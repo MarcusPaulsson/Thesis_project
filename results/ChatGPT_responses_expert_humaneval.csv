@@ -1,0 +1,1688 @@
+task_index,assistant_response
+0,"```python
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    numbers.sort()
+    for i in range(len(numbers) - 1):
+        if numbers[i + 1] - numbers[i] < threshold:
+            return True
+    return False
+```"
+1,"```python
+def separate_paren_groups(paren_string: str) -> List[str]:
+    result = []
+    current_group = []
+    balance = 0
+
+    for char in paren_string.replace("" "", """"):
+        if char == '(':
+            if balance == 0 and current_group:
+                result.append(''.join(current_group))
+                current_group = []
+            current_group.append(char)
+            balance += 1
+        elif char == ')':
+            current_group.append(char)
+            balance -= 1
+        
+        if balance == 0 and current_group:
+            result.append(''.join(current_group))
+            current_group = []
+
+    return result
+```"
+2,"```python
+def truncate_number(number: float) -> float:
+    return number - int(number)
+```"
+3,"```python
+def below_zero(operations: List[int]) -> bool:
+    balance = 0
+    for operation in operations:
+        balance += operation
+        if balance < 0:
+            return True
+    return False
+```"
+4,"```python
+    if not numbers:
+        return 0.0
+    
+    mean = sum(numbers) / len(numbers)
+    mad = sum(abs(x - mean) for x in numbers) / len(numbers)
+    return mad
+```"
+5,"```python
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    if not numbers:
+        return []
+    result = []
+    for i in range(len(numbers) - 1):
+        result.append(numbers[i])
+        result.append(delimeter)
+    result.append(numbers[-1])
+    return result
+```"
+6,"```python
+def parse_nested_parens(paren_string: str) -> List[int]:
+    def max_nesting_depth(s: str) -> int:
+        max_depth = current_depth = 0
+        for char in s:
+            if char == '(':
+                current_depth += 1
+                max_depth = max(max_depth, current_depth)
+            elif char == ')':
+                current_depth -= 1
+        return max_depth
+
+    return [max_nesting_depth(group) for group in paren_string.split()]
+```"
+7,"```python
+    return [s for s in strings if substring in s]
+```"
+8,"```python
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    total_sum = sum(numbers)
+    total_product = 1 if numbers else 1
+    for number in numbers:
+        total_product *= number
+    return total_sum, total_product
+```"
+9,"```python
+def rolling_max(numbers: List[int]) -> List[int]:
+    max_so_far = float('-inf')
+    result = []
+    for num in numbers:
+        max_so_far = max(max_so_far, num)
+        result.append(max_so_far)
+    return result
+```"
+10,"```python
+def make_palindrome(string: str) -> str:
+    """""" Find the shortest palindrome that begins with a supplied string. """"""
+    for i in range(len(string), -1, -1):
+        if is_palindrome(string[i:]):
+            return string + string[:i][::-1]
+    return string
+```"
+11,"```python
+def string_xor(a: str, b: str) -> str:
+    return ''.join('1' if x != y else '0' for x, y in zip(a, b))
+```"
+12,"```python
+    if not strings:
+        return None
+    return max(strings, key=len)
+```"
+13,"```python
+def greatest_common_divisor(a: int, b: int) -> int:
+    while b:
+        a, b = b, a % b
+    return a
+```"
+14,"```python
+def all_prefixes(string: str) -> List[str]:
+    return [string[:i] for i in range(1, len(string) + 1)]
+```"
+15,"```python
+def string_sequence(n: int) -> str:
+    """""" Return a string containing space-delimited numbers starting from 0 upto n inclusive.
+    >>> string_sequence(0)
+    '0'
+    >>> string_sequence(5)
+    '0 1 2 3 4 5'
+    """"""
+    return ' '.join(str(i) for i in range(n + 1))
+```"
+16,"```python
+def count_distinct_characters(string: str) -> int:
+    return len(set(string.lower()))
+```"
+17,"```python
+def parse_music(music_string: str) -> List[int]:
+    note_mapping = {
+        'o': 4,
+        'o|': 2,
+        '.|': 1
+    }
+    
+    notes = music_string.split()
+    return [note_mapping[note] for note in notes]
+```"
+18,"```python
+def how_many_times(string: str, substring: str) -> int:
+    count = 0
+    start = 0
+    while True:
+        start = string.find(substring, start)
+        if start == -1:
+            break
+        count += 1
+        start += 1  # Move one character forward to count overlapping
+    return count
+```"
+19,"```python
+def sort_numbers(numbers: str) -> str:
+    """""" Input is a space-delimited string of numberals from 'zero' to 'nine'.
+    Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.
+    Return the string with numbers sorted from smallest to largest
+    >>> sort_numbers('three one five')
+    'one three five'
+    """"""
+    num_map = {
+        'zero': 0, 'one': 1, 'two': 2, 'three': 3,
+        'four': 4, 'five': 5, 'six': 6, 'seven': 7,
+        'eight': 8, 'nine': 9
+    }
+    
+    numbers_list = numbers.split()
+    sorted_numbers = sorted(numbers_list, key=lambda x: num_map[x])
+    
+    return ' '.join(sorted_numbers)
+```"
+20,"```python
+def find_closest_elements(numbers: List[float]) -> Tuple[float, float]:
+    numbers.sort()
+    closest_pair = (numbers[0], numbers[1])
+    min_diff = abs(numbers[1] - numbers[0])
+
+    for i in range(1, len(numbers) - 1):
+        diff = abs(numbers[i + 1] - numbers[i])
+        if diff < min_diff:
+            min_diff = diff
+            closest_pair = (numbers[i], numbers[i + 1])
+
+    return closest_pair
+```"
+21,"```python
+    min_val = min(numbers)
+    max_val = max(numbers)
+    return [(x - min_val) / (max_val - min_val) for x in numbers]
+```"
+22,"```python
+def filter_integers(values: List[Any]) -> List[int]:
+    return [value for value in values if isinstance(value, int)]
+```"
+23,"```python
+def strlen(string: str) -> int:
+    """""" Return length of given string
+    >>> strlen('')
+    0
+    >>> strlen('abc')
+    3
+    """"""
+    return len(string)
+```"
+24,"```python
+def largest_divisor(n: int) -> int:
+    """""" For a given number n, find the largest number that divides n evenly, smaller than n
+    >>> largest_divisor(15)
+    5
+    """"""
+    for i in range(n - 1, 0, -1):
+        if n % i == 0:
+            return i
+```"
+25,"```python
+def factorize(n: int) -> List[int]:
+    factors = []
+    divisor = 2
+    while n > 1:
+        while n % divisor == 0:
+            factors.append(divisor)
+            n //= divisor
+        divisor += 1
+    return factors
+```"
+26,"```python
+def remove_duplicates(numbers: List[int]) -> List[int]:
+    counts = {}
+    for number in numbers:
+        counts[number] = counts.get(number, 0) + 1
+    return [number for number in numbers if counts[number] == 1]
+```"
+27,"```python
+def flip_case(string: str) -> str:
+    """""" For a given string, flip lowercase characters to uppercase and uppercase to lowercase.
+    >>> flip_case('Hello')
+    'hELLO'
+    """"""
+    return string.swapcase()
+```"
+28,"```python
+    return ''.join(strings)
+```"
+29,"```python
+    return [s for s in strings if s.startswith(prefix)]
+```"
+30,"```python
+def get_positive(l: list):
+    """"""Return only positive numbers in the list.
+    >>> get_positive([-1, 2, -4, 5, 6])
+    [2, 5, 6]
+    >>> get_positive([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])
+    [5, 3, 2, 3, 9, 123, 1]
+    """"""
+    return [x for x in l if x > 0]
+```"
+31,"```python
+def is_prime(n):
+    """"""Return true if a given number is prime, and false otherwise.""""""
+    if n <= 1:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+```"
+32,"```python
+import math
+from scipy.optimize import fsolve
+
+def poly(xs: list, x: float):
+    """"""
+    Evaluates polynomial with coefficients xs at point x.
+    return xs[0] + xs[1] * x + xs[1] * x^2 + .... xs[n] * x^n
+    """"""
+    return sum(coeff * math.pow(x, i) for i, coeff in enumerate(xs))
+
+def find_zero(xs: list):
+    """""" xs are coefficients of a polynomial.
+    find_zero find x such that poly(x) = 0.
+    find_zero returns only one zero point, even if there are many.
+    Moreover, find_zero only takes list xs having even number of coefficients
+    and largest non zero coefficient as it guarantees
+    a solution.
+    >>> round(find_zero([1, 2]), 2) # f(x) = 1 + 2x
+    -0.5
+    >>> round(find_zero([-6, 11, -6, 1]), 2) # (x - 1) * (x - 2) * (x - 3) = -6 + 11x - 6x^2 + x^3
+    1.0
+    """"""
+    if len(xs) % 2 != 0:
+        raise ValueError(""Coefficient list must have an even number of coefficients."")
+    
+    # Use fsolve to find the root of the polynomial
+    initial_guess = 0
+    root = fsolve(poly, initial_guess, args=(xs))[0]
+    return root
+```"
+33,"```python
+def sort_third(l: list):
+    sorted_third = sorted(l[i] for i in range(len(l)) if i % 3 == 0)
+    result = l[:]
+    j = 0
+    for i in range(len(l)):
+        if i % 3 == 0:
+            result[i] = sorted_third[j]
+            j += 1
+    return result
+```"
+34,"```python
+def unique(l: list):
+    """"""Return sorted unique elements in a list
+    >>> unique([5, 3, 5, 2, 3, 3, 9, 0, 123])
+    [0, 2, 3, 5, 9, 123]
+    """"""
+    return sorted(set(l))
+```"
+35,"```python
+def max_element(l: list):
+    """"""Return maximum element in the list.
+    >>> max_element([1, 2, 3])
+    3
+    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])
+    123
+    """"""
+    return max(l)
+```"
+36,"```python
+def fizz_buzz(n: int):
+    count = 0
+    for i in range(n):
+        if i % 11 == 0 or i % 13 == 0:
+            count += str(i).count('7')
+    return count
+```"
+37,"```python
+def sort_even(l: list):
+    even_indices = sorted(l[i] for i in range(len(l)) if i % 2 == 0)
+    result = l[:]
+    for i, val in zip(range(0, len(l), 2), even_indices):
+        result[i] = val
+    return result
+```"
+38,"```python
+def decode_cyclic(s: str):
+    """"""
+    takes as input string encoded with encode_cyclic function. Returns decoded string.
+    """"""
+    # split string to groups. Each of length 3.
+    groups = [s[(3 * i):min((3 * i + 3), len(s))] for i in range((len(s) + 2) // 3)]
+    # cycle elements back in each group. Unless group has fewer elements than 3.
+    groups = [(group[-1] + group[:-1]) if len(group) == 3 else group for group in groups]
+    return """".join(groups)
+```"
+39,"```python
+def is_prime(num: int) -> bool:
+    if num <= 1:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def fibonacci_generator():
+    a, b = 0, 1
+    while True:
+        a, b = b, a + b
+        yield a
+
+def prime_fib(n: int):
+    fib_gen = fibonacci_generator()
+    count = 0
+    for fib in fib_gen:
+        if is_prime(fib):
+            count += 1
+            if count == n:
+                return fib
+```"
+40,"```python
+def triples_sum_to_zero(l: list):
+    num_set = set(l)
+    for i in range(len(l)):
+        for j in range(i + 1, len(l)):
+            target = -(l[i] + l[j])
+            if target in num_set and target != l[i] and target != l[j]:
+                return True
+    return False
+```"
+41,"```python
+def car_race_collision(n: int) -> int:
+    return n * n
+```"
+42,"```python
+def incr_list(l: list):
+    """"""Return list with elements incremented by 1.
+    >>> incr_list([1, 2, 3])
+    [2, 3, 4]
+    >>> incr_list([5, 3, 5, 2, 3, 3, 9, 0, 123])
+    [6, 4, 6, 3, 4, 4, 10, 1, 124]
+    """"""
+    return [x + 1 for x in l]
+```"
+43,"```python
+def pairs_sum_to_zero(l):
+    seen = set()
+    for num in l:
+        if -num in seen:
+            return True
+        seen.add(num)
+    return False
+```"
+44,"```python
+def change_base(x: int, base: int) -> str:
+    if base < 2 or base >= 10:
+        raise ValueError(""Base must be between 2 and 9 inclusive."")
+    
+    if x == 0:
+        return '0'
+    
+    result = ''
+    while x > 0:
+        result = str(x % base) + result
+        x //= base
+    
+    return result
+```"
+45,"```python
+def triangle_area(a, h):
+    """"""Given length of a side and height return area for a triangle.
+    >>> triangle_area(5, 3)
+    7.5
+    """"""
+    return 0.5 * a * h
+```"
+46,"```python
+def fib4(n: int) -> int:
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 0
+    elif n == 2:
+        return 2
+    elif n == 3:
+        return 0
+
+    fib = [0] * (n + 1)
+    fib[0] = 0
+    fib[1] = 0
+    fib[2] = 2
+    fib[3] = 0
+
+    for i in range(4, n + 1):
+        fib[i] = fib[i - 1] + fib[i - 2] + fib[i - 3] + fib[i - 4]
+
+    return fib[n]
+```"
+47,"```python
+def median(l: list):
+    """"""Return median of elements in the list l.
+    >>> median([3, 1, 2, 4, 5])
+    3
+    >>> median([-10, 4, 6, 1000, 10, 20])
+    15.0
+    """"""
+    l.sort()
+    n = len(l)
+    mid = n // 2
+    if n % 2 == 0:
+        return (l[mid - 1] + l[mid]) / 2
+    else:
+        return l[mid]
+```"
+48,"```python
+def is_palindrome(text: str) -> bool:
+    return text == text[::-1]
+```"
+49,"```python
+def modp(n: int, p: int) -> int:
+    return pow(2, n, p)
+```"
+50,"```python
+def decode_shift(s: str):
+    """"""
+    takes as input string encoded with encode_shift function. Returns decoded string.
+    """"""
+    return """".join([chr(((ord(ch) - 5 - ord(""a"")) % 26) + ord(""a"")) for ch in s])
+```"
+51,"```python
+def remove_vowels(text):
+    vowels = 'aeiouAEIOU'
+    return ''.join(char for char in text if char not in vowels)
+```"
+52,"```python
+def below_threshold(l: list, t: int) -> bool:
+    return all(x < t for x in l)
+```"
+53,"```python
+def add(x: int, y: int) -> int:
+    """"""Add two numbers x and y
+    >>> add(2, 3)
+    5
+    >>> add(5, 7)
+    12
+    """"""
+    return x + y
+```"
+54,"```python
+def same_chars(s0: str, s1: str) -> bool:
+    return set(s0) == set(s1)
+```"
+55,"```python
+def fib(n: int) -> int:
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        a, b = 0, 1
+        for _ in range(2, n + 1):
+            a, b = b, a + b
+        return b
+```"
+56,"```python
+def correct_bracketing(brackets: str) -> bool:
+    balance = 0
+    for char in brackets:
+        if char == '<':
+            balance += 1
+        elif char == '>':
+            balance -= 1
+        if balance < 0:
+            return False
+    return balance == 0
+```"
+57,"```python
+def monotonic(l: list) -> bool:
+    """"""Return True if list elements are monotonically increasing or decreasing.""""""
+    if not l:
+        return True
+    
+    increasing = decreasing = True
+    
+    for i in range(1, len(l)):
+        if l[i] > l[i - 1]:
+            decreasing = False
+        elif l[i] < l[i - 1]:
+            increasing = False
+    
+    return increasing or decreasing
+```"
+58,"```python
+def common(l1: list, l2: list):
+    """"""Return sorted unique common elements for two lists.
+    >>> common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121])
+    [1, 5, 653]
+    >>> common([5, 3, 2, 8], [3, 2])
+    [2, 3]
+
+    """"""
+    return sorted(set(l1) & set(l2))
+```"
+59,"```python
+def largest_prime_factor(n: int):
+    """"""Return the largest prime factor of n. Assume n > 1 and is not a prime.
+    >>> largest_prime_factor(13195)
+    29
+    >>> largest_prime_factor(2048)
+    2
+    """"""
+    factor = 2
+    while factor * factor <= n:
+        if n % factor == 0:
+            n //= factor
+        else:
+            factor += 1
+    return n
+```"
+60,"```python
+def sum_to_n(n: int) -> int:
+    return n * (n + 1) // 2
+```"
+61,"```python
+def correct_bracketing(brackets: str) -> bool:
+    balance = 0
+    for char in brackets:
+        if char == '(':
+            balance += 1
+        elif char == ')':
+            balance -= 1
+        if balance < 0:
+            return False
+    return balance == 0
+```"
+62,"```python
+def derivative(xs: list):
+    return [i * coef for i, coef in enumerate(xs) if i > 0]
+```"
+63,"```python
+def fibfib(n: int) -> int:
+    if n == 0 or n == 1:
+        return 0
+    elif n == 2:
+        return 1
+
+    fibfib_values = [0, 0, 1] + [0] * (n - 2)
+
+    for i in range(3, n + 1):
+        fibfib_values[i] = fibfib_values[i - 1] + fibfib_values[i - 2] + fibfib_values[i - 3]
+
+    return fibfib_values[n]
+```"
+64,"```python
+def vowels_count(s):
+    vowels = 'aeiou'
+    count = sum(1 for char in s.lower() if char in vowels)
+    if s and s[-1].lower() == 'y':
+        count += 1
+    return count
+```"
+65,"```python
+def circular_shift(x, shift):
+    """"""Circular shift the digits of the integer x, shift the digits right by shift
+    and return the result as a string.
+    If shift > number of digits, return digits reversed.
+    >>> circular_shift(12, 1)
+    ""21""
+    >>> circular_shift(12, 2)
+    ""12""
+    """"""
+    s = str(x)
+    n = len(s)
+    if shift >= n:
+        return s[::-1]
+    return s[-shift:] + s[:-shift]
+```"
+66,"```python
+def digitSum(s):
+    return sum(ord(char) for char in s if char.isupper())
+```"
+67,"```python
+def fruit_distribution(s, n):
+    apples = int(s.split()[0])
+    oranges = int(s.split()[3])
+    mangoes = n - apples - oranges
+    return mangoes
+```"
+68,"```python
+def pluck(arr):
+    smallest_even = float('inf')
+    index = -1
+    
+    for i, value in enumerate(arr):
+        if value % 2 == 0 and value < smallest_even:
+            smallest_even = value
+            index = i
+            
+    if index == -1:
+        return []
+    
+    return [smallest_even, index]
+```"
+69,"```python
+def search(lst):
+    from collections import Counter
+    
+    frequency = Counter(lst)
+    result = -1
+    
+    for num in frequency:
+        if num > 0 and frequency[num] >= num:
+            result = max(result, num)
+    
+    return result
+```"
+70,"```python
+def strange_sort_list(lst):
+    if not lst:
+        return []
+    
+    lst.sort()
+    result = []
+    left, right = 0, len(lst) - 1
+    
+    while left <= right:
+        if left == right:
+            result.append(lst[left])
+        else:
+            result.append(lst[left])
+            result.append(lst[right])
+        left += 1
+        right -= 1
+        
+    return result
+```"
+71,"```python
+def triangle_area(a, b, c):
+    if a + b > c and a + c > b and b + c > a:
+        s = (a + b + c) / 2
+        area = (s * (s - a) * (s - b) * (s - c)) ** 0.5
+        return round(area, 2)
+    return -1
+```"
+72,"```python
+def will_it_fly(q, w):
+    return q == q[::-1] and sum(q) <= w
+```"
+73,"```python
+def smallest_change(arr):
+    n = len(arr)
+    changes = 0
+    for i in range(n // 2):
+        if arr[i] != arr[n - 1 - i]:
+            changes += 1
+    return changes
+```"
+74,"```python
+def total_match(lst1, lst2):
+    total_chars_lst1 = sum(len(s) for s in lst1)
+    total_chars_lst2 = sum(len(s) for s in lst2)
+    
+    if total_chars_lst1 < total_chars_lst2:
+        return lst1
+    else:
+        return lst2
+```"
+75,"```python
+def is_multiply_prime(a):
+    def is_prime(n):
+        if n <= 1:
+            return False
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    primes = [i for i in range(2, 100) if is_prime(i)]
+    
+    for i in range(len(primes)):
+        for j in range(i, len(primes)):
+            for k in range(j, len(primes)):
+                if primes[i] * primes[j] * primes[k] == a:
+                    return True
+    return False
+```"
+76,"```python
+def is_simple_power(x, n):
+    if n <= 1:
+        return x == n  # Only n = 1 can be a power of 1, which is always 1
+    power = 1
+    while n ** power < x:
+        power += 1
+    return n ** power == x
+```"
+77,"```python
+def iscube(a):
+    return round(a ** (1/3)) ** 3 == a
+```"
+78,"```python
+def hex_key(num):
+    prime_hex_digits = {'2', '3', '5', '7', 'B', 'D'}
+    return sum(1 for digit in num if digit in prime_hex_digits)
+```"
+79,"```python
+def decimal_to_binary(decimal):
+    binary = bin(decimal)[2:]  # Convert to binary and strip the '0b' prefix
+    return f""db{binary}db""
+```"
+80,"```python
+def is_happy(s):
+    if len(s) < 3:
+        return False
+    for i in range(len(s) - 2):
+        if len(set(s[i:i+3])) < 3:
+            return False
+    return True
+```"
+81,"```python
+def numerical_letter_grade(grades):
+    letter_grades = []
+    for gpa in grades:
+        if gpa == 4.0:
+            letter_grades.append('A+')
+        elif gpa > 3.7:
+            letter_grades.append('A')
+        elif gpa > 3.3:
+            letter_grades.append('A-')
+        elif gpa > 3.0:
+            letter_grades.append('B+')
+        elif gpa > 2.7:
+            letter_grades.append('B')
+        elif gpa > 2.3:
+            letter_grades.append('B-')
+        elif gpa > 2.0:
+            letter_grades.append('C+')
+        elif gpa > 1.7:
+            letter_grades.append('C')
+        elif gpa > 1.3:
+            letter_grades.append('C-')
+        elif gpa > 1.0:
+            letter_grades.append('D+')
+        elif gpa > 0.7:
+            letter_grades.append('D')
+        elif gpa > 0.0:
+            letter_grades.append('D-')
+        else:
+            letter_grades.append('E')
+    return letter_grades
+```"
+82,"```python
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def prime_length(string):
+    return is_prime(len(string))
+```"
+83,"```python
+def starts_one_ends(n):
+    if n == 1:
+        return 1  # Only the number 1
+    start_count = 10 ** (n - 1) - 10 ** (n - 2)  # Numbers starting with 1
+    end_count = 10 ** (n - 1)  # Numbers ending with 1
+    overlap_count = 1  # The number 1 itself
+    return start_count + end_count - overlap_count
+```"
+84,"```python
+def solve(N):
+    return bin(sum(int(digit) for digit in str(N)))[2:]
+```"
+85,"```python
+def add(lst):
+    return sum(lst[i] for i in range(1, len(lst), 2) if lst[i] % 2 == 0)
+```"
+86,"```python
+def anti_shuffle(s):
+    def sort_word(word):
+        return ''.join(sorted(word))
+
+    words = s.split(' ')
+    sorted_words = [sort_word(word) for word in words]
+    return ' '.join(sorted_words)
+```"
+87,"```python
+def get_row(lst, x):
+    coordinates = []
+    for i, row in enumerate(lst):
+        for j, value in enumerate(row):
+            if value == x:
+                coordinates.append((i, j))
+    coordinates.sort(key=lambda coord: (coord[0], -coord[1]))
+    return coordinates
+```"
+88,"```python
+def sort_array(array):
+    if not array:
+        return []
+    
+    first, last = array[0], array[-1]
+    sorted_array = sorted(array)
+    
+    if (first + last) % 2 == 0:
+        return sorted_array[::-1]  # Sort in descending order
+    else:
+        return sorted_array  # Sort in ascending order
+```"
+89,"```python
+def encrypt(s):
+    return ''.join(chr(((ord(char) - ord('a') + 4) % 26) + ord('a')) if char.islower() else char for char in s)
+```"
+90,"```python
+def next_smallest(lst):
+    unique_elements = list(set(lst))
+    if len(unique_elements) < 2:
+        return None
+    unique_elements.sort()
+    return unique_elements[1]
+```"
+91,"```python
+def is_bored(S):
+    return sum(1 for sentence in S.replace('!', '.').replace('?', '.').split('.') if sentence.strip().startswith('I '))
+```"
+92,"```python
+def any_int(x, y, z):
+    return isinstance(x, int) and isinstance(y, int) and isinstance(z, int) and (
+        x == y + z or y == x + z or z == x + y
+    )
+```"
+93,"```python
+def encode(message):
+    vowels = 'aeiouAEIOU'
+    encoded_message = []
+    
+    for char in message:
+        if char.isalpha():
+            # Swap case
+            if char in vowels:
+                # Replace vowel with the letter 2 places ahead
+                if char.islower():
+                    new_char = chr((ord(char) - ord('a') + 2) % 26 + ord('a'))
+                else:
+                    new_char = chr((ord(char) - ord('A') + 2) % 26 + ord('A'))
+                encoded_message.append(new_char)
+            else:
+                encoded_message.append(char.swapcase())
+        else:
+            encoded_message.append(char)
+    
+    return ''.join(encoded_message)
+```"
+94,"```python
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def sum_of_digits(n):
+    return sum(int(digit) for digit in str(n))
+
+def skjkasdkd(lst):
+    largest_prime = None
+    for num in lst:
+        if is_prime(num):
+            if largest_prime is None or num > largest_prime:
+                largest_prime = num
+    return sum_of_digits(largest_prime) if largest_prime is not None else 0
+```"
+95,"```python
+def check_dict_case(d):
+    if not d:
+        return False
+    
+    keys = d.keys()
+    all_lower = all(isinstance(key, str) and key.islower() for key in keys)
+    all_upper = all(isinstance(key, str) and key.isupper() for key in keys)
+    
+    return all_lower or all_upper
+```"
+96,"```python
+def count_up_to(n):
+    if n <= 2:
+        return []
+    
+    primes = []
+    for num in range(2, n):
+        is_prime = True
+        for i in range(2, int(num**0.5) + 1):
+            if num % i == 0:
+                is_prime = False
+                break
+        if is_prime:
+            primes.append(num)
+    
+    return primes
+```"
+97,"```python
+def multiply(a, b):
+    return (abs(a) % 10) * (abs(b) % 10)
+```"
+98,"```python
+def count_upper(s):
+    return sum(1 for i in range(0, len(s), 2) if s[i] in 'AEIOU')
+```"
+99,"```python
+def closest_integer(value):
+    number = float(value)
+    rounded = round(number)
+    if abs(number - rounded) == 0.5:
+        return rounded + (1 if number > 0 else -1)
+    return rounded
+```"
+100,"```python
+def make_a_pile(n):
+    return [n + 2 * i for i in range(n)]
+```"
+101,"```python
+def words_string(s):
+    return [word.strip() for word in s.replace(',', ' ').split()]
+```"
+102,"```python
+def choose_num(x, y):
+    if x > y:
+        return -1
+    
+    # Find the largest even number in the range
+    for num in range(y, x - 1, -1):
+        if num % 2 == 0:
+            return num
+            
+    return -1
+```"
+103,"```python
+def rounded_avg(n, m):
+    if n > m:
+        return -1
+    avg = (n + m) / 2
+    rounded = round(avg)
+    return bin(rounded)
+```"
+104,"```python
+def unique_digits(x):
+    """"""Given a list of positive integers x. return a sorted list of all 
+    elements that hasn't any even digit.
+
+    Note: Returned list should be sorted in increasing order.
+    """"""
+    def has_even_digit(n):
+        return any(int(digit) % 2 == 0 for digit in str(n))
+    
+    result = [num for num in x if not has_even_digit(num)]
+    return sorted(result)
+```"
+105,"```python
+def by_length(arr):
+    if not arr:
+        return []
+    
+    # Filter the array to only include numbers between 1 and 9
+    filtered = [num for num in arr if 1 <= num <= 9]
+    
+    # Sort and reverse the filtered array
+    sorted_reversed = sorted(filtered)[::-1]
+    
+    # Mapping from digits to their names
+    digit_names = [""Zero"", ""One"", ""Two"", ""Three"", ""Four"", ""Five"", ""Six"", ""Seven"", ""Eight"", ""Nine""]
+    
+    # Replace each digit with its corresponding name
+    result = [digit_names[num] for num in sorted_reversed]
+    
+    return result
+```"
+106,"```python
+def f(n):
+    result = []
+    for i in range(1, n + 1):
+        if i % 2 == 0:
+            factorial = 1
+            for j in range(1, i + 1):
+                factorial *= j
+            result.append(factorial)
+        else:
+            result.append(sum(range(1, i + 1)))
+    return result
+```"
+107,"```python
+def even_odd_palindrome(n):
+    def is_palindrome(num):
+        return str(num) == str(num)[::-1]
+
+    even_count = 0
+    odd_count = 0
+
+    for i in range(1, n + 1):
+        if is_palindrome(i):
+            if i % 2 == 0:
+                even_count += 1
+            else:
+                odd_count += 1
+
+    return (even_count, odd_count)
+```"
+108,"```python
+def count_nums(arr):
+    return sum(1 for num in arr if sum(int(digit) if num >= 0 else -int(digit) for digit in str(abs(num))) > 0)
+```"
+109,"```python
+def move_one_ball(arr):
+    if not arr:
+        return True
+    
+    n = len(arr)
+    count = 0
+    
+    for i in range(n):
+        if arr[i] > arr[(i + 1) % n]:
+            count += 1
+            
+    return count <= 1
+```"
+110,"```python
+def exchange(lst1, lst2):
+    has_even_in_lst2 = any(x % 2 == 0 for x in lst2)
+    needs_even_in_lst1 = any(x % 2 != 0 for x in lst1)
+    
+    if needs_even_in_lst1 and has_even_in_lst2:
+        return ""YES""
+    elif not needs_even_in_lst1:
+        return ""YES""
+    else:
+        return ""NO""
+```"
+111,"```python
+def histogram(test):
+    if not test:
+        return {}
+    
+    counts = {}
+    for letter in test.split():
+        counts[letter] = counts.get(letter, 0) + 1
+    
+    max_count = max(counts.values())
+    return {letter: count for letter, count in counts.items() if count == max_count}
+```"
+112,"```python
+def reverse_delete(s, c):
+    result = ''.join(char for char in s if char not in c)
+    is_palindrome = result == result[::-1]
+    return (result, is_palindrome)
+```"
+113,"```python
+def odd_count(lst):
+    result = []
+    for s in lst:
+        odd_count = sum(1 for char in s if char in '13579')
+        result.append(f""the number of odd elements {odd_count}n the str{odd_count}ng {odd_count} of the {odd_count}nput."")
+    return result
+```"
+114,"```python
+def minSubArraySum(nums):
+    min_sum = float('inf')
+    current_sum = 0
+    
+    for num in nums:
+        current_sum += num
+        if current_sum < min_sum:
+            min_sum = current_sum
+        if current_sum > 0:
+            current_sum = 0
+            
+    return min_sum
+```"
+115,"```python
+def max_fill(grid, capacity):
+    total_water = sum(sum(row) for row in grid)
+    return math.ceil(total_water / capacity)
+```"
+116,"```python
+def sort_array(arr):
+    return sorted(arr, key=lambda x: (bin(x).count('1'), x))
+```"
+117,"```python
+def select_words(s, n):
+    def count_consonants(word):
+        vowels = set(""aeiouAEIOU"")
+        return sum(1 for char in word if char.isalpha() and char not in vowels)
+
+    if not s:
+        return []
+
+    words = s.split()
+    return [word for word in words if count_consonants(word) == n]
+```"
+118,"```python
+def get_closest_vowel(word):
+    vowels = ""aeiouAEIOU""
+    n = len(word)
+    
+    for i in range(n - 2, 0, -1):
+        if word[i] in vowels and word[i - 1].isalpha() and word[i + 1].isalpha() and word[i - 1] not in vowels and word[i + 1] not in vowels:
+            return word[i]
+    
+    return """"
+```"
+119,"```python
+def match_parens(lst):
+    def is_good(s):
+        balance = 0
+        for char in s:
+            balance += 1 if char == '(' else -1
+            if balance < 0:
+                return False
+        return balance == 0
+
+    s1, s2 = lst
+    return 'Yes' if (is_good(s1 + s2) or is_good(s2 + s1)) else 'No'
+```"
+120,"```python
+def maximum(arr, k):
+    return sorted(sorted(arr)[-k:])
+```"
+121,"```python
+def solution(lst):
+    return sum(lst[i] for i in range(0, len(lst), 2) if lst[i] % 2 != 0)
+```"
+122,"```python
+def add_elements(arr, k):
+    return sum(x for x in arr[:k] if -10 < x < 100)
+```"
+123,"```python
+def get_odd_collatz(n):
+    collatz_sequence = []
+    
+    while n != 1:
+        collatz_sequence.append(n)
+        if n % 2 == 0:
+            n //= 2
+        else:
+            n = 3 * n + 1
+    
+    collatz_sequence.append(1)  # Adding the last term which is 1
+    
+    # Filter odd numbers and sort the list
+    odd_numbers = sorted(num for num in collatz_sequence if num % 2 != 0)
+    
+    return odd_numbers
+```"
+124,"```python
+def valid_date(date):
+    if not date:
+        return False
+    
+    parts = date.split('-')
+    if len(parts) != 3:
+        return False
+    
+    if not all(part.isdigit() for part in parts):
+        return False
+    
+    month, day, year = map(int, parts)
+    
+    if month < 1 or month > 12:
+        return False
+    
+    if day < 1:
+        return False
+    
+    if month in {1, 3, 5, 7, 8, 10, 12}:
+        if day > 31:
+            return False
+    elif month in {4, 6, 9, 11}:
+        if day > 30:
+            return False
+    elif month == 2:
+        if day > 29:
+            return False
+    
+    return True
+```"
+125,"```python
+def split_words(txt):
+    if ' ' in txt:
+        return txt.split()
+    elif ',' in txt:
+        return txt.split(',')
+    else:
+        return sum(1 for char in txt if char.islower() and (ord(char) - ord('a')) % 2 == 1)
+```"
+126,"```python
+def is_sorted(lst):
+    if len(lst) < 2:
+        return True
+    
+    seen = set()
+    for i in range(len(lst)):
+        if lst[i] in seen:
+            return False
+        seen.add(lst[i])
+        if i > 0 and lst[i] < lst[i - 1]:
+            return False
+            
+    return True
+```"
+127,"```python
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def intersection(interval1, interval2):
+    start1, end1 = interval1
+    start2, end2 = interval2
+    
+    # Find the intersection of the two intervals
+    start_intersection = max(start1, start2)
+    end_intersection = min(end1, end2)
+    
+    # Calculate the length of the intersection
+    if start_intersection <= end_intersection:
+        length = end_intersection - start_intersection
+        return ""YES"" if is_prime(length) else ""NO""
+    
+    return ""NO""
+```"
+128,"```python
+def prod_signs(arr):
+    if not arr:
+        return None
+    
+    sign_product = 1
+    magnitude_sum = 0
+    
+    for num in arr:
+        if num > 0:
+            magnitude_sum += num
+        elif num < 0:
+            sign_product *= -1
+            magnitude_sum += -num
+        else:
+            return 0
+    
+    return sign_product * magnitude_sum
+```"
+129,"```python
+def minPath(grid, k):
+    from collections import deque
+    
+    N = len(grid)
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    
+    def bfs(start_x, start_y):
+        queue = deque([(start_x, start_y, [grid[start_x][start_y]])])
+        min_path = None
+        
+        while queue:
+            x, y, path = queue.popleft()
+            if len(path) == k:
+                if min_path is None or path < min_path:
+                    min_path = path
+                continue
+            
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < N and 0 <= ny < N:
+                    queue.append((nx, ny, path + [grid[nx][ny]]))
+        
+        return min_path
+    
+    result = None
+    for i in range(N):
+        for j in range(N):
+            current_path = bfs(i, j)
+            if result is None or current_path < result:
+                result = current_path
+    
+    return result
+```"
+130,"```python
+def tri(n):
+    result = []
+    
+    def tribonacci(k):
+        if k == 1:
+            return 3
+        elif k % 2 == 0:
+            return 1 + k / 2
+        else:
+            return tribonacci(k - 1) + tribonacci(k - 2) + tribonacci(k + 1)
+
+    for i in range(n + 1):
+        result.append(tribonacci(i))
+        
+    return result
+```"
+131,"```python
+def digits(n):
+    product = 1
+    has_odd = False
+    
+    for digit in str(n):
+        if int(digit) % 2 != 0:
+            product *= int(digit)
+            has_odd = True
+            
+    return product if has_odd else 0
+```"
+132,"```python
+def is_nested(string):
+    open_count = 0
+    has_nested = False
+
+    for char in string:
+        if char == '[':
+            open_count += 1
+            if open_count > 1:
+                has_nested = True
+        elif char == ']':
+            open_count -= 1
+            if open_count < 0:
+                return False
+
+    return has_nested and open_count == 0
+```"
+133,"```python
+import math
+
+def sum_squares(lst):
+    return sum(math.ceil(x) ** 2 for x in lst)
+```"
+134,"```python
+def check_if_last_char_is_a_letter(txt):
+    if not txt:
+        return False
+    txt = txt.rstrip()  # Remove trailing spaces
+    if len(txt) == 0:
+        return False
+    last_char = txt[-1]
+    if last_char.isalpha() and (len(txt) == 1 or txt[-2] == ' '):
+        return True
+    return False
+```"
+135,"```python
+def can_arrange(arr):
+    for i in range(len(arr) - 1, 0, -1):
+        if arr[i] < arr[i - 1]:
+            return i
+    return -1
+```"
+136,"```python
+def largest_smallest_integers(lst):
+    largest_negative = None
+    smallest_positive = None
+
+    for num in lst:
+        if num < 0:
+            if largest_negative is None or num > largest_negative:
+                largest_negative = num
+        elif num > 0:
+            if smallest_positive is None or num < smallest_positive:
+                smallest_positive = num
+
+    return (largest_negative, smallest_positive)
+```"
+137,"```python
+def compare_one(a, b):
+    def parse_value(val):
+        if isinstance(val, str):
+            val = val.replace("","", ""."")
+        return float(val) if isinstance(val, (str, int, float)) else val
+
+    a_parsed = parse_value(a)
+    b_parsed = parse_value(b)
+
+    if a_parsed == b_parsed:
+        return None
+    return a if a_parsed > b_parsed else b
+```"
+138,"```python
+def is_equal_to_sum_even(n):
+    return n >= 8 and n % 2 == 0
+```"
+139,"```python
+def special_factorial(n):
+    from math import factorial
+    return factorial(n) * special_factorial(n - 1) if n > 1 else 1
+```"
+140,"```python
+def fix_spaces(text):
+    text = text.replace(' ', '_')
+    while '  ' in text:
+        text = text.replace('  ', '-')
+    return text
+```"
+141,"```python
+def file_name_check(file_name):
+    if file_name.count('.') != 1:
+        return 'No'
+    
+    name, extension = file_name.split('.')
+    
+    if not name or not name[0].isalpha():
+        return 'No'
+    
+    digit_count = sum(c.isdigit() for c in name)
+    if digit_count > 3:
+        return 'No'
+    
+    if extension not in ['txt', 'exe', 'dll']:
+        return 'No'
+    
+    return 'Yes'
+```"
+142,"```python
+def sum_squares(lst):
+    total = 0
+    for i, num in enumerate(lst):
+        if i % 3 == 0:
+            total += num ** 2
+        elif i % 4 == 0:
+            total += num ** 3
+        else:
+            total += num
+    return total
+```"
+143,"```python
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def words_in_sentence(sentence):
+    words = sentence.split()
+    prime_length_words = [word for word in words if is_prime(len(word))]
+    return ' '.join(prime_length_words)
+```"
+144,"```python
+def simplify(x, n):
+    from fractions import Fraction
+
+    frac_x = Fraction(x)
+    frac_n = Fraction(n)
+
+    result = frac_x * frac_n
+    return result.denominator == 1
+```"
+145,"```python
+def order_by_points(nums):
+    def digit_sum(num):
+        return sum(int(d) for d in str(abs(num)))
+
+    return sorted(nums, key=lambda x: (digit_sum(x), nums.index(x)))
+```"
+146,"```python
+def specialFilter(nums):
+    def first_and_last_digit_odd(num):
+        first_digit = int(str(abs(num))[0])
+        last_digit = int(str(abs(num))[-1])
+        return first_digit % 2 == 1 and last_digit % 2 == 1
+
+    return sum(1 for num in nums if num > 10 and first_and_last_digit_odd(num))
+```"
+147,"```python
+def get_max_triples(n):
+    a = [i * i - i + 1 for i in range(1, n + 1)]
+    count = 0
+    
+    # Count occurrences of each modulo 3
+    mod_count = [0, 0, 0]
+    for num in a:
+        mod_count[num % 3] += 1
+    
+    # Count valid triples
+    count += mod_count[0] * (mod_count[0] - 1) * (mod_count[0] - 2) // 6  # (0, 0, 0)
+    count += mod_count[1] * mod_count[1] * mod_count[1] // 6              # (1, 1, 1)
+    count += mod_count[2] * mod_count[2] * mod_count[2] // 6              # (2, 2, 2)
+    count += mod_count[0] * mod_count[1] * mod_count[2]                   # (0, 1, 2)
+    
+    return count
+```"
+148,"```python
+def bf(planet1, planet2):
+    planets = [""Mercury"", ""Venus"", ""Earth"", ""Mars"", ""Jupiter"", ""Saturn"", ""Uranus"", ""Neptune""]
+    
+    if planet1 not in planets or planet2 not in planets:
+        return ()
+    
+    index1 = planets.index(planet1)
+    index2 = planets.index(planet2)
+    
+    start, end = sorted((index1, index2))
+    
+    return tuple(planets[start + 1:end])
+```"
+149,"```python
+def sorted_list_sum(lst):
+    filtered_lst = [s for s in lst if len(s) % 2 == 0]
+    return sorted(filtered_lst, key=lambda x: (len(x), x))
+```"
+150,"```python
+def x_or_y(n, x, y):
+    def is_prime(num):
+        if num <= 1:
+            return False
+        for i in range(2, int(num**0.5) + 1):
+            if num % i == 0:
+                return False
+        return True
+
+    return x if is_prime(n) else y
+```"
+151,"```python
+def double_the_difference(lst):
+    return sum(x**2 for x in lst if isinstance(x, int) and x > 0 and x % 2 != 0)
+```"
+152,"```python
+def compare(game, guess):
+    return [abs(g - s) for g, s in zip(guess, game)]
+```"
+153,"```python
+def Strongest_Extension(class_name, extensions):
+    def strength(extension):
+        CAP = sum(1 for c in extension if c.isupper())
+        SM = sum(1 for c in extension if c.islower())
+        return CAP - SM
+
+    strongest_extension = max(extensions, key=strength)
+    return f""{class_name}.{strongest_extension}""
+```"
+154,"```python
+def cycpattern_check(a, b):
+    return any(b in (b * i) for i in range(1, len(a) // len(b) + 2)) and (len(b) <= len(a))
+```"
+155,"```python
+def even_odd_count(num):
+    num_str = str(abs(num))
+    even_count = sum(1 for digit in num_str if int(digit) % 2 == 0)
+    odd_count = len(num_str) - even_count
+    return (even_count, odd_count)
+```"
+156,"```python
+def int_to_mini_roman(number):
+    if not (1 <= number <= 1000):
+        raise ValueError(""Number must be between 1 and 1000"")
+
+    roman_numerals = [
+        (1000, 'm'), (900, 'cm'), (500, 'd'), (400, 'cd'),
+        (100, 'c'), (90, 'xc'), (50, 'l'), (40, 'xl'),
+        (10, 'x'), (9, 'ix'), (5, 'v'), (4, 'iv'), (1, 'i')
+    ]
+    
+    result = []
+    for value, symbol in roman_numerals:
+        while number >= value:
+            result.append(symbol)
+            number -= value
+            
+    return ''.join(result)
+```"
+157,"```python
+def right_angle_triangle(a, b, c):
+    sides = sorted([a, b, c])
+    return sides[0]**2 + sides[1]**2 == sides[2]**2
+```"
+158,"```python
+def find_max(words):
+    max_word = """"
+    max_unique_count = 0
+    
+    for word in words:
+        unique_chars = len(set(word))
+        
+        if unique_chars > max_unique_count or (unique_chars == max_unique_count and word < max_word):
+            max_word = word
+            max_unique_count = unique_chars
+            
+    return max_word
+```"
+159,"```python
+def eat(number, need, remaining):
+    eaten = min(need, remaining)
+    total_eaten = number + eaten
+    carrots_left = remaining - eaten
+    return [total_eaten, carrots_left]
+```"
+160,"```python
+def do_algebra(operator, operand):
+    expression = str(operand[0])
+    
+    for op, num in zip(operator, operand[1:]):
+        expression += f"" {op} {num}""
+    
+    return eval(expression)
+```"
+161,"```python
+def solve(s):
+    if any(c.isalpha() for c in s):
+        return ''.join(c.swapcase() if c.isalpha() else c for c in s)
+    else:
+        return s[::-1]
+```"
+162,"```python
+import hashlib
+
+def string_to_md5(text):
+    if not text:
+        return None
+    return hashlib.md5(text.encode()).hexdigest()
+```"
