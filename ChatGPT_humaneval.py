@@ -58,7 +58,7 @@ if __name__ == "__main__":
     
     # Define the index interval for tasks you want to run (start_index inclusive, end_index exclusive)
     start_index = 0  # change as needed
-    end_index = 1    # change as needed
+    end_index = 2    # change as needed
     
     results = []  # Dictionary to hold responses for each task
     
@@ -77,4 +77,4 @@ if __name__ == "__main__":
         })
     
     # Save all results to a CSV file
-    save_results_to_csv(results, "responses.csv")
+    save_results_to_csv(results, "responses_expert_humaneval.csv")
