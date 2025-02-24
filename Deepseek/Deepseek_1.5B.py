@@ -35,13 +35,13 @@ def run_task_with_local_model(task_prompt):
     """ Runs the local DeepSeek model on a given prompt using PyTorch best practices. """
 
     # Define system message (acts as context)
-    system_prompt = "You are a senior Python developer. Provide high-quality and optimized code responses."
+    #system_prompt = "You are a senior Python developer. Provide high-quality and optimized code responses."
     
     # Define user task prompt
     extra_message = "Give only the code."
 
     # Format the final input prompt correctly
-    formatted_prompt = f"System: {system_prompt}\nUser: {task_prompt} {extra_message}"
+    formatted_prompt = f"{task_prompt} {extra_message}"
 
     # Tokenize input and move to correct device
     inputs = tokenizer(formatted_prompt, return_tensors="pt").to(device)

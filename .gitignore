@@ -1,3 +1,3 @@
 # Ignore file with private API keys
 config.py
-DeepSeek-R1-Distill-Qwen-1.5B/
+env/
