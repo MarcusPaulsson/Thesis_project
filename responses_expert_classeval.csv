@@ -9,7 +9,7 @@ class AccessGatewayFilter:
     """"""
 
     def __init__(self):
-        self.allowed_paths = ['/api', '/login']
+        self.allowed_paths = ['/login', '/api']
         logging.basicConfig(level=logging.INFO)
 
     def filter(self, request):
@@ -21,11 +21,10 @@ class AccessGatewayFilter:
         >>> filter.filter({'path': '/login', 'method': 'POST'})
         True
         """"""
+        if request['method'] == 'POST' and request['path'] == '/login':
+            return True
         if self.is_start_with(request['path']):
-            user_info = self.get_jwt_user(request)
-            if user_info:
-                self.set_current_user_info_and_log(user_info)
-                return True
+            return True
         return False
 
     def is_start_with(self, request_uri):
@@ -49,8 +48,8 @@ class AccessGatewayFilter:
         >>> filter.get_jwt_user({'headers': {'Authorization': {'user': {'name': 'user1'}, 'jwt': 'user1'+str(datetime.date.today())}}})
         {'user': {'name': 'user1'}}
         """"""
-        auth_header = request.get('headers', {}).get('Authorization')
-        if auth_header and 'user' in auth_header:
+        auth_header = request.get('headers', {}).get('Authorization', {})
+        if 'user' in auth_header:
             return auth_header['user']
         return None
 
@@ -63,5 +62,5 @@ class AccessGatewayFilter:
         >>> user = {'name': 'user1', 'address': '127.0.0.1'}
         >>> filter.set_current_user_info_and_log(user)
         """"""
-        logging.info(f""User access logged: {user['name']} from {user.get('address', 'unknown address')}"")
+        logging.info(f""Access Log - User: {user['name']}, Address: {user['address']}, Time: {datetime.datetime.now()}"")
 ```"

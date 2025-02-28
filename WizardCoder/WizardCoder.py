@@ -1,38 +1,62 @@
-from transformers import AutoTokenizer, pipeline, logging
-from auto_gptq import AutoGPTQForCausalLM
+import time
 import os
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# Set the local model folder path (adjust the folder name if needed)
-model_name_or_path = os.path.join(os.getcwd(), "WizardCoder-15B-1.0-GPTQ")
+print("Started")
 
-# Load the tokenizer from the local model
+# Set the absolute path to the model
+model_name_or_path = "/home/marpa/Projects/Models/WizardCoder-Python-7B-V1.0"
+
+# Start timing model loading
+start_load_time = time.time()
+
+# Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
-# Load the model using AutoGPTQ (ensure you have auto-gptq installed)
-model = AutoGPTQForCausalLM.from_quantized(
-    model_name_or_path,
-    use_safetensors=True,
-    device="cuda:0",    # Change to "cpu" if you don't have a GPU
-    use_triton=False,   # Set to True if you want to use Triton
-    quantize_config=None  # Quantization parameters are read automatically
+# Load model with PyTorch, ensure CPU execution
+model = AutoModelForCausalLM.from_pretrained(model_name_or_path, torch_dtype=torch.float16).to("cpu")
+
+# End timing model loading
+end_load_time = time.time()
+loading_time = end_load_time - start_load_time
+print(f"\nModel loaded in {loading_time:.2f} seconds.\n")
+
+# Define the evaluation function
+def evaluate(batch_data, tokenizer, model, max_new_tokens=4):
+    """ Runs inference using PyTorch tensors. """
+    # Convert input to PyTorch tensor
+    inputs = tokenizer(batch_data, return_tensors="pt", max_length=256, truncation=True)
+    input_ids = inputs["input_ids"].to("cpu")  # Ensure tensor is on CPU
+
+    # Generate output using PyTorch
+    with torch.no_grad():  # Disable gradients for efficiency
+        generation_output = model.generate(
+    input_ids,
+    max_new_tokens=max_new_tokens,
+    do_sample=True,
+    temperature=1.0,
+    top_p=0.9,
+    top_k=40,
+    pad_token_id=tokenizer.eos_token_id  
 )
 
-# Suppress extra logging messages
-logging.set_verbosity(logging.CRITICAL)
 
-# Create a text-generation pipeline using the loaded model and tokenizer
-pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
+    # Decode the generated tokens into human-readable text
+    output_text = tokenizer.decode(generation_output[0], skip_special_tokens=True)
+    return output_text
 
-# Define a prompt template and generate a prompt
-prompt_template = '''Below is an instruction that describes a task. Write a response that appropriately completes the request
+# Start timing inference
+start_inference_time = time.time()
 
-### Instruction: {prompt}
+# Run inference
+prompt = "Hello, tell me a story about the sun."
+output = evaluate(prompt, tokenizer, model)
 
-### Response:'''
-prompt = prompt_template.format(prompt="How do I sort a list in Python?")
+# End timing inference
+end_inference_time = time.time()
+inference_time = end_inference_time - start_inference_time
 
-# Generate text using the pipeline
-outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.2, top_k=50, top_p=0.95)
-
-# Print the generated text
-print(outputs[0]['generated_text'])
+# Print results
+print(output.strip())
+print(f"\n\nGeneration complete! Inference took {inference_time:.2f} seconds.\n")
