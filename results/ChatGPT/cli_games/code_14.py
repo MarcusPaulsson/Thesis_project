@@ -1,87 +1,81 @@
 import random
 import os
-import sys
 import time
-import threading
-import keyboard
+import sys
+import tty
+import termios
 
-# Game constants
+# Constants
 WIDTH = 40
 HEIGHT = 20
-NUM_ASTEROIDS = 5
-SHIP_ICON = '>'
-ASTEROID_ICON = '*'
-BULLET_ICON = '|'
-SHIP_START_X = WIDTH // 2
-SHIP_START_Y = HEIGHT - 1
+ASTEROID_COUNT = 5
+SHIP_SYMBOL = '^'
+ASTEROID_SYMBOL = 'O'
+EMPTY_SPACE = ' '
 
 class Game:
     def __init__(self):
-        self.ship_x = SHIP_START_X
-        self.ship_y = SHIP_START_Y
-        self.asteroids = self.create_asteroids()
-        self.bullets = []
+        self.ship_position = WIDTH // 2
+        self.asteroids = self.generate_asteroids()
         self.score = 0
         self.game_over = False
 
-    def create_asteroids(self):
-        return [(random.randint(0, WIDTH-1), random.randint(0, HEIGHT-5)) for _ in range(NUM_ASTEROIDS)]
+    def generate_asteroids(self):
+        return [random.randint(0, WIDTH - 1) for _ in range(ASTEROID_COUNT)]
 
     def draw(self):
         os.system('cls' if os.name == 'nt' else 'clear')
         for y in range(HEIGHT):
-            for x in range(WIDTH):
-                if (x, y) == (self.ship_x, self.ship_y):
-                    print(SHIP_ICON, end='')
-                elif (x, y) in self.asteroids:
-                    print(ASTEROID_ICON, end='')
-                elif (x, y) in self.bullets:
-                    print(BULLET_ICON, end='')
-                else:
-                    print(' ', end='')
-            print()
+            if y == HEIGHT - 1:
+                row = [' '] * WIDTH
+                row[self.ship_position] = SHIP_SYMBOL
+                print(''.join(row))
+            else:
+                row = [' '] * WIDTH
+                for asteroid in self.asteroids:
+                    if asteroid == y:
+                        row[random.randint(0, WIDTH - 1)] = ASTEROID_SYMBOL
+                print(''.join(row))
         print(f'Score: {self.score}')
 
-    def move_ship(self, dx):
-        self.ship_x = max(0, min(WIDTH - 1, self.ship_x + dx))
-
-    def shoot(self):
-        self.bullets.append((self.ship_x, self.ship_y - 1))
-
-    def update_bullets(self):
-        new_bullets = []
-        for bullet in self.bullets:
-            if bullet[1] > 0:
-                new_bullets.append((bullet[0], bullet[1] - 1))
-        self.bullets = new_bullets
-
-    def check_collisions(self):
-        for bullet in self.bullets:
-            if bullet in self.asteroids:
-                self.asteroids.remove(bullet)
+    def update(self):
+        for i in range(len(self.asteroids)):
+            if self.asteroids[i] < HEIGHT - 1:
+                self.asteroids[i] += 1
+            else:
+                self.asteroids[i] = 0
+                self.asteroids[i] = random.randint(0, WIDTH - 1)
                 self.score += 1
+            
+            # Check for collision
+            if self.asteroids[i] == HEIGHT - 1 and self.ship_position == self.asteroids[i]:
+                self.game_over = True
 
     def run(self):
-        while not self.game_over:
-            self.draw()
-            self.update_bullets()
-            self.check_collisions()
-            if not self.asteroids:
-                print("You destroyed all the asteroids! You win!")
-                self.game_over = True
-            time.sleep(0.1)
+        try:
+            print("Use 'a' to move left, 'd' to move right, 'q' to quit.")
+            while not self.game_over:
+                self.draw()
+                self.update()
+                time.sleep(0.1)
+                self.handle_input()
+        finally:
+            print("Game Over! Your score was:", self.score)
 
-def control_thread(game):
-    while not game.game_over:
-        if keyboard.is_pressed('a'):
-            game.move_ship(-1)
-        elif keyboard.is_pressed('d'):
-            game.move_ship(1)
-        elif keyboard.is_pressed('space'):
-            game.shoot()
-        time.sleep(0.1)
+    def handle_input(self):
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            if sys.stdin.read(1) == 'a':
+                self.ship_position = max(0, self.ship_position - 1)
+            elif sys.stdin.read(1) == 'd':
+                self.ship_position = min(WIDTH - 1, self.ship_position + 1)
+            elif sys.stdin.read(1) == 'q':
+                self.game_over = True
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
 if __name__ == '__main__':
     game = Game()
-    threading.Thread(target=control_thread, args=(game,), daemon=True).start()
     game.run()

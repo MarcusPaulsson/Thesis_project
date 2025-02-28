@@ -1,66 +1,75 @@
 import random
 
 class Minesweeper:
-    def __init__(self, width, height, mines):
+    def __init__(self, width, height, num_mines):
         self.width = width
         self.height = height
-        self.mines = mines
+        self.num_mines = num_mines
         self.board = [[' ' for _ in range(width)] for _ in range(height)]
         self.visible = [[' ' for _ in range(width)] for _ in range(height)]
+        self.mines = set()
         self.game_over = False
         self.populate_mines()
 
     def populate_mines(self):
-        mine_positions = set()
-        while len(mine_positions) < self.mines:
-            position = (random.randint(0, self.height - 1), random.randint(0, self.width - 1))
-            mine_positions.add(position)
-        for (y, x) in mine_positions:
-            self.board[y][x] = '*'
-            for dy in range(-1, 2):
-                for dx in range(-1, 2):
-                    if 0 <= y + dy < self.height and 0 <= x + dx < self.width:
-                        if self.board[y + dy][x + dx] != '*':
-                            self.board[y + dy][x + dx] = str(int(self.board[y + dy][x + dx]) + 1) if self.board[y + dy][x + dx] != ' ' else '1'
+        while len(self.mines) < self.num_mines:
+            x = random.randint(0, self.width - 1)
+            y = random.randint(0, self.height - 1)
+            if (x, y) not in self.mines:
+                self.mines.add((x, y))
+                self.board[y][x] = '*'
+                self.increment_adjacent_cells(x, y)
 
-    def display_board(self):
-        print("   " + " ".join(str(x) for x in range(self.width)))
-        for y in range(self.height):
-            print(f"{y} | " + " ".join(self.visible[y]))
+    def increment_adjacent_cells(self, x, y):
+        for i in range(max(0, y - 1), min(self.height, y + 2)):
+            for j in range(max(0, x - 1), min(self.width, x + 2)):
+                if (j, i) != (x, y) and self.board[i][j] != '*':
+                    if self.board[i][j] == ' ':
+                        self.board[i][j] = '1'
+                    else:
+                        self.board[i][j] = str(int(self.board[i][j]) + 1)
 
-    def reveal(self, y, x):
-        if self.board[y][x] == '*':
+    def print_board(self):
+        print("   " + " ".join(str(i) for i in range(self.width)))
+        for i in range(self.height):
+            print(f"{i} | " + " ".join(self.visible[i]))
+
+    def reveal(self, x, y):
+        if self.game_over or self.visible[y][x] != ' ':
+            return
+
+        if (x, y) in self.mines:
+            self.visible[y][x] = '*'
             self.game_over = True
             return
-        self._reveal(y, x)
 
-    def _reveal(self, y, x):
-        if self.visible[y][x] == ' ':
-            self.visible[y][x] = self.board[y][x]
-            if self.board[y][x] == '0':
-                for dy in range(-1, 2):
-                    for dx in range(-1, 2):
-                        if 0 <= y + dy < self.height and 0 <= x + dx < self.width:
-                            self._reveal(y + dy, x + dx)
+        self.visible[y][x] = self.board[y][x]
+
+        if self.board[y][x] == ' ':
+            for i in range(max(0, y - 1), min(self.height, y + 2)):
+                for j in range(max(0, x - 1), min(self.width, x + 2)):
+                    if (j, i) != (x, y):
+                        self.reveal(j, i)
 
     def play(self):
         while not self.game_over:
-            self.display_board()
+            self.print_board()
             try:
-                y, x = map(int, input("Enter row and column to reveal (e.g., '1 2'): ").split())
-                if 0 <= y < self.height and 0 <= x < self.width:
-                    self.reveal(y, x)
+                x, y = map(int, input("Enter x and y coordinates (e.g., 0 1): ").split())
+                if 0 <= x < self.width and 0 <= y < self.height:
+                    self.reveal(x, y)
                 else:
-                    print("Invalid coordinates. Please try again.")
+                    print("Coordinates out of bounds. Try again.")
             except ValueError:
-                print("Invalid input. Please enter two numbers separated by a space.")
+                print("Invalid input. Please enter two integers separated by space.")
 
-        print("Game Over! You hit a mine.")
-        self.display_board()
+        self.print_board()
+        print("Game Over! You hit a mine!")
+
 
 if __name__ == "__main__":
     width = 10
     height = 10
-    mines = 10
-    game = Minesweeper(width, height, mines)
+    num_mines = 10
+    game = Minesweeper(width, height, num_mines)
     game.play()

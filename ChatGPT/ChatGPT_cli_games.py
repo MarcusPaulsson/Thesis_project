@@ -96,7 +96,7 @@ if __name__ == "__main__":
             "assistant_response": assistant_response
         })
     
-    json_file_path = 'test.json'  # Replace with your JSON file path
+    json_file_path = 'test_chatGPT_cli_games.json'  # Replace with your JSON file path
     # Save all results to a CSV file
     save_results_to_json(results, json_file_path)
 

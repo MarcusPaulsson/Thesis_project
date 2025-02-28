@@ -2,74 +2,84 @@ import curses
 import time
 
 # Constants
-WIN_HEIGHT = 20
-WIN_WIDTH = 40
+WINDOW_HEIGHT = 20
+WINDOW_WIDTH = 40
 PADDLE_HEIGHT = 3
-BALL_SYMBOL = 'O'
-PADDLE_SYMBOL = '|'
+PADDLE_WIDTH = 1
+BALL_SIZE = 1
+
+# Ball and paddle positions
+ball_x = WINDOW_WIDTH // 2
+ball_y = WINDOW_HEIGHT // 2
+ball_dx = 1
+ball_dy = 1
+
+left_paddle_y = (WINDOW_HEIGHT // 2) - (PADDLE_HEIGHT // 2)
+right_paddle_y = (WINDOW_HEIGHT // 2) - (PADDLE_HEIGHT // 2)
+
+def draw(window):
+    window.clear()
+    
+    # Draw paddles
+    for i in range(PADDLE_HEIGHT):
+        window.addch(left_paddle_y + i, 1, '|')
+        window.addch(right_paddle_y + i, WINDOW_WIDTH - 2, '|')
+    
+    # Draw ball
+    window.addch(ball_y, ball_x, 'O')
+    
+    window.refresh()
+
+def update_ball():
+    global ball_x, ball_y, ball_dx, ball_dy
+
+    # Update ball position
+    ball_x += ball_dx
+    ball_y += ball_dy
+
+    # Bounce off top and bottom walls
+    if ball_y <= 0 or ball_y >= WINDOW_HEIGHT - 1:
+        ball_dy *= -1
+
+    # Bounce off paddles
+    if ball_x == 2 and left_paddle_y <= ball_y < left_paddle_y + PADDLE_HEIGHT:
+        ball_dx *= -1
+    elif ball_x == WINDOW_WIDTH - 3 and right_paddle_y <= ball_y < right_paddle_y + PADDLE_HEIGHT:
+        ball_dx *= -1
+
+    # Reset ball if it goes out of bounds
+    if ball_x <= 0 or ball_x >= WINDOW_WIDTH - 1:
+        ball_x = WINDOW_WIDTH // 2
+        ball_y = WINDOW_HEIGHT // 2
+        ball_dx *= -1
 
 def main(stdscr):
-    # Clear and refresh the screen
-    stdscr.clear()
+    global left_paddle_y, right_paddle_y
+
+    # Set up curses
     curses.curs_set(0)
-
-    # Create a window
-    win = curses.newwin(WIN_HEIGHT, WIN_WIDTH, 0, 0)
-    win.keypad(1)
-    win.timeout(100)
-
-    # Initial positions
-    left_paddle = (WIN_HEIGHT // 2) - 1
-    right_paddle = (WIN_HEIGHT // 2) - 1
-    ball_x = WIN_WIDTH // 2
-    ball_y = WIN_HEIGHT // 2
-    ball_dx = 1
-    ball_dy = 1
+    stdscr.nodelay(1)
+    stdscr.timeout(100)
 
     while True:
-        win.clear()
+        draw(stdscr)
+        update_ball()
 
-        # Draw paddles
-        for i in range(PADDLE_HEIGHT):
-            win.addch(left_paddle + i, 1, PADDLE_SYMBOL)
-            win.addch(right_paddle + i, WIN_WIDTH - 2, PADDLE_SYMBOL)
+        key = stdscr.getch()
 
-        # Draw ball
-        win.addch(ball_y, ball_x, BALL_SYMBOL)
+        # Move left paddle
+        if key == curses.KEY_UP and left_paddle_y > 0:
+            left_paddle_y -= 1
+        elif key == curses.KEY_DOWN and left_paddle_y < WINDOW_HEIGHT - PADDLE_HEIGHT:
+            left_paddle_y += 1
 
-        # Refresh the window
-        win.refresh()
+        # Move right paddle
+        if key == ord('w') and right_paddle_y > 0:
+            right_paddle_y -= 1
+        elif key == ord('s') and right_paddle_y < WINDOW_HEIGHT - PADDLE_HEIGHT:
+            right_paddle_y += 1
 
-        # Ball movement
-        ball_x += ball_dx
-        ball_y += ball_dy
-
-        # Ball collision with top and bottom
-        if ball_y <= 0 or ball_y >= WIN_HEIGHT - 1:
-            ball_dy *= -1
-
-        # Ball collision with paddles
-        if ball_x == 2 and left_paddle <= ball_y < left_paddle + PADDLE_HEIGHT:
-            ball_dx *= -1
-        if ball_x == WIN_WIDTH - 3 and right_paddle <= ball_y < right_paddle + PADDLE_HEIGHT:
-            ball_dx *= -1
-
-        # Ball out of bounds
-        if ball_x <= 0 or ball_x >= WIN_WIDTH - 1:
-            ball_x, ball_y = WIN_WIDTH // 2, WIN_HEIGHT // 2  # Reset ball position
-
-        # Paddle movement
-        key = win.getch()
-        if key == curses.KEY_UP and right_paddle > 0:
-            right_paddle -= 1
-        elif key == curses.KEY_DOWN and right_paddle < WIN_HEIGHT - PADDLE_HEIGHT:
-            right_paddle += 1
-        elif key == ord('w') and left_paddle > 0:
-            left_paddle -= 1
-        elif key == ord('s') and left_paddle < WIN_HEIGHT - PADDLE_HEIGHT:
-            left_paddle += 1
-
-        time.sleep(0.05)
+        time.sleep(0.01)
 
 if __name__ == "__main__":
     curses.wrapper(main)

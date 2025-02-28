@@ -1,38 +1,55 @@
 import random
 
-def get_user_choice():
-    user_input = input("Enter your choice (rock, paper, scissors): ").lower()
-    while user_input not in ['rock', 'paper', 'scissors']:
-        print("Invalid choice. Please try again.")
-        user_input = input("Enter your choice (rock, paper, scissors): ").lower()
-    return user_input
+def get_player_choice():
+    """Gets the player's choice from the command line."""
+    while True:
+        choice = input("Choose rock, paper, or scissors: ").lower()
+        if choice in ["rock", "paper", "scissors"]:
+            return choice
+        else:
+            print("Invalid choice. Please enter rock, paper, or scissors.")
 
 def get_computer_choice():
-    return random.choice(['rock', 'paper', 'scissors'])
+    """Generates a random choice for the computer."""
+    return random.choice(["rock", "paper", "scissors"])
 
-def determine_winner(user_choice, computer_choice):
-    if user_choice == computer_choice:
+def determine_winner(player_choice, computer_choice):
+    """Determines the winner of the game."""
+    print(f"You chose: {player_choice}")
+    print(f"Computer chose: {computer_choice}")
+
+    if player_choice == computer_choice:
         return "It's a tie!"
-    elif (user_choice == 'rock' and computer_choice == 'scissors') or \
-         (user_choice == 'paper' and computer_choice == 'rock') or \
-         (user_choice == 'scissors' and computer_choice == 'paper'):
+    elif (player_choice == "rock" and computer_choice == "scissors") or \
+         (player_choice == "paper" and computer_choice == "rock") or \
+         (player_choice == "scissors" and computer_choice == "paper"):
         return "You win!"
     else:
-        return "You lose!"
+        return "Computer wins!"
 
-def play_game():
-    print("Welcome to Rock-Paper-Scissors!")
+def play_again():
+    """Asks the player if they want to play again."""
     while True:
-        user_choice = get_user_choice()
+        choice = input("Play again? (yes/no): ").lower()
+        if choice in ["yes", "no"]:
+            return choice == "yes"
+        else:
+            print("Invalid input. Please enter yes or no.")
+
+def main():
+    """The main function that runs the game."""
+    print("Welcome to Rock, Paper, Scissors!")
+
+    while True:
+        player_choice = get_player_choice()
         computer_choice = get_computer_choice()
-        print(f"Computer chose: {computer_choice}")
-        result = determine_winner(user_choice, computer_choice)
+        result = determine_winner(player_choice, computer_choice)
         print(result)
-        
-        play_again = input("Do you want to play again? (yes/no): ").lower()
-        if play_again != 'yes':
+
+        if not play_again():
             break
+
     print("Thanks for playing!")
 
 if __name__ == "__main__":
-    play_game()
+    main()

@@ -93,7 +93,7 @@ if __name__ == "__main__":
             "assistant_response": assistant_response
         })
 
-    json_file_path = 'gemini_test.json'
+    json_file_path = 'test_cli_games.json'
     # Save all results to a json file
     save_results_to_json(results, json_file_path)
 

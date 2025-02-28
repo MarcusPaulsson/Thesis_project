@@ -1,48 +1,71 @@
-import numpy as np
 import os
 import time
-import sys
+import random
 
 class GameOfLife:
-    def __init__(self, width=20, height=10):
+    def __init__(self, width=20, height=20, live_cells=None):
         self.width = width
         self.height = height
-        self.board = np.zeros((height, width), dtype=int)
+        self.board = [[0 for _ in range(width)] for _ in range(height)]
+        if live_cells:
+            for x, y in live_cells:
+                self.set_cell(x, y, 1)
 
-    def randomize(self):
-        self.board = np.random.choice([0, 1], size=(self.height, self.width))
+    def set_cell(self, x, y, state):
+        if 0 <= x < self.width and 0 <= y < self.height:
+            self.board[y][x] = state
+
+    def get_cell(self, x, y):
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return self.board[y][x]
+        return 0
+
+    def count_live_neighbors(self, x, y):
+        directions = [(-1, -1), (-1, 0), (-1, 1),
+                      (0, -1),          (0, 1),
+                      (1, -1), (1, 0), (1, 1)]
+        count = 0
+        for dx, dy in directions:
+            count += self.get_cell(x + dx, y + dy)
+        return count
+
+    def update(self):
+        new_board = [[0 for _ in range(self.width)] for _ in range(self.height)]
+        for y in range(self.height):
+            for x in range(self.width):
+                live_neighbors = self.count_live_neighbors(x, y)
+                if self.get_cell(x, y) == 1:
+                    if live_neighbors in (2, 3):
+                        new_board[y][x] = 1
+                else:
+                    if live_neighbors == 3:
+                        new_board[y][x] = 1
+        self.board = new_board
 
     def display(self):
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n".join("".join("█" if cell else " " for cell in row) for row in self.board))
+        for row in self.board:
+            print(' '.join(['#' if cell else '.' for cell in row]))
+        print(f"Press Ctrl+C to stop.")
 
-    def update(self):
-        new_board = np.copy(self.board)
+    def randomize(self, density=0.2):
         for y in range(self.height):
             for x in range(self.width):
-                alive_neighbors = np.sum(self.board[y-1:y+2, x-1:x+2]) - self.board[y, x]
-                if self.board[y, x] == 1:
-                    if alive_neighbors < 2 or alive_neighbors > 3:
-                        new_board[y, x] = 0
-                else:
-                    if alive_neighbors == 3:
-                        new_board[y, x] = 1
-        self.board = new_board
-
-    def run(self, iterations=100, delay=0.5):
-        for _ in range(iterations):
-            self.display()
-            self.update()
-            time.sleep(delay)
+                self.set_cell(x, y, 1 if random.random() < density else 0)
 
 def main():
     width = 20
-    height = 10
+    height = 20
     game = GameOfLife(width, height)
-    game.randomize()
-    iterations = int(input("Enter number of iterations (default 100): ") or 100)
-    delay = float(input("Enter delay in seconds (default 0.5): ") or 0.5)
-    game.run(iterations, delay)
+    game.randomize(density=0.3)
+
+    try:
+        while True:
+            game.display()
+            game.update()
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print("Game stopped.")
 
 if __name__ == "__main__":
     main()
