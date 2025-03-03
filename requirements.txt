@@ -2,3 +2,4 @@ openai
 google
 google-generativeai
 torch
+lizard

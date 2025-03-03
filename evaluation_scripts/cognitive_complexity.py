@@ -43,21 +43,21 @@ def calculate_cognitive_complexity(file_path):
     visit(tree)
     return complexity
 
-def process_files(directory):
+def process_files(directory, complexity_function):  # Added complexity_function argument
     """
-    Processes all Python files in a directory and calculates their cognitive complexity.
+    Processes all Python files in a directory and calculates their complexity.
 
     Args:
         directory (str): The directory containing Python files.
+        complexity_function (function): The complexity calculation function.
     """
     results = {}
     for filename in os.listdir(directory):
         if filename.endswith(".py"):
             file_path = os.path.join(directory, filename)
-            complexity = calculate_cognitive_complexity(file_path)
+            complexity = complexity_function(file_path)  # Use the passed function
             if complexity is not None:
                 results[filename] = complexity
-                print(f"Cognitive complexity of '{filename}': {complexity}")
     return results
 
 def calculate_statistics(results):
