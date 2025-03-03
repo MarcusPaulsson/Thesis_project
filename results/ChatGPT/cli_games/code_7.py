@@ -1,58 +1,58 @@
 import numpy as np
 import os
 import time
-import sys
 
 class GameOfLife:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.grid = np.zeros((height, width), dtype=int)
+        self.board = np.zeros((height, width), dtype=int)
 
-    def randomize(self, density=0.2):
-        for i in range(self.height):
-            for j in range(self.width):
-                self.grid[i][j] = 1 if np.random.rand() < density else 0
-
-    def update(self):
-        new_grid = self.grid.copy()
-        for i in range(self.height):
-            for j in range(self.width):
-                total = int(
-                    self.grid[i, (j-1) % self.width] + 
-                    self.grid[i, (j+1) % self.width] + 
-                    self.grid[(i-1) % self.height, j] + 
-                    self.grid[(i+1) % self.height, j] + 
-                    self.grid[(i-1) % self.height, (j-1) % self.width] + 
-                    self.grid[(i-1) % self.height, (j+1) % self.width] + 
-                    self.grid[(i+1) % self.height, (j-1) % self.width] + 
-                    self.grid[(i+1) % self.height, (j+1) % self.width]
-                )
-
-                if self.grid[i, j] == 1:
-                    if total < 2 or total > 3:
-                        new_grid[i, j] = 0
-                else:
-                    if total == 3:
-                        new_grid[i, j] = 1
-
-        self.grid = new_grid
+    def initialize_random(self):
+        self.board = np.random.choice([0, 1], size=(self.height, self.width))
 
     def display(self):
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n".join("".join("█" if cell else " " for cell in row) for row in self.grid))
+        for row in self.board:
+            print(' '.join(['█' if cell else ' ' for cell in row]))
+        print("\nPress Ctrl+C to exit.")
+
+    def update(self):
+        new_board = self.board.copy()
+        for y in range(self.height):
+            for x in range(self.width):
+                alive_neighbors = self.count_alive_neighbors(x, y)
+                if self.board[y, x] == 1:
+                    if alive_neighbors < 2 or alive_neighbors > 3:
+                        new_board[y, x] = 0
+                else:
+                    if alive_neighbors == 3:
+                        new_board[y, x] = 1
+        self.board = new_board
+
+    def count_alive_neighbors(self, x, y):
+        neighbors = [
+            (x-1, y-1), (x-1, y), (x-1, y+1),
+            (x, y-1),               (x, y+1),
+            (x+1, y-1), (x+1, y), (x+1, y+1)
+        ]
+        count = 0
+        for nx, ny in neighbors:
+            if 0 <= nx < self.width and 0 <= ny < self.height:
+                count += self.board[ny, nx]
+        return count
 
 def main():
-    width = 40
-    height = 20
+    width = 20
+    height = 10
     game = GameOfLife(width, height)
-    game.randomize(density=0.2)
-
+    game.initialize_random()
+    
     try:
         while True:
             game.display()
             game.update()
-            time.sleep(0.1)
+            time.sleep(0.5)
     except KeyboardInterrupt:
         print("Game exited.")
 

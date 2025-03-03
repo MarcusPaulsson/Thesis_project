@@ -1,85 +1,101 @@
-import curses
+import os
 import time
+import random
+import sys
+import threading
 
 # Constants
-WINDOW_HEIGHT = 20
-WINDOW_WIDTH = 40
-PADDLE_HEIGHT = 3
-PADDLE_WIDTH = 1
-BALL_SIZE = 1
+WIDTH = 40
+HEIGHT = 20
+PADDLE_SIZE = 3
+BALL_CHAR = 'O'
+PADDLE_CHAR = '|'
+EMPTY_CHAR = ' '
 
-# Ball and paddle positions
-ball_x = WINDOW_WIDTH // 2
-ball_y = WINDOW_HEIGHT // 2
+# Game state
+ball_x = WIDTH // 2
+ball_y = HEIGHT // 2
 ball_dx = 1
 ball_dy = 1
+left_paddle_y = HEIGHT // 2 - PADDLE_SIZE // 2
+right_paddle_y = HEIGHT // 2 - PADDLE_SIZE // 2
+running = True
 
-left_paddle_y = (WINDOW_HEIGHT // 2) - (PADDLE_HEIGHT // 2)
-right_paddle_y = (WINDOW_HEIGHT // 2) - (PADDLE_HEIGHT // 2)
-
-def draw(window):
-    window.clear()
-    
-    # Draw paddles
-    for i in range(PADDLE_HEIGHT):
-        window.addch(left_paddle_y + i, 1, '|')
-        window.addch(right_paddle_y + i, WINDOW_WIDTH - 2, '|')
-    
-    # Draw ball
-    window.addch(ball_y, ball_x, 'O')
-    
-    window.refresh()
+def draw():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    for y in range(HEIGHT):
+        for x in range(WIDTH):
+            if x == 0 and left_paddle_y <= y < left_paddle_y + PADDLE_SIZE:
+                print(PADDLE_CHAR, end="")
+            elif x == WIDTH - 1 and right_paddle_y <= y < right_paddle_y + PADDLE_SIZE:
+                print(PADDLE_CHAR, end="")
+            elif x == ball_x and y == ball_y:
+                print(BALL_CHAR, end="")
+            else:
+                print(EMPTY_CHAR, end="")
+        print()
 
 def update_ball():
-    global ball_x, ball_y, ball_dx, ball_dy
+    global ball_x, ball_y, ball_dx, ball_dy, left_paddle_y, right_paddle_y
 
-    # Update ball position
-    ball_x += ball_dx
-    ball_y += ball_dy
+    while running:
+        time.sleep(0.1)
+        ball_x += ball_dx
+        ball_y += ball_dy
 
-    # Bounce off top and bottom walls
-    if ball_y <= 0 or ball_y >= WINDOW_HEIGHT - 1:
-        ball_dy *= -1
+        # Ball collision with top and bottom walls
+        if ball_y <= 0 or ball_y >= HEIGHT - 1:
+            ball_dy *= -1
 
-    # Bounce off paddles
-    if ball_x == 2 and left_paddle_y <= ball_y < left_paddle_y + PADDLE_HEIGHT:
-        ball_dx *= -1
-    elif ball_x == WINDOW_WIDTH - 3 and right_paddle_y <= ball_y < right_paddle_y + PADDLE_HEIGHT:
-        ball_dx *= -1
+        # Ball collision with paddles
+        if ball_x == 0 and left_paddle_y <= ball_y < left_paddle_y + PADDLE_SIZE:
+            ball_dx *= -1
+        elif ball_x == WIDTH - 1 and right_paddle_y <= ball_y < right_paddle_y + PADDLE_SIZE:
+            ball_dx *= -1
 
-    # Reset ball if it goes out of bounds
-    if ball_x <= 0 or ball_x >= WINDOW_WIDTH - 1:
-        ball_x = WINDOW_WIDTH // 2
-        ball_y = WINDOW_HEIGHT // 2
-        ball_dx *= -1
+        # Ball out of bounds
+        if ball_x < 0 or ball_x >= WIDTH:
+            ball_x = WIDTH // 2
+            ball_y = HEIGHT // 2
+            ball_dx = random.choice([-1, 1])
+            ball_dy = random.choice([-1, 1])
 
-def main(stdscr):
+def move_paddle(paddle, direction):
     global left_paddle_y, right_paddle_y
-
-    # Set up curses
-    curses.curs_set(0)
-    stdscr.nodelay(1)
-    stdscr.timeout(100)
-
-    while True:
-        draw(stdscr)
-        update_ball()
-
-        key = stdscr.getch()
-
-        # Move left paddle
-        if key == curses.KEY_UP and left_paddle_y > 0:
+    if paddle == 'left':
+        if direction == 'up' and left_paddle_y > 0:
             left_paddle_y -= 1
-        elif key == curses.KEY_DOWN and left_paddle_y < WINDOW_HEIGHT - PADDLE_HEIGHT:
+        elif direction == 'down' and left_paddle_y < HEIGHT - PADDLE_SIZE:
             left_paddle_y += 1
-
-        # Move right paddle
-        if key == ord('w') and right_paddle_y > 0:
+    elif paddle == 'right':
+        if direction == 'up' and right_paddle_y > 0:
             right_paddle_y -= 1
-        elif key == ord('s') and right_paddle_y < WINDOW_HEIGHT - PADDLE_HEIGHT:
+        elif direction == 'down' and right_paddle_y < HEIGHT - PADDLE_SIZE:
             right_paddle_y += 1
 
-        time.sleep(0.01)
+def input_listener():
+    global running
+    while running:
+        command = input()
+        if command == 'w':
+            move_paddle('left', 'up')
+        elif command == 's':
+            move_paddle('left', 'down')
+        elif command == 'i':
+            move_paddle('right', 'up')
+        elif command == 'k':
+            move_paddle('right', 'down')
+        elif command == 'q':
+            running = False
 
 if __name__ == "__main__":
-    curses.wrapper(main)
+    # Start the ball update thread
+    ball_thread = threading.Thread(target=update_ball)
+    ball_thread.start()
+
+    # Start the input listener
+    input_listener()
+
+    # Wait for the ball thread to finish
+    ball_thread.join()
+    print("Game Over!")

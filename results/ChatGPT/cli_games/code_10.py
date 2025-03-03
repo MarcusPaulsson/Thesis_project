@@ -3,72 +3,115 @@ import random
 class Hammurabi:
     def __init__(self):
         self.year = 1
-        self.bushels = 100
         self.population = 100
+        self.bushels = 2800
         self.land = 100
-        self.plague = False
-        self.famine = False
-        self.harvest_yield = 3
+        self.plague_years = 0
+        self.historical_events = {
+            'plague': [0.1, 0.3],
+            'famine': [0.1, 0.4]
+        }
 
     def print_status(self):
-        print(f"\nYear: {self.year}")
-        print(f"Bushels: {self.bushels}")
+        print(f"Year: {self.year}")
         print(f"Population: {self.population}")
-        print(f"Land: {self.land}")
-        print(f"Plague: {'Yes' if self.plague else 'No'}")
-        print(f"Famine: {'Yes' if self.famine else 'No'}")
+        print(f"Bushels: {self.bushels}")
+        print(f"Land: {self.land} acres")
+        print()
 
-    def plant_crops(self, bushels):
-        if bushels > self.bushels:
-            print("You don't have enough bushels!")
-            return 0
-        self.bushels -= bushels
-        return bushels
+    def get_input(self, prompt, valid_options=None):
+        while True:
+            response = input(prompt).strip()
+            if valid_options and response not in valid_options:
+                print(f"Invalid input. Please choose from {valid_options}.")
+            else:
+                return response
 
-    def harvest(self, planted):
-        if planted > self.land:
-            print("You can't plant more than the land you have!")
-            return 0
-        yield_harvest = planted * self.harvest_yield
-        self.bushels += yield_harvest
-        return yield_harvest
-
-    def handle_population_change(self):
-        if self.famine:
-            self.population -= int(self.population * 0.2)
-        if self.plague:
-            self.population -= int(self.population * 0.1)
-
-    def next_year(self):
-        self.year += 1
-        self.handle_population_change()
-        self.check_events()
-
-    def check_events(self):
-        if random.random() < 0.1:  # 10% chance of plague
-            self.plague = True
-        else:
-            self.plague = False
-
-        if random.random() < 0.1:  # 10% chance of famine
-            self.famine = True
-        else:
-            self.famine = False
+    def decide(self):
+        print("What do you want to do?")
+        print("1. Plant bushels")
+        print("2. Buy land")
+        print("3. Sell land")
+        print("4. Feed the people")
+        print("5. End year")
+        
+        decision = self.get_input("Choose an option (1-5): ", ['1', '2', '3', '4', '5'])
+        return decision
 
     def play(self):
-        while self.year <= 10 and self.population > 0:
+        while self.year <= 10:
             self.print_status()
-            planted = int(input("Enter the number of bushels to plant: "))
-            bushels_used = self.plant_crops(planted)
-            if bushels_used > 0:
-                harvest_yield = self.harvest(bushels_used)
-                print(f"You harvested {harvest_yield} bushels!")
-            self.next_year()
+            decision = self.decide()
+            
+            if decision == '1':
+                self.plant_bushels()
+            elif decision == '2':
+                self.buy_land()
+            elif decision == '3':
+                self.sell_land()
+            elif decision == '4':
+                self.feed_people()
+            elif decision == '5':
+                self.end_year()
 
-        if self.population <= 0:
-            print("Your population has died out. You lose!")
-        else:
-            print("Game over! You survived 10 years.")
+            if self.population <= 0:
+                print("Your population has died out. You lose!")
+                break
+
+        if self.year > 10:
+            print("Congratulations! You survived 10 years.")
+
+    def plant_bushels(self):
+        amount = int(self.get_input("How many bushels do you want to plant? "))
+        if amount > self.bushels:
+            print("You don't have enough bushels!")
+            return
+        self.bushels -= amount
+        print(f"You planted {amount} bushels.")
+
+    def buy_land(self):
+        acres = int(self.get_input("How many acres do you want to buy? "))
+        cost = acres * 20
+        if cost > self.bushels:
+            print("You don't have enough bushels!")
+            return
+        self.bushels -= cost
+        self.land += acres
+        print(f"You bought {acres} acres.")
+
+    def sell_land(self):
+        acres = int(self.get_input("How many acres do you want to sell? "))
+        if acres > self.land:
+            print("You don't have that much land!")
+            return
+        self.land -= acres
+        self.bushels += acres * 20
+        print(f"You sold {acres} acres.")
+
+    def feed_people(self):
+        amount = int(self.get_input("How many bushels do you want to feed the people? "))
+        if amount > self.bushels:
+            print("You don't have enough bushels!")
+            return
+        self.bushels -= amount
+        fed_population = min(self.population, amount // 20)
+        self.population -= (self.population - fed_population)
+        print(f"You fed {fed_population} people.")
+
+    def end_year(self):
+        self.year += 1
+        self.check_events()
+        self.population += random.randint(-5, 5)  # Random population change
+        print("Year ended.")
+
+    def check_events(self):
+        if random.random() < self.historical_events['plague'][0]:
+            self.plague_years += 1
+            self.population -= self.population // 10
+            print("A plague has struck! 10% of the population has died.")
+        if random.random() < self.historical_events['famine'][1]:
+            self.population -= self.population // 20
+            print("A famine has occurred! 5% of the population has died.")
 
 if __name__ == "__main__":
     game = Hammurabi()

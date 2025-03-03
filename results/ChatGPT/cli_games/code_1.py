@@ -2,48 +2,56 @@ import random
 
 class Hangman:
     def __init__(self):
-        self.words = ["python", "hangman", "programming", "developer", "software", "keyboard", "interface", "challenge"]
+        self.words = ['python', 'hangman', 'programming', 'developer', 'challenge', 'interface']
+        self.max_attempts = 6
+        self.reset_game()
+
+    def reset_game(self):
         self.secret_word = random.choice(self.words)
         self.guesses = []
-        self.max_attempts = 6
-        self.attempts = 0
+        self.attempts_remaining = self.max_attempts
+        self.word_completion = ['_' for _ in self.secret_word]
 
-    def display_word(self):
-        return ' '.join([letter if letter in self.guesses else '_' for letter in self.secret_word])
+    def display_game_status(self):
+        print("\nWord: " + " ".join(self.word_completion))
+        print(f"Attempts remaining: {self.attempts_remaining}")
+        print("Guessed letters: " + ", ".join(sorted(self.guesses)))
 
-    def guess_letter(self, letter):
-        if letter in self.guesses:
-            print("You already guessed that letter.")
-            return False
-        self.guesses.append(letter)
-        if letter not in self.secret_word:
-            self.attempts += 1
-            print(f"Incorrect guess. You have {self.max_attempts - self.attempts} attempts left.")
-            return False
-        return True
+    def get_guess(self):
+        while True:
+            guess = input("Enter a letter: ").lower()
+            if len(guess) == 1 and guess.isalpha() and guess not in self.guesses:
+                self.guesses.append(guess)
+                return guess
+            print("Invalid input. Please enter a single unguessed letter.")
 
-    def is_won(self):
-        return all(letter in self.guesses for letter in self.secret_word)
-
-    def is_lost(self):
-        return self.attempts >= self.max_attempts
+    def update_word_completion(self, guess):
+        for index, letter in enumerate(self.secret_word):
+            if letter == guess:
+                self.word_completion[index] = letter
 
     def play(self):
         print("Welcome to Hangman!")
-        while not self.is_won() and not self.is_lost():
-            print("\nCurrent word:", self.display_word())
-            guess = input("Guess a letter: ").lower()
-            if len(guess) != 1 or not guess.isalpha():
-                print("Please enter a single letter.")
-                continue
-
-            self.guess_letter(guess)
-
-        if self.is_won():
-            print("\nCongratulations! You've guessed the word:", self.secret_word)
+        while self.attempts_remaining > 0 and '_' in self.word_completion:
+            self.display_game_status()
+            guess = self.get_guess()
+            if guess in self.secret_word:
+                print(f"Good guess! '{guess}' is in the word.")
+                self.update_word_completion(guess)
+            else:
+                self.attempts_remaining -= 1
+                print(f"Sorry, '{guess}' is not in the word.")
+        
+        self.display_game_status()
+        if '_' not in self.word_completion:
+            print("Congratulations! You've guessed the word!")
         else:
-            print("\nSorry, you've lost. The word was:", self.secret_word)
+            print(f"Game over! The word was '{self.secret_word}'.")
 
 if __name__ == "__main__":
     game = Hangman()
-    game.play()
+    while True:
+        game.play()
+        if input("Play again? (y/n): ").lower() != 'y':
+            break
+        game.reset_game()

@@ -1,10 +1,12 @@
 import random
 
 # Constants
-SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
-RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace']
-VALUES = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-          'Jack': 10, 'Queen': 10, 'King': 10, 'Ace': 11}
+SUITS = ('Hearts', 'Diamonds', 'Clubs', 'Spades')
+RANKS = ('2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace')
+VALUES = {
+    '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+    'Jack': 10, 'Queen': 10, 'King': 10, 'Ace': 11
+}
 
 class Card:
     def __init__(self, suit, rank):
@@ -25,76 +27,85 @@ class Deck:
 class Hand:
     def __init__(self):
         self.cards = []
+        self.value = 0
+        self.aces = 0
 
     def add_card(self, card):
         self.cards.append(card)
+        self.value += VALUES[card.rank]
+        if card.rank == 'Ace':
+            self.aces += 1
+        self.adjust_for_aces()
 
-    def calculate_value(self):
-        value = sum(VALUES[card.rank] for card in self.cards)
-        aces = sum(1 for card in self.cards if card.rank == 'Ace')
-
-        while value > 21 and aces:
-            value -= 10
-            aces -= 1
-
-        return value
+    def adjust_for_aces(self):
+        while self.value > 21 and self.aces:
+            self.value -= 10
+            self.aces -= 1
 
     def __str__(self):
         return ', '.join(str(card) for card in self.cards)
 
-def main():
-    print("Welcome to Blackjack!")
-    
-    while True:
-        deck = Deck()
-        player_hand = Hand()
-        dealer_hand = Hand()
+class BlackjackGame:
+    def __init__(self):
+        self.deck = Deck()
+        self.player_hand = Hand()
+        self.dealer_hand = Hand()
 
-        # Initial dealing
+    def initial_deal(self):
         for _ in range(2):
-            player_hand.add_card(deck.deal_card())
-            dealer_hand.add_card(deck.deal_card())
+            self.player_hand.add_card(self.deck.deal_card())
+            self.dealer_hand.add_card(self.deck.deal_card())
 
-        # Player's turn
+    def show_hands(self, hide_dealer_card=True):
+        print("Player's Hand:", self.player_hand)
+        if hide_dealer_card:
+            print("Dealer's Hand: [Hidden],", self.dealer_hand.cards[1])
+        else:
+            print("Dealer's Hand:", self.dealer_hand)
+
+    def player_busts(self):
+        print("Player busts! Dealer wins.")
+
+    def dealer_busts(self):
+        print("Dealer busts! Player wins.")
+
+    def dealer_turn(self):
+        while self.dealer_hand.value < 17:
+            self.dealer_hand.add_card(self.deck.deal_card())
+
+    def determine_winner(self):
+        if self.player_hand.value > 21:
+            self.player_busts()
+        elif self.dealer_hand.value > 21:
+            self.dealer_busts()
+        elif self.player_hand.value > self.dealer_hand.value:
+            print("Player wins!")
+        elif self.player_hand.value < self.dealer_hand.value:
+            print("Dealer wins!")
+        else:
+            print("It's a tie!")
+
+    def play(self):
+        self.initial_deal()
+        self.show_hands()
+
         while True:
-            print(f"Your hand: {player_hand} (Value: {player_hand.calculate_value()})")
-            print(f"Dealer's hand: {dealer_hand.cards[0]}, [Hidden]")
-
-            if player_hand.calculate_value() == 21:
-                print("Blackjack! You win!")
-                break
-            elif player_hand.calculate_value() > 21:
-                print("Bust! You lose!")
-                break
-
-            action = input("Do you want to (h)it or (s)tand? ").lower()
+            action = input("Would you like to [H]it or [S]tand? ").strip().lower()
             if action == 'h':
-                player_hand.add_card(deck.deal_card())
+                self.player_hand.add_card(self.deck.deal_card())
+                print("Player's Hand:", self.player_hand)
+                if self.player_hand.value > 21:
+                    self.player_busts()
+                    return
             elif action == 's':
                 break
-
-        # Dealer's turn
-        if player_hand.calculate_value() <= 21:
-            while dealer_hand.calculate_value() < 17:
-                dealer_hand.add_card(deck.deal_card())
-
-            print(f"Dealer's hand: {dealer_hand} (Value: {dealer_hand.calculate_value()})")
-
-            # Determine winner
-            player_value = player_hand.calculate_value()
-            dealer_value = dealer_hand.calculate_value()
-
-            if dealer_value > 21 or player_value > dealer_value:
-                print("You win!")
-            elif player_value < dealer_value:
-                print("You lose!")
             else:
-                print("It's a tie!")
+                print("Invalid input! Please enter 'H' or 'S'.")
 
-        # Play again?
-        play_again = input("Do you want to play again? (y/n): ").lower()
-        if play_again != 'y':
-            break
+        self.dealer_turn()
+        self.show_hands(hide_dealer_card=False)
+        self.determine_winner()
 
 if __name__ == "__main__":
-    main()
+    game = BlackjackGame()
+    game.play()

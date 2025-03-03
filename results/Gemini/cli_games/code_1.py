@@ -1,9 +1,8 @@
 import random
 
-def choose_word():
-    """Chooses a random word from a predefined list."""
-    words = ["python", "hangman", "programming", "computer", "algorithm", "developer", "software", "interface", "keyboard", "monitor"]
-    return random.choice(words)
+def choose_word(word_list):
+    """Chooses a random word from a list of words."""
+    return random.choice(word_list).upper()
 
 def display_word(word, guessed_letters):
     """Displays the word with correctly guessed letters and underscores for unguessed letters."""
@@ -15,70 +14,63 @@ def display_word(word, guessed_letters):
             displayed_word += "_ "
     return displayed_word.strip()
 
-def hangman():
-    """Implements the Hangman game logic."""
+def get_guess(guessed_letters):
+    """Gets a valid letter guess from the player."""
+    while True:
+        guess = input("Guess a letter: ").upper()
+        if not guess.isalpha():
+            print("Invalid input. Please enter a letter.")
+        elif len(guess) != 1:
+            print("Please guess only one letter at a time.")
+        elif guess in guessed_letters:
+            print("You already guessed that letter.")
+        else:
+            return guess
 
-    word_to_guess = choose_word()
+def play_hangman(word_list):
+    """Plays a game of Hangman."""
+    word = choose_word(word_list)
     guessed_letters = set()
     incorrect_guesses = 0
-    max_incorrect_guesses = 6  # Number of incorrect guesses allowed
+    max_incorrect_guesses = 6  # You can adjust this
     game_over = False
 
     print("Welcome to Hangman!")
-    print(display_word(word_to_guess, guessed_letters))
-    print(f"You have {max_incorrect_guesses} incorrect guesses remaining.")
+    print(f"The word has {len(word)} letters.")
+    print(display_word(word, guessed_letters))
 
     while not game_over:
-        guess = input("Guess a letter: ").lower()
-
-        if not guess.isalpha() or len(guess) != 1:
-            print("Invalid input. Please enter a single letter.")
-            continue
-
-        if guess in guessed_letters:
-            print("You already guessed that letter.")
-            continue
-
+        guess = get_guess(guessed_letters)
         guessed_letters.add(guess)
 
-        if guess in word_to_guess:
+        if guess in word:
             print("Correct guess!")
-            displayed_word = display_word(word_to_guess, guessed_letters)
-            print(displayed_word)
+            displayed = display_word(word, guessed_letters)
+            print(displayed)
 
-            if "_" not in displayed_word:
-                print("Congratulations! You guessed the word:", word_to_guess)
+            if "_" not in displayed:
+                print("Congratulations! You guessed the word:", word)
                 game_over = True
         else:
             incorrect_guesses += 1
-            print("Incorrect guess.")
-            print(f"You have {max_incorrect_guesses - incorrect_guesses} incorrect guesses remaining.")
+            print(f"Incorrect guess. You have {max_incorrect_guesses - incorrect_guesses} guesses remaining.")
+            print(display_word(word, guessed_letters))
 
-            # Simple hangman drawing based on incorrect guesses
-            if incorrect_guesses == 1:
-                print("  O  ")
-            elif incorrect_guesses == 2:
-                print("  O  ")
-                print("  |  ")
-            elif incorrect_guesses == 3:
-                print("  O  ")
-                print(" /|  ")
-            elif incorrect_guesses == 4:
-                print("  O  ")
-                print(" /|\ ")
-            elif incorrect_guesses == 5:
-                print("  O  ")
-                print(" /|\ ")
-                print(" /   ")
-            elif incorrect_guesses == 6:
-                print("  O  ")
-                print(" /|\ ")
-                print(" / \ ")
-                print("You ran out of guesses. The word was:", word_to_guess)
+            if incorrect_guesses >= max_incorrect_guesses:
+                print("You ran out of guesses. The word was:", word)
                 game_over = True
 
-        if incorrect_guesses >= max_incorrect_guesses:
-            game_over = True
+def main():
+    """Main function to start the Hangman game."""
+    word_list = ["apple", "banana", "cherry", "date", "elderberry", "fig", "grape"]
+    play_again = True
+
+    while play_again:
+        play_hangman(word_list)
+        response = input("Play again? (yes/no): ").lower()
+        if response != "yes":
+            play_again = False
+            print("Thanks for playing!")
 
 if __name__ == "__main__":
-    hangman()
+    main()

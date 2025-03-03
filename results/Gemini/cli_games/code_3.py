@@ -1,65 +1,126 @@
+import random
+import time
 import curses
-from random import randint
 
-# Setting up the window
-stdscr = curses.initscr()
-curses.curs_set(0)
-sh, sw = stdscr.getmaxyx()  # height and width of window
-w = curses.newwin(sh, sw, 0, 0)  # create a new window
-w.keypad(1)  # enable keypad input
-w.timeout(100)  # refresh every 100 milliseconds
+class SnakeGame:
+    def __init__(self, width=20, height=10):
+        self.width = width
+        self.height = height
+        self.snake = [(width // 2, height // 2)]  # Snake starts in the middle
+        self.food = self.create_food()
+        self.direction = curses.KEY_RIGHT  # Initial direction
+        self.score = 0
+        self.game_over = False
 
-# Initializing the snake and food
-snk_x = sw // 4  # starting x coordinate
-snk_y = sh // 2  # starting y coordinate
-snake = [
-    [snk_y, snk_x],
-    [snk_y, snk_x - 1],
-    [snk_y, snk_x - 2]
-]
-food = [sh // 2, sw // 2]  # food position
-w.addch(int(food[0]), int(food[1]), curses.ACS_PI)  # place food on the window
+    def create_food(self):
+        """Creates food at a random empty location."""
+        while True:
+            food = (random.randint(1, self.width - 2), random.randint(1, self.height - 2))
+            if food not in self.snake:
+                return food
 
-key = curses.KEY_RIGHT  # initial direction
+    def move_snake(self):
+        """Moves the snake based on the current direction."""
+        head_x, head_y = self.snake[0]
 
-while True:
-    next_key = w.getch()  # get user input
-    key = key if next_key == -1 else next_key  # update direction if input is available
+        if self.direction == curses.KEY_RIGHT:
+            new_head = (head_x + 1, head_y)
+        elif self.direction == curses.KEY_LEFT:
+            new_head = (head_x - 1, head_y)
+        elif self.direction == curses.KEY_UP:
+            new_head = (head_x, head_y - 1)
+        elif self.direction == curses.KEY_DOWN:
+            new_head = (head_x, head_y + 1)
+        else:
+            return  # Invalid direction
 
-    # Calculate new head of the snake
-    new_head = [snake[0][0], snake[0][1]]
+        self.snake.insert(0, new_head)  # Add new head
 
-    if key == curses.KEY_DOWN:
-        new_head[0] += 1
-    if key == curses.KEY_UP:
-        new_head[0] -= 1
-    if key == curses.KEY_LEFT:
-        new_head[1] -= 1
-    if key == curses.KEY_RIGHT:
-        new_head[1] += 1
+        # Check if snake ate food
+        if new_head == self.food:
+            self.score += 1
+            self.food = self.create_food()  # Create new food
+        else:
+            self.snake.pop()  # Remove tail if no food eaten
 
-    # Insert new head
-    snake.insert(0, new_head)
+    def check_collision(self):
+        """Checks for collisions with walls or itself."""
+        head_x, head_y = self.snake[0]
 
-    # Check if snake has eaten the food
-    if snake[0] == food:
-        food = None
-        while food is None:
-            nf = [
-                randint(1, sh - 1),
-                randint(1, sw - 1)
-            ]
-            food = nf if nf not in snake else None
-        w.addch(int(food[0]), int(food[1]), curses.ACS_PI)  # place new food
-    else:
-        # Remove the last segment of snake
-        tail = snake.pop()
-        w.addch(int(tail[0]), int(tail[1]), ' ')  # clear the tail
+        if (
+            head_x <= 0
+            or head_x >= self.width - 1
+            or head_y <= 0
+            or head_y >= self.height - 1
+            or self.snake[0] in self.snake[1:]  # Check self-collision
+        ):
+            self.game_over = True
 
-    # Game Over conditions
-    if (snake[0][0] in [0, sh]) or (snake[0][1] in [0, sw]) or (snake[0] in snake[1:]):
-        curses.endwin()
-        quit()
+    def update(self):
+        """Updates the game state."""
+        self.move_snake()
+        self.check_collision()
 
-    # Drawing the snake
-    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)  # draw the head
+    def draw(self, screen):
+        """Draws the game on the screen."""
+        screen.clear()
+
+        # Draw border
+        for i in range(self.width):
+            screen.addch(0, i, '#')
+            screen.addch(self.height - 1, i, '#')
+        for i in range(self.height):
+            screen.addch(i, 0, '#')
+            screen.addch(i, self.width - 1, '#')
+
+
+        # Draw snake
+        for x, y in self.snake:
+            screen.addch(y, x, 'O')
+
+        # Draw food
+        screen.addch(self.food[1], self.food[0], '*')
+
+        # Draw score
+        screen.addstr(self.height, 0, f"Score: {self.score}")
+
+        screen.refresh()
+
+
+
+def main(screen):
+    """Main game loop."""
+    curses.curs_set(0)  # Hide cursor
+    screen.nodelay(1)  # Non-blocking getch
+    screen.timeout(100)  # Refresh every 100 ms
+
+    game = SnakeGame(width=40, height=20)
+
+    while not game.game_over:
+        game.draw(screen)
+        key = screen.getch()
+
+        # Handle input
+        if key == curses.KEY_EXIT or key == ord('q'):
+            break
+        elif key in [curses.KEY_LEFT, curses.KEY_RIGHT, curses.KEY_UP, curses.KEY_DOWN]:
+            # Prevent snake from going directly backwards
+            if (key == curses.KEY_LEFT and game.direction != curses.KEY_RIGHT) or \
+               (key == curses.KEY_RIGHT and game.direction != curses.KEY_LEFT) or \
+               (key == curses.KEY_UP and game.direction != curses.KEY_DOWN) or \
+               (key == curses.KEY_DOWN and game.direction != curses.KEY_UP):
+                game.direction = key
+
+        game.update()
+
+    # Game over message
+    screen.clear()
+    screen.addstr(game.height // 2, game.width // 2 - 5, "Game Over!")
+    screen.addstr(game.height // 2 + 1, game.width // 2 - 7, f"Final Score: {game.score}")
+    screen.refresh()
+    time.sleep(2)
+
+
+
+if __name__ == '__main__':
+    curses.wrapper(main)
