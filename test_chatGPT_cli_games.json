@@ -1,5 +1,0 @@
-{
-    "task1": "Here is a response with ```python\nprint('Hello, world!')\n```",
-    "task2": "Another response with ```python\ndef add(a, b):\n    return a + b\n``` and some other text.",
-    "task3": "No code here."
-}
