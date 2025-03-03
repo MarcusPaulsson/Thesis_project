@@ -1,6 +1,5 @@
-import csv
-from openai import OpenAI
 import json
+from openai import OpenAI
 import sys
 import os
 
@@ -11,6 +10,8 @@ sys.path.append(upper_dir)
 
 import config
 from extract_code_python import extract_and_save_python_code, save_results_to_json
+import prompt_technique_templates as prompt
+
 
 def run_task_with_api(task_prompt):
     """
@@ -23,8 +24,7 @@ def run_task_with_api(task_prompt):
         model="gpt-4o-mini",
         
         messages = [
-    #{"role": "system", "content": "You are a beginner level, programming student."},
-    {"role": "system", "content": "You are a beginner software engineering student"},
+    {"role": "system", "content": prompt.SYSTEM_PROMPT_SENIOR},
     {"role": "user", "content": task_prompt+extra_message}
 ],
         response_format={"type": "text"},
@@ -39,39 +39,35 @@ def run_task_with_api(task_prompt):
     return response.choices[0].message.content
 
 
-def load_cli_games_tasks(csv_file_path):
+def load_cli_games_tasks_from_json(json_file_path):
     """
-    Load game instructions from a CSV file.
-    Assumes the CSV file has a header with columns:
-    task_id, prompt
-    Returns a list of game instruction prompts (from the "prompt" field).
+    Load game instructions from a JSON file.
+    Assumes the JSON file contains a list of dictionaries, where each dictionary
+    has a 'prompt' key.
+    Returns a list of game instruction prompts.
     """
     instructions = []
     try:
-        with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                instructions.append(row["prompt"])
+        with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
+            data = json.load(jsonfile)
+            for item in data:
+                instructions.append(item["prompt"])
         return instructions
     except FileNotFoundError:
-        print(f"Error: CSV file '{csv_file_path}' not found.")
+        print(f"Error: JSON file '{json_file_path}' not found.")
         return None
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
-
-
+    
 
 if __name__ == "__main__":
     # Load all tasks from the CSV file
     tasks = "Give me a full implementation of the game battleship with a command line interface."
-    csv_file_path = os.path.join("data", "cli_games.csv") #the .. means go up one directory.
-    tasks = load_cli_games_tasks(csv_file_path)
+    json_file_path = os.path.join("data", "cli_games.json") #the .. means go up one directory.
+    tasks = load_cli_games_tasks_from_json(json_file_path)
 
 
     # Define the index interval for tasks you want to run (start_index inclusive, end_index exclusive)
     start_index = 0  # change as needed
-    end_index = 1    # change as needed
+    end_index = 18   # change as needed
     
     results = []  # Dictionary to hold responses for each task
     

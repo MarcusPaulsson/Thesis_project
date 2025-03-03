@@ -1,27 +1,39 @@
-import csv
+import json
 from openai import OpenAI
-import config
+import sys
+import os
 
-def load_classEval_tasks(csv_file_path):
-  
+# Adjust paths to access config.py and extract_code_python.py
+main_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')) # access content in main folder
+upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # access content from one step up in folders
+sys.path.append(main_dir)
+sys.path.append(upper_dir)
+
+import config
+from extract_code_python import extract_and_save_python_code, save_results_to_json
+import prompt_technique_templates as prompt
+
+def load_classEval_tasks(json_file_path):
+    """Loads class evaluation tasks from a JSON file."""
     tasks = []
-    with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            tasks.append(row["skeleton"])
-    return tasks
+    try:
+        with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
+            data = json.load(jsonfile)
+            for item in data:
+                tasks.append(item["skeleton"]) # Assumes each item in the JSON list has a 'skeleton' key
+        return tasks
+    except FileNotFoundError:
+        print(f"Error: JSON file '{json_file_path}' not found.")
+        return None
 
 def run_task_with_api(task_prompt):
-    """
-    Run a single task by passing the task prompt as the user's message
-    to the OpenAI API.
-    """
+    """Runs a single task using the OpenAI API."""
     client = OpenAI(api_key=config.OPENAI_API_KEY)
     extra_message = " Give only the code."
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You are a senior software developer in Python programming."},
+            {"role": "system", "content": prompt.SYSTEM_PROMPT_SENIOR},
             {"role": "user", "content": task_prompt + extra_message}
         ],
         response_format={"type": "text"},
@@ -35,39 +47,27 @@ def run_task_with_api(task_prompt):
     print("Token count:", total_tokens)
     return response.choices[0].message.content
 
-def save_results_to_json(results, output_file):
-    output_data = {}
-    for entry in results:
-        output_data[entry["task_index"]] = entry["assistant_response"]
-
-    with open(output_file, "w", encoding="utf-8") as jsonfile:
-        json.dump(output_data, jsonfile, ensure_ascii=False, indent=4) #ensure_ascii=False ensures non-ascii characters are correctly saved.
-    print(f"Results saved to {output_file}")
-
 if __name__ == "__main__":
-    # Load all tasks from the ClassEval CSV file
-    tasks = load_classEval_tasks("data/classeval.csv")
-    
-    # Define the index interval for tasks you want to run (start_index inclusive, end_index exclusive)
-    start_index = 0  # Change as needed
-    end_index = 1    # Change as needed
-    
-    results = []  # List to hold responses for each task
-    
-    # Loop through the selected task indices
+    # Load tasks from the ClassEval CSV file
+    csv_file_path = os.path.join(main_dir, "data", "ClassEval_data.json")
+    tasks = load_classEval_tasks(csv_file_path)
+
+    if tasks is None:
+        sys.exit(1) 
+
+    # Define the index interval for tasks
+    start_index = 0
+    end_index = 1
+
+    results = []
     for i in range(start_index, end_index):
         task_prompt = tasks[i]
         print(f"Processing task {i}...")
-        
-        # Call the API for this task prompt
         assistant_response = run_task_with_api(task_prompt)
-        
-        # Save the result in the results list
-        results.append({
-            "task_index": i,
-            "assistant_response": assistant_response
-        })
-    
-    # Save all results to a CSV file
-    save_file = 
-    save_results_to_json(results, "responses_expert_classeval.csv")
+        results.append({"task_index": i, "assistant_response": assistant_response})
+
+    # Save results to JSON and extract Python code
+    results_dir = os.path.join(main_dir, "results", "ChatGPT", "classEval")
+    json_file_path = os.path.join(results_dir, "classeval_raw.json")
+    save_results_to_json(results, json_file_path)
+    extract_and_save_python_code(json_file_path, results_dir)

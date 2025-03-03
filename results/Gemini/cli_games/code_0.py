@@ -1,73 +1,81 @@
 def print_board(board):
-    """Prints the Tic-Tac-Toe board."""
+    """Prints the Tic-Tac-Toe board to the console."""
     print("-------------")
     for i in range(3):
-        print("|", board[i * 3], "|", board[i * 3 + 1], "|", board[i * 3 + 2], "|")
+        print("|", board[i][0], "|", board[i][1], "|", board[i][2], "|")
         print("-------------")
 
 
 def check_win(board, player):
-    """Checks if the player has won the game."""
+    """Checks if the given player has won the game."""
     # Check rows
-    for i in range(3):
-        if board[i * 3] == board[i * 3 + 1] == board[i * 3 + 2] == player:
+    for row in board:
+        if all(cell == player for cell in row):
             return True
 
     # Check columns
-    for i in range(3):
-        if board[i] == board[i + 3] == board[i + 6] == player:
+    for col in range(3):
+        if all(board[row][col] == player for row in range(3)):
             return True
 
     # Check diagonals
-    if board[0] == board[4] == board[8] == player:
+    if all(board[i][i] == player for i in range(3)):
         return True
-    if board[2] == board[4] == board[6] == player:
+    if all(board[i][2 - i] == player for i in range(3)):
         return True
 
     return False
 
 
-def check_tie(board):
-    """Checks if the game is a tie."""
-    return all(cell != " " for cell in board)
+def check_draw(board):
+    """Checks if the game is a draw."""
+    return all(cell != " " for row in board for cell in row)
 
 
 def get_player_move(board, player):
-    """Gets the player's move."""
+    """Gets the player's move from the console."""
     while True:
         try:
-            move = int(input(f"Player {player}, enter your move (1-9): ")) - 1
-            if 0 <= move <= 8 and board[move] == " ":
-                return move
-            else:
-                print("Invalid move. Try again.")
+            row = int(input(f"Player {player}, enter row (0-2): "))
+            col = int(input(f"Player {player}, enter column (0-2): "))
+
+            if not (0 <= row <= 2 and 0 <= col <= 2):
+                print("Invalid input. Row and column must be between 0 and 2.")
+                continue
+
+            if board[row][col] != " ":
+                print("That cell is already occupied. Try again.")
+                continue
+
+            return row, col
+
         except ValueError:
-            print("Invalid input. Please enter a number between 1 and 9.")
+            print("Invalid input. Please enter numbers.")
 
 
-def play_tic_tac_toe():
-    """Plays a game of Tic-Tac-Toe."""
-    board = [" "] * 9
-    player = "X"
-    game_over = False
+def tic_tac_toe():
+    """Main function to run the Tic-Tac-Toe game."""
+    board = [[" " for _ in range(3)] for _ in range(3)]
+    current_player = "X"
 
-    while not game_over:
+    print("Welcome to Tic-Tac-Toe!")
+    print_board(board)
+
+    while True:
+        row, col = get_player_move(board, current_player)
+        board[row][col] = current_player
         print_board(board)
-        move = get_player_move(board, player)
-        board[move] = player
 
-        if check_win(board, player):
-            print_board(board)
-            print(f"Player {player} wins!")
-            game_over = True
-        elif check_tie(board):
-            print_board(board)
-            print("It's a tie!")
-            game_over = True
-        else:
-            player = "O" if player == "X" else "X"
+        if check_win(board, current_player):
+            print(f"Player {current_player} wins!")
+            break
+
+        if check_draw(board):
+            print("It's a draw!")
+            break
+
+        current_player = "O" if current_player == "X" else "X"
 
 
 if __name__ == "__main__":
-    print("Welcome to Tic-Tac-Toe!")
-    play_tic_tac_toe()
+    tic_tac_toe()

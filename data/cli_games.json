@@ -1,0 +1,20 @@
+[
+  {"task_id": 0, "prompt": "Give me a full implementation of the game Tic-Tac-Toe with a command line interface."},
+  {"task_id": 1, "prompt": "Give me a full implementation of the game Hangman with a command line interface."},
+  {"task_id": 2, "prompt": "Give me a full implementation of the game Rock-paper-scissors with a command line interface."},
+  {"task_id": 3, "prompt": "Give me a full implementation of the game Snake with a command line interface."},
+  {"task_id": 4, "prompt": "Give me a full implementation of the game Minesweeper with a command line interface."},
+  {"task_id": 5, "prompt": "Give me a full implementation of the game Mastermind with a command line interface."},
+  {"task_id": 6, "prompt": "Give me a full implementation of the game Battleship with a command line interface."},
+  {"task_id": 7, "prompt": "Give me a full implementation of the game Game of Life with a command line interface."},
+  {"task_id": 8, "prompt": "Give me a full implementation of the game Connect Four with a command line interface."},
+  {"task_id": 9, "prompt": "Give me a full implementation of the game Blackjack with a command line interface."},
+  {"task_id": 10, "prompt": "Give me a full implementation of the game Hammurabi with a command line interface."},
+  {"task_id": 11, "prompt": "Give me a full implementation of the game Lights Out with a command line interface."},
+  {"task_id": 12, "prompt": "Give me a full implementation of the game Pong with a command line interface."},
+  {"task_id": 13, "prompt": "Give me a full implementation of the game Tetris with a command line interface."},
+  {"task_id": 14, "prompt": "Give me a full implementation of the game Asteroid with a command line interface."},
+  {"task_id": 15, "prompt": "Give me a full implementation of the game Boggle with a command line interface."},
+  {"task_id": 16, "prompt": "Give me a full implementation of the game Pac-Man with a command line interface."},
+  {"task_id": 17, "prompt": "Give me a full implementation of the game Dinosaur Runner with a command line interface."}
+]

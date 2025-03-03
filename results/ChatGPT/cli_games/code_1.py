@@ -1,107 +1,49 @@
 import random
 
-def choose_word():
-    words = ['python', 'hangman', 'challenge', 'programming', 'interface', 'computer', 'science', 'development']
-    return random.choice(words)
+class Hangman:
+    def __init__(self):
+        self.words = ["python", "hangman", "programming", "developer", "software", "keyboard", "interface", "challenge"]
+        self.secret_word = random.choice(self.words)
+        self.guesses = []
+        self.max_attempts = 6
+        self.attempts = 0
 
-def display_hangman(tries):
-    stages = [
-        """
-           ------
-           |    |
-           |    O
-           |   /|\\
-           |   / \\
-           |
-        """,
-        """
-           ------
-           |    |
-           |    O
-           |   /|\\
-           |   /
-           |
-        """,
-        """
-           ------
-           |    |
-           |    O
-           |   /|
-           |
-           |
-        """,
-        """
-           ------
-           |    |
-           |    O
-           |    |
-           |
-           |
-        """,
-        """
-           ------
-           |    |
-           |    O
-           |
-           |
-           |
-        """,
-        """
-           ------
-           |    |
-           |
-           |
-           |
-           |
-        """,
-        """
-           ------
-           |    |
-           |
-           |
-           |
-           |
-        """
-    ]
-    return stages[tries]
+    def display_word(self):
+        return ' '.join([letter if letter in self.guesses else '_' for letter in self.secret_word])
 
-def play_hangman():
-    word = choose_word()
-    word_letters = set(word)
-    guessed_letters = set()
-    tries = 6
+    def guess_letter(self, letter):
+        if letter in self.guesses:
+            print("You already guessed that letter.")
+            return False
+        self.guesses.append(letter)
+        if letter not in self.secret_word:
+            self.attempts += 1
+            print(f"Incorrect guess. You have {self.max_attempts - self.attempts} attempts left.")
+            return False
+        return True
 
-    print("Welcome to Hangman!")
-    
-    while tries > 0 and word_letters != guessed_letters:
-        print(display_hangman(tries))
-        print("Guessed letters: ", ' '.join(guessed_letters))
-        word_display = [letter if letter in guessed_letters else '_' for letter in word]
-        print("Current word: ", ' '.join(word_display))
+    def is_won(self):
+        return all(letter in self.guesses for letter in self.secret_word)
 
-        guess = input("Guess a letter: ").lower()
-        
-        if len(guess) != 1 or not guess.isalpha():
-            print("Please enter a single alphabetic character.")
-            continue
-        
-        if guess in guessed_letters:
-            print("You've already guessed that letter.")
-            continue
+    def is_lost(self):
+        return self.attempts >= self.max_attempts
 
-        guessed_letters.add(guess)
+    def play(self):
+        print("Welcome to Hangman!")
+        while not self.is_won() and not self.is_lost():
+            print("\nCurrent word:", self.display_word())
+            guess = input("Guess a letter: ").lower()
+            if len(guess) != 1 or not guess.isalpha():
+                print("Please enter a single letter.")
+                continue
 
-        if guess not in word_letters:
-            tries -= 1
-            print(f"Wrong guess! You have {tries} tries left.")
+            self.guess_letter(guess)
+
+        if self.is_won():
+            print("\nCongratulations! You've guessed the word:", self.secret_word)
         else:
-            print("Good guess!")
-
-    if word_letters == guessed_letters:
-        print(f"Congratulations! You've guessed the word: {word}")
-    else:
-        print(display_hangman(tries))
-        print(f"Sorry, you lost! The word was: {word}")
+            print("\nSorry, you've lost. The word was:", self.secret_word)
 
 if __name__ == "__main__":
-    play_hangman()
+    game = Hangman()
+    game.play()

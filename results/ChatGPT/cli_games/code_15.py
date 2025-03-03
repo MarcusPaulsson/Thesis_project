@@ -1,29 +1,23 @@
 import random
 import string
+import itertools
 
 class Boggle:
-    def __init__(self):
+    def __init__(self, size=4):
+        self.size = size
         self.board = self.generate_board()
         self.dictionary = self.load_dictionary()
         self.found_words = set()
 
     def generate_board(self):
-        letters = [
-            'A', 'A', 'A', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'L', 'L', 'N', 'N', 'O', 'O',
-            'O', 'O', 'R', 'R', 'S', 'S', 'T', 'T', 'U', 'U', 'W', 'Y', 'B', 'C', 'D', 'F',
-            'G', 'H', 'J', 'K', 'M', 'P', 'Q', 'V', 'X', 'Z'
-        ]
-        return [random.sample(letters, 4) for _ in range(4)]
+        letters = [random.choice(string.ascii_uppercase) for _ in range(self.size * self.size)]
+        return [letters[i:i + self.size] for i in range(0, len(letters), self.size)]
 
     def load_dictionary(self):
-        # Example dictionary, you can expand this with a real dictionary file or a larger set of words.
-        return {
-            'word', 'test', 'sample', 'boggle', 'game', 'play', 'code', 'python', 'hello',
-            'world', 'example', 'random', 'letter', 'grid'
-        }
+        # A small set of words for demonstration
+        return {"BAT", "TAB", "CAT", "ACT", "COT", "DOG", "GOD", "HAT", "HARD", "HARDER", "ART", "CARD"}
 
     def display_board(self):
-        print("Boggle Board:")
         for row in self.board:
             print(" ".join(row))
         print()
@@ -31,28 +25,32 @@ class Boggle:
     def is_valid_word(self, word):
         return word in self.dictionary
 
-    def find_words(self):
-        print("Enter words (type 'exit' to finish):")
-        while True:
-            word = input("> ").strip().upper()
-            if word == 'EXIT':
-                break
-            if self.is_valid_word(word):
-                if word not in self.found_words:
-                    self.found_words.add(word)
-                    print(f"Found: {word}")
-                else:
-                    print("Already found this word.")
-            else:
-                print("Invalid word or not in dictionary.")
+    def find_words(self, word, x, y, visited):
+        if len(word) > 1 and self.is_valid_word(word):
+            self.found_words.add(word)
+        
+        if len(word) >= 16:  # Max length of a word is size squared
+            return
+
+        for dx, dy in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < self.size and 0 <= ny < self.size and (nx, ny) not in visited:
+                visited.add((nx, ny))
+                self.find_words(word + self.board[nx][ny], nx, ny, visited)
+                visited.remove((nx, ny))
+
+    def search_words(self):
+        for x in range(self.size):
+            for y in range(self.size):
+                visited = {(x, y)}
+                self.find_words(self.board[x][y], x, y, visited)
 
     def play(self):
+        print("Welcome to Boggle!")
         self.display_board()
-        self.find_words()
-        print("\nYou found the following words:")
-        print(", ".join(self.found_words) if self.found_words else "No words found.")
-
+        self.search_words()
+        print("Found words:", self.found_words)
 
 if __name__ == "__main__":
-    game = Boggle()
-    game.play()
+    boggle_game = Boggle()
+    boggle_game.play()

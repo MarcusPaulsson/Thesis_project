@@ -1,15 +1,15 @@
-import random
 import curses
+from random import randint
 
-# Setup the window
+# Initialize the window
 stdscr = curses.initscr()
 curses.curs_set(0)
-sh, sw = stdscr.getmaxyx()
-w = curses.newwin(sh, sw, 0, 0)  # Create a new window
-w.keypad(1)
-w.timeout(100)  # Refresh every 100 milliseconds
+sh, sw = stdscr.getmaxyx()  # get height and width of window
+w = curses.newwin(sh, sw, 0, 0)  # create a new window
+w.keypad(1)  # enable keypad input
+w.timeout(100)  # refresh window every 100 milliseconds
 
-# Initial snake and food settings
+# Initial snake and food positions
 snk_x = sw // 4
 snk_y = sh // 2
 snake = [
@@ -20,12 +20,13 @@ snake = [
 food = [sh // 2, sw // 2]
 w.addch(int(food[0]), int(food[1]), curses.ACS_PI)
 
-key = curses.KEY_RIGHT  # Initial direction
+# Game logic variables
+key = curses.KEY_RIGHT  # initial direction
+score = 0
 
-# Game loop
 while True:
-    next_key = w.getch()
-    key = key if next_key == -1 else next_key
+    next_key = w.getch()  # get the next key
+    key = key if next_key == -1 else next_key  # update direction if a key is pressed
 
     # Calculate new head of the snake
     new_head = [snake[0][0], snake[0][1]]
@@ -42,27 +43,28 @@ while True:
     # Insert new head
     snake.insert(0, new_head)
 
-    # Check if snake has eaten the food
+    # Check if snake has eaten food
     if snake[0] == food:
+        score += 1
         food = None
         while food is None:
             nf = [
-                random.randint(1, sh - 1),
-                random.randint(1, sw - 1)
+                randint(1, sh-1),
+                randint(1, sw-1)
             ]
             food = nf if nf not in snake else None
         w.addch(int(food[0]), int(food[1]), curses.ACS_PI)
     else:
-        # Remove tail segment
+        # Remove the last segment of the snake
         tail = snake.pop()
         w.addch(int(tail[0]), int(tail[1]), ' ')
 
-    # Check for collisions with walls or self
+    # Check for collision with borders or itself
     if (snake[0][0] in [0, sh] or
-        snake[0][1] in [0, sw] or
-        snake[0] in snake[1:]):
+            snake[0][1] in [0, sw] or
+            snake[0] in snake[1:]):
         curses.endwin()
         quit()
 
-    # Draw the snake
+    # Draw snake
     w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)

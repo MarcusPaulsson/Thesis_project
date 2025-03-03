@@ -53,28 +53,3 @@ def save_results_to_json(results, output_file):
     print(f"Results saved to {output_file}")
 
 
-# Example usage:
-if __name__ == "__main__":
-
-    # Example Results List (Replace with your actual data)
-    results = [
-        {"task_index": "task1", "assistant_response": "Here is a response with ```python\nprint('Hello, world!')\n```"},
-        {"task_index": "task2", "assistant_response": "Another response with ```python\ndef add(a, b):\n    return a + b\n``` and some other text."},
-        {"task_index": "task3", "assistant_response": "No code here."},
-    ]
-
-    # Save results to a JSON file
-    json_file_path = 'test_chatGPT_cli_games.json'
-    save_results_to_json(results, json_file_path)
-
-    # Extract and save Python code from the saved JSON
-    output_directory = 'results/ChatGPT/cli_games'
-    extract_and_save_python_code(json_file_path, output_directory)
-
-    # Example usage with a different JSON file
-    json_file_path = 'test.json'  # Replace with your JSON file path
-    # Create a dummy test.json.
-    with open(json_file_path, 'w') as f:
-        json.dump({"test_key":"here is some code ```python\nprint('test')\n```"}, f)
-    output_directory = 'experiment_scripts/'
-    extract_and_save_python_code(json_file_path, output_directory)
