@@ -8,8 +8,8 @@ This repository contains the code and resources for the thesis experiments
 This repository contains scripts and data for evaluating code generation models. The project is organized as follows:
 
 * **`data/`**: Stores input datasets. Most dataset are downloaded from HuggingFace.
-* **`results/`**: Contains raw model outputs, filtered code snippets
-* **`ChatGPT, Deepseek, Gemini, WizardCoder/`**: Holds Python scripts for running inference on the models.
+* **`results/`**: Contains raw model outputs, filtered code snippets. Evaluation scripts refer to this folder.
+* **`experiment_scripts/`**: Holds Python scripts for running inference on the models. (Rewrite to experiment scripts)
 * **`evaluation_scripts/`**: Holds python scripts for calculating metrics, statistical data and visuliazation plots.
 
 **External Model Dependency:**
@@ -21,9 +21,7 @@ For running the local models (**`Deepseek`** and **`Wizardcoder`**), it expects 
 
 For running the API based models, addition API keys needs to be listed in a python file ```config.py``` in the main folder.
 
-**Virtual Environment:**
-
-It is assumed that a virtual environment (`venv`) has been created and activated for this project. To set up your environment, follow these steps:
+**Virtual Environment Setup:**
 
 1.  Navigate to the project directory.
 2.  Create a virtual environment: `python3 -m venv venv`
