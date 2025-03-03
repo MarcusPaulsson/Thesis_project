@@ -22,8 +22,8 @@ def run_task_with_gemini(task_prompt):
     client = genai.Client(api_key=config.GEMINI_API_KEY)
 
     model = "gemini-2.0-flash" 
-    system_prompt = prompt.SYSTEM_PROMPT_SENIOR #or some other system prompt.
-    user_prompt = system_prompt + "\n" + task_prompt + " Give only the code."
+    system_prompt = prompt.SYSTEM_PROMPT #or some other system prompt.
+    user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PROMPT
 
     contents = [
     types.Content(

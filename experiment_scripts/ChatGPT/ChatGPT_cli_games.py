@@ -19,13 +19,13 @@ def run_task_with_api(task_prompt):
     to the OpenAI API.
     """
     client = OpenAI(api_key=config.OPENAI_API_KEY)
-    extra_message = "Give only the code."
+    
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         
         messages = [
-    {"role": "system", "content": prompt.SYSTEM_PROMPT_SENIOR},
-    {"role": "user", "content": task_prompt+extra_message}
+    {"role": "system", "content": prompt.SYSTEM_PROMPT},
+    {"role": "user", "content": prompt.TAIL_PROMPT+task_prompt+prompt.TAIL_PROMPT}
 ],
         response_format={"type": "text"},
         temperature=0.7,
@@ -61,7 +61,7 @@ def load_cli_games_tasks_from_json(json_file_path):
 if __name__ == "__main__":
     # Load all tasks from the CSV file
     tasks = "Give me a full implementation of the game battleship with a command line interface."
-    json_file_path = os.path.join("data", "cli_games.json") #the .. means go up one directory.
+    json_file_path = os.path.join("data", "cli_games.json")
     tasks = load_cli_games_tasks_from_json(json_file_path)
 
 
