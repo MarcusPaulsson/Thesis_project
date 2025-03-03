@@ -7,9 +7,10 @@ This repository contains the code and resources for the thesis experiments
 This repository contains scripts and data for evaluating code generation models. The project is organized as follows:
 
 * **`data/`**: Stores input datasets. Most dataset are downloaded from HuggingFace.
+* **`evaluation_scripts/`**: Holds python scripts for calculating metrics, statistical data and visuliazation plots.
 * **`results/`**: Contains raw model outputs, filtered code snippets. Evaluation scripts refer to this folder.
 * **`experiment_scripts/`**: Holds Python scripts for running inference on the models. (Rewrite to experiment scripts)
-* **`evaluation_scripts/`**: Holds python scripts for calculating metrics, statistical data and visuliazation plots.
+
 
 **External Model Dependency:**
 
