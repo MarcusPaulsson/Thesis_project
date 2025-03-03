@@ -2,7 +2,6 @@
 
 This repository contains the code and resources for the thesis experiments
 
-
 ## Project Structure and Setup
 
 This repository contains scripts and data for evaluating code generation models. The project is organized as follows:
@@ -14,7 +13,7 @@ This repository contains scripts and data for evaluating code generation models.
 
 **External Model Dependency:**
 
-For running the local models (**`Deepseek`** and **`Wizardcoder`**), it expects a directory named `Models` to be located in the parent directory of this repository (`../Models/`). This directory should contain the model files for each local model used in the evaluation. This setup allows for the use of large models without bloating the Git repository.
+For running the local models (**`experiment_script/sDeepseek`** and **`experiment_scripts/Wizardcoder`**), it expects a directory named `Models` to be located in the parent directory of this repository (`../Models/`). This directory should contain the model files for each local model used in the evaluation. This setup allows for the use of large models without bloating the Git repository.
 
 
 **API Model Dependency:**

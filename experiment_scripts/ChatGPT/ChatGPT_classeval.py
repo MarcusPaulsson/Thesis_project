@@ -35,13 +35,13 @@ def run_task_with_api(task_prompt):
     print("Token count:", total_tokens)
     return response.choices[0].message.content
 
-def save_results_to_csv(results, output_file):
-    with open(output_file, "w", newline='', encoding='utf-8') as csvfile:
-        fieldnames = ["task_index", "assistant_response"]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        for entry in results:
-            writer.writerow(entry)
+def save_results_to_json(results, output_file):
+    output_data = {}
+    for entry in results:
+        output_data[entry["task_index"]] = entry["assistant_response"]
+
+    with open(output_file, "w", encoding="utf-8") as jsonfile:
+        json.dump(output_data, jsonfile, ensure_ascii=False, indent=4) #ensure_ascii=False ensures non-ascii characters are correctly saved.
     print(f"Results saved to {output_file}")
 
 if __name__ == "__main__":
@@ -69,4 +69,5 @@ if __name__ == "__main__":
         })
     
     # Save all results to a CSV file
-    save_results_to_csv(results, "responses_expert_classeval.csv")
+    save_file = 
+    save_results_to_json(results, "responses_expert_classeval.csv")

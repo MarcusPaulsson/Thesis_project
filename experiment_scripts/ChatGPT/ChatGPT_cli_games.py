@@ -4,11 +4,13 @@ import json
 import sys
 import os
 
-thesis_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),  '..'))
-sys.path.append(thesis_dir)
+main_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')) # access content in main folder
+upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # access content from one step up in folders
+sys.path.append(main_dir)
+sys.path.append(upper_dir)
 
 import config
-from extract_code_python import extract_and_save_python_code 
+from extract_code_python import extract_and_save_python_code, save_results_to_json
 
 def run_task_with_api(task_prompt):
     """
@@ -36,8 +38,6 @@ def run_task_with_api(task_prompt):
     # Extract and return the assistant's reply
     return response.choices[0].message.content
 
-import csv
-import os 
 
 def load_cli_games_tasks(csv_file_path):
     """
@@ -60,14 +60,7 @@ def load_cli_games_tasks(csv_file_path):
         print(f"An error occurred: {e}")
         return None
 
-def save_results_to_json(results, output_file):
-    output_data = {}
-    for entry in results:
-        output_data[entry["task_index"]] = entry["assistant_response"]
 
-    with open(output_file, "w", encoding="utf-8") as jsonfile:
-        json.dump(output_data, jsonfile, ensure_ascii=False, indent=4) #ensure_ascii=False ensures non-ascii characters are correctly saved.
-    print(f"Results saved to {output_file}")
 
 if __name__ == "__main__":
     # Load all tasks from the CSV file
@@ -78,7 +71,7 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks you want to run (start_index inclusive, end_index exclusive)
     start_index = 0  # change as needed
-    end_index = 18    # change as needed
+    end_index = 1    # change as needed
     
     results = []  # Dictionary to hold responses for each task
     
@@ -96,7 +89,7 @@ if __name__ == "__main__":
             "assistant_response": assistant_response
         })
     
-    json_file_path = 'test_chatGPT_cli_games.json'  # Replace with your JSON file path
+    json_file_path = 'results/ChatGPT/cli_games/cli_games_raw.json'  # Replace with your JSON file path
     # Save all results to a CSV file
     save_results_to_json(results, json_file_path)
 
