@@ -5,16 +5,6 @@ from cognitive_complexity import calculate_cognitive_complexity, process_files a
 from cyclomatic_complexity import calculate_cyclomatic_complexity, process_files as process_cyclomatic_files, calculate_statistics as calculate_cyclomatic_statistics
 
 def create_bar_plots(chatgpt_stats, gemini_stats, metric_name, output_filename):
-    """
-    Creates bar staple plots comparing ChatGPT and Gemini statistics.
-
-    Args:
-        chatgpt_stats (dict): Statistics for ChatGPT.
-        gemini_stats (dict): Statistics for Gemini.
-        metric_name (str): The name of the complexity metric.
-        output_filename (str): The filename to save the plot.
-    """
-
     if chatgpt_stats is None or gemini_stats is None:
         print("No data available to create plots.")
         return
