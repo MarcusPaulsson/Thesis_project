@@ -32,3 +32,10 @@ SYSTEM_PROMPT="You are a senior software developer in python."
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code."
 '''
+
+# Role prompting (Student)
+'''
+SYSTEM_PROMPT="You are a university student."
+HEAD_PROMPT = ""
+TAIL_PROMPT="Give only the code."
+'''
