@@ -8,8 +8,8 @@ This repository contains scripts and data for evaluating code generation models.
 
 * **`data/`**: Stores input datasets. Most dataset are downloaded from HuggingFace.
 * **`evaluation_scripts/`**: Holds python scripts for calculating metrics, statistical data and visuliazation plots.
-* **`results/`**: Contains raw model outputs, filtered code snippets. Evaluation scripts refer to this folder.
 * **`experiment_scripts/`**: Holds Python scripts for running inference on the models. (Rewrite to experiment scripts)
+* **`results/`**: Contains raw model outputs, filtered code snippets. Evaluation scripts refer to this folder.
 
 
 **External Model Dependency:**
