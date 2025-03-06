@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks you want to run (start_index inclusive, end_index exclusive)
     start_index = 0
-    end_index = 18
+    end_index = 1
 
     results = []
 
