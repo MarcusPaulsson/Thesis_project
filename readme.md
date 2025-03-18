@@ -28,3 +28,17 @@ For running the API based models, addition API keys needs to be listed in a pyth
     * On macOS/Linux: `source venv/bin/activate`
     * On Windows: `venv\Scripts\activate`
 4.  Install the required dependencies: `pip install -r requirements.txt`
+
+
+## Run experiments and evaluation scripts:
+
+Description how to run the experiments with different configurations
+
+**Prompt setup:**
+Each input prompt to the models consist of 4 pieces which is formulated in file: `experiment_scripts/prompt_technique_template.py`. Depending which prompt technique to run, make sure only the present techniques prompt constants are accessable, keep the others commented out!
+
+**models scripts**
+In `experiment_scripts/`, each model has its own folder together with the scripts to run the experiments on each of the datasets. The result from these scripts are saved in the result folder. OBS! note that the saved result overrides previous content and no differnt file naming is used when changing prompting techniques.
+
+**Evaluation scripts** 
+For the three different metrics used in this project, each has a corresponding script in `evaluation_scripts/`. For **Cognitive Complexity**, the python library ''complexipy'' is used for the calculations. The script is hardcoded to run on the subfolders to each model. 
