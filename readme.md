@@ -42,3 +42,8 @@ In `experiment_scripts/`, each model has its own folder together with the script
 
 **Evaluation scripts** 
 For the three different metrics used in this project, each has a corresponding script in `evaluation_scripts/`. For **Cognitive Complexity**, the python library ''complexipy'' is used for the calculations. The script is hardcoded to run on the subfolders to each model. 
+
+
+
+## Thesis results:
+TODO: Showcase result maybe???
