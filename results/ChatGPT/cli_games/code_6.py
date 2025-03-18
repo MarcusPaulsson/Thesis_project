@@ -1,84 +1,106 @@
 import random
 
-class Board:
-    def __init__(self, size=5):
+class Ship:
+    def __init__(self, size):
         self.size = size
-        self.board = [['~' for _ in range(size)] for _ in range(size)]
+        self.hits = 0
+
+    def hit(self):
+        self.hits += 1
+
+    def is_sunk(self):
+        return self.hits >= self.size
+
+
+class Board:
+    def __init__(self, size):
+        self.size = size
+        self.board = [[' ' for _ in range(size)] for _ in range(size)]
         self.ships = []
 
-    def place_ship(self, length):
-        placed = False
-        while not placed:
-            orientation = random.choice(['H', 'V'])
-            if orientation == 'H':
-                row = random.randint(0, self.size - 1)
-                col = random.randint(0, self.size - length)
-                if all(self.board[row][col + i] == '~' for i in range(length)):
-                    for i in range(length):
-                        self.board[row][col + i] = 'S'
-                    self.ships.append((row, col, orientation, length))
+    def place_ship(self, ship, x, y, orientation):
+        if orientation == 'H':
+            for i in range(ship.size):
+                self.board[x][y + i] = 'S'
+        else:
+            for i in range(ship.size):
+                self.board[x + i][y] = 'S'
+        self.ships.append(ship)
+
+    def display(self, show_ships=False):
+        print("  " + " ".join(str(i) for i in range(self.size)))
+        for i in range(self.size):
+            row = str(i) + " "
+            for j in range(self.size):
+                cell = self.board[i][j]
+                if cell == 'S' and not show_ships:
+                    row += '. '
+                else:
+                    row += cell + ' '
+            print(row)
+
+    def attack(self, x, y):
+        if self.board[x][y] == 'S':
+            self.board[x][y] = 'H'
+            for ship in self.ships:
+                if ship.size > 0:
+                    ship.hit()
+                    return True
+        else:
+            self.board[x][y] = 'M'
+        return False
+
+    def all_sunk(self):
+        return all(ship.is_sunk() for ship in self.ships)
+
+
+class Game:
+    def __init__(self, size=5):
+        self.board = Board(size)
+        self.setup()
+
+    def setup(self):
+        ship_sizes = [2, 3]
+        for size in ship_sizes:
+            placed = False
+            while not placed:
+                x = random.randint(0, self.board.size - 1)
+                y = random.randint(0, self.board.size - 1)
+                orientation = random.choice(['H', 'V'])
+                if self.can_place_ship(x, y, size, orientation):
+                    self.board.place_ship(Ship(size), x, y, orientation)
                     placed = True
-            else:
-                row = random.randint(0, self.size - length)
-                col = random.randint(0, self.size - 1)
-                if all(self.board[row + i][col] == '~' for i in range(length)):
-                    for i in range(length):
-                        self.board[row + i][col] = 'S'
-                    self.ships.append((row, col, orientation, length))
-                    placed = True
 
-    def display_board(self, reveal=False):
-        for row in self.board:
-            print(' '.join(row if reveal else ['~' if cell == 'S' else cell for cell in row]))
-
-    def make_guess(self, row, col):
-        if self.board[row][col] == 'S':
-            self.board[row][col] = 'X'  # Hit
-            return True
-        elif self.board[row][col] == '~':
-            self.board[row][col] = 'O'  # Miss
-            return False
-        return None  # Already guessed
-
-    def all_ships_sunk(self):
-        return all(self.board[row][col] != 'S' for row, col, orientation, length in self.ships)
-
-class BattleshipGame:
-    def __init__(self):
-        self.board = Board()
-        self.setup_game()
-        self.turns = 0
-
-    def setup_game(self):
-        ship_lengths = [2, 3, 3, 4, 5]
-        for length in ship_lengths:
-            self.board.place_ship(length)
+    def can_place_ship(self, x, y, size, orientation):
+        if orientation == 'H':
+            if y + size > self.board.size:
+                return False
+            return all(self.board.board[x][y + i] == ' ' for i in range(size))
+        else:
+            if x + size > self.board.size:
+                return False
+            return all(self.board.board[x + i][y] == ' ' for i in range(size))
 
     def play(self):
-        print("Welcome to Battleship!")
         while True:
-            self.board.display_board()
+            self.board.display()
             try:
-                row = int(input("Enter row (0-4): "))
-                col = int(input("Enter column (0-4): "))
-                if row < 0 or row >= self.board.size or col < 0 or col >= self.board.size:
-                    print("Invalid input. Try again.")
-                    continue
-                result = self.board.make_guess(row, col)
-                self.turns += 1
-                if result is True:
+                x = int(input("Enter row (0-{}): ".format(self.board.size - 1)))
+                y = int(input("Enter column (0-{}): ".format(self.board.size - 1)))
+                if self.board.attack(x, y):
                     print("Hit!")
-                elif result is False:
-                    print("Miss!")
                 else:
-                    print("You already guessed that!")
-                
-                if self.board.all_ships_sunk():
-                    print(f"Congratulations! You've sunk all the ships in {self.turns} turns.")
-                    break
-            except ValueError:
-                print("Please enter valid integers for row and column.")
+                    print("Miss!")
+            except (ValueError, IndexError):
+                print("Invalid input. Please try again.")
+                continue
+
+            if self.board.all_sunk():
+                print("All ships sunk! You win!")
+                self.board.display(show_ships=True)
+                break
+
 
 if __name__ == '__main__':
-    game = BattleshipGame()
+    game = Game(size=5)
     game.play()

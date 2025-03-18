@@ -6,24 +6,24 @@ def choose_word(word_list):
 
 def display_word(word, guessed_letters):
     """Displays the word with correctly guessed letters and underscores for unguessed letters."""
-    displayed_word = ""
+    display = ""
     for letter in word:
         if letter in guessed_letters:
-            displayed_word += letter + " "
+            display += letter + " "
         else:
-            displayed_word += "_ "
-    return displayed_word.strip()
+            display += "_ "
+    return display.strip()
 
 def get_guess(guessed_letters):
-    """Gets a valid letter guess from the player."""
+    """Gets a valid letter guess from the user."""
     while True:
         guess = input("Guess a letter: ").upper()
         if not guess.isalpha():
             print("Invalid input. Please enter a letter.")
         elif len(guess) != 1:
-            print("Please guess only one letter at a time.")
+            print("Please enter only one letter at a time.")
         elif guess in guessed_letters:
-            print("You already guessed that letter.")
+            print("You already guessed that letter. Try again.")
         else:
             return guess
 
@@ -32,45 +32,39 @@ def play_hangman(word_list):
     word = choose_word(word_list)
     guessed_letters = set()
     incorrect_guesses = 0
-    max_incorrect_guesses = 6  # You can adjust this
-    game_over = False
+    max_guesses = 6  # You can adjust the number of allowed incorrect guesses.
 
     print("Welcome to Hangman!")
-    print(f"The word has {len(word)} letters.")
     print(display_word(word, guessed_letters))
+    print(f"You have {max_guesses} guesses.")
 
-    while not game_over:
+    while incorrect_guesses < max_guesses:
         guess = get_guess(guessed_letters)
         guessed_letters.add(guess)
 
         if guess in word:
             print("Correct guess!")
-            displayed = display_word(word, guessed_letters)
-            print(displayed)
+            display = display_word(word, guessed_letters)
+            print(display)
 
-            if "_" not in displayed:
+            if "_" not in display:
                 print("Congratulations! You guessed the word:", word)
-                game_over = True
+                return
+
         else:
             incorrect_guesses += 1
-            print(f"Incorrect guess. You have {max_incorrect_guesses - incorrect_guesses} guesses remaining.")
-            print(display_word(word, guessed_letters))
+            print("Incorrect guess.")
+            print(f"You have {max_guesses - incorrect_guesses} guesses remaining.")
+            print(display_word(word, guessed_letters)) # Show progress even after incorrect guess
 
-            if incorrect_guesses >= max_incorrect_guesses:
-                print("You ran out of guesses. The word was:", word)
-                game_over = True
+        if incorrect_guesses == max_guesses:
+            print("You ran out of guesses. The word was:", word)
+            return
 
 def main():
-    """Main function to start the Hangman game."""
-    word_list = ["apple", "banana", "cherry", "date", "elderberry", "fig", "grape"]
-    play_again = True
-
-    while play_again:
-        play_hangman(word_list)
-        response = input("Play again? (yes/no): ").lower()
-        if response != "yes":
-            play_again = False
-            print("Thanks for playing!")
+    """Main function to start the game."""
+    word_list = ["apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew"] # Add more words!
+    play_hangman(word_list)
 
 if __name__ == "__main__":
     main()

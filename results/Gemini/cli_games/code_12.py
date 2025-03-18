@@ -1,75 +1,122 @@
-import curses
 import time
+import random
+import os
 
-# Constants
-WIN_HEIGHT = 20
-WIN_WIDTH = 40
-PADDLE_HEIGHT = 3
-BALL_SYMBOL = 'O'
-PADDLE_SYMBOL = '|'
+class Pong:
+    def __init__(self, width=60, height=20):
+        self.width = width
+        self.height = height
+        self.ball_x = width // 2
+        self.ball_y = height // 2
+        self.ball_dx = random.choice([-1, 1])
+        self.ball_dy = random.choice([-1, 1])
+        self.paddle1_y = height // 2 - 2
+        self.paddle2_y = height // 2 - 2
+        self.paddle_length = 4
+        self.score1 = 0
+        self.score2 = 0
+        self.running = True
+        self.delay = 0.05 # Adjust for game speed
 
-def main(stdscr):
-    # Clear and refresh the screen
-    stdscr.clear()
-    curses.curs_set(0)
+    def clear_screen(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
 
-    # Create a window
-    win = curses.newwin(WIN_HEIGHT, WIN_WIDTH, 0, 0)
-    win.keypad(1)
-    win.timeout(100)
-
-    # Initial positions
-    left_paddle = (WIN_HEIGHT // 2) - 1
-    right_paddle = (WIN_HEIGHT // 2) - 1
-    ball_x = WIN_WIDTH // 2
-    ball_y = WIN_HEIGHT // 2
-    ball_dx = 1
-    ball_dy = 1
-
-    while True:
-        win.clear()
+    def draw(self):
+        self.clear_screen()
+        # Create the game board
+        board = [[' ' for _ in range(self.width)] for _ in range(self.height)]
 
         # Draw paddles
-        for i in range(PADDLE_HEIGHT):
-            win.addch(left_paddle + i, 1, PADDLE_SYMBOL)
-            win.addch(right_paddle + i, WIN_WIDTH - 2, PADDLE_SYMBOL)
+        for i in range(self.paddle_length):
+            board[self.paddle1_y + i][0] = '|'
+            board[self.paddle2_y + i][self.width - 1] = '|'
 
         # Draw ball
-        win.addch(ball_y, ball_x, BALL_SYMBOL)
+        board[self.ball_y][self.ball_x] = 'O'
 
-        # Refresh the window
-        win.refresh()
+        # Print the board
+        for row in board:
+            print(''.join(row))
 
+        # Print the score
+        print(f"Player 1: {self.score1}  Player 2: {self.score2}")
+
+    def update(self):
         # Ball movement
-        ball_x += ball_dx
-        ball_y += ball_dy
+        self.ball_x += self.ball_dx
+        self.ball_y += self.ball_dy
 
-        # Ball collision with top and bottom
-        if ball_y <= 0 or ball_y >= WIN_HEIGHT - 1:
-            ball_dy *= -1
+        # Bounce off top and bottom
+        if self.ball_y <= 0 or self.ball_y >= self.height - 1:
+            self.ball_dy *= -1
 
-        # Ball collision with paddles
-        if ball_x == 2 and left_paddle <= ball_y < left_paddle + PADDLE_HEIGHT:
-            ball_dx *= -1
-        if ball_x == WIN_WIDTH - 3 and right_paddle <= ball_y < right_paddle + PADDLE_HEIGHT:
-            ball_dx *= -1
+        # Paddle collision
+        if self.ball_x == 1 and self.paddle1_y <= self.ball_y <= self.paddle1_y + self.paddle_length - 1:
+            self.ball_dx *= -1
+        elif self.ball_x == self.width - 2 and self.paddle2_y <= self.ball_y <= self.paddle2_y + self.paddle_length - 1:
+            self.ball_dx *= -1
 
-        # Ball out of bounds
-        if ball_x <= 0 or ball_x >= WIN_WIDTH - 1:
-            ball_x, ball_y = WIN_WIDTH // 2, WIN_HEIGHT // 2  # Reset ball position
+        # Score and reset
+        if self.ball_x <= 0:
+            self.score2 += 1
+            self.reset_ball()
+        elif self.ball_x >= self.width - 1:
+            self.score1 += 1
+            self.reset_ball()
 
-        # Paddle movement
-        key = win.getch()
-        if key == curses.KEY_UP and right_paddle > 0:
-            right_paddle -= 1
-        elif key == curses.KEY_DOWN and right_paddle < WIN_HEIGHT - PADDLE_HEIGHT:
-            right_paddle += 1
-        elif key == ord('w') and left_paddle > 0:
-            left_paddle -= 1
-        elif key == ord('s') and left_paddle < WIN_HEIGHT - PADDLE_HEIGHT:
-            left_paddle += 1
+    def reset_ball(self):
+        self.ball_x = self.width // 2
+        self.ball_y = self.height // 2
+        self.ball_dx = random.choice([-1, 1])
+        self.ball_dy = random.choice([-1, 1])
 
-        time.sleep(0.05)
+
+    def move_paddle1(self, direction):
+        if direction == "up" and self.paddle1_y > 0:
+            self.paddle1_y -= 1
+        elif direction == "down" and self.paddle1_y < self.height - self.paddle_length:
+            self.paddle1_y += 1
+
+    def move_paddle2(self, direction):
+        if direction == "up" and self.paddle2_y > 0:
+            self.paddle2_y -= 1
+        elif direction == "down" and self.paddle2_y < self.height - self.paddle_length:
+            self.paddle2_y += 1
+
+
+    def play(self):
+        while self.running:
+            self.draw()
+            self.update()
+
+            # Get input (non-blocking)
+            import select
+            import sys
+            if select.select([sys.stdin,], [], [], 0.0)[0]: # Check if stdin is ready to read
+                action = sys.stdin.readline().strip() # Read input without blocking
+                if action == "q":
+                    self.running = False
+                    break
+                elif action == "w":
+                    self.move_paddle1("up")
+                elif action == "s":
+                    self.move_paddle1("down")
+                elif action == "o":
+                    self.move_paddle2("up")
+                elif action == "l":
+                    self.move_paddle2("down")
+
+            time.sleep(self.delay)
+
+        print("Game Over!")
+        print(f"Final Score: Player 1: {self.score1}  Player 2: {self.score2}")
+
 
 if __name__ == "__main__":
-    curses.wrapper(main)
+    game = Pong()
+    print("Welcome to Pong!")
+    print("Controls:")
+    print("Player 1: w (up), s (down)")
+    print("Player 2: o (up), l (down)")
+    print("Press q to quit")
+    game.play()

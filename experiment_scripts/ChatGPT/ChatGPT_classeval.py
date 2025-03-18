@@ -8,8 +8,8 @@ main_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')) 
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # access content from one step up in folders
 sys.path.append(main_dir)
 sys.path.append(upper_dir)
-
 import config
+
 from extract_code_python import extract_and_save_python_code, save_results_to_json
 import prompt_technique_templates as prompt
 
@@ -33,12 +33,12 @@ def run_task_with_api(task_prompt):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": prompt.SYSTEM_PROMPT_SENIOR},
+            {"role": "system", "content": prompt.SYSTEM_PROMPT},
             {"role": "user", "content": task_prompt + extra_message}
         ],
         response_format={"type": "text"},
         temperature=0.7,
-        max_completion_tokens=1500,
+        max_completion_tokens=1800,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 1
+    end_index = 30
 
     results = []
     for i in range(start_index, end_index):

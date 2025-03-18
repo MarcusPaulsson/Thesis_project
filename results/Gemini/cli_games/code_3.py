@@ -1,126 +1,108 @@
 import random
 import time
-import curses
+import os
 
 class SnakeGame:
-    def __init__(self, width=20, height=10):
+    def __init__(self, width=20, height=15, delay=0.1):
         self.width = width
         self.height = height
-        self.snake = [(width // 2, height // 2)]  # Snake starts in the middle
+        self.snake = [(width // 2, height // 2)]
         self.food = self.create_food()
-        self.direction = curses.KEY_RIGHT  # Initial direction
-        self.score = 0
+        self.direction = "right"
         self.game_over = False
+        self.score = 0
+        self.delay = delay
 
     def create_food(self):
-        """Creates food at a random empty location."""
         while True:
-            food = (random.randint(1, self.width - 2), random.randint(1, self.height - 2))
+            food = (random.randint(0, self.width - 1), random.randint(0, self.height - 1))
             if food not in self.snake:
                 return food
 
-    def move_snake(self):
-        """Moves the snake based on the current direction."""
+    def move(self):
         head_x, head_y = self.snake[0]
 
-        if self.direction == curses.KEY_RIGHT:
+        if self.direction == "right":
             new_head = (head_x + 1, head_y)
-        elif self.direction == curses.KEY_LEFT:
+        elif self.direction == "left":
             new_head = (head_x - 1, head_y)
-        elif self.direction == curses.KEY_UP:
+        elif self.direction == "up":
             new_head = (head_x, head_y - 1)
-        elif self.direction == curses.KEY_DOWN:
+        elif self.direction == "down":
             new_head = (head_x, head_y + 1)
-        else:
-            return  # Invalid direction
-
-        self.snake.insert(0, new_head)  # Add new head
-
-        # Check if snake ate food
-        if new_head == self.food:
-            self.score += 1
-            self.food = self.create_food()  # Create new food
-        else:
-            self.snake.pop()  # Remove tail if no food eaten
-
-    def check_collision(self):
-        """Checks for collisions with walls or itself."""
-        head_x, head_y = self.snake[0]
 
         if (
-            head_x <= 0
-            or head_x >= self.width - 1
-            or head_y <= 0
-            or head_y >= self.height - 1
-            or self.snake[0] in self.snake[1:]  # Check self-collision
+            new_head[0] < 0
+            or new_head[0] >= self.width
+            or new_head[1] < 0
+            or new_head[1] >= self.height
+            or new_head in self.snake
         ):
             self.game_over = True
+            return
 
-    def update(self):
-        """Updates the game state."""
-        self.move_snake()
-        self.check_collision()
+        self.snake.insert(0, new_head)
 
-    def draw(self, screen):
-        """Draws the game on the screen."""
-        screen.clear()
+        if new_head == self.food:
+            self.score += 1
+            self.food = self.create_food()
+        else:
+            self.snake.pop()
 
-        # Draw border
-        for i in range(self.width):
-            screen.addch(0, i, '#')
-            screen.addch(self.height - 1, i, '#')
-        for i in range(self.height):
-            screen.addch(i, 0, '#')
-            screen.addch(i, self.width - 1, '#')
+    def change_direction(self, new_direction):
+        if new_direction == "right" and self.direction != "left":
+            self.direction = "right"
+        elif new_direction == "left" and self.direction != "right":
+            self.direction = "left"
+        elif new_direction == "up" and self.direction != "down":
+            self.direction = "up"
+        elif new_direction == "down" and self.direction != "up":
+            self.direction = "down"
 
+    def draw(self):
+        os.system("cls" if os.name == "nt" else "clear")  # Clear the console
 
-        # Draw snake
-        for x, y in self.snake:
-            screen.addch(y, x, 'O')
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) == self.food:
+                    print("F", end="")
+                elif (x, y) in self.snake:
+                    if (x,y) == self.snake[0]:
+                        print("H", end="")
+                    else:
+                        print("S", end="")
+                else:
+                    print(" ", end="")
+            print()
 
-        # Draw food
-        screen.addch(self.food[1], self.food[0], '*')
+        print(f"Score: {self.score}")
+        print("Use 'w', 'a', 's', 'd' to move. Press 'q' to quit.")
 
-        # Draw score
-        screen.addstr(self.height, 0, f"Score: {self.score}")
+    def play(self):
+        while not self.game_over:
+            self.draw()
+            time.sleep(self.delay)
 
-        screen.refresh()
+            direction = input("Enter move (w/a/s/d/q): ").lower()
+            if direction == "q":
+                self.game_over = True
+                break
+            elif direction in ("w", "a", "s", "d"):
+                if direction == "w":
+                    self.change_direction("up")
+                elif direction == "a":
+                    self.change_direction("left")
+                elif direction == "s":
+                    self.change_direction("down")
+                elif direction == "d":
+                    self.change_direction("right")
 
+            self.move()
 
-
-def main(screen):
-    """Main game loop."""
-    curses.curs_set(0)  # Hide cursor
-    screen.nodelay(1)  # Non-blocking getch
-    screen.timeout(100)  # Refresh every 100 ms
-
-    game = SnakeGame(width=40, height=20)
-
-    while not game.game_over:
-        game.draw(screen)
-        key = screen.getch()
-
-        # Handle input
-        if key == curses.KEY_EXIT or key == ord('q'):
-            break
-        elif key in [curses.KEY_LEFT, curses.KEY_RIGHT, curses.KEY_UP, curses.KEY_DOWN]:
-            # Prevent snake from going directly backwards
-            if (key == curses.KEY_LEFT and game.direction != curses.KEY_RIGHT) or \
-               (key == curses.KEY_RIGHT and game.direction != curses.KEY_LEFT) or \
-               (key == curses.KEY_UP and game.direction != curses.KEY_DOWN) or \
-               (key == curses.KEY_DOWN and game.direction != curses.KEY_UP):
-                game.direction = key
-
-        game.update()
-
-    # Game over message
-    screen.clear()
-    screen.addstr(game.height // 2, game.width // 2 - 5, "Game Over!")
-    screen.addstr(game.height // 2 + 1, game.width // 2 - 7, f"Final Score: {game.score}")
-    screen.refresh()
-    time.sleep(2)
+        print("Game Over!")
+        print(f"Final Score: {self.score}")
 
 
-
-if __name__ == '__main__':
-    curses.wrapper(main)
+if __name__ == "__main__":
+    game = SnakeGame()
+    game.play()

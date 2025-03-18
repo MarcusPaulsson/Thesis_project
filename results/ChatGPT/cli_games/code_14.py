@@ -1,103 +1,77 @@
+import curses
 import random
-import os
-import sys
-import time
 import math
-import threading
 
 # Constants
-WIDTH = 40
-HEIGHT = 20
+WIDTH = 80
+HEIGHT = 24
 ASTEROID_COUNT = 5
+ASTEROID_SYMBOL = '*'
 SHIP_SYMBOL = 'A'
-ASTEROID_SYMBOL = 'O'
-BULLET_SYMBOL = '|'
-BULLET_LIMIT = 5
 
-# Directions
-UP = 0
-DOWN = 1
-LEFT = 2
-RIGHT = 3
-
-class Game:
+class Asteroid:
     def __init__(self):
-        self.ship_position = [WIDTH // 2, HEIGHT // 2]
-        self.asteroids = []
-        self.bullets = []
-        self.score = 0
-        self.is_running = True
-        self.spawn_asteroids()
+        self.x = random.randint(0, WIDTH - 1)
+        self.y = random.randint(0, HEIGHT - 1)
+        self.dx = random.choice([-1, 1])
+        self.dy = random.choice([-1, 1])
 
-    def spawn_asteroids(self):
-        for _ in range(ASTEROID_COUNT):
-            x = random.randint(0, WIDTH - 1)
-            y = random.randint(0, HEIGHT - 1)
-            self.asteroids.append([x, y])
+    def move(self):
+        self.x += self.dx
+        self.y += self.dy
+        if self.x <= 0 or self.x >= WIDTH - 1:
+            self.dx *= -1
+        if self.y <= 0 or self.y >= HEIGHT - 1:
+            self.dy *= -1
 
-    def draw(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
-        for y in range(HEIGHT):
-            for x in range(WIDTH):
-                if [x, y] == self.ship_position:
-                    print(SHIP_SYMBOL, end='')
-                elif [x, y] in self.asteroids:
-                    print(ASTEROID_SYMBOL, end='')
-                elif any(bullet[0] == x and bullet[1] == y for bullet in self.bullets):
-                    print(BULLET_SYMBOL, end='')
-                else:
-                    print(' ', end='')
-            print()
-        print(f'Score: {self.score}')
+class Ship:
+    def __init__(self):
+        self.x = WIDTH // 2
+        self.y = HEIGHT // 2
+        self.angle = 0
 
-    def move_ship(self, direction):
-        if direction == UP and self.ship_position[1] > 0:
-            self.ship_position[1] -= 1
-        elif direction == DOWN and self.ship_position[1] < HEIGHT - 1:
-            self.ship_position[1] += 1
-        elif direction == LEFT and self.ship_position[0] > 0:
-            self.ship_position[0] -= 1
-        elif direction == RIGHT and self.ship_position[0] < WIDTH - 1:
-            self.ship_position[0] += 1
+    def turn_left(self):
+        self.angle -= 5
 
-    def shoot(self):
-        if len(self.bullets) < BULLET_LIMIT:
-            self.bullets.append([self.ship_position[0], self.ship_position[1] - 1])
+    def turn_right(self):
+        self.angle += 5
 
-    def update_bullets(self):
-        new_bullets = []
-        for bullet in self.bullets:
-            bullet[1] -= 1
-            if bullet[1] >= 0:
-                new_bullets.append(bullet)
-                self.check_collision(bullet)
-        self.bullets = new_bullets
+    def move(self):
+        rad = math.radians(self.angle)
+        self.x += int(math.cos(rad))
+        self.y += int(math.sin(rad))
+        self.x %= WIDTH
+        self.y %= HEIGHT
 
-    def check_collision(self, bullet):
-        for asteroid in self.asteroids:
-            if bullet[0] == asteroid[0] and bullet[1] == asteroid[1]:
-                self.asteroids.remove(asteroid)
-                self.score += 1
-                self.spawn_asteroids()
-                break
+def draw_window(stdscr, ship, asteroids):
+    stdscr.clear()
+    stdscr.addstr(ship.y, ship.x, SHIP_SYMBOL)
+    for asteroid in asteroids:
+        stdscr.addstr(asteroid.y, asteroid.x, ASTEROID_SYMBOL)
+    stdscr.refresh()
 
-    def run(self):
-        while self.is_running:
-            self.draw()
-            command = input("Move (WASD) or Shoot (Space): ").strip().lower()
-            if command == 'w':
-                self.move_ship(UP)
-            elif command == 's':
-                self.move_ship(DOWN)
-            elif command == 'a':
-                self.move_ship(LEFT)
-            elif command == 'd':
-                self.move_ship(RIGHT)
-            elif command == ' ':
-                self.shoot()
-            self.update_bullets()
-            time.sleep(0.1)
+def main(stdscr):
+    curses.curs_set(0)
+    stdscr.nodelay(1)
+    stdscr.timeout(100)
 
-if __name__ == "__main__":
-    game = Game()
-    game.run()
+    ship = Ship()
+    asteroids = [Asteroid() for _ in range(ASTEROID_COUNT)]
+
+    while True:
+        draw_window(stdscr, ship, asteroids)
+
+        key = stdscr.getch()
+        if key == curses.KEY_LEFT:
+            ship.turn_left()
+        elif key == curses.KEY_RIGHT:
+            ship.turn_right()
+        elif key == ord('w'):
+            ship.move()
+        elif key == ord('q'):
+            break
+
+        for asteroid in asteroids:
+            asteroid.move()
+
+curses.wrapper(main)

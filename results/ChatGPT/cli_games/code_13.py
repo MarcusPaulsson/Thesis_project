@@ -1,184 +1,178 @@
 import random
-import os
 import sys
+import os
 import time
-import keyboard
+import threading
 
 # Constants
 BOARD_WIDTH = 10
 BOARD_HEIGHT = 20
-TICK_RATE = 0.5  # Seconds per tick
-
-# Tetrimino shapes
 SHAPES = [
     [['.....',
       '.....',
       '..X..',
-      '..X..',
-      '..X..'],
+      '.....',
+      '.....'],
      ['.....',
       '.....',
-      'XXXXX',
+      '..X..',
       '.....',
       '.....']],
     
     [['.....',
       '.....',
       '..X..',
-      '..XX.',
-      '.....'],
-     ['.....',
-      '.....',
       '..X..',
-      '..XX.',
       '.....'],
      ['.....',
       '.....',
-      'XXXXX',
+      '..XX.',
       '.....',
       '.....']],
     
     [['.....',
       '.....',
-      '..X..',
       '.XX..',
+      '..X..',
       '.....'],
      ['.....',
-      '.....',
+      '..X..',
       '..XX.',
-      '..X..',
-      '.....'],
-     ['.....',
-      '.....',
-      'XXXXX',
       '.....',
       '.....']],
-    
+
     [['.....',
       '.....',
-      '..X..',
-      '..XXX',
+      'XX...',
+      '.....',
       '.....'],
      ['.....',
-      '.....',
-      'XXXXX',
-      '.....',
-      '.....']],
-    
-    [['.....',
-      '.....',
-      '..X..',
       '.X...',
-      '.X...'],
-     ['.....',
-      '.....',
-      'XXXXX',
+      '.XX..',
       '.....',
       '.....']],
     
     [['.....',
       '.....',
-      '..XX.',
-      '..X..',
-      '.....'],
-     ['.....',
-      '.....',
-      'XXXXX',
-      '.....',
-      '.....']],
-    
-    [['.....',
-      '.....',
-      '..XX.',
+      '.X...',
       '.X...',
       '.....'],
      ['.....',
+      '..XX.',
       '.....',
-      'XXXXX',
       '.....',
       '.....']],
+    
+    [['.....',
+      '.....',
+      'X....',
+      'X....',
+      '.....'],
+     ['.....',
+      '.....',
+      'XXX..',
+      '.....',
+      '.....']],
+    
+    [['.....',
+      '.....',
+      '..X..',
+      '..X..',
+      '.....'],
+     ['.....',
+      '.XX..',
+      '.....',
+      '.....',
+      '.....']]
 ]
 
 class Tetris:
     def __init__(self):
-        self.board = [[' ' for _ in range(BOARD_WIDTH)] for _ in range(BOARD_HEIGHT)]
-        self.current_tetrimino = self.new_tetrimino()
+        self.board = [['.' for _ in range(BOARD_WIDTH)] for _ in range(BOARD_HEIGHT)]
+        self.current_piece = self.new_piece()
         self.current_x = BOARD_WIDTH // 2 - 1
         self.current_y = 0
+        self.game_over = False
         self.score = 0
 
-    def new_tetrimino(self):
-        shape = random.choice(SHAPES)
-        return [list(row) for row in shape]
+    def new_piece(self):
+        return random.choice(SHAPES)
 
-    def rotate_tetrimino(self):
-        self.current_tetrimino = self.current_tetrimino[1:] + self.current_tetrimino[:1]
+    def rotate_piece(self):
+        self.current_piece = self.current_piece[1:] + self.current_piece[:1]
 
-    def draw_board(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
-        for row in self.board:
-            print('|' + ''.join(row) + '|')
-        print('-' * (BOARD_WIDTH + 2))
-        print(f'Score: {self.score}')
-
-    def check_collision(self, dx=0, dy=0):
-        for y, row in enumerate(self.current_tetrimino[0]):
+    def valid_position(self, dx=0, dy=0):
+        for y, row in enumerate(self.current_piece[0]):
             for x, cell in enumerate(row):
-                if cell != '.' and (y + self.current_y + dy >= BOARD_HEIGHT or
-                                    x + self.current_x + dx < 0 or
-                                    x + self.current_x + dx >= BOARD_WIDTH or
-                                    self.board[y + self.current_y + dy][x + self.current_x + dx] != ' '):
-                    return True
-        return False
+                if cell == 'X':
+                    new_x = self.current_x + x + dx
+                    new_y = self.current_y + y + dy
+                    if new_x < 0 or new_x >= BOARD_WIDTH or new_y >= BOARD_HEIGHT:
+                        return False
+                    if new_y >= 0 and self.board[new_y][new_x] == 'X':
+                        return False
+        return True
 
-    def merge_tetrimino(self):
-        for y, row in enumerate(self.current_tetrimino[0]):
+    def merge_piece(self):
+        for y, row in enumerate(self.current_piece[0]):
             for x, cell in enumerate(row):
-                if cell != '.':
-                    self.board[y + self.current_y][x + self.current_x] = cell
+                if cell == 'X':
+                    self.board[self.current_y + y][self.current_x + x] = 'X'
 
     def clear_lines(self):
-        lines_to_clear = [i for i, row in enumerate(self.board) if all(cell != ' ' for cell in row)]
+        lines_to_clear = [i for i, row in enumerate(self.board) if all(cell == 'X' for cell in row)]
         for i in lines_to_clear:
             self.board.pop(i)
-            self.board.insert(0, [' ' for _ in range(BOARD_WIDTH)])
-            self.score += 1
+            self.board.insert(0, ['.' for _ in range(BOARD_WIDTH)])
+        self.score += len(lines_to_clear)
 
-    def drop_tetrimino(self):
-        if not self.check_collision(dy=1):
+    def drop_piece(self):
+        if self.valid_position(dy=1):
             self.current_y += 1
         else:
-            self.merge_tetrimino()
+            self.merge_piece()
             self.clear_lines()
-            self.current_tetrimino = self.new_tetrimino()
+            self.current_piece = self.new_piece()
             self.current_x = BOARD_WIDTH // 2 - 1
             self.current_y = 0
-            if self.check_collision():
-                print("Game Over!")
-                sys.exit()
+            if not self.valid_position():
+                self.game_over = True
 
-    def move_left(self):
-        if not self.check_collision(dx=-1):
-            self.current_x -= 1
+    def print_board(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(f"Score: {self.score}")
+        for row in self.board:
+            print(' '.join(row))
+        print()
 
-    def move_right(self):
-        if not self.check_collision(dx=1):
-            self.current_x += 1
+def game_loop(game):
+    while not game.game_over:
+        game.drop_piece()
+        game.print_board()
+        time.sleep(0.5)
 
-    def main_loop(self):
-        while True:
-            self.draw_board()
-            self.drop_tetrimino()
-            time.sleep(TICK_RATE)
+def main():
+    game = Tetris()
+    threading.Thread(target=game_loop, args=(game,), daemon=True).start()
+    
+    while not game.game_over:
+        command = input("Enter command (a: left, d: right, s: down, r: rotate, q: quit): ").strip()
+        if command == 'a':
+            if game.valid_position(dx=-1):
+                game.current_x -= 1
+        elif command == 'd':
+            if game.valid_position(dx=1):
+                game.current_x += 1
+        elif command == 's':
+            game.drop_piece()
+        elif command == 'r':
+            game.rotate_piece()
+            if not game.valid_position():
+                game.rotate_piece()
+        elif command == 'q':
+            game.game_over = True
 
-            if keyboard.is_pressed('left'):
-                self.move_left()
-            if keyboard.is_pressed('right'):
-                self.move_right()
-            if keyboard.is_pressed('up'):
-                self.rotate_tetrimino()
-
+    print("Game Over! Your score was:", game.score)
 
 if __name__ == '__main__':
-    game = Tetris()
-    game.main_loop()
+    main()

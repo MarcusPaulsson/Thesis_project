@@ -1,54 +1,89 @@
-import random
 import time
+import random
 import os
 
 class DinosaurRunner:
     def __init__(self):
+        self.dino_position = 0
+        self.obstacle_position = 20
         self.score = 0
-        self.is_running = True
+        self.game_over = False
+        self.obstacle_type = self.choose_obstacle() # 0: cactus, 1: bird
+        self.jump_height = 3
 
-    def clear_screen(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
+    def choose_obstacle(self):
+        return random.randint(0, 1)
 
-    def display_score(self):
-        print(f"Score: {self.score}")
+    def generate_obstacle(self):
+       if self.obstacle_type == 0:
+            return "🌵"
+       else:
+            return "🐦"
 
-    def jump(self):
-        print("Jumping!")
-        time.sleep(0.5)
+    def print_screen(self):
+        """Prints the game screen."""
+        os.system('cls' if os.name == 'nt' else 'clear')  # Clear the screen
+        screen = ""
 
-    def game_over(self):
-        self.clear_screen()
-        print("Game Over!")
-        print(f"Final Score: {self.score}")
-        self.is_running = False
+        # Ground
+        ground = "_" * 40 + "\n"
+        screen += ground
 
-    def check_obstacle(self):
-        # Randomly determine if an obstacle appears
-        return random.choice([True, False])
+        # Dino
+        dino = "🦖"
+        dino_position_str = " " * self.dino_position + dino
+
+        # Obstacle
+        obstacle = self.generate_obstacle()
+        obstacle_position_str = " " * self.obstacle_position + obstacle
+
+        # Combine dino and obstacle, handling potential overlap
+        if self.dino_position < self.obstacle_position:
+          screen += dino_position_str + obstacle_position_str[len(dino_position_str):] + "\n"
+        else:
+          screen += obstacle_position_str + dino_position_str[len(obstacle_position_str):] + "\n"
+
+
+        screen += ground
+        screen += f"Score: {self.score}\n"
+        print(screen)
+
+
+    def update(self, action):
+        """Updates the game state based on the player's action."""
+
+        # Handle jumping
+        if action == "jump":
+            self.dino_position = self.jump_height  # Dino jumps
+        else:
+            self.dino_position = 0 # Dino on the ground
+
+
+        # Move the obstacle
+        self.obstacle_position -= 1
+
+        # Check for collision
+        if self.dino_position == 0 and self.obstacle_position <= 1:
+            self.game_over = True
+            return
+
+        # Generate new obstacle
+        if self.obstacle_position < 0:
+            self.obstacle_position = 39
+            self.score += 1
+            self.obstacle_type = self.choose_obstacle()
 
     def play(self):
-        while self.is_running:
-            self.clear_screen()
-            self.display_score()
-            print("Press 'j' to jump or 'q' to quit.")
-            user_input = input("Your action: ")
+        """Main game loop."""
+        while not self.game_over:
+            self.print_screen()
+            action = input("Type 'jump' to jump, or press Enter to continue: ").lower()
+            self.update(action)
+            time.sleep(0.1)
 
-            if user_input.lower() == 'j':
-                if self.check_obstacle():
-                    print("You jumped over an obstacle!")
-                    self.score += 1
-                else:
-                    print("No obstacle to jump over.")
-                time.sleep(1)
-            elif user_input.lower() == 'q':
-                self.is_running = False
-            else:
-                print("Invalid action! Please press 'j' to jump or 'q' to quit.")
-                time.sleep(1)
+        print("Game Over!")
+        print(f"Final Score: {self.score}")
 
-            if self.check_obstacle() and random.random() < 0.1:  # 10% chance of hitting an obstacle
-                self.game_over()
 
 if __name__ == "__main__":
     game = DinosaurRunner()

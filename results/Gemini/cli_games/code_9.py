@@ -1,15 +1,7 @@
 import random
 
 def calculate_hand_value(hand):
-    """Calculates the value of a hand in Blackjack.
-
-    Args:
-        hand: A list of strings representing the cards in the hand.
-              Each string is the card's rank (e.g., 'A', 'K', '10', '2').
-
-    Returns:
-        The integer value of the hand.  Handles Aces correctly.
-    """
+    """Calculates the value of a hand in Blackjack. Aces can be 1 or 11."""
     ace_count = hand.count('A')
     total = 0
     for card in hand:
@@ -24,119 +16,112 @@ def calculate_hand_value(hand):
         ace_count -= 1
     return total
 
-
 def deal_card(deck):
-    """Deals a card from the deck.
-
-    Args:
-        deck: A list of strings representing the deck of cards.
-
-    Returns:
-        A tuple containing:
-            - The card dealt (string).
-            - The updated deck (list).
-    """
-    card = deck.pop()
-    return card, deck
-
+    """Deals a card from the deck."""
+    return deck.pop()
 
 def create_deck():
-    """Creates a standard 52-card deck.
-
-    Returns:
-        A list of strings representing the deck of cards, shuffled.
-    """
+    """Creates a standard 52-card deck."""
     suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
     ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-    deck = [rank for rank in ranks for suit in suits]
+    deck = [rank for suit in suits for rank in ranks] * 4 # Use 4 decks
     random.shuffle(deck)
     return deck
 
-
-def display_hand(hand, is_dealer=False, hide_first_card=False):
-    """Displays a hand of cards.
-
-    Args:
-        hand: A list of strings representing the cards in the hand.
-        is_dealer: Boolean, True if the hand is the dealer's.
-        hide_first_card: Boolean, True if the dealer's first card should be hidden.
-    """
-    if is_dealer and hide_first_card:
-        print("Dealer's Hand: [Hidden],", ', '.join(hand[1:]))
+def display_hand(hand, hidden=False):
+    """Displays a hand of cards."""
+    if hidden:
+        print("[Hidden Card]", end=" ")
+        for card in hand[1:]:
+            print(card, end=" ")
     else:
-        print("Dealer's Hand:" if is_dealer else "Your Hand:", ', '.join(hand))
+        for card in hand:
+            print(card, end=" ")
+    print()
 
 def play_blackjack():
     """Plays a game of Blackjack."""
-
     deck = create_deck()
     player_hand = []
     dealer_hand = []
 
     # Deal initial hands
     for _ in range(2):
-        card, deck = deal_card(deck)
-        player_hand.append(card)
-        card, deck = deal_card(deck)
-        dealer_hand.append(card)
+        player_hand.append(deal_card(deck))
+        dealer_hand.append(deal_card(deck))
 
-    player_value = calculate_hand_value(player_hand)
-    dealer_value = calculate_hand_value(dealer_hand)
-
-    print("\nWelcome to Blackjack!")
+    print("Dealer's hand:")
+    display_hand(dealer_hand, hidden=True)
+    print("Your hand:")
     display_hand(player_hand)
-    display_hand(dealer_hand, is_dealer=True, hide_first_card=True)
+    player_value = calculate_hand_value(player_hand)
     print(f"Your hand value: {player_value}")
-
 
     # Player's turn
     while player_value < 21:
-        action = input("Hit or Stand? (h/s): ").lower()
+        action = input("Hit or stand? (h/s): ").lower()
         if action == 'h':
-            card, deck = deal_card(deck)
-            player_hand.append(card)
-            player_value = calculate_hand_value(player_hand)
+            player_hand.append(deal_card(deck))
+            print("Your hand:")
             display_hand(player_hand)
+            player_value = calculate_hand_value(player_hand)
             print(f"Your hand value: {player_value}")
             if player_value > 21:
-                print("Bust! You lose.")
-                return
+                print("You bust!")
+                return "dealer"
         elif action == 's':
             break
         else:
-            print("Invalid input. Please enter 'h' or 's'.")
+            print("Invalid action. Please enter 'h' or 's'.")
 
     # Dealer's turn
-    if player_value <= 21:
-        print("\nDealer's turn...")
-        display_hand(dealer_hand, is_dealer=True)
+    print("\nDealer's hand:")
+    display_hand(dealer_hand)
+    dealer_value = calculate_hand_value(dealer_hand)
+    print(f"Dealer's hand value: {dealer_value}")
+
+    if player_value > 21:
+        return "dealer"
+
+    while dealer_value < 17:  # Dealer hits on 16 or less
+        print("Dealer hits.")
+        dealer_hand.append(deal_card(deck))
+        display_hand(dealer_hand)
+        dealer_value = calculate_hand_value(dealer_hand)
         print(f"Dealer's hand value: {dealer_value}")
+        if dealer_value > 21:
+            print("Dealer busts!")
+            return "player"
 
-        while dealer_value < 17:
-            print("Dealer hits.")
-            card, deck = deal_card(deck)
-            dealer_hand.append(card)
-            dealer_value = calculate_hand_value(dealer_hand)
-            display_hand(dealer_hand, is_dealer=True)
-            print(f"Dealer's hand value: {dealer_value}")
-            if dealer_value > 21:
-                print("Dealer busts! You win!")
-                return
+    # Determine the winner
+    print("\nFinal hands:")
+    print("Your hand:", end=" ")
+    display_hand(player_hand)
+    print("Dealer's hand:", end=" ")
+    display_hand(dealer_hand)
 
-        # Determine the winner
-        print("\nFinal Results:")
-        display_hand(player_hand)
-        print(f"Your hand value: {player_value}")
-        display_hand(dealer_hand, is_dealer=True)
-        print(f"Dealer's hand value: {dealer_value}")
-
-        if dealer_value > player_value:
-            print("Dealer wins!")
-        elif dealer_value == player_value:
-            print("Push! (Tie)")
-        else:
-            print("You win!")
-
+    if dealer_value > 21:
+        return "player"
+    elif player_value > dealer_value or dealer_value > 21:
+        return "player"
+    elif player_value == dealer_value:
+        return "push"
+    else:
+        return "dealer"
 
 if __name__ == "__main__":
-    play_blackjack()
+    while True:
+        print("\nLet's play Blackjack!")
+        winner = play_blackjack()
+
+        if winner == "player":
+            print("You win!")
+        elif winner == "dealer":
+            print("Dealer wins!")
+        else:
+            print("It's a push (tie)!")
+
+        play_again = input("Play again? (y/n): ").lower()
+        if play_again != 'y':
+            break
+    print("Thanks for playing!")

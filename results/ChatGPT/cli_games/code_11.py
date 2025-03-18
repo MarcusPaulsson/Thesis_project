@@ -4,22 +4,21 @@ class LightsOut:
     def __init__(self, size=5):
         self.size = size
         self.board = self.generate_board()
-    
+
     def generate_board(self):
         return [[random.choice([0, 1]) for _ in range(self.size)] for _ in range(self.size)]
 
     def display_board(self):
         for row in self.board:
-            print(" ".join(['☼' if cell else '◯' for cell in row]))
+            print(" ".join(['O' if cell == 1 else '.' for cell in row]))
         print()
 
-    def toggle(self, row, col):
-        self.board[row][col] ^= 1  # Toggle the selected cell
-        # Toggle adjacent cells
-        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            r, c = row + dr, col + dc
-            if 0 <= r < self.size and 0 <= c < self.size:
-                self.board[r][c] ^= 1
+    def toggle(self, x, y):
+        if 0 <= x < self.size and 0 <= y < self.size:
+            self.board[x][y] ^= 1  # Toggle the light
+            # Toggle adjacent lights
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                self.toggle(x + dx, y + dy)
 
     def is_solved(self):
         return all(cell == 0 for row in self.board for cell in row)
@@ -28,17 +27,12 @@ class LightsOut:
         while not self.is_solved():
             self.display_board()
             try:
-                row, col = map(int, input(f"Enter row and column (0-{self.size-1}): ").split())
-                if 0 <= row < self.size and 0 <= col < self.size:
-                    self.toggle(row, col)
-                else:
-                    print(f"Please enter values between 0 and {self.size-1}.")
-            except ValueError:
-                print("Invalid input. Please enter two integers separated by space.")
-        
-        self.display_board()
-        print("Congratulations! You've solved the puzzle.")
+                x, y = map(int, input("Enter row and column to toggle (e.g., '1 2'): ").split())
+                self.toggle(x, y)
+            except (ValueError, IndexError):
+                print("Invalid input, please enter valid row and column numbers.")
+        print("Congratulations! You solved the puzzle!")
 
 if __name__ == "__main__":
-    game = LightsOut(size=5)
+    game = LightsOut()
     game.play()

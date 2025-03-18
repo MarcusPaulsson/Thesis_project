@@ -1,66 +1,124 @@
 import random
 
 class Minesweeper:
-    def __init__(self, width, height, mines):
-        self.width = width
-        self.height = height
+    def __init__(self, rows, cols, mines):
+        self.rows = rows
+        self.cols = cols
         self.mines = mines
-        self.board = [[' ' for _ in range(width)] for _ in range(height)]
-        self.visible = [[' ' for _ in range(width)] for _ in range(height)]
+        self.board = [[' ' for _ in range(cols)] for _ in range(rows)]
+        self.hidden_board = [[' ' for _ in range(cols)] for _ in range(rows)]
+        self.mines_positions = []
         self.game_over = False
-        self.populate_mines()
+        self.game_won = False
+        self.first_move = True
 
-    def populate_mines(self):
-        mine_positions = set()
-        while len(mine_positions) < self.mines:
-            position = (random.randint(0, self.height - 1), random.randint(0, self.width - 1))
-            mine_positions.add(position)
-        for (y, x) in mine_positions:
-            self.board[y][x] = '*'
-            for dy in range(-1, 2):
-                for dx in range(-1, 2):
-                    if 0 <= y + dy < self.height and 0 <= x + dx < self.width:
-                        if self.board[y + dy][x + dx] != '*':
-                            self.board[y + dy][x + dx] = str(int(self.board[y + dy][x + dx]) + 1) if self.board[y + dy][x + dx] != ' ' else '1'
+    def print_board(self):
+        """Prints the current state of the board."""
+        print("   " + "  ".join(str(i) for i in range(self.cols)))
+        print("  " + "-" * (self.cols * 3))
+        for i in range(self.rows):
+            print(f"{i} | {'  '.join(self.board[i])} |")
+        print("  " + "-" * (self.cols * 3))
 
-    def display_board(self):
-        print("   " + " ".join(str(x) for x in range(self.width)))
-        for y in range(self.height):
-            print(f"{y} | " + " ".join(self.visible[y]))
+    def generate_mines(self, first_row, first_col):
+        """Generates mine positions, avoiding the first move."""
+        self.mines_positions = []
+        while len(self.mines_positions) < self.mines:
+            row = random.randint(0, self.rows - 1)
+            col = random.randint(0, self.cols - 1)
+            if (row, col) not in self.mines_positions and (row, col) != (first_row, first_col):
+                self.mines_positions.append((row, col))
+                self.hidden_board[row][col] = '*'
 
-    def reveal(self, y, x):
-        if self.board[y][x] == '*':
-            self.game_over = True
-            return
-        self._reveal(y, x)
+    def calculate_adjacent_mines(self):
+        """Calculates the number of mines adjacent to each cell."""
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if self.hidden_board[row][col] != '*':
+                    count = 0
+                    for i in range(max(0, row - 1), min(self.rows, row + 2)):
+                        for j in range(max(0, col - 1), min(self.cols, col + 2)):
+                            if self.hidden_board[i][j] == '*':
+                                count += 1
+                    if count > 0:
+                        self.hidden_board[row][col] = str(count)
+                    else:
+                        self.hidden_board[row][col] = '0'
 
-    def _reveal(self, y, x):
-        if self.visible[y][x] == ' ':
-            self.visible[y][x] = self.board[y][x]
-            if self.board[y][x] == '0':
-                for dy in range(-1, 2):
-                    for dx in range(-1, 2):
-                        if 0 <= y + dy < self.height and 0 <= x + dx < self.width:
-                            self._reveal(y + dy, x + dx)
+    def reveal_cell(self, row, col):
+        """Reveals a cell and recursively reveals adjacent empty cells."""
+        if self.board[row][col] != ' ':
+            return  # Cell already revealed
+
+        self.board[row][col] = self.hidden_board[row][col]
+
+        if self.hidden_board[row][col] == '0':
+            for i in range(max(0, row - 1), min(self.rows, row + 2)):
+                for j in range(max(0, col - 1), min(self.cols, col + 2)):
+                    if self.board[i][j] == ' ':
+                        self.reveal_cell(i, j)
+
+    def flag_cell(self, row, col):
+        """Flags or unflags a cell."""
+        if self.board[row][col] == ' ':
+            self.board[row][col] = 'F'
+        elif self.board[row][col] == 'F':
+            self.board[row][col] = ' '
+
+    def check_win(self):
+        """Checks if the player has won the game."""
+        revealed_cells = 0
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if self.board[row][col] != ' ':
+                    revealed_cells += 1
+        if revealed_cells == self.rows * self.cols - self.mines:
+            self.game_won = True
 
     def play(self):
-        while not self.game_over:
-            self.display_board()
-            try:
-                y, x = map(int, input("Enter row and column to reveal (e.g., '1 2'): ").split())
-                if 0 <= y < self.height and 0 <= x < self.width:
-                    self.reveal(y, x)
-                else:
-                    print("Invalid coordinates. Please try again.")
-            except ValueError:
-                print("Invalid input. Please enter two numbers separated by a space.")
+        """Main game loop."""
+        while not self.game_over and not self.game_won:
+            self.print_board()
 
-        print("Game Over! You hit a mine.")
-        self.display_board()
+            try:
+                action, row, col = input("Enter action (reveal/flag), row, and column (e.g., reveal 0 0): ").split()
+                row = int(row)
+                col = int(col)
+            except ValueError:
+                print("Invalid input. Please enter action, row, and column separated by spaces.")
+                continue
+
+            if not (0 <= row < self.rows and 0 <= col < self.cols):
+                print("Invalid row or column. Please enter values within the board dimensions.")
+                continue
+
+            if self.first_move:
+                self.generate_mines(row, col)
+                self.calculate_adjacent_mines()
+                self.first_move = False
+
+            if action.lower() == 'reveal':
+                if self.hidden_board[row][col] == '*':
+                    self.game_over = True
+                    self.board = [row[:] for row in self.hidden_board]
+                    self.print_board()
+                    print("Game Over! You hit a mine.")
+                else:
+                    self.reveal_cell(row, col)
+                    self.check_win()
+            elif action.lower() == 'flag':
+                self.flag_cell(row, col)
+            else:
+                print("Invalid action. Please enter 'reveal' or 'flag'.")
+
+        if self.game_won:
+            self.print_board()
+            print("Congratulations! You won the game!")
+
 
 if __name__ == "__main__":
-    width = 10
-    height = 10
-    mines = 10
-    game = Minesweeper(width, height, mines)
+    rows = 10
+    cols = 10
+    mines = 15
+    game = Minesweeper(rows, cols, mines)
     game.play()

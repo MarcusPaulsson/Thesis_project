@@ -29,7 +29,7 @@ def run_task_with_api(task_prompt):
 ],
         response_format={"type": "text"},
         temperature=0.7,
-        max_completion_tokens=1400,
+        max_completion_tokens=2500,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -61,7 +61,7 @@ def load_cli_games_tasks_from_json(json_file_path):
 if __name__ == "__main__":
     # Load all tasks from the CSV file
     tasks = "Give me a full implementation of the game battleship with a command line interface."
-    json_file_path = os.path.join("data", "cli_games.json")
+    json_file_path = os.path.join(main_dir,"data", "cli_games.json")
     tasks = load_cli_games_tasks_from_json(json_file_path)
 
 
@@ -85,10 +85,10 @@ if __name__ == "__main__":
             "assistant_response": assistant_response
         })
     
-    json_file_path = 'results/ChatGPT/cli_games/cli_games_raw.json'  # Replace with your JSON file path
+    json_file_path = os.path.join(main_dir,'results/ChatGPT/cli_games/cli_games_raw.json')  # Replace with your JSON file path
     # Save all results to a CSV file
     save_results_to_json(results, json_file_path)
 
-    output_directory = 'results/ChatGPT/cli_games' #where the python files will be saved.
+    output_directory = os.path.join(main_dir,'results/ChatGPT/cli_games') #where the python files will be saved.
     extract_and_save_python_code(json_file_path,output_directory)
 

@@ -1,5 +1,7 @@
 openai
 google
 google-generativeai
+google.genai
 torch
 lizard
+complexipy

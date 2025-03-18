@@ -1,73 +1,55 @@
-import time
 import random
+import time
+import os
 import sys
-import threading
 
 class DinosaurRunner:
     def __init__(self):
         self.score = 0
-        self.is_running = True
-        self.obstacles = []
-        self.dino_position = 0
-        self.game_speed = 1
+        self.game_over = False
+        self.obstacles = ['-', '!', 'O']  # Different obstacles
+        self.player_pos = 0
 
-    def start_game(self):
-        print("Welcome to Dinosaur Runner!")
-        print("Press 'j' to jump over obstacles, or 'q' to quit.")
-        print("Good luck!\n")
-        
-        # Start obstacle generation in a separate thread
-        obstacle_thread = threading.Thread(target=self.generate_obstacles)
-        obstacle_thread.start()
-        
-        # Main game loop
-        while self.is_running:
-            self.update_score()
-            self.display_game_state()
-            time.sleep(self.game_speed)
-            self.check_collision()
-
-        print("Game Over! Your final score is:", self.score)
+    def print_game_state(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("Dinosaur Runner")
+        print("Score:", self.score)
+        print("Press 'x' to jump, 'q' to quit.")
+        print(" " * self.player_pos + "D")
+        print("\n" + self.generate_obstacles())
 
     def generate_obstacles(self):
-        while self.is_running:
-            self.obstacles.append(random.randint(1, 5))  # Random height of obstacles
-            time.sleep(random.uniform(1, 3))  # Random interval for obstacles
-
-    def update_score(self):
-        self.score += 1
-
-    def display_game_state(self):
-        print(f"Score: {self.score}")
-        print("Dino " + " " * self.dino_position + "O")
-        print("Obstacles: " + " ".join(['#' if h <= 1 else ' ' for h in self.obstacles]))
-        
-        if self.obstacles:
-            self.obstacles = [h - 1 for h in self.obstacles if h - 1 > 0]
-
-    def check_collision(self):
-        if self.obstacles and self.obstacles[0] == 0:
-            self.is_running = False
+        return ''.join(random.choice(self.obstacles) for _ in range(20))
 
     def jump(self):
-        print("Jumping!")
-        self.dino_position = 1  # Move dino up
-        time.sleep(0.5)  # Simulate jump duration
-        self.dino_position = 0  # Move dino back down
+        if not self.game_over:
+            self.score += 1
+            print("Jumped over an obstacle!")
+            time.sleep(0.5)
 
-    def quit_game(self):
-        self.is_running = False
+    def check_collision(self, obstacles):
+        if obstacles[self.player_pos] in self.obstacles:
+            self.game_over = True
+            print("Game Over! You hit an obstacle.")
 
-def main():
-    game = DinosaurRunner()
-    threading.Thread(target=game.start_game).start()
-    
-    while game.is_running:
-        user_input = input()
-        if user_input == 'j':
-            game.jump()
-        elif user_input == 'q':
-            game.quit_game()
+    def play(self):
+        while not self.game_over:
+            self.print_game_state()
+            obstacles = self.generate_obstacles()
+            self.check_collision(obstacles)
+            if self.game_over:
+                break
+            action = input("Action: ")
+            if action == 'x':
+                self.jump()
+            elif action == 'q':
+                print("Thanks for playing!")
+                sys.exit()
+            else:
+                print("Invalid action. Press 'x' to jump or 'q' to quit.")
+
+        print("Final Score:", self.score)
 
 if __name__ == "__main__":
-    main()
+    game = DinosaurRunner()
+    game.play()

@@ -35,7 +35,7 @@ def run_task_with_gemini(task_prompt):
         temperature=0.7,
         top_p=1,
         top_k=40,
-        max_output_tokens=1400,
+        max_output_tokens=2500,
         response_mime_type="text/plain",
     )
 
@@ -72,12 +72,12 @@ def load_cli_games_tasks_from_json(json_file_path):
 
 if __name__ == "__main__":
     # Load all tasks from the JSON file
-    json_file_path = os.path.join("data", "cli_games.json")
+    json_file_path = os.path.join(main_dir,"data", "cli_games.json")
     tasks = load_cli_games_tasks_from_json(json_file_path)
 
     # Define the index interval for tasks you want to run (start_index inclusive, end_index exclusive)
     start_index = 0
-    end_index = 1
+    end_index = 18
 
     results = []
 
@@ -95,9 +95,9 @@ if __name__ == "__main__":
             "assistant_response": assistant_response
         })
 
-    json_file_path = 'results/Gemini/cli_games/cli_games_raw.json'
+    json_file_path = os.path.join(main_dir,'results/Gemini/cli_games/cli_games_raw.json')
     # Save all results to a JSON file
     save_results_to_json(results, json_file_path)
 
-    output_directory = 'results/Gemini/cli_games'
+    output_directory = os.path.join(main_dir,'results/Gemini/cli_games')
     extract_and_save_python_code(json_file_path, output_directory)
