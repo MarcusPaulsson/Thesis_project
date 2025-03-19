@@ -1,190 +1,240 @@
 import random
 import os
-import time
 
 class Tetris:
     """
     A command-line Tetris game.
     """
 
-    GRID_WIDTH = 10
-    GRID_HEIGHT = 20
-    SHAPES = [
+    WIDTH = 10
+    HEIGHT = 20
+    PIECES = [
         [[1, 1, 1, 1]],  # I
         [[1, 1], [1, 1]],  # O
         [[0, 1, 1], [1, 1, 0]],  # S
         [[1, 1, 0], [0, 1, 1]],  # Z
-        [[1, 1, 1], [0, 0, 1]],  # J
-        [[1, 1, 1], [1, 0, 0]],  # L
-        [[1, 1, 1], [0, 1, 0]]   # T
+        [[1, 0, 0], [1, 1, 1]],  # L
+        [[0, 0, 1], [1, 1, 1]],  # J
+        [[0, 1, 0], [1, 1, 1]]   # T
     ]
-    COLORS = ["\033[0m", "\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m", "\033[36m", "\033[37m"]  # ANSI color codes
+    COLORS = ['cyan', 'yellow', 'green', 'red', 'orange', 'blue', 'purple']
 
     def __init__(self):
-        self.grid = [[0] * self.GRID_WIDTH for _ in range(self.GRID_HEIGHT)]
-        self.current_shape = None
+        self.grid = [[0] * self.WIDTH for _ in range(self.HEIGHT)]
+        self.current_piece = None
         self.current_x = 0
         self.current_y = 0
-        self.score = 0
+        self.next_piece = None
         self.game_over = False
-        self.next_shape = self.get_random_shape()
+        self.score = 0
         self.level = 1
-        self.drop_interval = 0.8  # Initial drop interval in seconds
+        self.lines_cleared = 0
+        self.new_piece()
+        self.next_piece = self.random_piece()  # Initialize the next piece
 
-    def get_random_shape(self):
-        """Returns a random shape from the SHAPES list."""
-        shape_index = random.randint(0, len(self.SHAPES) - 1)
-        return (self.SHAPES[shape_index], shape_index + 1)  # Return shape and color index
+    def random_piece(self):
+        """
+        Returns a random piece and its corresponding color.
+        """
+        index = random.randint(0, len(self.PIECES) - 1)
+        return self.PIECES[index], self.COLORS[index]
 
-    def spawn_shape(self):
-        """Spawns a new shape at the top of the grid."""
-        self.current_shape, self.current_color = self.next_shape
-        self.next_shape = self.get_random_shape()
-        self.current_x = self.GRID_WIDTH // 2 - len(self.current_shape[0]) // 2
+    def new_piece(self):
+        """
+        Generates a new piece at the top of the grid.
+        """
+        self.current_piece, self.current_color = self.next_piece # Use the next piece
+        self.next_piece = self.random_piece() # Get a new next piece
+        self.current_x = self.WIDTH // 2 - len(self.current_piece[0]) // 2
         self.current_y = 0
-        if not self.is_valid_position(self.current_shape, self.current_x, self.current_y):
+
+        if not self.is_valid_position(self.current_piece, self.current_x, self.current_y):
             self.game_over = True
-            return False
-        return True
 
-    def rotate_shape(self):
-        """Rotates the current shape 90 degrees clockwise."""
-        rotated_shape = list(zip(*self.current_shape[::-1]))
-        if self.is_valid_position(rotated_shape, self.current_x, self.current_y):
-            self.current_shape = rotated_shape
+    def rotate_piece(self):
+        """
+        Rotates the current piece clockwise.
+        """
+        rotated_piece = list(zip(*self.current_piece[::-1]))
+        if self.is_valid_position(rotated_piece, self.current_x, self.current_y):
+            self.current_piece = rotated_piece
 
-    def move_shape(self, dx):
-        """Moves the current shape horizontally."""
+    def move(self, dx):
+        """
+        Moves the current piece horizontally.
+        """
         new_x = self.current_x + dx
-        if self.is_valid_position(self.current_shape, new_x, self.current_y):
+        if self.is_valid_position(self.current_piece, new_x, self.current_y):
             self.current_x = new_x
 
-    def drop_shape(self):
-        """Drops the current shape down one row."""
+    def drop(self):
+        """
+        Moves the current piece down one row.
+        """
         new_y = self.current_y + 1
-        if self.is_valid_position(self.current_shape, self.current_x, new_y):
+        if self.is_valid_position(self.current_piece, self.current_x, new_y):
             self.current_y = new_y
         else:
-            self.lock_shape()
-            self.clear_lines()
-            if not self.spawn_shape():
-                self.game_over = True
-            return False
-        return True
+            self.lock_piece()
 
-    def is_valid_position(self, shape, x, y):
-        """Checks if the given shape can be placed at the given position."""
-        for row_index, row in enumerate(shape):
-            for col_index, cell in enumerate(row):
-                if cell:
-                    grid_x = x + col_index
-                    grid_y = y + row_index
+    def hard_drop(self):
+        """
+        Drops the piece to the lowest possible position.
+        """
+        while not self.game_over:
+            new_y = self.current_y + 1
+            if self.is_valid_position(self.current_piece, self.current_x, new_y):
+                self.current_y = new_y
+            else:
+                self.lock_piece()
+                break
 
-                    if grid_x < 0 or grid_x >= self.GRID_WIDTH or grid_y >= self.GRID_HEIGHT:
+    def is_valid_position(self, piece, x, y):
+        """
+        Checks if the given piece can be placed at the given position.
+        """
+        for i in range(len(piece)):
+            for j in range(len(piece[0])):
+                if piece[i][j]:
+                    grid_x = x + j
+                    grid_y = y + i
+
+                    if grid_x < 0 or grid_x >= self.WIDTH or grid_y >= self.HEIGHT:
                         return False
                     if grid_y >= 0 and self.grid[grid_y][grid_x] != 0:
                         return False
         return True
 
-    def lock_shape(self):
-        """Locks the current shape into the grid."""
-        for row_index, row in enumerate(self.current_shape):
-            for col_index, cell in enumerate(row):
-                if cell:
-                    self.grid[self.current_y + row_index][self.current_x + col_index] = self.current_color
+    def lock_piece(self):
+        """
+        Locks the current piece into the grid.
+        """
+        for i in range(len(self.current_piece)):
+            for j in range(len(self.current_piece[0])):
+                if self.current_piece[i][j]:
+                    self.grid[self.current_y + i][self.current_x + j] = self.current_color
+
+        self.clear_lines()
+        self.new_piece()
 
     def clear_lines(self):
-        """Clears any full lines from the grid."""
-        lines_cleared = 0
-        for row_index in range(self.GRID_HEIGHT):
-            if all(self.grid[row_index]):
-                del self.grid[row_index]
-                self.grid.insert(0, [0] * self.GRID_WIDTH)
-                lines_cleared += 1
+        """
+        Clears any full lines from the grid.
+        """
+        lines_to_clear = []
+        for i in range(self.HEIGHT):
+            if all(self.grid[i]):
+                lines_to_clear.append(i)
 
-        if lines_cleared > 0:
-            self.score += self.level * (lines_cleared ** 2) * 100
-            self.update_level(lines_cleared)
+        for line in lines_to_clear:
+            del self.grid[line]
+            self.grid.insert(0, [0] * self.WIDTH)
 
-    def update_level(self, lines_cleared):
-        """Updates the game level and drop interval based on lines cleared."""
-        if self.score >= self.level * 1000:
-            self.level += 1
-            self.drop_interval *= 0.9  # Increase speed by decreasing interval
-            print(f"Level Up!  Current Level: {self.level}")
-            time.sleep(1)  # Wait for a second to display the level up message
+        num_lines = len(lines_to_clear)
+        if num_lines > 0:
+            self.lines_cleared += num_lines
+            self.score += self.level * (num_lines ** 2) * 100
+            if self.lines_cleared >= self.level * 10:
+                self.level += 1
 
-    def draw_grid(self):
-        """Draws the grid with the current shape."""
+    def display(self):
+        """
+        Displays the game grid in the console.
+        """
         os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console
+        print("Tetris")
+        print(f"Score: {self.score}, Level: {self.level}, Lines: {self.lines_cleared}")
+        print("Next piece:")
+        self.display_piece(self.next_piece[0])
 
-        # Print score and level information
-        print(f"Score: {self.score}   Level: {self.level}")
+        for i in range(self.HEIGHT):
+            row = ""
+            for j in range(self.WIDTH):
+                cell = self.grid[i][j]
+                if cell:
+                    row += self.color_to_symbol(cell)
+                else:
+                    # Check if current piece is occupying this cell
+                    occupied = False
+                    for piece_row in range(len(self.current_piece)):
+                        for piece_col in range(len(self.current_piece[0])):
+                            if self.current_piece[piece_row][piece_col]:
+                                grid_x = self.current_x + piece_col
+                                grid_y = self.current_y + piece_row
+                                if grid_x == j and grid_y == i:
+                                    row += self.color_to_symbol(self.current_color)
+                                    occupied = True
+                                    break
+                        if occupied:
+                            break
+                    if not occupied:
+                        row += "."
+            print(row)
+        print("Controls: A - Left, D - Right, S - Down, W - Rotate, Space - Hard Drop, Q - Quit")
 
-        # Print the next shape
-        print("Next Shape:")
-        for row in self.next_shape[0]:
-            print("".join(self.COLORS[self.next_shape[1]] + "[]" + self.COLORS[0] if cell else "  " for cell in row))
-        print()
 
-        # Create a copy of the grid to draw the current shape on
-        display_grid = [row[:] for row in self.grid]
+    def display_piece(self, piece):
+        """
+        Displays a piece in the console.
+        """
+        for row in piece:
+            line = ""
+            for cell in row:
+                if cell:
+                    line += "#"
+                else:
+                    line += " "
+            print(line)
 
-        # Draw the current shape
-        if self.current_shape:
-            for row_index, row in enumerate(self.current_shape):
-                for col_index, cell in enumerate(row):
-                    if cell:
-                        grid_x = self.current_x + col_index
-                        grid_y = self.current_y + row_index
-                        if 0 <= grid_x < self.GRID_WIDTH and 0 <= grid_y < self.GRID_HEIGHT:
-                            display_grid[grid_y][grid_x] = self.current_color
 
-        # Print the grid with colors
-        print("-" * (self.GRID_WIDTH * 2 + 2))  # Top border
-        for row in display_grid:
-            print("|" + "".join(self.COLORS[cell] + "[]" + self.COLORS[0] if cell else "  " for cell in row) + "|")
-        print("-" * (self.GRID_WIDTH * 2 + 2))  # Bottom border
+    def color_to_symbol(self, color):
+        """
+        Converts a color name to a symbol for display.
+        """
+        if color == 'cyan':
+            return 'C'
+        elif color == 'yellow':
+            return 'Y'
+        elif color == 'green':
+            return 'G'
+        elif color == 'red':
+            return 'R'
+        elif color == 'orange':
+            return 'O'
+        elif color == 'blue':
+            return 'B'
+        elif color == 'purple':
+            return 'P'
+        else:
+            return '?'  # Unknown color
 
-    def run(self):
-        """Runs the main game loop."""
-        if not self.spawn_shape():
-            self.game_over = True
-
-        last_drop_time = time.time()
-
+    def play(self):
+        """
+        Runs the main game loop.
+        """
         while not self.game_over:
-            self.draw_grid()
+            self.display()
+            action = input("Enter action (A - Left, D - Right, S - Down, W - Rotate, Space - Hard Drop, Q - Quit): ").upper()
 
-            # Handle user input
-            user_input = input("Enter command (a=left, d=right, s=down, w=rotate, q=quit): ").lower()
-
-            if user_input == 'a':
-                self.move_shape(-1)
-            elif user_input == 'd':
-                self.move_shape(1)
-            elif user_input == 's':
-                self.drop_shape()
-                last_drop_time = time.time() #Reset timer after manual drop
-            elif user_input == 'w':
-                self.rotate_shape()
-            elif user_input == 'q':
+            if action == 'A':
+                self.move(-1)
+            elif action == 'D':
+                self.move(1)
+            elif action == 'S':
+                self.drop()
+            elif action == 'W':
+                self.rotate_piece()
+            elif action == ' ':
+                self.hard_drop()
+            elif action == 'Q':
                 self.game_over = True
-                break
+            else:
+                print("Invalid input.")
 
-            # Automatic drop
-            current_time = time.time()
-            if current_time - last_drop_time >= self.drop_interval:
-                if not self.drop_shape():
-                    if self.game_over:
-                        break
-                last_drop_time = current_time
-
-        # Game over message
-        self.draw_grid()
-        print("Game Over! Your score:", self.score)
-
+            if self.game_over:
+                self.display()
+                print("Game Over!  Final Score:", self.score)
 
 if __name__ == "__main__":
     game = Tetris()
-    game.run()
+    game.play()

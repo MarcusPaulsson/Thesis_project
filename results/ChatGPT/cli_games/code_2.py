@@ -1,37 +1,45 @@
 import random
 
-def get_user_choice():
-    user_input = input("Enter your choice (rock, paper, scissors): ").lower()
-    while user_input not in ['rock', 'paper', 'scissors']:
-        print("Invalid choice. Please try again.")
-        user_input = input("Enter your choice (rock, paper, scissors): ").lower()
-    return user_input
+class RockPaperScissors:
+    def __init__(self):
+        self.choices = ['rock', 'paper', 'scissors']
+        self.score = {'player': 0, 'computer': 0}
 
-def get_computer_choice():
-    return random.choice(['rock', 'paper', 'scissors'])
+    def get_computer_choice(self):
+        return random.choice(self.choices)
 
-def determine_winner(user_choice, computer_choice):
-    if user_choice == computer_choice:
-        return "It's a tie!"
-    elif (user_choice == 'rock' and computer_choice == 'scissors') or \
-         (user_choice == 'scissors' and computer_choice == 'paper') or \
-         (user_choice == 'paper' and computer_choice == 'rock'):
-        return "You win!"
-    else:
-        return "You lose!"
+    def get_player_choice(self):
+        choice = input("Enter rock, paper, or scissors (or 'quit' to exit): ").lower()
+        while choice not in self.choices and choice != 'quit':
+            print("Invalid choice. Please try again.")
+            choice = input("Enter rock, paper, or scissors (or 'quit' to exit): ").lower()
+        return choice
 
-def play_game():
-    while True:
-        user_choice = get_user_choice()
-        computer_choice = get_computer_choice()
-        print(f"Computer chose: {computer_choice}")
-        result = determine_winner(user_choice, computer_choice)
-        print(result)
+    def determine_winner(self, player, computer):
+        if player == computer:
+            return "It's a tie!"
+        elif (player == 'rock' and computer == 'scissors') or \
+             (player == 'paper' and computer == 'rock') or \
+             (player == 'scissors' and computer == 'paper'):
+            self.score['player'] += 1
+            return "You win!"
+        else:
+            self.score['computer'] += 1
+            return "Computer wins!"
 
-        play_again = input("Do you want to play again? (yes/no): ").lower()
-        if play_again != 'yes':
-            print("Thanks for playing!")
-            break
+    def play(self):
+        print("Welcome to Rock-Paper-Scissors!")
+        while True:
+            player_choice = self.get_player_choice()
+            if player_choice == 'quit':
+                break
+            computer_choice = self.get_computer_choice()
+            print(f"Computer chose: {computer_choice}")
+            result = self.determine_winner(player_choice, computer_choice)
+            print(result)
+            print(f"Score - You: {self.score['player']} | Computer: {self.score['computer']}")
+        print("Thanks for playing!")
 
 if __name__ == "__main__":
-    play_game()
+    game = RockPaperScissors()
+    game.play()

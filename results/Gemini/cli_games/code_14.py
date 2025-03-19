@@ -1,22 +1,19 @@
 import math
 import random
 import time
-import sys
 
-class GameObject:
-    def __init__(self, x, y, velocity_x, velocity_y, size, symbol):
+class Asteroid:
+    def __init__(self, x, y, size, dx, dy):
         self.x = x
         self.y = y
-        self.velocity_x = velocity_x
-        self.velocity_y = velocity_y
         self.size = size
-        self.symbol = symbol
+        self.dx = dx
+        self.dy = dy
 
     def move(self, width, height):
-        self.x += self.velocity_x
-        self.y += self.velocity_y
+        self.x += self.dx
+        self.y += self.dy
 
-        # Wrap around the screen
         if self.x < 0:
             self.x = width
         elif self.x > width:
@@ -26,183 +23,171 @@ class GameObject:
         elif self.y > height:
             self.y = 0
 
-    def draw(self, screen):
-        x = int(round(self.x))
-        y = int(round(self.y))
-        screen[y][x] = self.symbol
+    def draw(self):
+        print(f"Asteroid at ({self.x:.1f}, {self.y:.1f}), size: {self.size:.1f}")
 
-    def check_collision(self, other):
-        distance = math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
-        return distance < (self.size + other.size)
 
-class Asteroid(GameObject):
-    def __init__(self, x, y, velocity_x, velocity_y, size):
-        super().__init__(x, y, velocity_x, velocity_y, size, '*')
+class Bullet:
+    def __init__(self, x, y, angle, speed):
+        self.x = x
+        self.y = y
+        self.angle = angle
+        self.speed = speed
+        self.dx = math.cos(self.angle) * self.speed
+        self.dy = math.sin(self.angle) * self.speed
 
-class Ship(GameObject):
+    def move(self, width, height):
+        self.x += self.dx
+        self.y += self.dy
+
+        if self.x < 0 or self.x > width or self.y < 0 or self.y > height:
+            return True  # Indicate out of bounds
+
+        return False
+
+    def draw(self):
+        print(f"Bullet at ({self.x:.1f}, {self.y:.1f})")
+
+
+class Spaceship:
     def __init__(self, x, y):
-        super().__init__(x, y, 0, 0, 1, '^') # '^' for ship pointing upwards
-        self.rotation = 0  # Angle in radians
+        self.x = x
+        self.y = y
+        self.angle = 0  # Radians
+        self.thrust = 0
+        self.dx = 0
+        self.dy = 0
 
-    def rotate_left(self):
-        self.rotation -= 0.1
+    def rotate_left(self, amount):
+        self.angle -= amount
 
-    def rotate_right(self):
-        self.rotation += 0.1
+    def rotate_right(self, amount):
+        self.angle += amount
 
-    def accelerate(self):
-        self.velocity_x += 0.2 * math.sin(self.rotation)
-        self.velocity_y -= 0.2 * math.cos(self.rotation)  # Y-axis is inverted
+    def apply_thrust(self, amount):
+        self.thrust = amount
 
-    def draw(self, screen):
-        x = int(round(self.x))
-        y = int(round(self.y))
+    def move(self, width, height):
+        # Update velocity based on thrust
+        self.dx += math.cos(self.angle) * self.thrust
+        self.dy += math.sin(self.angle) * self.thrust
 
-        # Convert rotation to a "pointing" symbol
-        if abs(self.rotation) < 0.2:
-            symbol = '^'
-        elif abs(self.rotation - math.pi/2) < 0.2:
-            symbol = '>'
-        elif abs(self.rotation - math.pi) < 0.2 or abs(self.rotation + math.pi) < 0.2:
-            symbol = 'v'
-        elif abs(self.rotation + math.pi/2) < 0.2:
-            symbol = '<'
-        else:
-             symbol = 'X' #Generic symbol if the angle doesn't match known angles
+        # Apply friction (damping)
+        self.dx *= 0.98
+        self.dy *= 0.98
 
-        screen[y][x] = symbol
+        self.x += self.dx
+        self.y += self.dy
 
+        # Keep within bounds (wrap around)
+        if self.x < 0:
+            self.x = width
+        elif self.x > width:
+            self.x = 0
+        if self.y < 0:
+            self.y = height
+        elif self.y > height:
+            self.y = 0
 
-class Bullet(GameObject):
-    def __init__(self, x, y, velocity_x, velocity_y):
-        super().__init__(x, y, velocity_x, velocity_y, 0, '.')
+    def draw(self):
+        print(f"Spaceship at ({self.x:.1f}, {self.y:.1f}), angle: {math.degrees(self.angle):.1f}")
+
+    def shoot(self, bullet_speed):
+        return Bullet(self.x, self.y, self.angle, bullet_speed)
+
 
 class AsteroidsGame:
-    def __init__(self, width=80, height=24):
+    def __init__(self, width=80, height=24, num_asteroids=5, bullet_speed=5):
         self.width = width
         self.height = height
-        self.ship = Ship(width // 2, height // 2)
-        self.asteroids = [Asteroid(random.randint(0, width), random.randint(0, height),
-                                   random.uniform(-0.5, 0.5), random.uniform(-0.5, 0.5),
-                                   random.randint(1, 3)) for _ in range(5)]
+        self.spaceship = Spaceship(width // 2, height // 2)
+        self.asteroids = []
         self.bullets = []
-        self.game_over = False
         self.score = 0
+        self.game_over = False
+        self.bullet_speed = bullet_speed
 
-    def create_screen(self):
-        return [[' ' for _ in range(self.width)] for _ in range(self.height)]
+        for _ in range(num_asteroids):
+            x = random.uniform(0, width)
+            y = random.uniform(0, height)
+            size = random.uniform(2, 5)
+            dx = random.uniform(-1, 1)
+            dy = random.uniform(-1, 1)
+            self.asteroids.append(Asteroid(x, y, size, dx, dy))
 
-    def draw_objects(self, screen):
-        self.ship.draw(screen)
-        for asteroid in self.asteroids:
-            asteroid.draw(screen)
-        for bullet in self.bullets:
-            bullet.draw(screen)
+    def handle_input(self, action):
+        if action == "left":
+            self.spaceship.rotate_left(0.2)
+        elif action == "right":
+            self.spaceship.rotate_right(0.2)
+        elif action == "thrust":
+            self.spaceship.apply_thrust(0.1)
+        elif action == "shoot":
+            self.bullets.append(self.spaceship.shoot(self.bullet_speed))
+        elif action == "quit":
+            self.game_over = True
 
-    def move_objects(self):
-        self.ship.move(self.width, self.height)
+    def update(self):
+        if self.game_over:
+            return
+
+        self.spaceship.move(self.width, self.height)
+
         for asteroid in self.asteroids:
             asteroid.move(self.width, self.height)
+
+        # Move bullets and remove out-of-bounds bullets
+        new_bullets = []
         for bullet in self.bullets:
-            bullet.move(self.width, self.height)
+            if not bullet.move(self.width, self.height):
+                new_bullets.append(bullet)
+        self.bullets = new_bullets
 
-        # Remove bullets that are out of bounds
-        self.bullets = [bullet for bullet in self.bullets if 0 <= bullet.x < self.width and 0 <= bullet.y < self.height]
 
-    def handle_collisions(self):
-        # Ship - Asteroid collisions
-        for asteroid in self.asteroids:
-            if self.ship.check_collision(asteroid):
-                self.game_over = True
-                return
-
-        # Bullet - Asteroid collisions
-        for bullet in self.bullets[:]: #Iterate over a copy
-            for asteroid in self.asteroids[:]: #Iterate over a copy
-                if bullet.check_collision(asteroid):
-                    self.bullets.remove(bullet)
+        # Collision detection (Asteroids and Bullets)
+        for bullet in self.bullets[:]: # Iterate over a copy
+            for asteroid in self.asteroids[:]: # Iterate over a copy
+                distance = math.sqrt((bullet.x - asteroid.x)**2 + (bullet.y - asteroid.y)**2)
+                if distance < asteroid.size:
                     self.asteroids.remove(asteroid)
-                    self.score += 10
-                    # Create new asteroids if the asteroid was large enough
-                    if asteroid.size > 1:
-                        new_asteroids = self.split_asteroid(asteroid)
-                        self.asteroids.extend(new_asteroids)
-                    break # Important: Break inner loop after removing asteroid
+                    self.bullets.remove(bullet)
+                    self.score += int(asteroid.size * 10)  # Score based on asteroid size
+                    break  # Only one asteroid can be hit by a bullet at a time
+
+        # Collision detection (Asteroids and Spaceship)
+        for asteroid in self.asteroids:
+            distance = math.sqrt((self.spaceship.x - asteroid.x)**2 + (self.spaceship.y - asteroid.y)**2)
+            if distance < asteroid.size:
+                self.game_over = True
+                print("Game Over! Ship hit by asteroid.")
+                break
 
 
-    def split_asteroid(self, asteroid):
-        new_asteroids = []
-        for _ in range(2): # Split into two smaller asteroids
-            new_size = asteroid.size - 1
-            if new_size > 0:
-                new_asteroids.append(Asteroid(asteroid.x, asteroid.y,
-                                              random.uniform(-0.5, 0.5), random.uniform(-0.5, 0.5),
-                                              new_size))
-        return new_asteroids
-
-
-    def handle_input(self, key):
-        if key == 'a':
-            self.ship.rotate_left()
-        elif key == 'd':
-            self.ship.rotate_right()
-        elif key == 'w':
-            self.ship.accelerate()
-        elif key == ' ':
-            # Fire a bullet.  Velocity is based on ship's rotation.
-            bullet_speed = 2
-            bullet_velocity_x = bullet_speed * math.sin(self.ship.rotation)
-            bullet_velocity_y = -bullet_speed * math.cos(self.ship.rotation)
-            self.bullets.append(Bullet(self.ship.x, self.ship.y, bullet_velocity_x, bullet_velocity_y))
-
-
-    def display_screen(self, screen):
-        # Clear the screen (OS specific)
-        if sys.platform in ['linux', 'darwin']:  # Linux or MacOS
-            print("\033[2J\033[H", end="")
-        elif sys.platform in ['win32', 'cygwin']:
-            import os
-            os.system('cls')
-        else: # Fallback - just print newlines
-            print('\n' * self.height)
-
-        print("\n".join("".join(row) for row in screen))
+    def draw(self):
+        print("\n" * 5)  # Clear screen (crude)
+        print("-" * self.width)
         print(f"Score: {self.score}")
-        print("Controls: W (Accelerate), A (Rotate Left), D (Rotate Right), Space (Fire)")
+        self.spaceship.draw()
+        for asteroid in self.asteroids:
+            asteroid.draw()
+        for bullet in self.bullets:
+            bullet.draw()
+        print("-" * self.width)
 
-    def run(self):
+        if self.game_over:
+            print("GAME OVER!")
+
+    def play(self):
         while not self.game_over:
-            screen = self.create_screen()
-            self.move_objects()
-            self.handle_collisions()
-            self.draw_objects(screen)
-            self.display_screen(screen)
+            self.draw()
+            action = input("Enter action (left, right, thrust, shoot, quit): ").lower()
+            self.handle_input(action)
+            self.update()
+            time.sleep(0.1)  # Control game speed
 
-            # Get user input (non-blocking)
-            key = get_input()  # Use the get_input function defined below
-            if key:
-                self.handle_input(key)
+        print(f"Final Score: {self.score}")
 
-            time.sleep(0.05)
-        print("Game Over! Final Score:", self.score)
-
-
-# Non-blocking input (platform specific)
-import select
-import tty
-import termios
-
-def get_input():
-    if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
-        old_settings = termios.tcgetattr(sys.stdin)
-        try:
-            tty.setcbreak(sys.stdin.fileno())
-            char = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
-        return char
-    return None
 
 if __name__ == "__main__":
     game = AsteroidsGame()
-    game.run()
+    game.play()

@@ -1,79 +1,67 @@
-import numpy as np
+class ConnectFour:
+    def __init__(self):
+        self.rows = 6
+        self.cols = 7
+        self.board = [[' ' for _ in range(self.cols)] for _ in range(self.rows)]
+        self.current_player = 'X'
 
-ROWS = 6
-COLUMNS = 7
-EMPTY = 0
-PLAYER1 = 1
-PLAYER2 = 2
+    def print_board(self):
+        for row in self.board:
+            print('|'.join(row))
+            print('-' * (self.cols * 2 - 1))
+        print(' '.join(str(i) for i in range(self.cols)))
 
-def create_board():
-    return np.zeros((ROWS, COLUMNS), dtype=int)
-
-def print_board(board):
-    for row in board:
-        print(" | ".join(str(int(cell)) for cell in row))
-        print("-" * (COLUMNS * 4 - 3))
-
-def is_valid_location(board, col):
-    return board[ROWS - 1][col] == EMPTY
-
-def get_next_open_row(board, col):
-    for r in range(ROWS):
-        if board[r][col] == EMPTY:
-            return r
-
-def drop_piece(board, row, col, piece):
-    board[row][col] = piece
-
-def winning_move(board, piece):
-    # Check horizontal locations
-    for c in range(COLUMNS - 3):
-        for r in range(ROWS):
-            if all(board[r][c + i] == piece for i in range(4)):
+    def drop_piece(self, col):
+        for row in reversed(range(self.rows)):
+            if self.board[row][col] == ' ':
+                self.board[row][col] = self.current_player
                 return True
+        return False
 
-    # Check vertical locations
-    for c in range(COLUMNS):
-        for r in range(ROWS - 3):
-            if all(board[r + i][c] == piece for i in range(4)):
-                return True
+    def is_winning_move(self, row, col):
+        return (self.check_direction(row, col, 1, 0) or  # horizontal
+                self.check_direction(row, col, 0, 1) or  # vertical
+                self.check_direction(row, col, 1, 1) or  # diagonal /
+                self.check_direction(row, col, 1, -1))   # diagonal \
 
-    # Check positively sloped diagonals
-    for c in range(COLUMNS - 3):
-        for r in range(ROWS - 3):
-            if all(board[r + i][c + i] == piece for i in range(4)):
-                return True
+    def check_direction(self, row, col, delta_row, delta_col):
+        count = 0
+        for direction in [1, -1]:
+            r, c = row, col
+            while 0 <= r < self.rows and 0 <= c < self.cols and self.board[r][c] == self.current_player:
+                count += 1
+                if count == 4:
+                    return True
+                r += delta_row * direction
+                c += delta_col * direction
+        return False
 
-    # Check negatively sloped diagonals
-    for c in range(COLUMNS - 3):
-        for r in range(3, ROWS):
-            if all(board[r - i][c + i] == piece for i in range(4)):
-                return True
+    def switch_player(self):
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
 
-    return False
+    def play(self):
+        while True:
+            self.print_board()
+            col = input(f"Player {self.current_player}, choose a column (0-{self.cols-1}): ")
+            if not col.isdigit() or not (0 <= int(col) < self.cols):
+                print("Invalid input. Please try again.")
+                continue
 
-def main():
-    board = create_board()
-    game_over = False
-    turn = 0
+            col = int(col)
+            if not self.drop_piece(col):
+                print("Column full. Try another one.")
+                continue
 
-    print("Welcome to Connect Four!")
-    print_board(board)
+            row = next(r for r in reversed(range(self.rows)) if self.board[r][col] == self.current_player)
 
-    while not game_over:
-        col = int(input(f"Player {turn % 2 + 1}, make your selection (0-{COLUMNS - 1}): "))
+            if self.is_winning_move(row, col):
+                self.print_board()
+                print(f"Player {self.current_player} wins!")
+                break
 
-        if is_valid_location(board, col):
-            row = get_next_open_row(board, col)
-            drop_piece(board, row, col, PLAYER1 if turn % 2 == 0 else PLAYER2)
+            self.switch_player()
 
-            print_board(board)
-
-            if winning_move(board, PLAYER1 if turn % 2 == 0 else PLAYER2):
-                print(f"Player {turn % 2 + 1} wins!")
-                game_over = True
-
-            turn += 1
 
 if __name__ == "__main__":
-    main()
+    game = ConnectFour()
+    game.play()

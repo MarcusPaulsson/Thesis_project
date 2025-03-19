@@ -1,82 +1,87 @@
 import os
-import sys
 import time
-import keyboard
+import random
+import sys
 
-# Constants
-WIDTH = 40
-HEIGHT = 20
-PADDLE_HEIGHT = 4
-BALL_CHAR = 'O'
-PADDLE_CHAR = '|'
-EMPTY_CHAR = ' '
+class Pong:
+    def __init__(self, width=40, height=20):
+        self.width = width
+        self.height = height
+        self.paddle_height = 3
+        self.ball = [width // 2, height // 2]
+        self.ball_dir = [random.choice([-1, 1]), random.choice([-1, 1])]
+        self.paddle1 = height // 2 - self.paddle_height // 2
+        self.paddle2 = height // 2 - self.paddle_height // 2
+        self.score1 = 0
+        self.score2 = 0
 
-# Game state
-ball_x = WIDTH // 2
-ball_y = HEIGHT // 2
-ball_dx = 1
-ball_dy = 1
-paddle_left_y = (HEIGHT // 2) - (PADDLE_HEIGHT // 2)
-paddle_right_y = (HEIGHT // 2) - (PADDLE_HEIGHT // 2)
+    def draw(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        for y in range(self.height):
+            for x in range(self.width):
+                if x == 0 and self.paddle1 <= y < self.paddle1 + self.paddle_height:
+                    print('|', end='')
+                elif x == self.width - 1 and self.paddle2 <= y < self.paddle2 + self.paddle_height:
+                    print('|', end='')
+                elif [x, y] == self.ball:
+                    print('O', end='')
+                else:
+                    print(' ', end='')
+            print()
+        print(f'Score: Player 1: {self.score1} | Player 2: {self.score2}')
 
-def draw():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    for y in range(HEIGHT):
-        for x in range(WIDTH):
-            if x == 0 and paddle_left_y <= y < paddle_left_y + PADDLE_HEIGHT:
-                print(PADDLE_CHAR, end='')
-            elif x == WIDTH - 1 and paddle_right_y <= y < paddle_right_y + PADDLE_HEIGHT:
-                print(PADDLE_CHAR, end='')
-            elif x == ball_x and y == ball_y:
-                print(BALL_CHAR, end='')
-            else:
-                print(EMPTY_CHAR, end='')
-        print()
-    print("Use 'w' and 's' to move left paddle, 'i' and 'k' to move right paddle. Press 'q' to quit.")
+    def update_ball(self):
+        self.ball[0] += self.ball_dir[0]
+        self.ball[1] += self.ball_dir[1]
 
-def update():
-    global ball_x, ball_y, ball_dx, ball_dy, paddle_left_y, paddle_right_y
-    
-    # Move the ball
-    ball_x += ball_dx
-    ball_y += ball_dy
+        if self.ball[1] <= 0 or self.ball[1] >= self.height - 1:
+            self.ball_dir[1] *= -1
 
-    # Ball collision with top and bottom walls
-    if ball_y <= 0 or ball_y >= HEIGHT - 1:
-        ball_dy *= -1
+        if self.ball[0] == 0:
+            self.score2 += 1
+            self.reset_ball()
+        elif self.ball[0] == self.width - 1:
+            self.score1 += 1
+            self.reset_ball()
 
-    # Ball collision with paddles
-    if ball_x == 0 and paddle_left_y <= ball_y < paddle_left_y + PADDLE_HEIGHT:
-        ball_dx *= -1
-    elif ball_x == WIDTH - 1 and paddle_right_y <= ball_y < paddle_right_y + PADDLE_HEIGHT:
-        ball_dx *= -1
+        if (self.ball[0] == 0 and self.paddle1 <= self.ball[1] < self.paddle1 + self.paddle_height) or \
+           (self.ball[0] == self.width - 1 and self.paddle2 <= self.ball[1] < self.paddle2 + self.paddle_height):
+            self.ball_dir[0] *= -1
 
-    # Reset ball if it goes out of bounds
-    if ball_x < 0 or ball_x >= WIDTH:
-        ball_x = WIDTH // 2
-        ball_y = HEIGHT // 2
-        ball_dx = 1 if ball_dx > 0 else -1
-        ball_dy = 1 if ball_dy > 0 else -1
+    def reset_ball(self):
+        self.ball = [self.width // 2, self.height // 2]
+        self.ball_dir = [random.choice([-1, 1]), random.choice([-1, 1])]
 
-def handle_input():
-    global paddle_left_y, paddle_right_y
-    if keyboard.is_pressed('w') and paddle_left_y > 0:
-        paddle_left_y -= 1
-    if keyboard.is_pressed('s') and paddle_left_y < HEIGHT - PADDLE_HEIGHT:
-        paddle_left_y += 1
-    if keyboard.is_pressed('i') and paddle_right_y > 0:
-        paddle_right_y -= 1
-    if keyboard.is_pressed('k') and paddle_right_y < HEIGHT - PADDLE_HEIGHT:
-        paddle_right_y += 1
-    if keyboard.is_pressed('q'):
-        sys.exit()
+    def move_paddle(self, player, direction):
+        if player == 1:
+            if direction == 'up' and self.paddle1 > 0:
+                self.paddle1 -= 1
+            elif direction == 'down' and self.paddle1 < self.height - self.paddle_height:
+                self.paddle1 += 1
+        else:
+            if direction == 'up' and self.paddle2 > 0:
+                self.paddle2 -= 1
+            elif direction == 'down' and self.paddle2 < self.height - self.paddle_height:
+                self.paddle2 += 1
 
-def main():
-    while True:
-        handle_input()
-        update()
-        draw()
-        time.sleep(0.1)
+    def play(self):
+        while True:
+            self.draw()
+            self.update_ball()
+            time.sleep(0.1)
+
+            if self.score1 >= 5 or self.score2 >= 5:
+                print("Game Over!")
+                break
+
+            # Simple input simulation
+            move = random.choice(['up', 'down', None])
+            if move:
+                self.move_paddle(1, move)
+            move = random.choice(['up', 'down', None])
+            if move:
+                self.move_paddle(2, move)
 
 if __name__ == "__main__":
-    main()
+    game = Pong()
+    game.play()

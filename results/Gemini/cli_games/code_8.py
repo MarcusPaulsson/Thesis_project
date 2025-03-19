@@ -1,133 +1,165 @@
-def create_board(rows=6, cols=7):
-    """Creates an empty Connect Four board."""
-    return [[' ' for _ in range(cols)] for _ in range(rows)]
+class ConnectFour:
+    def __init__(self, rows=6, cols=7):
+        """
+        Initializes the Connect Four game board.
 
+        Args:
+            rows (int): The number of rows in the board (default: 6).
+            cols (int): The number of columns in the board (default: 7).
+        """
+        self.rows = rows
+        self.cols = cols
+        self.board = [[' ' for _ in range(cols)] for _ in range(rows)]
+        self.current_player = 'X'  # Player X starts
+        self.game_over = False
 
-def print_board(board):
-    """Prints the Connect Four board to the console."""
-    cols = len(board[0])
-    print('  ' + '  '.join(str(i + 1) for i in range(cols)))  # Column numbers
-    for row in board:
-        print('| ' + ' | '.join(row) + ' |')
-    print('+' + '---+' * cols)  # Bottom border
+    def print_board(self):
+        """
+        Prints the current state of the game board to the console.
+        """
+        for row in range(self.rows):
+            print('|', end='')
+            for col in range(self.cols):
+                print(self.board[row][col], end='|')
+            print()
+        print('-' * (2 * self.cols + 1))  # Separator line
+        print(' ', end='')
+        for col in range(self.cols):
+            print(col + 1, end=' ') # Column numbers
+        print()
 
+    def is_valid_move(self, col):
+        """
+        Checks if a move (dropping a piece into a column) is valid.
 
-def drop_piece(board, col, piece):
-    """Drops a piece into the specified column."""
-    rows = len(board)
-    for row in range(rows - 1, -1, -1):
-        if board[row][col] == ' ':
-            board[row][col] = piece
-            return row  # Return the row where the piece landed
-    return None  # Column is full
+        Args:
+            col (int): The column to check (1-indexed).
 
-
-def is_valid_location(board, col):
-    """Checks if a column is a valid location to drop a piece."""
-    rows = len(board)
-    return board[0][col] == ' ' and 0 <= col < len(board[0])
-
-
-def winning_move(board, piece):
-    """Checks if the last move resulted in a win."""
-    rows = len(board)
-    cols = len(board[0])
-
-    # Check horizontal
-    for row in range(rows):
-        for col in range(cols - 3):
-            if (board[row][col] == piece and
-                    board[row][col + 1] == piece and
-                    board[row][col + 2] == piece and
-                    board[row][col + 3] == piece):
-                return True
-
-    # Check vertical
-    for row in range(rows - 3):
-        for col in range(cols):
-            if (board[row][col] == piece and
-                    board[row + 1][col] == piece and
-                    board[row + 2][col] == piece and
-                    board[row + 3][col] == piece):
-                return True
-
-    # Check positive diagonal
-    for row in range(rows - 3):
-        for col in range(cols - 3):
-            if (board[row][col] == piece and
-                    board[row + 1][col + 1] == piece and
-                    board[row + 2][col + 2] == piece and
-                    board[row + 3][col + 3] == piece):
-                return True
-
-    # Check negative diagonal
-    for row in range(3, rows):
-        for col in range(cols - 3):
-            if (board[row][col] == piece and
-                    board[row - 1][col + 1] == piece and
-                    board[row - 2][col + 2] == piece and
-                    board[row - 3][col + 3] == piece):
-                return True
-
-    return False
-
-
-def is_board_full(board):
-    """Checks if the board is full."""
-    for row in board:
-        if ' ' in row:
+        Returns:
+            bool: True if the move is valid, False otherwise.
+        """
+        if col < 1 or col > self.cols:
             return False
-    return True
+        return self.board[0][col - 1] == ' '  # Check if top row is empty
 
+    def drop_piece(self, col):
+        """
+        Drops a piece of the current player into the specified column.
 
-def get_player_move(board, player_number):
-    """Gets a valid column choice from the player."""
-    while True:
-        try:
-            col = int(input(f"Player {player_number}, choose a column (1-{len(board[0])}): ")) - 1
-            if is_valid_location(board, col):
-                return col
+        Args:
+            col (int): The column to drop the piece into (1-indexed).
+        """
+        for row in range(self.rows - 1, -1, -1):
+            if self.board[row][col - 1] == ' ':
+                self.board[row][col - 1] = self.current_player
+                return row  # Return the row where the piece landed
+
+    def check_win(self, row, col):
+        """
+        Checks if the current move resulted in a win for the current player.
+
+        Args:
+            row (int): The row where the piece was dropped.
+            col (int): The column where the piece was dropped (1-indexed).
+
+        Returns:
+            bool: True if the current player has won, False otherwise.
+        """
+        player = self.current_player
+
+        # Check horizontal
+        count = 0
+        for c in range(self.cols):
+            if self.board[row][c] == player:
+                count += 1
+                if count == 4:
+                    return True
             else:
-                print("Invalid column.  It's either full or out of bounds.")
-        except ValueError:
-            print("Invalid input. Please enter a number.")
-        except IndexError:
-            print("Invalid input. Column number out of range.")
+                count = 0
 
-
-
-def play_connect_four():
-    """Plays a game of Connect Four."""
-    board = create_board()
-    print_board(board)
-    game_over = False
-    turn = 0
-
-    while not game_over:
-        # Player turn
-        if turn % 2 == 0:
-            player = 1
-            piece = 'X'
-        else:
-            player = 2
-            piece = 'O'
-
-        col = get_player_move(board, player)
-
-        if drop_piece(board, col, piece) is not None:
-            print_board(board)
-
-            if winning_move(board, piece):
-                print(f"Player {player} wins!")
-                game_over = True
-            elif is_board_full(board):
-                print("It's a draw!")
-                game_over = True
+        # Check vertical
+        count = 0
+        for r in range(self.rows):
+            if self.board[r][col - 1] == player:
+                count += 1
+                if count == 4:
+                    return True
             else:
-                turn += 1
-        else:
-            print("That column is full. Try again.")  # Should not happen due to input validation
+                count = 0
+
+        # Check positive diagonal
+        count = 0
+        for i in range(-3, 4):
+            r = row + i
+            c = col - 1 + i
+            if 0 <= r < self.rows and 0 <= c < self.cols:
+                if self.board[r][c] == player:
+                    count += 1
+                    if count == 4:
+                        return True
+                else:
+                    count = 0
+
+        # Check negative diagonal
+        count = 0
+        for i in range(-3, 4):
+            r = row - i
+            c = col - 1 + i
+            if 0 <= r < self.rows and 0 <= c < self.cols:
+                if self.board[r][c] == player:
+                    count += 1
+                    if count == 4:
+                        return True
+                else:
+                    count = 0
+
+        return False
+
+    def check_draw(self):
+        """
+        Checks if the game is a draw (board is full).
+
+        Returns:
+            bool: True if the game is a draw, False otherwise.
+        """
+        for col in range(self.cols):
+            if self.board[0][col] == ' ':
+                return False  # At least one empty space
+        return True
+
+    def switch_player(self):
+        """
+        Switches the current player to the other player.
+        """
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
+
+    def play_game(self):
+        """
+        Starts and runs the Connect Four game loop.
+        """
+        while not self.game_over:
+            self.print_board()
+            print(f"Player {self.current_player}, it's your turn.")
+            try:
+                col = int(input(f"Enter the column to drop your piece (1-{self.cols}): "))
+                if self.is_valid_move(col):
+                    row = self.drop_piece(col)
+                    if self.check_win(row, col):
+                        self.print_board()
+                        print(f"Player {self.current_player} wins!")
+                        self.game_over = True
+                    elif self.check_draw():
+                        self.print_board()
+                        print("It's a draw!")
+                        self.game_over = True
+                    else:
+                        self.switch_player()
+                else:
+                    print("Invalid move. Try again.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
 
 
 if __name__ == "__main__":
-    play_connect_four()
+    game = ConnectFour()
+    game.play_game()

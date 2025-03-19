@@ -1,128 +1,195 @@
 import random
 import time
-import sys
 
 class Boggle:
-    def __init__(self, size=4, time_limit=180):
+    """
+    A class to represent the Boggle game.
+    """
+
+    def __init__(self, size=4, time_limit=180, dictionary_file="words.txt"):
+        """
+        Initializes the Boggle game.
+
+        Args:
+            size (int): The size of the Boggle board (default: 4).
+            time_limit (int): The time limit for the game in seconds (default: 180).
+            dictionary_file (str): The path to the dictionary file (default: "words.txt").
+        """
         self.size = size
         self.time_limit = time_limit
+        self.dictionary = self.load_dictionary(dictionary_file)
         self.board = self.generate_board()
-        self.words = self.load_words("wordlist.txt")  # Replace with your wordlist file
         self.found_words = set()
-        self.start_time = 0
+        self.start_time = None
+        self.game_over = False
 
-    def generate_board(self):
-        dice = [
-            "RIFOBX", "IFEHSE", "OBJOBA", "HMQUMNI",
-            "WEDSLG", "ITAEOL", "HRIUOB", "ENSIEU",
-            "ATCIWO", "TLAEWR", "GONHES", "SMRZOI",
-            "TOEISS", "ANEDVZ", "ANDELA", "SFPCAP"
-        ]
-        board = []
-        for _ in range(self.size):
-            row = []
-            for _ in range(self.size):
-                die = random.choice(dice)
-                row.append(random.choice(die))
-            board.append(row)
-        return board
+    def load_dictionary(self, dictionary_file):
+        """
+        Loads the dictionary from a file.
 
-    def load_words(self, filename):
+        Args:
+            dictionary_file (str): The path to the dictionary file.
+
+        Returns:
+            set: A set of words from the dictionary.
+        """
         try:
-            with open(filename, "r") as f:
+            with open(dictionary_file, "r") as f:
                 words = set(word.strip().upper() for word in f)
             return words
         except FileNotFoundError:
-            print(f"Error: Wordlist file '{filename}' not found.")
-            sys.exit(1)
+            print(f"Error: Dictionary file '{dictionary_file}' not found.")
+            exit()
 
-    def print_board(self):
+    def generate_board(self):
+        """
+        Generates the Boggle board.
+
+        Returns:
+            list: A 2D list representing the Boggle board.
+        """
+        dice = [
+            "AAEEGN", "ELRTTY", "AOOTTW", "ABBJOO",
+            "EHRTVW", "CIMOTU", "DISTTY", "EIOSST",
+            "DELRVY", "ACHOPS", "HIMNQU", "EEINSV",
+            "EEGHNW", "AFFKPS", "HLNNRZ", "DEILRX"
+        ]
+        board = []
+        random.shuffle(dice)
+        for i in range(self.size):
+            row = []
+            for j in range(self.size):
+                row.append(random.choice(dice[i * self.size + j]))
+            board.append(row)
+        return board
+
+    def display_board(self):
+        """
+        Displays the Boggle board in the console.
+        """
+        print("Boggle Board:")
         for row in self.board:
             print(" ".join(row))
+        print()
 
     def is_valid_word(self, word):
-        return word in self.words and word not in self.found_words and len(word) >= 3
+        """
+        Checks if a word is valid.
 
-    def find_word(self, word):
+        Args:
+            word (str): The word to check.
+
+        Returns:
+            bool: True if the word is valid, False otherwise.
+        """
+        word = word.upper()
+        if len(word) < 3:
+            return False
+        if word in self.found_words:
+            return False
+        if word not in self.dictionary:
+            return False
+        return True
+
+    def find_word_on_board(self, word):
+        """
+        Checks if a word can be found on the Boggle board.
+
+        Args:
+            word (str): The word to find.
+
+        Returns:
+            bool: True if the word can be found, False otherwise.
+        """
+        word = word.upper()
         for row in range(self.size):
             for col in range(self.size):
                 if self.board[row][col] == word[0]:
-                    if self._search_recursive(word, row, col, 0, set()):
+                    if self.search_word(word, row, col, 0, set()):
                         return True
         return False
 
-    def _search_recursive(self, word, row, col, index, visited):
+    def search_word(self, word, row, col, index, visited):
+        """
+        Recursively searches for the word on the board.
+
+        Args:
+            word (str): The word to search for.
+            row (int): The current row.
+            col (int): The current column.
+            index (int): The current index in the word.
+            visited (set): A set of visited coordinates.
+
+        Returns:
+            bool: True if the word is found, False otherwise.
+        """
         if index == len(word):
             return True
 
-        if (row < 0 or row >= self.size or
-            col < 0 or col >= self.size or
-            self.board[row][col] != word[index] or
-            (row, col) in visited):
+        if row < 0 or row >= self.size or col < 0 or col >= self.size:
+            return False
+
+        if (row, col) in visited:
+            return False
+
+        if self.board[row][col] != word[index]:
             return False
 
         visited.add((row, col))
-        
-        # Explore adjacent cells
+
         for dr in [-1, 0, 1]:
             for dc in [-1, 0, 1]:
                 if dr == 0 and dc == 0:
-                    continue  # Skip the current cell
+                    continue
                 new_row = row + dr
                 new_col = col + dc
-                if self._search_recursive(word, new_row, new_col, index + 1, visited.copy()):
+                if self.search_word(word, new_row, new_col, index + 1, visited.copy()):
                     return True
-        
+
         return False
 
     def play(self):
+        """
+        Runs the Boggle game.
+        """
         self.start_time = time.time()
-        print("Welcome to Boggle!")
-        self.print_board()
-        print(f"You have {self.time_limit} seconds to find as many words as possible.")
+        self.display_board()
 
-        while time.time() - self.start_time < self.time_limit:
-            remaining_time = self.time_limit - (time.time() - self.start_time)
-            print(f"\nTime remaining: {int(remaining_time)} seconds")
-            word = input("Enter a word (or type 'quit' to end): ").strip().upper()
+        while not self.game_over:
+            elapsed_time = time.time() - self.start_time
+            remaining_time = self.time_limit - elapsed_time
 
-            if word == "QUIT":
+            if remaining_time <= 0:
+                self.game_over = True
+                print("Time's up!")
                 break
 
-            if self.is_valid_word(word) and self.find_word(word):
-                self.found_words.add(word)
-                print("Word found!")
+            print(f"Time remaining: {int(remaining_time)} seconds")
+            word = input("Enter a word (or type 'quit' to end): ").strip()
+
+            if word.lower() == "quit":
+                self.game_over = True
+                break
+
+            if self.is_valid_word(word) and self.find_word_on_board(word):
+                self.found_words.add(word.upper())
+                print("Valid word!")
             else:
-                print("Invalid word or already found.")
+                print("Invalid word.")
 
         self.end_game()
 
     def end_game(self):
-        print("\nTime's up!")
-        print("Words found:")
+        """
+        Ends the game and displays the results.
+        """
+        print("\nGame Over!")
+        print("Words you found:")
         for word in sorted(self.found_words):
             print(word)
-
-        score = self.calculate_score()
-        print(f"Your score: {score}")
-
-    def calculate_score(self):
-        score = 0
-        for word in self.found_words:
-            length = len(word)
-            if length == 3 or length == 4:
-                score += 1
-            elif length == 5:
-                score += 2
-            elif length == 6:
-                score += 3
-            elif length == 7:
-                score += 5
-            else:  # 8 or more
-                score += 11
-        return score
+        print(f"\nTotal score: {len(self.found_words)}")
 
 
 if __name__ == "__main__":
-    boggle = Boggle()
-    boggle.play()
+    game = Boggle()
+    game.play()

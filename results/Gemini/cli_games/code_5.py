@@ -1,136 +1,154 @@
 import random
 
 class Mastermind:
-    def __init__(self, code_length=4, color_range=6, max_guesses=10):
+    """
+    A class to represent the Mastermind game.
+    """
+
+    def __init__(self, code_length=4, colors=6, max_guesses=10):
         """
         Initializes the Mastermind game.
 
         Args:
-            code_length (int): The length of the code to guess. Default is 4.
-            color_range (int): The number of possible colors (1 to color_range). Default is 6.
-            max_guesses (int): The maximum number of guesses allowed. Default is 10.
+            code_length (int): The length of the code to guess.
+            colors (int): The number of possible colors (represented by integers).
+            max_guesses (int): The maximum number of guesses allowed.
         """
         self.code_length = code_length
-        self.color_range = color_range
+        self.colors = colors
         self.max_guesses = max_guesses
-        self.secret_code = self.generate_secret_code()
-        self.guesses_remaining = max_guesses
-        self.history = []  # List to store guesses and feedback
+        self.secret_code = self._generate_code()
+        self.guesses = []
+        self.feedback = []
+        self.game_over = False
+        self.won = False
 
-    def generate_secret_code(self):
+    def _generate_code(self):
         """
         Generates a random secret code.
 
         Returns:
             list: A list of integers representing the secret code.
         """
-        return [random.randint(1, self.color_range) for _ in range(self.code_length)]
+        return [random.randint(1, self.colors) for _ in range(self.code_length)]
 
-    def get_guess(self):
+    def guess(self, guess):
         """
-        Prompts the user for a guess and validates the input.
-
-        Returns:
-            list: A list of integers representing the user's guess, or None if input is invalid.
-        """
-        while True:
-            try:
-                guess_str = input(f"Enter your guess ({self.code_length} numbers, 1-{self.color_range}, separated by spaces): ")
-                guess = [int(x) for x in guess_str.split()]
-
-                if len(guess) != self.code_length:
-                    print(f"Invalid guess: Must be {self.code_length} numbers long.")
-                    continue
-
-                if any(not (1 <= x <= self.color_range) for x in guess):
-                    print(f"Invalid guess: Numbers must be between 1 and {self.color_range}.")
-                    continue
-
-                return guess
-            except ValueError:
-                print("Invalid input: Please enter numbers separated by spaces.")
-
-    def check_guess(self, guess):
-        """
-        Checks the user's guess against the secret code and provides feedback.
+        Takes a guess from the player and provides feedback.
 
         Args:
-            guess (list): A list of integers representing the user's guess.
+            guess (list): A list of integers representing the player's guess.
 
         Returns:
-            tuple: A tuple containing the number of "exact" matches (correct color and position) and
-                   the number of "partial" matches (correct color, wrong position).
+            tuple: A tuple containing:
+                - bool: True if the guess is valid, False otherwise.
+                - str: A message indicating the validity of the guess.
         """
-        exact_matches = 0
-        partial_matches = 0
-        temp_secret_code = self.secret_code[:]  # Create a copy to avoid modifying the original
+        if len(guess) != self.code_length:
+            return False, f"Invalid guess: Must be {self.code_length} digits long."
+        if not all(1 <= digit <= self.colors for digit in guess):
+            return False, f"Invalid guess: Digits must be between 1 and {self.colors}."
+
+        self.guesses.append(guess)
+        feedback = self._evaluate_guess(guess)
+        self.feedback.append(feedback)
+
+        if guess == self.secret_code:
+            self.game_over = True
+            self.won = True
+            return True, "Congratulations! You cracked the code!"
+
+        if len(self.guesses) >= self.max_guesses:
+            self.game_over = True
+            return True, f"You ran out of guesses. The code was {self.secret_code}"
+
+        return True, self._feedback_to_string(feedback)
+
+    def _evaluate_guess(self, guess):
+        """
+        Evaluates a guess against the secret code.
+
+        Args:
+            guess (list): The player's guess.
+
+        Returns:
+            list: A list of strings representing the feedback.  "B" for black (correct position),
+                   "W" for white (correct color, wrong position), "" for incorrect.
+        """
+        feedback = []
+        temp_secret = self.secret_code[:]  # Create a copy to avoid modifying the original
         temp_guess = guess[:]
 
-        # First, check for exact matches
+        # First, check for correct positions (black pegs)
         for i in range(self.code_length):
-            if temp_guess[i] == temp_secret_code[i]:
-                exact_matches += 1
-                temp_guess[i] = None  # Mark as matched to avoid double-counting
-                temp_secret_code[i] = None
+            if temp_guess[i] == temp_secret[i]:
+                feedback.append("B")
+                temp_secret[i] = None  # Mark as used
+                temp_guess[i] = None  # Mark as used
 
-        # Then, check for partial matches
+        # Then, check for correct colors in wrong positions (white pegs)
         for i in range(self.code_length):
             if temp_guess[i] is not None:
-                if temp_guess[i] in temp_secret_code:
-                    partial_matches += 1
-                    # Remove the first occurrence of the matching color from the secret code
-                    temp_secret_code[temp_secret_code.index(temp_guess[i])] = None
+                try:
+                    j = temp_secret.index(temp_guess[i])
+                    feedback.append("W")
+                    temp_secret[j] = None  # Mark as used
+                except ValueError:
+                    pass  # Color not found in secret code
 
-        return exact_matches, partial_matches
+        # Sort the feedback to have black pegs first
+        feedback.sort(reverse=True)
+        return feedback
 
-    def play_round(self):
+    def _feedback_to_string(self, feedback):
         """
-        Plays a single round of the game.
+        Converts the feedback list to a string.
+
+        Args:
+            feedback (list): The feedback list.
 
         Returns:
-            bool: True if the user guessed the code correctly, False otherwise.
+            str: A string representation of the feedback.
         """
-        guess = self.get_guess()
-        if guess is None:
-            return False  # Invalid guess, but continue the game
+        return "".join(feedback)
 
-        exact_matches, partial_matches = self.check_guess(guess)
-        self.history.append((guess, exact_matches, partial_matches))
-        self.guesses_remaining -= 1
-
-        print(f"Feedback: Exact matches: {exact_matches}, Partial matches: {partial_matches}")
-
-        return exact_matches == self.code_length
-
-    def print_history(self):
+    def display_guesses(self):
         """
-        Prints the history of guesses and feedback.
+        Displays the previous guesses and their feedback.
         """
-        print("\n--- Guess History ---")
-        for guess, exact, partial in self.history:
-            print(f"Guess: {guess}, Exact: {exact}, Partial: {partial}")
-        print("---------------------")
+        print("\nPrevious Guesses:")
+        for i in range(len(self.guesses)):
+            print(f"Guess {i+1}: {self.guesses[i]} - Feedback: {self._feedback_to_string(self.feedback[i])}")
 
-    def play_game(self):
+    def play(self):
         """
-        Plays the entire Mastermind game.
+        Plays the Mastermind game through the command line.
         """
         print("Welcome to Mastermind!")
-        print(f"I have generated a secret code of length {self.code_length} with numbers from 1 to {self.color_range}.")
+        print(f"I've generated a secret code with {self.code_length} digits, each between 1 and {self.colors}.")
         print(f"You have {self.max_guesses} guesses to crack the code.")
 
-        while self.guesses_remaining > 0:
-            print(f"\nGuesses remaining: {self.guesses_remaining}")
-            if self.play_round():
-                print("Congratulations! You cracked the code!")
-                self.print_history()
-                return
+        while not self.game_over:
+            try:
+                guess_str = input(f"Enter your guess (separated by spaces, e.g., {' '.join(['1'] * self.code_length)}): ")
+                guess = [int(x) for x in guess_str.split()]
+            except ValueError:
+                print("Invalid input. Please enter numbers separated by spaces.")
+                continue
 
-        print("\nYou ran out of guesses.")
-        print(f"The secret code was: {self.secret_code}")
-        self.print_history()
+            valid, message = self.guess(guess)
+            if not valid:
+                print(message)
+            else:
+                print(message)
+                self.display_guesses()
+
+        if self.won:
+            print("You won!")
+        else:
+            print(f"You lost! The secret code was {self.secret_code}")
 
 
 if __name__ == "__main__":
-    game = Mastermind()  # You can customize code_length, color_range, and max_guesses
-    game.play_game()
+    game = Mastermind()  # You can customize the game by passing arguments to the constructor
+    game.play()

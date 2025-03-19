@@ -1,4 +1,5 @@
 import random
+import sys
 
 class Minesweeper:
     def __init__(self, rows, cols, mines):
@@ -6,114 +7,141 @@ class Minesweeper:
         self.cols = cols
         self.mines = mines
         self.board = [[' ' for _ in range(cols)] for _ in range(rows)]
-        self.hidden_board = [[' ' for _ in range(cols)] for _ in range(rows)]
-        self.mines_positions = []
+        self.revealed = [[False for _ in range(cols)] for _ in range(rows)]
+        self.flags = [[False for _ in range(cols)] for _ in range(rows)]
         self.game_over = False
-        self.game_won = False
         self.first_move = True
+        self.mine_locations = []
 
     def print_board(self):
         """Prints the current state of the board."""
         print("   " + "  ".join(str(i) for i in range(self.cols)))
         print("  " + "-" * (self.cols * 3))
         for i in range(self.rows):
-            print(f"{i} | {'  '.join(self.board[i])} |")
+            row_str = str(i) + " |"
+            for j in range(self.cols):
+                if self.flags[i][j]:
+                    row_str += " F "
+                elif self.revealed[i][j]:
+                    row_str += " " + self.board[i][j] + " "
+                else:
+                    row_str += " . "
+            row_str += "|"
+            print(row_str)
         print("  " + "-" * (self.cols * 3))
+        print(f"Mines: {self.mines}")
 
-    def generate_mines(self, first_row, first_col):
-        """Generates mine positions, avoiding the first move."""
-        self.mines_positions = []
-        while len(self.mines_positions) < self.mines:
+
+    def place_mines(self, start_row, start_col):
+        """Places mines randomly on the board, avoiding the starting cell."""
+        mines_placed = 0
+        while mines_placed < self.mines:
             row = random.randint(0, self.rows - 1)
             col = random.randint(0, self.cols - 1)
-            if (row, col) not in self.mines_positions and (row, col) != (first_row, first_col):
-                self.mines_positions.append((row, col))
-                self.hidden_board[row][col] = '*'
+            if (row, col) != (start_row, start_col) and (row, col) not in self.mine_locations:
+                self.mine_locations.append((row, col))
+                self.board[row][col] = '*'
+                mines_placed += 1
 
-    def calculate_adjacent_mines(self):
-        """Calculates the number of mines adjacent to each cell."""
+    def calculate_neighboring_mines(self):
+        """Calculates the number of neighboring mines for each cell."""
         for row in range(self.rows):
             for col in range(self.cols):
-                if self.hidden_board[row][col] != '*':
+                if self.board[row][col] != '*':
                     count = 0
                     for i in range(max(0, row - 1), min(self.rows, row + 2)):
                         for j in range(max(0, col - 1), min(self.cols, col + 2)):
-                            if self.hidden_board[i][j] == '*':
+                            if self.board[i][j] == '*':
                                 count += 1
-                    if count > 0:
-                        self.hidden_board[row][col] = str(count)
-                    else:
-                        self.hidden_board[row][col] = '0'
+                    self.board[row][col] = str(count) if count > 0 else ' '
 
-    def reveal_cell(self, row, col):
-        """Reveals a cell and recursively reveals adjacent empty cells."""
-        if self.board[row][col] != ' ':
-            return  # Cell already revealed
+    def reveal(self, row, col):
+        """Reveals a cell and recursively reveals neighboring cells if they are empty."""
 
-        self.board[row][col] = self.hidden_board[row][col]
+        if row < 0 or row >= self.rows or col < 0 or col >= self.cols or self.revealed[row][col]:
+            return
 
-        if self.hidden_board[row][col] == '0':
+        self.revealed[row][col] = True
+
+        if self.board[row][col] == '*':
+            self.game_over = True
+            return
+
+        if self.board[row][col] == ' ':
             for i in range(max(0, row - 1), min(self.rows, row + 2)):
                 for j in range(max(0, col - 1), min(self.cols, col + 2)):
-                    if self.board[i][j] == ' ':
-                        self.reveal_cell(i, j)
+                    self.reveal(i, j)
 
-    def flag_cell(self, row, col):
-        """Flags or unflags a cell."""
-        if self.board[row][col] == ' ':
-            self.board[row][col] = 'F'
-        elif self.board[row][col] == 'F':
-            self.board[row][col] = ' '
+
+    def flag(self, row, col):
+         """Flags or unflags a cell."""
+         if self.revealed[row][col]:
+             print("Cannot flag a revealed cell.")
+             return
+
+         self.flags[row][col] = not self.flags[row][col]
 
     def check_win(self):
         """Checks if the player has won the game."""
-        revealed_cells = 0
+        revealed_count = 0
         for row in range(self.rows):
             for col in range(self.cols):
-                if self.board[row][col] != ' ':
-                    revealed_cells += 1
-        if revealed_cells == self.rows * self.cols - self.mines:
-            self.game_won = True
+                if self.revealed[row][col]:
+                    revealed_count += 1
+
+        return revealed_count == self.rows * self.cols - self.mines
 
     def play(self):
         """Main game loop."""
-        while not self.game_over and not self.game_won:
+        while not self.game_over:
             self.print_board()
+            action = input("Enter action (reveal r, flag f, quit q), row, col (e.g., r 0 0): ").split()
+
+            if not action:
+                print("Invalid input. Please try again.")
+                continue
+
+            if action[0].lower() == 'q':
+                print("Quitting the game.")
+                sys.exit()
 
             try:
-                action, row, col = input("Enter action (reveal/flag), row, and column (e.g., reveal 0 0): ").split()
-                row = int(row)
-                col = int(col)
-            except ValueError:
-                print("Invalid input. Please enter action, row, and column separated by spaces.")
+                operation = action[0].lower()
+                row = int(action[1])
+                col = int(action[2])
+
+                if row < 0 or row >= self.rows or col < 0 or col >= self.cols:
+                    print("Invalid row or column. Please try again.")
+                    continue
+
+            except (IndexError, ValueError):
+                print("Invalid input. Please try again.")
                 continue
 
-            if not (0 <= row < self.rows and 0 <= col < self.cols):
-                print("Invalid row or column. Please enter values within the board dimensions.")
-                continue
+            if operation == 'r':
+                if self.first_move:
+                    self.place_mines(row, col)
+                    self.calculate_neighboring_mines()
+                    self.first_move = False
 
-            if self.first_move:
-                self.generate_mines(row, col)
-                self.calculate_adjacent_mines()
-                self.first_move = False
+                self.reveal(row, col)
 
-            if action.lower() == 'reveal':
-                if self.hidden_board[row][col] == '*':
-                    self.game_over = True
-                    self.board = [row[:] for row in self.hidden_board]
+                if self.game_over:
                     self.print_board()
                     print("Game Over! You hit a mine.")
-                else:
-                    self.reveal_cell(row, col)
-                    self.check_win()
-            elif action.lower() == 'flag':
-                self.flag_cell(row, col)
+                    return
+
+                if self.check_win():
+                    self.print_board()
+                    print("Congratulations! You won!")
+                    return
+
+            elif operation == 'f':
+                self.flag(row, col)
             else:
                 print("Invalid action. Please enter 'reveal' or 'flag'.")
 
-        if self.game_won:
-            self.print_board()
-            print("Congratulations! You won the game!")
+        print("Game Over!")
 
 
 if __name__ == "__main__":

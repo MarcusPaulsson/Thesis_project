@@ -1,65 +1,67 @@
 class TicTacToe:
     def __init__(self):
         self.board = [' ' for _ in range(9)]  # A list to hold the board state
-        self.current_player = 'X'  # Starting player
+        self.current_winner = None  # Keep track of the winner!
 
     def print_board(self):
-        print(f"{self.board[0]} | {self.board[1]} | {self.board[2]}")
-        print("--+---+--")
-        print(f"{self.board[3]} | {self.board[4]} | {self.board[5]}")
-        print("--+---+--")
-        print(f"{self.board[6]} | {self.board[7]} | {self.board[8]}")
+        for i in range(3):
+            print('|'.join(self.board[i * 3:(i + 1) * 3]))
+            if i < 2:
+                print('-' * 5)
 
-    def is_winner(self):
-        winning_combinations = [
-            (0, 1, 2), (3, 4, 5), (6, 7, 8),  # Horizontal
-            (0, 3, 6), (1, 4, 7), (2, 5, 8),  # Vertical
-            (0, 4, 8), (2, 4, 6)               # Diagonal
-        ]
-        for combo in winning_combinations:
-            if self.board[combo[0]] == self.board[combo[1]] == self.board[combo[2]] != ' ':
-                return True
-        return False
+    def available_moves(self):
+        return [i for i, spot in enumerate(self.board) if spot == ' ']
 
-    def is_full(self):
-        return ' ' not in self.board
+    def empty_squares(self):
+        return ' ' in self.board
 
-    def make_move(self, position):
-        if self.board[position] == ' ':
-            self.board[position] = self.current_player
+    def make_move(self, square, letter):
+        if self.board[square] == ' ':
+            self.board[square] = letter
+            if self.winner(square, letter):
+                self.current_winner = letter
             return True
         return False
 
-    def switch_player(self):
-        self.current_player = 'O' if self.current_player == 'X' else 'X'
+    def winner(self, square, letter):
+        row_ind = square // 3
+        row = self.board[row_ind * 3:(row_ind + 1) * 3]
+        if all([spot == letter for spot in row]):
+            return True
+        col_ind = square % 3
+        column = [self.board[col_ind + i * 3] for i in range(3)]
+        if all([spot == letter for spot in column]):
+            return True
+        if square % 2 == 0:
+            diagonal1 = [self.board[i] for i in [0, 4, 8]]
+            if all([spot == letter for spot in diagonal1]):
+                return True
+            diagonal2 = [self.board[i] for i in [2, 4, 6]]
+            if all([spot == letter for spot in diagonal2]):
+                return True
+        return False
 
     def play(self):
-        while True:
-            self.print_board()
+        print("Welcome to Tic-Tac-Toe!")
+        self.print_board()
+        letter = 'X'
+        while self.empty_squares():
+            move = input(f"{letter}'s turn. Enter a position (0-8): ")
             try:
-                move = int(input(f"Player {self.current_player}, enter a position (1-9): ")) - 1
-                if move < 0 or move > 8:
-                    print("Invalid position! Please enter a number between 1 and 9.")
+                move = int(move)
+                if move not in self.available_moves():
+                    print("Invalid move. Try again.")
                     continue
-                if not self.make_move(move):
-                    print("Position already taken! Try again.")
-                    continue
+                self.make_move(move, letter)
+                self.print_board()
+                if self.current_winner:
+                    print(f"{letter} wins!")
+                    return
+                letter = 'O' if letter == 'X' else 'X'
             except ValueError:
-                print("Invalid input! Please enter a number between 1 and 9.")
-                continue
+                print("Invalid input. Please enter a number between 0 and 8.")
+        print("It's a tie!")
 
-            if self.is_winner():
-                self.print_board()
-                print(f"Player {self.current_player} wins!")
-                break
-
-            if self.is_full():
-                self.print_board()
-                print("It's a tie!")
-                break
-
-            self.switch_player()
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     game = TicTacToe()
     game.play()

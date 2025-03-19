@@ -1,178 +1,96 @@
 import random
-import sys
 import os
+import sys
 import time
-import threading
-
-# Constants
-BOARD_WIDTH = 10
-BOARD_HEIGHT = 20
-SHAPES = [
-    [['.....',
-      '.....',
-      '..X..',
-      '.....',
-      '.....'],
-     ['.....',
-      '.....',
-      '..X..',
-      '.....',
-      '.....']],
-    
-    [['.....',
-      '.....',
-      '..X..',
-      '..X..',
-      '.....'],
-     ['.....',
-      '.....',
-      '..XX.',
-      '.....',
-      '.....']],
-    
-    [['.....',
-      '.....',
-      '.XX..',
-      '..X..',
-      '.....'],
-     ['.....',
-      '..X..',
-      '..XX.',
-      '.....',
-      '.....']],
-
-    [['.....',
-      '.....',
-      'XX...',
-      '.....',
-      '.....'],
-     ['.....',
-      '.X...',
-      '.XX..',
-      '.....',
-      '.....']],
-    
-    [['.....',
-      '.....',
-      '.X...',
-      '.X...',
-      '.....'],
-     ['.....',
-      '..XX.',
-      '.....',
-      '.....',
-      '.....']],
-    
-    [['.....',
-      '.....',
-      'X....',
-      'X....',
-      '.....'],
-     ['.....',
-      '.....',
-      'XXX..',
-      '.....',
-      '.....']],
-    
-    [['.....',
-      '.....',
-      '..X..',
-      '..X..',
-      '.....'],
-     ['.....',
-      '.XX..',
-      '.....',
-      '.....',
-      '.....']]
-]
+import msvcrt
 
 class Tetris:
     def __init__(self):
-        self.board = [['.' for _ in range(BOARD_WIDTH)] for _ in range(BOARD_HEIGHT)]
-        self.current_piece = self.new_piece()
-        self.current_x = BOARD_WIDTH // 2 - 1
-        self.current_y = 0
-        self.game_over = False
+        self.board = [[' ' for _ in range(10)] for _ in range(20)]
+        self.shapes = [
+            [['#', '#', '#', '#']],  # I
+            [['#', '#', '#'], [' ', '#', ' ']],  # T
+            [['#', '#'], ['#', '#']],  # O
+            [[' ', '#', '#'], ['#', '#', ' ']],  # S
+            [['#', '#', ' '], [' ', '#', '#']],  # Z
+            [['#', ' '], ['#', ' '], ['#', '#']],  # J
+            [[' ', '#'], [' ', '#'], ['#', '#']]   # L
+        ]
+        self.current_shape = None
+        self.current_position = (0, 0)
         self.score = 0
+        self.game_over = False
 
-    def new_piece(self):
-        return random.choice(SHAPES)
+    def new_shape(self):
+        self.current_shape = random.choice(self.shapes)
+        self.current_position = (0, len(self.board[0]) // 2 - len(self.current_shape[0]) // 2)
 
-    def rotate_piece(self):
-        self.current_piece = self.current_piece[1:] + self.current_piece[:1]
+    def rotate_shape(self):
+        self.current_shape = [list(row) for row in zip(*self.current_shape[::-1])]
 
-    def valid_position(self, dx=0, dy=0):
-        for y, row in enumerate(self.current_piece[0]):
-            for x, cell in enumerate(row):
-                if cell == 'X':
-                    new_x = self.current_x + x + dx
-                    new_y = self.current_y + y + dy
-                    if new_x < 0 or new_x >= BOARD_WIDTH or new_y >= BOARD_HEIGHT:
-                        return False
-                    if new_y >= 0 and self.board[new_y][new_x] == 'X':
+    def can_move(self, dx, dy):
+        for i, row in enumerate(self.current_shape):
+            for j, cell in enumerate(row):
+                if cell == '#':
+                    x, y = self.current_position[0] + i + dy, self.current_position[1] + j + dx
+                    if x < 0 or x >= len(self.board) or y < 0 or y >= len(self.board[0]) or (y < len(self.board[0]) and self.board[x][y] == '#'):
                         return False
         return True
 
-    def merge_piece(self):
-        for y, row in enumerate(self.current_piece[0]):
-            for x, cell in enumerate(row):
-                if cell == 'X':
-                    self.board[self.current_y + y][self.current_x + x] = 'X'
+    def merge_shape(self):
+        for i, row in enumerate(self.current_shape):
+            for j, cell in enumerate(row):
+                if cell == '#':
+                    self.board[self.current_position[0] + i][self.current_position[1] + j] = '#'
 
     def clear_lines(self):
-        lines_to_clear = [i for i, row in enumerate(self.board) if all(cell == 'X' for cell in row)]
-        for i in lines_to_clear:
-            self.board.pop(i)
-            self.board.insert(0, ['.' for _ in range(BOARD_WIDTH)])
-        self.score += len(lines_to_clear)
-
-    def drop_piece(self):
-        if self.valid_position(dy=1):
-            self.current_y += 1
-        else:
-            self.merge_piece()
-            self.clear_lines()
-            self.current_piece = self.new_piece()
-            self.current_x = BOARD_WIDTH // 2 - 1
-            self.current_y = 0
-            if not self.valid_position():
-                self.game_over = True
+        cleared_lines = 0
+        for i in range(len(self.board) - 1, -1, -1):
+            if all(cell == '#' for cell in self.board[i]):
+                cleared_lines += 1
+                del self.board[i]
+                self.board.insert(0, [' ' for _ in range(10)])
+        self.score += cleared_lines
 
     def print_board(self):
         os.system('cls' if os.name == 'nt' else 'clear')
-        print(f"Score: {self.score}")
         for row in self.board:
-            print(' '.join(row))
-        print()
+            print('|' + ''.join(row) + '|')
+        print(f'Score: {self.score}')
+        print('Controls: [A] Left, [D] Right, [S] Down, [W] Rotate, [Q] Quit')
 
-def game_loop(game):
-    while not game.game_over:
-        game.drop_piece()
-        game.print_board()
-        time.sleep(0.5)
+    def drop(self):
+        while self.can_move(0, 1):
+            self.current_position = (self.current_position[0] + 1, self.current_position[1])
+            self.print_board()
+            time.sleep(0.5)
+        self.merge_shape()
+        self.clear_lines()
+        self.new_shape()
+        if not self.can_move(0, 0):
+            self.game_over = True
 
-def main():
+    def play(self):
+        self.new_shape()
+        while not self.game_over:
+            self.print_board()
+            if msvcrt.kbhit():
+                key = msvcrt.getch()
+                if key == b'a' and self.can_move(-1, 0):
+                    self.current_position = (self.current_position[0], self.current_position[1] - 1)
+                elif key == b'd' and self.can_move(1, 0):
+                    self.current_position = (self.current_position[0], self.current_position[1] + 1)
+                elif key == b's' and self.can_move(0, 1):
+                    self.current_position = (self.current_position[0] + 1, self.current_position[1])
+                elif key == b'w':
+                    self.rotate_shape()
+                    if not self.can_move(0, 0):
+                        self.rotate_shape()  # Undo rotate if not valid
+                elif key == b'q':
+                    break
+            self.drop()
+        print("Game Over! Your score was:", self.score)
+
+if __name__ == "__main__":
     game = Tetris()
-    threading.Thread(target=game_loop, args=(game,), daemon=True).start()
-    
-    while not game.game_over:
-        command = input("Enter command (a: left, d: right, s: down, r: rotate, q: quit): ").strip()
-        if command == 'a':
-            if game.valid_position(dx=-1):
-                game.current_x -= 1
-        elif command == 'd':
-            if game.valid_position(dx=1):
-                game.current_x += 1
-        elif command == 's':
-            game.drop_piece()
-        elif command == 'r':
-            game.rotate_piece()
-            if not game.valid_position():
-                game.rotate_piece()
-        elif command == 'q':
-            game.game_over = True
-
-    print("Game Over! Your score was:", game.score)
-
-if __name__ == '__main__':
-    main()
+    game.play()

@@ -1,67 +1,59 @@
 import random
 import curses
 
-# Initialize the curses module
-stdscr = curses.initscr()
-curses.curs_set(0)
-sh, sw = stdscr.getmaxyx()  # Get height and width of window
-w = curses.newwin(sh, sw, 0, 0)  # Create a new window
-w.keypad(1)  # Enable keypad input
-w.timeout(100)  # Refresh window every 100 milliseconds
+class SnakeGame:
+    def __init__(self, height=20, width=60):
+        self.height = height
+        self.width = width
+        self.window = curses.initscr()
+        self.window.keypad(1)
+        self.window.timeout(100)
+        self.snake = [[height // 2, width // 4]]
+        self.snake_direction = curses.KEY_RIGHT
+        self.food = self.place_food()
+        self.score = 0
 
-# Initial snake and food positions
-snk_x = sw // 4
-snk_y = sh // 2
-snake = [
-    [snk_y, snk_x],
-    [snk_y, snk_x - 1],
-    [snk_y, snk_x - 2]
-]
-food = [sh // 2, sw // 2]
-w.addch(int(food[0]), int(food[1]), curses.ACS_PI)
+    def place_food(self):
+        while True:
+            food = [random.randint(1, self.height - 1), random.randint(1, self.width - 1)]
+            if food not in self.snake:
+                return food
 
-key = curses.KEY_RIGHT  # Initial direction
+    def run(self):
+        while True:
+            next_key = self.window.getch()
+            self.snake_direction = next_key if next_key in [curses.KEY_RIGHT, curses.KEY_LEFT, curses.KEY_UP, curses.KEY_DOWN] else self.snake_direction
 
-while True:
-    next_key = w.getch()
-    key = key if next_key == -1 else next_key
+            new_head = self.snake[0][:]
+            if self.snake_direction == curses.KEY_DOWN:
+                new_head[0] += 1
+            elif self.snake_direction == curses.KEY_UP:
+                new_head[0] -= 1
+            elif self.snake_direction == curses.KEY_LEFT:
+                new_head[1] -= 1
+            elif self.snake_direction == curses.KEY_RIGHT:
+                new_head[1] += 1
 
-    # Calculate new head of the snake
-    new_head = [snake[0][0], snake[0][1]]
+            if new_head in self.snake or new_head[0] in [0, self.height] or new_head[1] in [0, self.width]:
+                curses.endwin()
+                print("Game Over! Your score is: {}".format(self.score))
+                break
 
-    if key == curses.KEY_DOWN:
-        new_head[0] += 1
-    if key == curses.KEY_UP:
-        new_head[0] -= 1
-    if key == curses.KEY_LEFT:
-        new_head[1] -= 1
-    if key == curses.KEY_RIGHT:
-        new_head[1] += 1
+            self.snake.insert(0, new_head)
 
-    # Check for collision with borders or self
-    if (new_head[0] in [0, sh] or
-        new_head[1] in [0, sw] or
-        new_head in snake):
-        curses.endwin()
-        quit()
+            if self.snake[0] == self.food:
+                self.score += 1
+                self.food = self.place_food()
+            else:
+                self.snake.pop()
 
-    # Insert new head
-    snake.insert(0, new_head)
+            self.window.clear()
+            self.window.border(0)
+            self.window.addstr(0, 2, 'Score: {}'.format(self.score))
+            self.window.addch(int(self.food[0]), int(self.food[1]), curses.ACS_PI)
+            for segment in self.snake:
+                self.window.addch(int(segment[0]), int(segment[1]), curses.ACS_CKBOARD)
+            self.window.refresh()
 
-    # Check if snake has eaten the food
-    if snake[0] == food:
-        food = None
-        while food is None:
-            nf = [
-                random.randint(1, sh - 1),
-                random.randint(1, sw - 1)
-            ]
-            food = nf if nf not in snake else None
-        w.addch(int(food[0]), int(food[1]), curses.ACS_PI)
-    else:
-        # Remove the last segment of the snake
-        tail = snake.pop()
-        w.addch(int(tail[0]), int(tail[1]), ' ')
-
-    # Draw the snake
-    w.addch(int(snake[0][0]), int(snake[0][1]), curses.ACS_CKBOARD)
+if __name__ == "__main__":
+    curses.wrapper(SnakeGame().run)

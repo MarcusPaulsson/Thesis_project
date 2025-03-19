@@ -1,151 +1,182 @@
 import random
 
-def play_hammurabi():
-    """Plays the game Hammurabi."""
+class Hammurabi:
+    """
+    A class to represent the game Hammurabi.
+    """
 
-    year = 1
-    population = 100
-    grain_stores = 2800
-    acres_owned = 1000
-    bushels_per_acre = 3
-    deaths_from_starvation = 0
+    def __init__(self):
+        """
+        Initializes the game with default values.
+        """
+        self.year = 1
+        self.population = 100
+        self.grain = 2800
+        self.acres = 3000
+        self.price_land = 19  # Initial price of land (randomized later)
+        self.deaths = 0
+        self.starved = 0
+        self.harvest = 3
+        self.rats_ate = 200
+        self.immigrants = 5
 
-    print("Congratulations, you are the newly appointed ruler of ancient Sumeria!")
-    print("Your reign begins in a time of plenty.  However, you face challenges:")
-    print(" - People will starve if you do not provide enough grain.")
-    print(" - Rats will eat your grain if you store too much.")
-    print(" - The price of land will vary from year to year.")
-    print(" - The amount of grain harvested per acre will also vary.")
-    print("You must rule wisely, or you will be deposed!")
+    def play_year(self):
+        """
+        Plays one year of the game.
+        """
+        print(f"\nYear {self.year}")
+        print(f"You are in year {self.year} of your ten-year rule.")
+        print(f"In the previous year {self.deaths} people starved to death.")
+        print(f"The population is now {self.population}.")
+        print(f"You harvested {self.harvest} bushels per acre.")
+        print(f"Rats ate {self.rats_ate} bushels.")
+        print(f"You now have {self.grain} bushels of grain in storage.")
+        print(f"The city owns {self.acres} acres of land.")
+        print(f"Land is trading at {self.price_land} bushels per acre.")
 
-    while year <= 10:
-        print("\nYear", year)
-        print("Population is", population)
-        print("Grain stores are", grain_stores, "bushels")
-        print("You own", acres_owned, "acres of land")
-        print("Harvest was", bushels_per_acre, "bushels per acre")
-        print("Deaths from starvation last year:", deaths_from_starvation)
+        self.ask_actions()
+        self.calculate_year_end()
 
-        # Land Price
-        land_price = random.randint(17, 23)
-        print("Land is selling for", land_price, "bushels per acre")
+    def ask_actions(self):
+        """
+        Asks the player for actions to take.
+        """
+        while True:
+            try:
+                self.buy_sell = int(input("How many acres do you wish to buy/sell? "))
+                if self.buy_sell < 0:  # Selling land
+                    if abs(self.buy_sell) > self.acres:
+                        print("Hammurabi: Think again. You only own", self.acres, "acres.")
+                        continue
+                elif self.buy_sell > 0:  # Buying land
+                    if self.buy_sell * self.price_land > self.grain:
+                        print("Hammurabi: Think again. You only have", self.grain, "bushels of grain.")
+                        continue
+                break
+            except ValueError:
+                print("Invalid input. Please enter an integer.")
+
+        while True:
+            try:
+                self.feed = int(input("How many bushels do you wish to feed your people? "))
+                if self.feed > self.grain:
+                    print("Hammurabi: Think again. You only have", self.grain, "bushels of grain.")
+                    continue
+                break
+            except ValueError:
+                print("Invalid input. Please enter an integer.")
+
+        while True:
+            try:
+                self.plant = int(input("How many acres do you wish to plant with grain? "))
+                if self.plant > self.acres:
+                    print("Hammurabi: Think again. You only have", self.acres, "acres.")
+                    continue
+                if self.plant > self.grain:
+                    print("Hammurabi: Think again. You only have", self.grain, "bushels of grain.")
+                    continue
+                if self.plant > self.population * 10:
+                    print("Hammurabi: Think again. You only have", self.population, "people to tend the fields.")
+                    continue
+                break
+            except ValueError:
+                print("Invalid input. Please enter an integer.")
+
+    def calculate_year_end(self):
+        """
+        Calculates the results of the year.
+        """
 
         # Buy/Sell Land
-        while True:
-            try:
-                land_to_buy = int(input("How many acres do you wish to buy? "))
-                if land_to_buy < 0:
-                    print("You can't buy a negative number of acres.")
-                    continue
-                if land_to_buy * land_price > grain_stores:
-                    print("You do not have enough grain to buy that much land.")
-                    continue
-                break
-            except ValueError:
-                print("Please enter a valid number.")
+        self.acres += self.buy_sell  # Acres owned are updated
+        self.grain -= self.buy_sell * self.price_land # Grain is updated
 
-        grain_stores -= land_to_buy * land_price
-        acres_owned += land_to_buy
+        # Calculate starvation
+        self.starved = 0
+        if self.feed < self.population * 20:
+            self.starved = int((self.population * 20 - self.feed) / 20)
+            if self.starved > self.population:
+                self.starved = self.population
+            self.population -= self.starved
 
-        while True:
-            try:
-                land_to_sell = int(input("How many acres do you wish to sell? "))
-                if land_to_sell < 0:
-                    print("You can't sell a negative number of acres.")
-                    continue
-                if land_to_sell > acres_owned:
-                    print("You do not own that much land.")
-                    continue
-                break
-            except ValueError:
-                print("Please enter a valid number.")
+        # Calculate immigration
+        self.immigrants = 0
+        if self.starved == 0:
+            self.immigrants = int(random.randint(0, 5) * (20 * self.acres + self.grain) / self.population / 100)
+        self.population += self.immigrants
 
-        grain_stores += land_to_sell * land_price
-        acres_owned -= land_to_sell
-
-        # Feed People
-        while True:
-            try:
-                grain_to_feed = int(input("How many bushels do you wish to feed your people? "))
-                if grain_to_feed < 0:
-                    print("You can't feed them a negative amount of grain.")
-                    continue
-                if grain_to_feed > grain_stores:
-                    print("You do not have enough grain to feed them that much.")
-                    continue
-                break
-            except ValueError:
-                print("Please enter a valid number.")
-
-        grain_stores -= grain_to_feed
-
-        # Planting
-        while True:
-            try:
-                acres_to_plant = int(input("How many acres do you wish to plant with grain? "))
-                if acres_to_plant < 0:
-                    print("You can't plant a negative number of acres.")
-                    continue
-                if acres_to_plant > acres_owned:
-                    print("You do not own that much land.")
-                    continue
-                if acres_to_plant > population * 10:
-                    print("You do not have enough people to plant that many acres.")
-                    continue
-                if acres_to_plant > grain_stores:
-                    print("You do not have enough grain to plant that many acres.")
-                    continue
-
-                break
-            except ValueError:
-                print("Please enter a valid number.")
-
-        grain_stores -= acres_to_plant
-
-        # Harvest
-        bushels_per_acre = random.randint(1, 6)
-        harvested_grain = acres_to_plant * bushels_per_acre
-        grain_stores += harvested_grain
-
-        # Rats
-        rat_infestation = random.randint(0, 100)
-        if rat_infestation < 40:
-            rat_loss = int(grain_stores * random.uniform(0.1, 0.3))
-            grain_stores -= rat_loss
-            print("Rats ate", rat_loss, "bushels of grain!")
-        else:
-            rat_loss = 0
-
-        # Starvation
-        people_fed = grain_to_feed // 20  # Each person needs 20 bushels
-        deaths_from_starvation = population - people_fed
-        if deaths_from_starvation < 0:
-            deaths_from_starvation = 0
-
-        population -= deaths_from_starvation
-
-        # Immigration
-        immigration = int(random.uniform(0.05, 0.15) * (100 - deaths_from_starvation))
-        if immigration < 0:
-            immigration = 0 # avoid negative populations
-        population += immigration
-
-        if population <= 0:
-            print("\nYour entire population has died.  Your reign is over.")
-            break
-
-        # Check for Deposition
-        if deaths_from_starvation > population * 0.45:
-            print("\nToo many people starved! You are deposed by the angry mob!")
-            break
+        # Calculate harvest
+        self.harvest = random.randint(1, 6)  # Random harvest yield
+        self.grain += self.plant * self.harvest
         
-        year += 1
+        # Rats attack
+        self.rats_ate = 0
+        if random.randint(0, 1) == 0:
+            self.rats_ate = int(self.grain * random.uniform(0.1, 0.3))
+            self.grain -= self.rats_ate
 
-    # End Game
-    if year > 10:
-        print("\nYour reign has ended after 10 years.")
-        print("You ruled", acres_owned, "acres of land with a population of", population, "people.")
+        # Calculate new grain amount
+        self.grain -= self.feed
+        self.grain -= self.plant
 
+        # Plague
+        self.deaths = 0
+        if random.randint(0, 15) == 0:
+            self.deaths = int(self.population / 2)
+            self.population -= self.deaths
+            print("A horrible plague struck! Half the people died.")
+
+        # Calculate new land price
+        self.price_land = random.randint(17, 23)
+
+    def is_game_over(self):
+        """
+        Checks if the game is over.
+        """
+        if self.year > 10:
+            return True
+        if self.population <= 0:
+            print("Due to your poor leadership, everyone has died.  The game is over.")
+            return True
+        if self.starved > (0.45 * self.population):
+            print("You starved more than 45% of the population! You are immediately deposed by force!")
+            return True
+        return False
+
+    def calculate_score(self):
+        """
+        Calculates the player's score.
+        """
+        acres_per_person = self.acres / self.population
+        print("\nFinal Report:")
+        print(f"You ruled for {self.year - 1} years.")
+        print(f"You ended with {self.population} people.")
+        print(f"You owned {self.acres} acres of land.")
+        print(f"Acres per person: {acres_per_person:.2f}")
+
+        if acres_per_person > 10:
+            print("A fantastic performance!  Well done!")
+        elif acres_per_person > 7:
+            print("Your performance could have been better.")
+        elif acres_per_person > 5:
+            print("Your performance was adequate.")
+        else:
+            print("Your performance was poor.  You are banished from the kingdom.")
+
+    def play_game(self):
+        """
+        Plays the entire game.
+        """
+        print("Welcome to the ancient Sumerian city state game of Hammurabi!\n")
+        print("Try your hand at governing a city state for ten years.")
+
+        while not self.is_game_over():
+            self.play_year()
+            self.year += 1
+
+        if self.year > 10:
+            self.calculate_score()
 
 if __name__ == "__main__":
-    play_hammurabi()
+    game = Hammurabi()
+    game.play_game()

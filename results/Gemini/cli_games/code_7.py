@@ -3,114 +3,106 @@ import time
 import os
 import random
 
-def create_grid(rows, cols, random_fill=False, density=0.5):
-    """Creates a grid for the Game of Life.
 
-    Args:
-        rows: Number of rows in the grid.
-        cols: Number of columns in the grid.
-        random_fill: If True, fills the grid randomly.
-        density: Probability of a cell being alive if random_fill is True.
-
-    Returns:
-        A 2D list representing the grid.  Alive cells are 1, dead cells are 0.
+class GameOfLife:
     """
-    grid = [[0 for _ in range(cols)] for _ in range(rows)]
-    if random_fill:
-        for i in range(rows):
-            for j in range(cols):
-                if random.random() < density:
-                    grid[i][j] = 1
-    return grid
-
-def print_grid(grid):
-    """Prints the grid to the console.
-
-    Args:
-        grid: The grid to print.
+    Implementation of Conway's Game of Life.
     """
-    os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console
-    for row in grid:
-        print(''.join(['#' if cell else ' ' for cell in row]))
 
+    def __init__(self, width, height, initial_density=0.3):
+        """
+        Initializes the Game of Life grid.
 
-def get_neighbors(grid, row, col):
-    """Gets the number of live neighbors for a given cell.
+        Args:
+            width (int): Width of the grid.
+            height (int): Height of the grid.
+            initial_density (float): Probability of a cell being alive initially (0 to 1).
+        """
+        self.width = width
+        self.height = height
+        self.grid = [[(random.random() < initial_density) for _ in range(width)] for _ in range(height)]
 
-    Args:
-        grid: The grid.
-        row: The row of the cell.
-        col: The column of the cell.
+    def __str__(self):
+        """
+        Returns a string representation of the grid.
+        """
+        output = ""
+        for row in self.grid:
+            output += "".join(["#" if cell else " " for cell in row]) + "\n"
+        return output
 
-    Returns:
-        The number of live neighbors.
-    """
-    rows = len(grid)
-    cols = len(grid[0])
-    neighbors = 0
-    for i in range(max(0, row - 1), min(rows, row + 2)):
-        for j in range(max(0, col - 1), min(cols, col + 2)):
-            if (i, j) != (row, col):
-                neighbors += grid[i][j]
-    return neighbors
+    def clear_screen(self):
+        """
+        Clears the console screen.
+        """
+        os.system('cls' if os.name == 'nt' else 'clear')
 
+    def get_neighbors(self, row, col):
+        """
+        Gets the number of alive neighbors for a given cell.
 
-def next_generation(grid):
-    """Calculates the next generation of the grid.
+        Args:
+            row (int): Row index of the cell.
+            col (int): Column index of the cell.
 
-    Args:
-        grid: The current grid.
+        Returns:
+            int: Number of alive neighbors.
+        """
+        neighbors = 0
+        for i in range(max(0, row - 1), min(self.height, row + 2)):
+            for j in range(max(0, col - 1), min(self.width, col + 2)):
+                if (i, j) != (row, col) and self.grid[i][j]:
+                    neighbors += 1
+        return neighbors
 
-    Returns:
-        The next generation grid.
-    """
-    rows = len(grid)
-    cols = len(grid[0])
-    new_grid = [[0 for _ in range(cols)] for _ in range(rows)]
-    for i in range(rows):
-        for j in range(cols):
-            neighbors = get_neighbors(grid, i, j)
-            if grid[i][j] == 1:  # Alive cell
-                if neighbors < 2 or neighbors > 3:
-                    new_grid[i][j] = 0  # Dies
-                else:
-                    new_grid[i][j] = 1  # Survives
-            else:  # Dead cell
-                if neighbors == 3:
-                    new_grid[i][j] = 1  # Becomes alive
-    return new_grid
+    def update(self):
+        """
+        Updates the grid to the next generation.
+        """
+        new_grid = [[False for _ in range(self.width)] for _ in range(self.height)]
 
+        for row in range(self.height):
+            for col in range(self.width):
+                neighbors = self.get_neighbors(row, col)
+                if self.grid[row][col]:  # Alive cell
+                    if neighbors == 2 or neighbors == 3:
+                        new_grid[row][col] = True
+                else:  # Dead cell
+                    if neighbors == 3:
+                        new_grid[row][col] = True
 
-def game_of_life(rows, cols, generations, delay, random_fill, density):
-    """Runs the Game of Life simulation.
+        self.grid = new_grid
 
-    Args:
-        rows: Number of rows in the grid.
-        cols: Number of columns in the grid.
-        generations: Number of generations to simulate.
-        delay: Delay between generations in seconds.
-        random_fill: If True, fills the grid randomly.
-        density: Probability of a cell being alive if random_fill is True.
-    """
-    grid = create_grid(rows, cols, random_fill, density)
-    for _ in range(generations):
-        print_grid(grid)
-        time.sleep(delay)
-        grid = next_generation(grid)
+    def run(self, generations, delay=0.1):
+        """
+        Runs the Game of Life for a specified number of generations.
+
+        Args:
+            generations (int): Number of generations to run.
+            delay (float): Delay in seconds between each generation.
+        """
+        for _ in range(generations):
+            self.clear_screen()
+            print(self)
+            self.update()
+            time.sleep(delay)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Conway's Game of Life")
-    parser.add_argument("-r", "--rows", type=int, default=20, help="Number of rows")
-    parser.add_argument("-c", "--cols", type=int, default=40, help="Number of columns")
-    parser.add_argument("-g", "--generations", type=int, default=100, help="Number of generations")
-    parser.add_argument("-d", "--delay", type=float, default=0.1, help="Delay between generations (seconds)")
-    parser.add_argument("-rand", "--random", action="store_true", help="Fill grid randomly")
-    parser.add_argument("--density", type=float, default=0.5, help="Density of live cells for random fill")
+    """
+    Main function to parse command-line arguments and run the Game of Life.
+    """
+    parser = argparse.ArgumentParser(description="Conway's Game of Life in Python")
+    parser.add_argument("--width", type=int, default=60, help="Width of the grid (default: 60)")
+    parser.add_argument("--height", type=int, default=30, help="Height of the grid (default: 30)")
+    parser.add_argument("--generations", type=int, default=100, help="Number of generations to run (default: 100)")
+    parser.add_argument("--delay", type=float, default=0.1, help="Delay between generations in seconds (default: 0.1)")
+    parser.add_argument("--density", type=float, default=0.3, help="Initial density of alive cells (default: 0.3)")
 
     args = parser.parse_args()
 
-    game_of_life(args.rows, args.cols, args.generations, args.delay, args.random, args.density)
+    game = GameOfLife(args.width, args.height, args.density)
+    game.run(args.generations, args.delay)
 
 
 if __name__ == "__main__":

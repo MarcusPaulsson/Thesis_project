@@ -1,179 +1,102 @@
 import random
 
 class LightsOut:
+    """
+    A class representing the Lights Out game.
+    """
+
     def __init__(self, size=5, initial_state=None):
         """
-        Initializes the Lights Out game.
+        Initializes the game board.
 
         Args:
-            size (int): The size of the grid (size x size). Default is 5.
-            initial_state (list of lists, optional): An initial grid state. If None, a random state is generated.
+            size (int): The size of the board (size x size).  Defaults to 5.
+            initial_state (list of lists):  An optional initial state for the board.
+                                          If None, generates a random initial state.
         """
         self.size = size
         if initial_state is None:
-            self.grid = self.generate_random_grid()
+            self.board = self.generate_random_board()
         else:
             if len(initial_state) != size or any(len(row) != size for row in initial_state):
-                raise ValueError("Initial state must be a square grid of the specified size.")
-            self.grid = [list(row) for row in initial_state]  # Create a copy to avoid modifying the original
-        self.moves = 0
+                raise ValueError("Initial state must be a square matrix of the specified size.")
+            self.board = initial_state
 
-    def generate_random_grid(self):
+    def generate_random_board(self):
         """
-        Generates a random grid for the game.
-
-        Returns:
-            list of lists: A random grid of 0s and 1s.
-        """
-        return [[random.randint(0, 1) for _ in range(self.size)] for _ in range(self.size)]
-
-    def __str__(self):
-        """
-        Returns a string representation of the game grid.
+        Generates a random board state.
 
         Returns:
-            str: A string representation of the grid.
+            list of lists: A 2D list representing the board.
         """
-        grid_str = ""
-        for row in self.grid:
-            grid_str += " ".join(map(str, row)) + "\n"
-        return grid_str
+        board = [[random.randint(0, 1) for _ in range(self.size)] for _ in range(self.size)]
+        return board
 
-    def toggle(self, row, col):
+    def print_board(self):
         """
-        Toggles the state of a cell (0 to 1, or 1 to 0).
+        Prints the current state of the board to the console.
+        """
+        for row in self.board:
+            print(" ".join(map(str, row)))
+
+    def toggle_light(self, row, col):
+        """
+        Toggles the light at the given row and column.
 
         Args:
-            row (int): The row index of the cell.
-            col (int): The column index of the cell.
+            row (int): The row of the light to toggle.
+            col (int): The column of the light to toggle.
         """
         if 0 <= row < self.size and 0 <= col < self.size:
-            self.grid[row][col] = 1 - self.grid[row][col]
+            self.board[row][col] = 1 - self.board[row][col]  # Flip 0 to 1 and 1 to 0
 
-    def press_button(self, row, col):
+    def make_move(self, row, col):
         """
-        Presses a button at the given coordinates, toggling the cell and its neighbors.
+        Makes a move by toggling the selected light and its neighbors.
 
         Args:
-            row (int): The row index of the button.
-            col (int): The column index of the button.
+            row (int): The row of the light to toggle.
+            col (int): The column of the light to toggle.
         """
-        self.toggle(row, col)
-        self.toggle(row - 1, col)  # Toggle above
-        self.toggle(row + 1, col)  # Toggle below
-        self.toggle(row, col - 1)  # Toggle left
-        self.toggle(row, col + 1)  # Toggle right
-        self.moves += 1
+        self.toggle_light(row, col)  # Toggle the selected light
+        self.toggle_light(row - 1, col)  # Toggle the light above
+        self.toggle_light(row + 1, col)  # Toggle the light below
+        self.toggle_light(row, col - 1)  # Toggle the light to the left
+        self.toggle_light(row, col + 1)  # Toggle the light to the right
 
     def is_solved(self):
         """
-        Checks if the game is solved (all cells are 0).
+        Checks if the game is solved (all lights are off).
 
         Returns:
             bool: True if the game is solved, False otherwise.
         """
-        return all(cell == 0 for row in self.grid for cell in row)
+        return all(all(light == 0 for light in row) for row in self.board)
 
-    def solve(self):
+    def play(self):
         """
-        Solves the game using Gaussian elimination (advanced).  This is optional, but useful for generating solvable puzzles.
+        Plays the game through the command line.
         """
-        # Create a matrix representing the game's equations.
-        matrix = []
-        for i in range(self.size):
-            for j in range(self.size):
-                row = [0] * (self.size * self.size)
-                row[i * self.size + j] = 1  # The cell itself
+        print("Welcome to Lights Out!")
+        self.print_board()
 
-                # Neighbors
-                if i > 0:
-                    row[(i - 1) * self.size + j] = 1
-                if i < self.size - 1:
-                    row[(i + 1) * self.size + j] = 1
-                if j > 0:
-                    row[i * self.size + (j - 1)] = 1
-                if j < self.size - 1:
-                    row[i * self.size + (j + 1)] = 1
+        while not self.is_solved():
+            try:
+                move = input(f"Enter your move (row, col) [0-{self.size-1}]: ").split(",")
+                row = int(move[0].strip())
+                col = int(move[1].strip())
 
-                matrix.append(row)
+                if 0 <= row < self.size and 0 <= col < self.size:
+                    self.make_move(row, col)
+                    self.print_board()
+                else:
+                    print("Invalid move. Row and column must be within the board boundaries.")
+            except (ValueError, IndexError):
+                print("Invalid input.  Please enter row and column as integers separated by a comma.")
 
-        # Augment the matrix with the initial state.
-        b = [self.grid[i // self.size][i % self.size] for i in range(self.size * self.size)]
-        augmented_matrix = [row + [b[i]] for i, row in enumerate(matrix)]
-
-        # Gaussian elimination (mod 2).
-        for i in range(self.size * self.size):
-            # Find pivot
-            pivot_row = i
-            for k in range(i + 1, self.size * self.size):
-                if augmented_matrix[k][i] == 1:
-                    pivot_row = k
-                    break
-
-            if augmented_matrix[pivot_row][i] == 0:
-                continue  # No pivot in this column
-
-            # Swap rows if necessary
-            if pivot_row != i:
-                augmented_matrix[i], augmented_matrix[pivot_row] = augmented_matrix[pivot_row], augmented_matrix[i]
-
-            # Eliminate other rows
-            for k in range(self.size * self.size):
-                if k != i and augmented_matrix[k][i] == 1:
-                    for j in range(i, self.size * self.size + 1):
-                        augmented_matrix[k][j] = (augmented_matrix[k][j] - augmented_matrix[i][j]) % 2
-
-        # Back substitution
-        solution = [0] * (self.size * self.size)
-        for i in range(self.size * self.size - 1, -1, -1):
-            if augmented_matrix[i][i] == 1:
-                solution[i] = augmented_matrix[i][-1]
-
-        # Apply the solution to the grid
-        for i in range(self.size):
-            for j in range(self.size):
-                if solution[i * self.size + j] == 1:
-                    self.press_button(i, j)
-
-def play_game():
-    """
-    Plays the Lights Out game in the command line.
-    """
-    size = 5
-    while True:
-        try:
-            size = int(input("Enter the size of the grid (default is 5): ") or 5)
-            if size < 2:
-                print("Grid size must be at least 2.")
-            else:
-                break
-        except ValueError:
-            print("Invalid input. Please enter an integer.")
-
-    game = LightsOut(size)
-    print("Initial grid:")
-    print(game)
-
-    while not game.is_solved():
-        try:
-            row, col = map(int, input("Enter the row and column to press (e.g., 0 0), or 'q' to quit: ").split())
-            game.press_button(row, col)
-            print(game)
-            print(f"Moves: {game.moves}")
-        except ValueError:
-            user_input = input("Enter the row and column to press (e.g., 0 0), or 'q' to quit: ")
-            if user_input.lower() == 'q':
-                print("Quitting the game.")
-                return
-            else:
-                print("Invalid input. Please enter two integers separated by a space or 'q'.")
-        except IndexError:
-            print("Invalid input. Please enter two integers separated by a space.")
-
-
-    print("Congratulations! You solved the puzzle.")
-    print(f"Total moves: {game.moves}")
+        print("Congratulations! You solved the puzzle!")
 
 
 if __name__ == "__main__":
-    play_game()
+    game = LightsOut(size=5)  # You can change the size of the board here
+    game.play()

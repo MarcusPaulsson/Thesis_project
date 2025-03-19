@@ -5,66 +5,96 @@ class Minesweeper:
         self.width = width
         self.height = height
         self.mines = mines
-        self.board = self.create_board()
-        self.revealed = [[False] * width for _ in range(height)]
+        self.board = [[' ' for _ in range(width)] for _ in range(height)]
+        self.revealed = [[' ' for _ in range(width)] for _ in range(height)]
         self.game_over = False
+        self.flags = 0
+        self.place_mines()
+        self.calculate_numbers()
 
-    def create_board(self):
-        board = [['0'] * self.width for _ in range(self.height)]
-        mine_positions = random.sample(range(self.width * self.height), self.mines)
+    def place_mines(self):
+        mine_locations = random.sample(range(self.width * self.height), self.mines)
+        for location in mine_locations:
+            row = location // self.width
+            col = location % self.width
+            self.board[row][col] = 'M'
 
-        for pos in mine_positions:
-            row, col = divmod(pos, self.width)
-            board[row][col] = '*'
-            for r in range(max(0, row - 1), min(self.height, row + 2)):
-                for c in range(max(0, col - 1), min(self.width, col + 2)):
-                    if board[r][c] != '*':
-                        board[r][c] = str(int(board[r][c]) + 1)
-
-        return board
-
-    def reveal(self, row, col):
-        if self.revealed[row][col]:
-            return
-        self.revealed[row][col] = True
-
-        if self.board[row][col] == '*':
-            self.game_over = True
-            return
-        elif self.board[row][col] == '0':
-            for r in range(max(0, row - 1), min(self.height, row + 2)):
-                for c in range(max(0, col - 1), min(self.width, col + 2)):
-                    if not self.revealed[r][c]:
-                        self.reveal(r, c)
-
-    def print_board(self):
+    def calculate_numbers(self):
         for r in range(self.height):
             for c in range(self.width):
-                if self.revealed[r][c]:
-                    print(self.board[r][c], end=' ')
-                else:
-                    print('.', end=' ')
-            print()
-        print()
+                if self.board[r][c] == 'M':
+                    continue
+                self.board[r][c] = str(self.count_mines(r, c))
+
+    def count_mines(self, row, col):
+        count = 0
+        for r in range(max(0, row - 1), min(self.height, row + 2)):
+            for c in range(max(0, col - 1), min(self.width, col + 2)):
+                if self.board[r][c] == 'M':
+                    count += 1
+        return count
+
+    def reveal(self, row, col):
+        if self.game_over or self.revealed[row][col] != ' ':
+            return
+
+        self.revealed[row][col] = self.board[row][col]
+
+        if self.board[row][col] == 'M':
+            self.game_over = True
+            return
+
+        if self.board[row][col] == '0':
+            for r in range(max(0, row - 1), min(self.height, row + 2)):
+                for c in range(max(0, col - 1), min(self.width, col + 2)):
+                    self.reveal(r, c)
+
+    def flag(self, row, col):
+        if self.revealed[row][col] == ' ':
+            self.revealed[row][col] = 'F'
+            self.flags += 1
+        elif self.revealed[row][col] == 'F':
+            self.revealed[row][col] = ' '
+            self.flags -= 1
+
+    def print_board(self):
+        print(' ' + ' '.join(str(i) for i in range(self.width)))
+        for r in range(self.height):
+            print(r, ' '.join(self.revealed[r]))
+
+    def check_win(self):
+        for r in range(self.height):
+            for c in range(self.width):
+                if self.board[r][c] != 'M' and self.revealed[r][c] == ' ':
+                    return False
+        return True
 
     def play(self):
         while not self.game_over:
             self.print_board()
-            try:
-                row, col = map(int, input("Enter row and column to reveal (e.g., 0 1): ").split())
-                if 0 <= row < self.height and 0 <= col < self.width:
-                    self.reveal(row, col)
-                else:
-                    print("Invalid input. Please enter valid coordinates.")
-            except ValueError:
-                print("Invalid input. Please enter two integers.")
+            command = input("Enter command (reveal/flag) and coordinates (row col): ").split()
+            if len(command) != 3:
+                print("Invalid input. Please enter a command followed by row and column.")
+                continue
 
-        print("Game Over! You hit a mine.")
-        self.print_board()
+            cmd, row, col = command[0], int(command[1]), int(command[2])
+
+            if cmd == 'reveal':
+                self.reveal(row, col)
+            elif cmd == 'flag':
+                self.flag(row, col)
+            else:
+                print("Invalid command. Use 'reveal' or 'flag'.")
+
+            if self.check_win():
+                print("Congratulations! You've won!")
+                break
+
+        if self.game_over:
+            self.revealed = self.board
+            self.print_board()
+            print("Game over! You hit a mine.")
 
 if __name__ == "__main__":
-    width = 10
-    height = 10
-    mines = 10
-    game = Minesweeper(width, height, mines)
+    game = Minesweeper(width=10, height=10, mines=10)
     game.play()

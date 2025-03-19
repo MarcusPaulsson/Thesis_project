@@ -3,120 +3,155 @@ import random
 import os
 
 class Pong:
-    def __init__(self, width=60, height=20):
+    """
+    A command-line Pong game.
+    """
+
+    def __init__(self, width=60, height=20, paddle_length=4, ball_speed=1, ai_speed=1):
+        """
+        Initializes the Pong game.
+
+        Args:
+            width (int): Width of the game board.
+            height (int): Height of the game board.
+            paddle_length (int): Length of the paddles.
+            ball_speed (int): Initial speed of the ball.
+            ai_speed (int): Initial speed of the AI paddle.
+        """
         self.width = width
         self.height = height
+        self.paddle_length = paddle_length
+        self.ball_speed = ball_speed
+        self.ai_speed = ai_speed
+
+        self.player_paddle_x = 1
+        self.player_paddle_y = height // 2 - paddle_length // 2
+        self.ai_paddle_x = width - 2
+        self.ai_paddle_y = height // 2 - paddle_length // 2
+
         self.ball_x = width // 2
         self.ball_y = height // 2
-        self.ball_dx = random.choice([-1, 1])
-        self.ball_dy = random.choice([-1, 1])
-        self.paddle1_y = height // 2 - 2
-        self.paddle2_y = height // 2 - 2
-        self.paddle_length = 4
-        self.score1 = 0
-        self.score2 = 0
-        self.running = True
-        self.delay = 0.05 # Adjust for game speed
+        self.ball_dx = random.choice([-1, 1]) * ball_speed
+        self.ball_dy = random.choice([-1, 1]) * ball_speed
 
-    def clear_screen(self):
+        self.player_score = 0
+        self.ai_score = 0
+        self.game_over = False
+
+    def _clear_screen(self):
+        """Clears the console screen."""
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    def draw(self):
-        self.clear_screen()
-        # Create the game board
+    def _draw_board(self):
+        """Draws the game board with paddles and ball."""
+
         board = [[' ' for _ in range(self.width)] for _ in range(self.height)]
 
         # Draw paddles
         for i in range(self.paddle_length):
-            board[self.paddle1_y + i][0] = '|'
-            board[self.paddle2_y + i][self.width - 1] = '|'
+            if 0 <= self.player_paddle_y + i < self.height:
+                board[self.player_paddle_y + i][self.player_paddle_x] = '|'
+            if 0 <= self.ai_paddle_y + i < self.height:
+                board[self.ai_paddle_y + i][self.ai_paddle_x] = '|'
 
         # Draw ball
-        board[self.ball_y][self.ball_x] = 'O'
+        if 0 <= self.ball_y < self.height and 0 <= self.ball_x < self.width:
+            board[self.ball_y][self.ball_x] = 'O'
 
-        # Print the board
+        # Draw score
+        score_str = f"Player: {self.player_score}  AI: {self.ai_score}"
+        score_x = (self.width - len(score_str)) // 2
+        for i, char in enumerate(score_str):
+            if 0 <= score_x + i < self.width:
+                board[0][score_x + i] = char
+
+
+        self._clear_screen()
         for row in board:
-            print(''.join(row))
+            print("".join(row))
+        print(f"Controls: W (Up), S (Down), Q (Quit)  - Ball Speed: {abs(self.ball_dx)}, AI Speed: {self.ai_speed}") #Added speed info
 
-        # Print the score
-        print(f"Player 1: {self.score1}  Player 2: {self.score2}")
 
-    def update(self):
-        # Ball movement
+    def _update_ball(self):
+        """Updates the ball's position and handles collisions."""
         self.ball_x += self.ball_dx
         self.ball_y += self.ball_dy
 
-        # Bounce off top and bottom
+        # Bounce off top and bottom walls
         if self.ball_y <= 0 or self.ball_y >= self.height - 1:
             self.ball_dy *= -1
 
-        # Paddle collision
-        if self.ball_x == 1 and self.paddle1_y <= self.ball_y <= self.paddle1_y + self.paddle_length - 1:
+        # Bounce off paddles
+        if (self.ball_x <= self.player_paddle_x + 1 and
+            self.player_paddle_y <= self.ball_y < self.player_paddle_y + self.paddle_length):
             self.ball_dx *= -1
-        elif self.ball_x == self.width - 2 and self.paddle2_y <= self.ball_y <= self.paddle2_y + self.paddle_length - 1:
-            self.ball_dx *= -1
+            self.ball_dx = max(self.ball_dx * 1.1, -5) if self.ball_dx < 0 else min(self.ball_dx * 1.1, 5) # Increase ball speed after paddle hit.
 
-        # Score and reset
+        if (self.ball_x >= self.ai_paddle_x - 1 and
+            self.ai_paddle_y <= self.ball_y < self.ai_paddle_y + self.paddle_length):
+            self.ball_dx *= -1
+            self.ball_dx = max(self.ball_dx * 1.1, -5) if self.ball_dx < 0 else min(self.ball_dx * 1.1, 5) # Increase ball speed after paddle hit.
+        # Score
         if self.ball_x <= 0:
-            self.score2 += 1
-            self.reset_ball()
+            self.ai_score += 1
+            self._reset_ball()
         elif self.ball_x >= self.width - 1:
-            self.score1 += 1
-            self.reset_ball()
+            self.player_score += 1
+            self._reset_ball()
 
-    def reset_ball(self):
+        #Check for Game Over
+        if self.player_score >= 10 or self.ai_score >= 10:
+            self.game_over = True
+
+    def _reset_ball(self):
+        """Resets the ball to the center of the board with random direction."""
         self.ball_x = self.width // 2
         self.ball_y = self.height // 2
-        self.ball_dx = random.choice([-1, 1])
-        self.ball_dy = random.choice([-1, 1])
+        self.ball_dx = random.choice([-1, 1]) * self.ball_speed
+        self.ball_dy = random.choice([-1, 1]) * self.ball_speed
+
+    def _update_ai(self):
+        """Updates the AI paddle's position."""
+        if self.ai_paddle_y + self.paddle_length // 2 < self.ball_y and self.ai_paddle_y < self.height - self.paddle_length:
+            self.ai_paddle_y += self.ai_speed
+        elif self.ai_paddle_y + self.paddle_length // 2 > self.ball_y and self.ai_paddle_y > 0:
+            self.ai_paddle_y -= self.ai_speed
 
 
-    def move_paddle1(self, direction):
-        if direction == "up" and self.paddle1_y > 0:
-            self.paddle1_y -= 1
-        elif direction == "down" and self.paddle1_y < self.height - self.paddle_length:
-            self.paddle1_y += 1
+    def _handle_input(self, key):
+        """Handles player input."""
+        if key.lower() == 'w':
+            self.player_paddle_y = max(0, self.player_paddle_y - 1)
+        elif key.lower() == 's':
+            self.player_paddle_y = min(self.height - self.paddle_length, self.player_paddle_y + 1)
+        elif key.lower() == 'q':
+            self.game_over = True
+        elif key.lower() == 'a': #Increase AI speed
+            self.ai_speed = min(self.ai_speed + 1, 5) #Limit to 5
+        elif key.lower() == 'd': #Decrease AI speed
+            self.ai_speed = max(self.ai_speed - 1, 1) #Limit to 1
 
-    def move_paddle2(self, direction):
-        if direction == "up" and self.paddle2_y > 0:
-            self.paddle2_y -= 1
-        elif direction == "down" and self.paddle2_y < self.height - self.paddle_length:
-            self.paddle2_y += 1
 
 
     def play(self):
-        while self.running:
-            self.draw()
-            self.update()
+        """Starts the Pong game loop."""
+        while not self.game_over:
+            self._draw_board()
+            self._update_ball()
+            self._update_ai()
 
-            # Get input (non-blocking)
-            import select
-            import sys
-            if select.select([sys.stdin,], [], [], 0.0)[0]: # Check if stdin is ready to read
-                action = sys.stdin.readline().strip() # Read input without blocking
-                if action == "q":
-                    self.running = False
-                    break
-                elif action == "w":
-                    self.move_paddle1("up")
-                elif action == "s":
-                    self.move_paddle1("down")
-                elif action == "o":
-                    self.move_paddle2("up")
-                elif action == "l":
-                    self.move_paddle2("down")
+            key = input()  # Get player input
+            self._handle_input(key)
 
-            time.sleep(self.delay)
+            time.sleep(0.05)  # Adjust for game speed
 
-        print("Game Over!")
-        print(f"Final Score: Player 1: {self.score1}  Player 2: {self.score2}")
+        self._draw_board() #Final Draw
+        if self.player_score > self.ai_score:
+            print("Player wins!")
+        else:
+            print("AI wins!")
 
 
 if __name__ == "__main__":
-    game = Pong()
-    print("Welcome to Pong!")
-    print("Controls:")
-    print("Player 1: w (up), s (down)")
-    print("Player 2: o (up), l (down)")
-    print("Press q to quit")
+    game = Pong(width=70, height=25, paddle_length=5, ball_speed=1, ai_speed=2)
     game.play()

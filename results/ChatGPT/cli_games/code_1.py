@@ -1,45 +1,51 @@
 import random
 
 class Hangman:
-    def __init__(self):
-        self.words = ["python", "hangman", "programming", "developer", "interface", "function"]
-        self.word = random.choice(self.words)
-        self.guesses = []
-        self.max_attempts = 6
+    def __init__(self, word_list, max_attempts=6):
+        self.word_list = word_list
+        self.max_attempts = max_attempts
+        self.word = random.choice(self.word_list).upper()
+        self.guesses = set()
         self.attempts = 0
 
     def display_word(self):
-        displayed = ''.join([letter if letter in self.guesses else '_' for letter in self.word])
-        print(f"Word: {displayed}")
+        return ' '.join(letter if letter in self.guesses else '_' for letter in self.word)
 
-    def get_guess(self):
-        while True:
-            guess = input("Enter a letter: ").lower()
-            if len(guess) == 1 and guess.isalpha():
-                if guess in self.guesses:
-                    print("You've already guessed that letter.")
-                else:
-                    return guess
-            else:
-                print("Invalid input. Please enter a single letter.")
+    def make_guess(self, guess):
+        guess = guess.upper()
+        if guess in self.guesses:
+            return False, "You've already guessed that letter."
+        self.guesses.add(guess)
+        if guess not in self.word:
+            self.attempts += 1
+        return True, None
+
+    def is_won(self):
+        return all(letter in self.guesses for letter in self.word)
+
+    def is_lost(self):
+        return self.attempts >= self.max_attempts
 
     def play(self):
         print("Welcome to Hangman!")
-        while self.attempts < self.max_attempts:
-            self.display_word()
-            guess = self.get_guess()
-            self.guesses.append(guess)
+        while not self.is_won() and not self.is_lost():
+            print(f"Word: {self.display_word()}")
+            print(f"Attempts left: {self.max_attempts - self.attempts}")
+            guess = input("Enter a letter: ").strip()
+            if len(guess) != 1 or not guess.isalpha():
+                print("Please enter a single letter.")
+                continue
+            
+            valid, message = self.make_guess(guess)
+            if message:
+                print(message)
 
-            if guess not in self.word:
-                self.attempts += 1
-                print(f"Wrong guess! You have {self.max_attempts - self.attempts} attempts left.")
-
-            if all(letter in self.guesses for letter in self.word):
-                print(f"Congratulations! You've guessed the word: {self.word}")
-                return
-        
-        print(f"Game over! The word was: {self.word}")
+        if self.is_won():
+            print(f"Congratulations! You've won! The word was '{self.word}'.")
+        else:
+            print(f"Game over! The word was '{self.word}'.")
 
 if __name__ == "__main__":
-    game = Hangman()
+    words = ["PYTHON", "HANGMAN", "PROGRAMMING", "COMPUTER", "DEVELOPER"]
+    game = Hangman(words)
     game.play()

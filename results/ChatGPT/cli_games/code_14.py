@@ -1,77 +1,66 @@
-import curses
 import random
+import os
+import sys
+import time
 import math
 
-# Constants
-WIDTH = 80
-HEIGHT = 24
-ASTEROID_COUNT = 5
-ASTEROID_SYMBOL = '*'
-SHIP_SYMBOL = 'A'
-
-class Asteroid:
+class AsteroidGame:
     def __init__(self):
-        self.x = random.randint(0, WIDTH - 1)
-        self.y = random.randint(0, HEIGHT - 1)
-        self.dx = random.choice([-1, 1])
-        self.dy = random.choice([-1, 1])
+        self.width = 40
+        self.height = 20
+        self.player_pos = [self.width // 2, self.height // 2]
+        self.asteroids = []
+        self.score = 0
+        self.game_over = False
+        self.generate_asteroids()
 
-    def move(self):
-        self.x += self.dx
-        self.y += self.dy
-        if self.x <= 0 or self.x >= WIDTH - 1:
-            self.dx *= -1
-        if self.y <= 0 or self.y >= HEIGHT - 1:
-            self.dy *= -1
+    def generate_asteroids(self, count=5):
+        for _ in range(count):
+            x = random.randint(0, self.width - 1)
+            y = random.randint(0, self.height - 1)
+            self.asteroids.append([x, y])
 
-class Ship:
-    def __init__(self):
-        self.x = WIDTH // 2
-        self.y = HEIGHT // 2
-        self.angle = 0
+    def draw(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        for y in range(self.height):
+            for x in range(self.width):
+                if [x, y] == self.player_pos:
+                    print('A', end='')
+                elif [x, y] in self.asteroids:
+                    print('*', end='')
+                else:
+                    print(' ', end='')
+            print()
+        print(f'Score: {self.score}')
 
-    def turn_left(self):
-        self.angle -= 5
+    def move_player(self, direction):
+        if direction == 'w' and self.player_pos[1] > 0:
+            self.player_pos[1] -= 1
+        elif direction == 's' and self.player_pos[1] < self.height - 1:
+            self.player_pos[1] += 1
+        elif direction == 'a' and self.player_pos[0] > 0:
+            self.player_pos[0] -= 1
+        elif direction == 'd' and self.player_pos[0] < self.width - 1:
+            self.player_pos[0] += 1
 
-    def turn_right(self):
-        self.angle += 5
+    def check_collision(self):
+        if self.player_pos in self.asteroids:
+            self.game_over = True
 
-    def move(self):
-        rad = math.radians(self.angle)
-        self.x += int(math.cos(rad))
-        self.y += int(math.sin(rad))
-        self.x %= WIDTH
-        self.y %= HEIGHT
+    def run(self):
+        while not self.game_over:
+            self.draw()
+            command = input('Move (w/a/s/d): ').strip().lower()
+            if command in ['w', 'a', 's', 'd']:
+                self.move_player(command)
+                self.check_collision()
+                self.score += 1
+            else:
+                print('Invalid command!')
+            time.sleep(0.1)
+        
+        print('Game Over! Your score:', self.score)
 
-def draw_window(stdscr, ship, asteroids):
-    stdscr.clear()
-    stdscr.addstr(ship.y, ship.x, SHIP_SYMBOL)
-    for asteroid in asteroids:
-        stdscr.addstr(asteroid.y, asteroid.x, ASTEROID_SYMBOL)
-    stdscr.refresh()
-
-def main(stdscr):
-    curses.curs_set(0)
-    stdscr.nodelay(1)
-    stdscr.timeout(100)
-
-    ship = Ship()
-    asteroids = [Asteroid() for _ in range(ASTEROID_COUNT)]
-
-    while True:
-        draw_window(stdscr, ship, asteroids)
-
-        key = stdscr.getch()
-        if key == curses.KEY_LEFT:
-            ship.turn_left()
-        elif key == curses.KEY_RIGHT:
-            ship.turn_right()
-        elif key == ord('w'):
-            ship.move()
-        elif key == ord('q'):
-            break
-
-        for asteroid in asteroids:
-            asteroid.move()
-
-curses.wrapper(main)
+if __name__ == "__main__":
+    game = AsteroidGame()
+    game.run()

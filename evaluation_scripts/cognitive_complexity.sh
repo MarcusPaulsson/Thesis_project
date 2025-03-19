@@ -45,7 +45,7 @@ OUTPUT=$(complexipy "$GEMINI_CLI_GAMES")
 COMPLEXITY_LINE=$(echo "$OUTPUT" | grep "Total Cognitive Complexity:")
 
 if [ -n "$COMPLEXITY_LINE" ]; then
-    echo "Cognitive Complexity for '$GEMINI_CLI_GAMES':"
+    echo "Cognitive Complexity for '$CHATGPT_CLI_GAMES':"
     echo "$COMPLEXITY_LINE"
 else
     echo "Could not extract cognitive complexity from output."
