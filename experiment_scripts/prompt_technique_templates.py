@@ -1,11 +1,9 @@
 # This file contains all strings for concatenating the prompt templates around the tasks. 
 # Both system prompt and extra context prompts
 
-# These variables are implemented to automaticlly build the prompts for the models.
-# For the models that does not take a system prompt, the SYSTEM_PROMPT is added to the head_prompt
 
 
-
+# Prompt template concatenation for the different models:
 ''' 
 # ChatGPT Format
 messages = [
@@ -46,6 +44,7 @@ SYSTEM_PROMPT="You are an expert software developer, skilled in producing clean 
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code."
 '''
+
 
 # Role prompting (Student)
 '''
