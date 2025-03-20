@@ -3,114 +3,181 @@ import time
 import os
 
 class DinosaurRunner:
-    def __init__(self, width=80, height=15):
+    """
+    A command-line implementation of the Dinosaur Runner game.
+    """
+
+    def __init__(self, width=80, initial_speed=1, speed_increment=0.1, obstacle_density=0.05, jump_height=5):
+        """
+        Initializes the game.
+
+        Args:
+            width (int): The width of the game screen.
+            initial_speed (float): The initial speed of the game.
+            speed_increment (float): The amount the speed increases each frame.
+            obstacle_density (float): The probability of an obstacle appearing on a given line.
+            jump_height (int): The maximum height of the dinosaur's jump.
+        """
         self.width = width
-        self.height = height
-        self.dino = 2  # Dino's vertical position
-        self.cactus_position = self.width - 5  # Cactus initial position
+        self.dinosaur_position = 5  # Vertical position of the dinosaur (0 is the ground)
+        self.dinosaur_velocity = 0  # Vertical velocity of the dinosaur
+        self.gravity = -1  # Simulates gravity
+        self.initial_speed = initial_speed
+        self.speed = initial_speed
+        self.speed_increment = speed_increment
+        self.obstacle_density = obstacle_density
+        self.jump_height = jump_height
+        self.obstacles = []  # List of obstacle positions (x-coordinates)
         self.score = 0
         self.game_over = False
-        self.cactus_speed = 1  # Cactus movement speed
-        self.jump_height = 4
-        self.is_jumping = False
-        self.jump_peak = 0
-        self.jump_direction = 1 # 1 for up, -1 for down
+        self.frame_delay = 0.1  # Initial delay between frames
 
     def clear_screen(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
+      """Clears the terminal screen."""
+      os.system('cls' if os.name == 'nt' else 'clear')
+
+
+    def generate_obstacle(self):
+        """
+        Generates a new obstacle at the right edge of the screen with a probability
+        determined by the obstacle density.
+        """
+        if random.random() < self.obstacle_density:
+            self.obstacles.append(self.width - 1)  # Add obstacle at the right edge
+
+    def update_obstacles(self):
+        """
+        Updates the position of the obstacles, removing those that have moved off-screen.
+        """
+        new_obstacles = []
+        for obstacle in self.obstacles:
+            obstacle -= self.speed  # Move obstacle to the left
+            if obstacle >= 0:
+                new_obstacles.append(obstacle)
+        self.obstacles = new_obstacles
+
+    def update_dinosaur(self):
+        """
+        Updates the dinosaur's position based on its velocity and gravity.
+        """
+        self.dinosaur_position += self.dinosaur_velocity
+        self.dinosaur_velocity += self.gravity
+
+        # Keep the dinosaur within the ground limits
+        if self.dinosaur_position < 0:
+            self.dinosaur_position = 0
+            self.dinosaur_velocity = 0  # Stop downward movement on the ground
+
+    def check_collision(self):
+        """
+        Checks for a collision between the dinosaur and any obstacles.
+        """
+        for obstacle in self.obstacles:
+            if (obstacle < 10 and obstacle > 3) and self.dinosaur_position < 2: # Collision detection range
+                return True
+        return False
+
+    def jump(self):
+        """
+        Initiates a jump if the dinosaur is on the ground.
+        """
+        if self.dinosaur_position == 0:  # Only jump if on the ground
+            self.dinosaur_velocity = self.jump_height
 
     def draw_screen(self):
-        """Draws the game screen in the console."""
-        screen = [[' ' for _ in range(self.width)] for _ in range(self.height)]
+        """
+        Draws the current state of the game on the screen.
+        """
+        self.clear_screen()  # Clear the previous frame
+        screen = [" " for _ in range(self.width * 6)] # 6 represents height of the screen
 
-        # Draw ground
+        # Draw the ground
         for i in range(self.width):
-            screen[self.height - 1][i] = '_'
+            screen[i] = "_"
 
-        # Draw dino
-        if self.is_jumping:
-            dino_height = self.dino - (self.jump_peak - abs(self.jump_peak - self.jump_height))
-            screen[int(dino_height)][2] = 'D'
+        # Draw the dinosaur
+        dinosaur_height = 2
+        dinosaur_width = 3
+        dinosaur_start_index = (self.dinosaur_position + 1) * self.width + 3
+
+        if self.dinosaur_position <1: #standing dinosaur
+            dino =  """
+            O
+           /|\\
+           / \\
+           """
         else:
-            screen[self.dino][2] = 'D'
+            dino =  """
+            O
+           /|\\
+           / \\
+           """
 
-        # Draw cactus
-        screen[self.height - 2][self.cactus_position] = '#'
-        screen[self.height - 3][self.cactus_position] = '#'
+        dino_lines = dino.splitlines()
+
+        for i, line in enumerate(dino_lines):
+          if line:
+            for j, char in enumerate(line):
+              screen[dinosaur_start_index - (len(dino_lines) -1 -i) * self.width + j] = char
+
+
+
+        # Draw the obstacles
+        obstacle_height = 2
+        obstacle_width = 2
+        for obstacle_x in self.obstacles:
+            for i in range(obstacle_height):
+                for j in range(obstacle_width):
+                  if (obstacle_x + j) < self.width:
+                    screen[(i) * self.width + int(obstacle_x +j)] = "#"
 
         # Print the screen
-        self.clear_screen()
-        for row in screen:
-            print(''.join(row))
+        for i in range(6): #Screen Height
+            print("".join(screen[i*self.width:(i+1)*self.width]))
 
+        # Print score
         print(f"Score: {self.score}")
 
-    def update_game(self):
-        """Updates the game state - moves cactus, checks for collisions, etc."""
+    def update_score(self):
+      """Updates the score based on the distance traveled."""
+      self.score += self.speed # the faster we go, the faster we score
 
-        # Move cactus
-        self.cactus_position -= self.cactus_speed
-        if self.cactus_position < 0:
-            self.cactus_position = self.width - 1
-            self.score += 1
-            self.cactus_speed = min(1 + self.score // 10, 5)  # Increase speed
-
-        # Jumping logic
-        if self.is_jumping:
-            self.jump_peak += self.jump_direction
-            if self.jump_peak == self.jump_height :
-                self.jump_direction = -1
-            elif self.jump_peak == 0:
-                self.is_jumping = False
-                self.jump_direction = 1
-
-        # Collision detection (simplified)
-        if 1 <= self.cactus_position <= 3:
-            if not self.is_jumping:
-                self.game_over = True
-                print("Game Over!")
-
-    def handle_input(self, input_char):
-        """Handles user input.  'j' for jump."""
-        if input_char == 'j' and not self.is_jumping:
-            self.is_jumping = True
-            self.jump_peak = 0
-            self.jump_direction = 1 # Start going up
-
-    def play(self):
-        """Main game loop."""
+    def run(self):
+        """
+        Runs the main game loop.
+        """
         while not self.game_over:
+            # Get user input
+            user_input = input("Press 'j' to jump, or any other key to continue (or 'q' to quit): ").lower()
+            if user_input == 'j':
+                self.jump()
+            elif user_input == 'q':
+                break
+
+            # Update game state
+            self.generate_obstacle()
+            self.update_obstacles()
+            self.update_dinosaur()
+            self.update_score()
+
+            if self.check_collision():
+                self.game_over = True
+
             self.draw_screen()
-            self.update_game()
 
-            # Get input (non-blocking)
-            input_char = None
-            try:
-                import termios, sys, tty
-                def getch():
-                    fd = sys.stdin.fileno()
-                    old_settings = termios.tcgetattr(fd)
-                    try:
-                        tty.setraw(sys.stdin.fileno())
-                        ch = sys.stdin.read(1)
-                    finally:
-                        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-                    return ch
-                input_char = getch()
-            except ImportError: # For Windows (no termios)
-                import msvcrt
-                if msvcrt.kbhit():
-                    input_char = msvcrt.getch().decode('utf-8')
+            # Increase speed
+            self.speed += self.speed_increment
+            self.frame_delay = max(0.02, 0.1 - (self.speed * 0.005)) #Adjust frame delay to increase speed smoothly
 
-            if input_char:
-                self.handle_input(input_char)
+            time.sleep(self.frame_delay)
 
-            time.sleep(0.1)  # Adjust for desired game speed
+        if self.game_over:
+            print("Game Over!")
+            print(f"Final Score: {self.score}")
+        else:
+            print("Game quit.")
+            print(f"Final Score: {self.score}")
 
-        print(f"Final Score: {self.score}")
-        input("Press Enter to exit.")
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     game = DinosaurRunner()
-    game.play()
+    game.run()

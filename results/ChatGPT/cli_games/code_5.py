@@ -1,48 +1,45 @@
 import random
 
 class Mastermind:
-    def __init__(self, code_length=4, max_attempts=10, colors=None):
+    def __init__(self, code_length=4, num_colors=6, max_attempts=10):
         self.code_length = code_length
+        self.num_colors = num_colors
         self.max_attempts = max_attempts
-        self.colors = colors or ['R', 'G', 'B', 'Y', 'O', 'P']
-        self.secret_code = self.generate_secret_code()
+        self.code = self.generate_code()
         self.attempts = 0
 
-    def generate_secret_code(self):
-        return random.choices(self.colors, k=self.code_length)
+    def generate_code(self):
+        return [random.randint(1, self.num_colors) for _ in range(self.code_length)]
 
     def get_feedback(self, guess):
-        if len(guess) != self.code_length:
-            return "Invalid guess length."
-        
-        correct_position = sum(1 for g, s in zip(guess, self.secret_code) if g == s)
-        correct_color = sum(min(guess.count(c), self.secret_code.count(c)) for c in set(guess)) - correct_position
-        
+        correct_position = sum(1 for i in range(self.code_length) if guess[i] == self.code[i])
+        correct_color = sum(min(guess.count(x), self.code.count(x)) for x in set(guess)) - correct_position
         return correct_position, correct_color
 
     def play(self):
         print("Welcome to Mastermind!")
-        print(f"Try to guess the secret code of length {self.code_length}.")
+        print(f"Guess the code consisting of {self.code_length} colors (1 to {self.num_colors}).")
         print(f"You have {self.max_attempts} attempts.")
         
         while self.attempts < self.max_attempts:
-            guess = input(f"Attempt {self.attempts + 1}: Enter your guess (colors: {', '.join(self.colors)}): ").upper()
-            feedback = self.get_feedback(guess)
+            guess = input(f"Attempt {self.attempts + 1}: Enter your guess (comma separated): ")
+            guess = list(map(int, guess.split(',')))
 
-            if isinstance(feedback, str):
-                print(feedback)
+            if len(guess) != self.code_length or any(g < 1 or g > self.num_colors for g in guess):
+                print(f"Invalid guess. Please enter {self.code_length} numbers between 1 and {self.num_colors}.")
                 continue
-            
-            correct_position, correct_color = feedback
+
             self.attempts += 1
+            correct_position, correct_color = self.get_feedback(guess)
 
             if correct_position == self.code_length:
-                print(f"Congratulations! You've guessed the code: {''.join(self.secret_code)}")
-                return
-            
-            print(f"Feedback: {correct_position} correct in position, {correct_color} correct color but wrong position.")
+                print(f"Congratulations! You've guessed the code: {self.code}")
+                break
+            else:
+                print(f"Feedback: {correct_position} correct position(s), {correct_color} correct color(s).")
 
-        print(f"Game over! The secret code was: {''.join(self.secret_code)}")
+        if self.attempts == self.max_attempts:
+            print(f"Sorry, you've run out of attempts. The code was: {self.code}")
 
 if __name__ == "__main__":
     game = Mastermind()

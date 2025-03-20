@@ -1,67 +1,67 @@
 import random
+import os
 import time
 import sys
-import threading
 
 class DinosaurRunner:
     def __init__(self):
-        self.dino_pos = 0
-        self.obstacles = []
+        self.dino_position = 0
+        self.obstacle_position = 50
         self.score = 0
         self.game_over = False
-        self.obstacle_interval = 2  # seconds
-        self.game_speed = 0.1  # seconds (delay between game updates)
-
-    def start(self):
-        print("Welcome to Dinosaur Runner!")
-        print("Press 'j' to jump and 'q' to quit.")
-        threading.Thread(target=self.spawn_obstacles).start()
-        self.run_game()
-
-    def spawn_obstacles(self):
-        while not self.game_over:
-            obstacle_pos = random.randint(1, 10)
-            self.obstacles.append(obstacle_pos)
-            time.sleep(self.obstacle_interval)
-
-    def run_game(self):
-        while not self.game_over:
-            self.clear_screen()
-            self.display_game()
-            self.handle_input()
-            self.check_collision()
-            self.score += 1
-            time.sleep(self.game_speed)
-
-    def display_game(self):
-        print(f"Score: {self.score}")
-        print(" " * self.dino_pos + "D")
-        for i in range(1, 11):
-            if i in self.obstacles:
-                print(" " * i + "X")
-            else:
-                print(" " * i + " ")
-    
-    def handle_input(self):
-        if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-            input_char = sys.stdin.read(1)
-            if input_char == 'j':
-                self.jump()
-            elif input_char == 'q':
-                self.game_over = True
-
-    def jump(self):
-        print("Jumping!")
-        time.sleep(0.5)  # simulate jump time
-
-    def check_collision(self):
-        if self.dino_pos in self.obstacles:
-            self.game_over = True
-            print("Game Over! Final Score:", self.score)
 
     def clear_screen(self):
-        print("\033[H\033[J", end="")
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+    def draw_game(self):
+        self.clear_screen()
+        print("Score:", self.score)
+        print(" " * self.dino_position + "D")
+        print(" " * self.obstacle_position + "X")
+        print("\nPress 'j' to jump, 'q' to quit.")
+
+    def jump(self):
+        if self.dino_position == 0:
+            self.dino_position = 1
+            print("Jumping!")
+            time.sleep(0.5)  # Simulate jump duration
+            self.dino_position = 0
+
+    def update_game(self):
+        self.obstacle_position -= 1
+        if self.obstacle_position < 0:
+            self.obstacle_position = 50
+            self.score += 1
+            if random.random() < 0.2:  # 20% chance for a new obstacle
+                self.obstacle_position = 50
+
+    def check_collision(self):
+        if self.dino_position == 0 and self.obstacle_position == 0:
+            self.game_over = True
+
+    def run(self):
+        print("Welcome to Dinosaur Runner!")
+        print("Avoid the obstacles by jumping!\n")
+
+        while not self.game_over:
+            self.draw_game()
+            self.update_game()
+            self.check_collision()
+
+            if self.game_over:
+                break
+
+            user_input = input("Action: ")
+            if user_input.lower() == 'j':
+                self.jump()
+            elif user_input.lower() == 'q':
+                print("Quitting the game.")
+                break
+            else:
+                print("Invalid input! Use 'j' to jump or 'q' to quit.")
+
+        print("Game Over! Your score is:", self.score)
 
 if __name__ == "__main__":
     game = DinosaurRunner()
-    game.start()
+    game.run()

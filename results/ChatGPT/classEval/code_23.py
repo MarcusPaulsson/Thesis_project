@@ -22,7 +22,9 @@ class CombinationCalculator:
         >>> CombinationCalculator.count(4, 2)
         6
         """
-        return math.comb(n, m)
+        if m > n or m < 0:
+            return 0
+        return math.factorial(n) // (math.factorial(m) * math.factorial(n - m))
 
     @staticmethod
     def count_all(n: int) -> int:
@@ -33,12 +35,8 @@ class CombinationCalculator:
         >>> CombinationCalculator.count_all(4)
         15
         """
-        total_combinations = 0
-        for m in range(1, n + 1):
-            total_combinations += CombinationCalculator.count(n, m)
-            if total_combinations > 2**63 - 1:
-                return float("inf")
-        return total_combinations
+        total_combinations = 2 ** n - 1  # Exclude the empty combination
+        return total_combinations if total_combinations <= 2**63 - 1 else float("inf")
 
     def select(self, m: int) -> List[List[str]]:
         """
@@ -61,10 +59,10 @@ class CombinationCalculator:
         >>> calc.select_all()
         [['A'], ['B'], ['C'], ['D'], ['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D'], ['A', 'B', 'C'], ['A', 'B', 'D'], ['A', 'C', 'D'], ['B', 'C', 'D'], ['A', 'B', 'C', 'D']]
         """
-        result = []
+        all_combinations = []
         for m in range(1, len(self.datas) + 1):
-            result.extend(self.select(m))
-        return result
+            all_combinations.extend(self.select(m))
+        return all_combinations
 
     def _select(self, dataIndex: int, resultList: List[str], resultIndex: int, result: List[List[str]]):
         """

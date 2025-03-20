@@ -63,11 +63,11 @@ class AssessmentSystem:
         ['student 1']
         """
         fail_students = []
-        for student_name, student_info in self.students.items():
-            for course, score in student_info['courses'].items():
+        for name, student_data in self.students.items():
+            for course, score in student_data['courses'].items():
                 if score < 60:
-                    fail_students.append(student_name)
-                    break
+                    fail_students.append(name)
+                    break  # Only add the student once if they have multiple failing courses
         return fail_students
 
     def get_course_average(self, course):
@@ -76,14 +76,13 @@ class AssessmentSystem:
         :param course: str, course name
         :return: float, average scores of this course if anyone have score of this course, or None if nobody have records.
         """
-        total_score = 0
-        student_count = 0
-        for student_name, student_info in self.students.items():
-            if course in student_info['courses']:
-                total_score += student_info['courses'][course]
-                student_count += 1
-        if student_count > 0:
-            return total_score / student_count
+        scores = []
+        for name, student_data in self.students.items():
+            if course in student_data['courses']:
+                scores.append(student_data['courses'][course])
+
+        if scores:
+            return sum(scores) / len(scores)
         else:
             return None
 
@@ -100,10 +99,12 @@ class AssessmentSystem:
         """
         top_student = None
         highest_gpa = None
-        for student_name, student_info in self.students.items():
-            gpa = self.get_gpa(student_name)
+
+        for name in self.students:
+            gpa = self.get_gpa(name)
             if gpa is not None:
-                if highest_gpa is None or gpa > highest_gpa:
+                if top_student is None or gpa > highest_gpa:
+                    top_student = name
                     highest_gpa = gpa
-                    top_student = student_name
+
         return top_student

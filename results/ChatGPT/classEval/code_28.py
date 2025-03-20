@@ -11,7 +11,7 @@ class DatabaseProcessor:
         Initialize database name of database processor
         """
         self.database_name = database_name
-        self.connection = sqlite3.connect(self.database_name)
+        self.connection = sqlite3.connect(database_name)
         self.cursor = self.connection.cursor()
 
     def create_table(self, table_name, key1, key2):
@@ -25,7 +25,7 @@ class DatabaseProcessor:
         """
         self.cursor.execute(f'''
             CREATE TABLE IF NOT EXISTS {table_name} (
-                id INTEGER PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 {key1} TEXT,
                 {key2} INTEGER
             )
@@ -43,12 +43,10 @@ class DatabaseProcessor:
             ])
         """
         for entry in data:
-            columns = ', '.join(entry.keys())
-            placeholders = ', '.join('?' * len(entry))
-            self.cursor.execute(f'''
-                INSERT INTO {table_name} ({columns})
-                VALUES ({placeholders})
-            ''', tuple(entry.values()))
+            keys = ', '.join(entry.keys())
+            question_marks = ', '.join('?' * len(entry))
+            values = tuple(entry.values())
+            self.cursor.execute(f'INSERT INTO {table_name} ({keys}) VALUES ({question_marks})', values)
         self.connection.commit()
 
     def search_database(self, table_name, name):
@@ -61,9 +59,7 @@ class DatabaseProcessor:
         >>> db.search_database('user', 'John')
         [(1, 'John', 25)]
         """
-        self.cursor.execute(f'''
-            SELECT * FROM {table_name} WHERE name = ?
-        ''', (name,))
+        self.cursor.execute(f'SELECT * FROM {table_name} WHERE name = ?', (name,))
         results = self.cursor.fetchall()
         return results if results else None
 
@@ -74,9 +70,7 @@ class DatabaseProcessor:
         :param name: str, the name to match for deletion.
         >>> db.delete_from_database('user', 'John')
         """
-        self.cursor.execute(f'''
-            DELETE FROM {table_name} WHERE name = ?
-        ''', (name,))
+        self.cursor.execute(f'DELETE FROM {table_name} WHERE name = ?', (name,))
         self.connection.commit()
 
     def close(self):

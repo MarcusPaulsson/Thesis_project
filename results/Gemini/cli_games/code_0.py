@@ -1,88 +1,75 @@
 class TicTacToe:
     def __init__(self):
-        self.board = [" " for _ in range(9)]
+        self.board = [" " for _ in range(9)]  # Represents the board as a list
         self.current_player = "X"
+        self.winner = None
+        self.game_over = False
 
     def print_board(self):
         """Prints the current state of the board."""
-        for i in range(0, 9, 3):
-            print(f" {self.board[i]} | {self.board[i+1]} | {self.board[i+2]} ")
-            if i < 6:
-                print("---+---+---")
-
-    def is_valid_move(self, position):
-        """Checks if the given position is a valid move."""
-        if not isinstance(position, int):
-            return False
-        if not (0 <= position <= 8):
-            return False
-        if self.board[position] != " ":
-            return False
-        return True
-
-    def make_move(self, position):
-        """Makes a move at the given position."""
-        if self.is_valid_move(position):
-            self.board[position] = self.current_player
-            return True
-        else:
-            return False
-
-    def check_winner(self):
-        """Checks if there is a winner."""
-        # Check rows
-        for i in range(0, 9, 3):
-            if self.board[i] == self.board[i+1] == self.board[i+2] != " ":
-                return self.board[i]
-
-        # Check columns
+        print("-------------")
         for i in range(3):
-            if self.board[i] == self.board[i+3] == self.board[i+6] != " ":
-                return self.board[i]
+            print(f"| {self.board[i * 3]} | {self.board[i * 3 + 1]} | {self.board[i * 3 + 2]} |")
+            print("-------------")
 
-        # Check diagonals
-        if self.board[0] == self.board[4] == self.board[8] != " ":
-            return self.board[0]
-        if self.board[2] == self.board[4] == self.board[6] != " ":
-            return self.board[2]
+    def is_valid_move(self, move):
+        """Checks if a move is valid (within range and the cell is empty)."""
+        if not move.isdigit():
+            return False
+        move = int(move)
+        if 0 <= move <= 8 and self.board[move] == " ":
+            return True
+        return False
 
-        return None
-
-    def is_board_full(self):
-        """Checks if the board is full."""
-        return " " not in self.board
+    def make_move(self, move):
+        """Makes a move on the board."""
+        move = int(move)
+        self.board[move] = self.current_player
+        self.check_winner()
+        self.check_draw()
+        self.switch_player()
 
     def switch_player(self):
         """Switches the current player."""
         self.current_player = "O" if self.current_player == "X" else "X"
 
+    def check_winner(self):
+        """Checks if there is a winner."""
+        winning_combinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
+            [0, 4, 8], [2, 4, 6]               # Diagonals
+        ]
+
+        for combo in winning_combinations:
+            if (self.board[combo[0]] == self.board[combo[1]] == self.board[combo[2]]
+                    and self.board[combo[0]] != " "):
+                self.winner = self.current_player
+                self.game_over = True
+                return
+
+    def check_draw(self):
+        """Checks if the game is a draw."""
+        if " " not in self.board and not self.winner:
+            self.game_over = True
+
     def play(self):
         """Main game loop."""
-        print("Welcome to Tic-Tac-Toe!")
-        self.print_board()
+        while not self.game_over:
+            self.print_board()
+            move = input(f"Player {self.current_player}, enter your move (0-8): ")
 
-        while True:
-            print(f"Player {self.current_player}, it's your turn.")
-            try:
-                position = int(input("Enter the position (0-8): "))
-            except ValueError:
-                print("Invalid input. Please enter a number between 0 and 8.")
-                continue
-
-            if self.make_move(position):
-                self.print_board()
-                winner = self.check_winner()
-
-                if winner:
-                    print(f"Player {winner} wins!")
-                    break
-                elif self.is_board_full():
-                    print("It's a draw!")
-                    break
-                else:
-                    self.switch_player()
+            if self.is_valid_move(move):
+                self.make_move(move)
             else:
-                print("Invalid move. Please try again.")
+                print("Invalid move. Try again.")
+
+        self.print_board()  # Print the final board
+
+        if self.winner:
+            print(f"Player {self.winner} wins!")
+        else:
+            print("It's a draw!")
 
 
 if __name__ == "__main__":

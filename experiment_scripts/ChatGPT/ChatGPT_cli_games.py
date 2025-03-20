@@ -29,10 +29,9 @@ def run_task_with_api(task_prompt):
 ],
         response_format={"type": "text"},
         temperature=0.7,
-        max_completion_tokens=2500,
+        max_completion_tokens=3000,
         top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
+
     )
    
     # Extract and return the assistant's reply

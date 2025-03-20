@@ -24,48 +24,30 @@ class Calculator:
         >>> calculator.calculate('1+2-3')
         0.0
         """
-        def evaluate(tokens):
-            operand_stack = []
-            operator_stack = []
+        operand_stack = []
+        operator_stack = []
+        i = 0
+        expression = expression.replace(' ', '')
+        
+        while i < len(expression):
+            if expression[i].isdigit() or (expression[i] == '-' and (i == 0 or expression[i-1] in '()+*/^')):
+                num = 0
+                while i < len(expression) and (expression[i].isdigit() or expression[i] == '.'):
+                    num = num * 10 + float(expression[i]) if expression[i] != '.' else num + 0.1
+                    i += 1
+                operand_stack.append(num)
+                continue
+            
+            if expression[i] in self.operators:
+                while (operator_stack and self.precedence(operator_stack[-1]) >= self.precedence(expression[i])):
+                    self.apply_operator(operand_stack, operator_stack)
+                operator_stack.append(expression[i])
+            i += 1
 
-            def apply_operator():
-                operator = operator_stack.pop()
-                right = operand_stack.pop()
-                left = operand_stack.pop()
-                result = self.operators[operator](left, right)
-                operand_stack.append(result)
+        while operator_stack:
+            self.apply_operator(operand_stack, operator_stack)
 
-            i = 0
-            while i < len(tokens):
-                if tokens[i].isdigit():
-                    operand_stack.append(float(tokens[i]))
-                elif tokens[i] in self.operators:
-                    while (operator_stack and
-                           self.precedence(operator_stack[-1]) >= self.precedence(tokens[i])):
-                        apply_operator()
-                    operator_stack.append(tokens[i])
-                i += 1
-
-            while operator_stack:
-                apply_operator()
-
-            return operand_stack[0] if operand_stack else None
-
-        tokens = []
-        current_number = []
-        for char in expression:
-            if char.isdigit() or char == '.':
-                current_number.append(char)
-            else:
-                if current_number:
-                    tokens.append(''.join(current_number))
-                    current_number = []
-                if char in self.operators:
-                    tokens.append(char)
-        if current_number:
-            tokens.append(''.join(current_number))
-
-        return evaluate(tokens)
+        return operand_stack[0] if operand_stack else None
 
     def precedence(self, operator):
         """
@@ -78,17 +60,17 @@ class Calculator:
         >>> calculator.precedence('^')
         3
         """
-        if operator == '^':
-            return 3
-        elif operator in ('*', '/'):
-            return 2
-        elif operator in ('+', '-'):
+        if operator == '+' or operator == '-':
             return 1
+        elif operator == '*' or operator == '/':
+            return 2
+        elif operator == '^':
+            return 3
         return 0
 
     def apply_operator(self, operand_stack, operator_stack):
         """
-        Use the operator at the top of the operator stack to perform the operation on the two numbers at the top of the operator stack, and store the results at the top of the operator stack
+        Use the operator at the top of the operator stack to perform the operation on the two numbers at the top of the operand stack, and store the results at the top of the operand stack
         :param operand_stack: list
         :param operator_stack: list
         :return: the updated operand_stack and operator_stack

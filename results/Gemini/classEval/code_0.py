@@ -21,8 +21,7 @@ class AccessGatewayFilter:
         """
         if request['path'] == '/login' and request['method'] == 'POST':
             return True
-        return True
-
+        return False
 
     def is_start_with(self, request_uri):
         """
@@ -35,8 +34,9 @@ class AccessGatewayFilter:
         True
 
         """
-        return request_uri.startswith('/api') or request_uri.startswith('/login')
-
+        if request_uri.startswith('/api') or request_uri.startswith('/login'):
+            return True
+        return False
 
     def get_jwt_user(self, request):
         """
@@ -49,7 +49,10 @@ class AccessGatewayFilter:
 
         """
         try:
-            return request['headers']['Authorization']['user']
+            auth_header = request.get('headers', {}).get('Authorization')
+            if auth_header and isinstance(auth_header, dict) and 'user' in auth_header:
+                return auth_header
+            return None
         except:
             return None
 
@@ -63,4 +66,4 @@ class AccessGatewayFilter:
         >>> filter.set_current_user_info_and_log(user)
 
         """
-        logging.info(f"User {user['name']} from {user['address']} accessed the gateway.")
+        logging.info(f"User {user.get('name', 'Unknown')} from {user.get('address', 'Unknown')} accessed the gateway.")

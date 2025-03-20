@@ -29,9 +29,7 @@ class CSVProcessor:
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
             return None, None
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return None, None
+
 
     def write_csv(self, data, file_name):
         """
@@ -45,10 +43,11 @@ class CSVProcessor:
         try:
             with open(file_name, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile)
-                writer.writerows(data)
+                for row in data:
+                    writer.writerow(row)
             return 1
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error writing to file: {e}")
             return 0
 
     def process_csv_data(self, N, save_file_name):
@@ -70,23 +69,33 @@ class CSVProcessor:
         title, data = self.read_csv(save_file_name)
         if title is None or data is None:
             return 0
-        
+
         new_data = []
         for row in data:
             try:
                 new_data.append([row[N].upper()])
             except IndexError:
-                print(f"IndexError: Column {N} not found in row. Skipping.")
+                print(f"IndexError: Column {N} not found in row {row}")
                 return 0
 
-        new_file_name = save_file_name.replace('.csv', '_process.csv')
+        new_file_name = save_file_name.replace(".csv", "_process.csv")
+        
+        data_to_write = [title, new_data[0]] if len(new_data) == 1 else [title] + new_data
+        
+        
+        
+        
+        
+        
         
         try:
             with open(new_file_name, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(title)
-                writer.writerows(new_data)
+                for row in new_data:
+                    writer.writerow(row)
+
             return 1
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error writing to file: {e}")
             return 0

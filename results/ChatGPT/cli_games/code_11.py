@@ -4,42 +4,38 @@ class LightsOut:
     def __init__(self, size=5):
         self.size = size
         self.board = self.generate_board()
-    
+        self.is_solved = False
+
     def generate_board(self):
         return [[random.choice([0, 1]) for _ in range(self.size)] for _ in range(self.size)]
 
-    def toggle(self, row, col):
-        self.board[row][col] ^= 1  # Toggle the selected light
-        if row > 0:
-            self.board[row - 1][col] ^= 1  # Toggle above
-        if row < self.size - 1:
-            self.board[row + 1][col] ^= 1  # Toggle below
-        if col > 0:
-            self.board[row][col - 1] ^= 1  # Toggle left
-        if col < self.size - 1:
-            self.board[row][col + 1] ^= 1  # Toggle right
+    def toggle_light(self, x, y):
+        if 0 <= x < self.size and 0 <= y < self.size:
+            self.board[x][y] ^= 1
+            if x > 0: self.board[x-1][y] ^= 1
+            if x < self.size - 1: self.board[x+1][y] ^= 1
+            if y > 0: self.board[x][y-1] ^= 1
+            if y < self.size - 1: self.board[x][y+1] ^= 1
 
-    def display(self):
+    def check_solved(self):
+        self.is_solved = all(light == 0 for row in self.board for light in row)
+
+    def display_board(self):
         for row in self.board:
-            print(" ".join("O" if light else "." for light in row))
+            print(' '.join(['O' if light else '.' for light in row]))
         print()
 
-    def is_solved(self):
-        return all(all(light == 0 for light in row) for row in self.board)
-
     def play(self):
-        while not self.is_solved():
-            self.display()
+        while not self.is_solved:
+            self.display_board()
             try:
-                row, col = map(int, input("Enter row and column to toggle (0-indexed): ").split())
-                if 0 <= row < self.size and 0 <= col < self.size:
-                    self.toggle(row, col)
-                else:
-                    print("Invalid input. Please enter numbers within the range.")
-            except ValueError:
-                print("Invalid input. Please enter two integers.")
+                x, y = map(int, input(f"Enter coordinates to toggle (row col) [0-{self.size-1}]: ").split())
+                self.toggle_light(x, y)
+                self.check_solved()
+            except (ValueError, IndexError):
+                print("Invalid input. Please enter valid coordinates.")
 
-        print("Congratulations! You've solved the puzzle.")
+        print("Congratulations! You've solved the puzzle!")
 
 if __name__ == "__main__":
     game = LightsOut()

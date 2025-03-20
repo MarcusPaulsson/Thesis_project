@@ -35,30 +35,33 @@ class ArgumentParser:
         args = command_string.split()
         i = 0
         while i < len(args):
-            arg = args[i]
-            if arg.startswith("--"):
-                arg_name = arg[2:]
+            if args[i].startswith("--"):
+                arg_name = args[i][2:]
                 if "=" in arg_name:
                     arg_name, arg_value = arg_name.split("=")
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
                 else:
-                    if i + 1 < len(args) and not args[i + 1].startswith("-"):
-                        i += 1
-                        arg_value = args[i]
+                    if i + 1 < len(args) and not args[i+1].startswith("-"):
+                        arg_value = args[i+1]
                         self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
+                        i += 1
                     else:
                         self.arguments[arg_name] = True
-            elif arg.startswith("-"):
-                arg_name = arg[1:]
-                if i + 1 < len(args) and not args[i + 1].startswith("-"):
-                    i += 1
-                    arg_value = args[i]
+            elif args[i].startswith("-"):
+                arg_name = args[i][1:]
+                if i + 1 < len(args) and not args[i+1].startswith("-"):
+                    arg_value = args[i+1]
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
+                    i += 1
                 else:
                     self.arguments[arg_name] = True
             i += 1
 
-        missing_args = self.required - set(self.arguments.keys())
+        missing_args = set()
+        for arg in self.required:
+            if arg not in self.arguments:
+                missing_args.add(arg)
+
         if missing_args:
             return False, missing_args
         else:
@@ -110,16 +113,24 @@ class ArgumentParser:
         """
         if arg in self.types:
             arg_type = self.types[arg]
-            try:
-                if arg_type == int:
+            if arg_type == int:
+                try:
                     return int(value)
-                elif arg_type == float:
+                except ValueError:
+                    return value
+            elif arg_type == float:
+                try:
                     return float(value)
-                elif arg_type == bool:
-                    return value.lower() == "true"
+                except ValueError:
+                    return value
+            elif arg_type == bool:
+                if value.lower() == 'true':
+                    return True
+                elif value.lower() == 'false':
+                    return False
                 else:
                     return value
-            except ValueError:
+            else:
                 return value
         else:
             return value

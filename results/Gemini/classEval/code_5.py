@@ -1,3 +1,5 @@
+# This class is an automatic guitar simulator that can interpret and play based on the input guitar sheet music.
+
 class AutomaticGuitarSimulator:
     def __init__(self, text) -> None:
         """
@@ -18,16 +20,16 @@ class AutomaticGuitarSimulator:
         """
         if not self.play_text or self.play_text.isspace():
             return []
-        
+
         play_list = []
         parts = self.play_text.split()
-        
         for part in parts:
-            chord = ''.join(filter(str.isalpha, part))
-            tune = ''.join(filter(str.isdigit, part))
-            
-            play_list.append({'Chord': chord, 'Tune': tune})
-            
+            if len(part) > 0 and part[0].isalpha():
+                chord = part[0]
+                tune = part[1:]
+                play_list.append({'Chord': chord, 'Tune': tune})
+                if display:
+                    print(f"Normal Guitar Playing -- Chord: {chord}, Play Tune: {tune}")
         return play_list
 
 

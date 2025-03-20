@@ -6,180 +6,202 @@ class Battleship:
         Initializes the Battleship game.
 
         Args:
-            board_size (int): The size of the game board (e.g., 10 for a 10x10 grid).
-            num_ships (int): The number of ships each player has.
+            board_size (int): The size of the game board (e.g., 10 for a 10x10 board).
+            num_ships (int): The number of ships each player will have.
         """
         self.board_size = board_size
         self.num_ships = num_ships
-        self.player_board = self._create_board()
-        self.computer_board = self._create_board()
-        self.player_ships = self._place_ships(self.player_board)
-        self.computer_ships = self._place_ships(self.computer_board)
-        self.player_guesses = set()  # Track player's guesses
-        self.computer_guesses = set() # Track computer's guesses
-        self.player_ship_locations = set() # Track player ship locations
-        self.computer_ship_locations = set() # Track computer ship locations
-        for ship in self.player_ships:
-            self.player_ship_locations.update(ship)
-        for ship in self.computer_ships:
-            self.computer_ship_locations.update(ship)
+        self.player_board = self.create_board()
+        self.computer_board = self.create_board()
+        self.player_ships = self.place_ships(self.player_board)
+        self.computer_ships = self.place_ships(self.computer_board)
+        self.computer_guesses = set()  # To avoid redundant guesses
+        self.player_ships_sunk = 0
+        self.computer_ships_sunk = 0
 
+    def create_board(self):
+        """
+        Creates an empty game board represented as a 2D list.
 
-    def _create_board(self):
-        """Creates an empty game board."""
-        return [['.' for _ in range(self.board_size)] for _ in range(self.board_size)]
+        Returns:
+            list: A 2D list representing the game board.
+        """
+        return [[' ' for _ in range(self.board_size)] for _ in range(self.board_size)]
 
-    def _place_ships(self, board):
-        """Randomly places ships on the board."""
+    def place_ships(self, board):
+        """
+        Randomly places ships on the given board.
+
+        Args:
+            board (list): The game board to place ships on.
+
+        Returns:
+            list: A list of ship coordinates (tuples) representing the ships placed.
+        """
         ships = []
         for _ in range(self.num_ships):
             while True:
-                ship_length = random.randint(2, 4)  # Ships of length 2, 3, or 4
                 orientation = random.choice(['horizontal', 'vertical'])
                 if orientation == 'horizontal':
                     row = random.randint(0, self.board_size - 1)
-                    col = random.randint(0, self.board_size - ship_length)
-                    positions = [(row, col + i) for i in range(ship_length)]
-                else:  # vertical
-                    row = random.randint(0, self.board_size - ship_length)
-                    col = random.randint(0, self.board_size - 1)
-                    positions = [(row + i, col) for i in range(ship_length)]
-
-                # Check for overlap
-                valid_placement = True
-                for r, c in positions:
-                    if board[r][c] == 'S':
-                        valid_placement = False
+                    col = random.randint(0, self.board_size - 2) # At least 2 spaces for a ship of size 2
+                    if all(board[row][col + i] == ' ' for i in range(2)):
+                        for i in range(2):
+                            board[row][col + i] = 'S'
+                            ships.append((row, col + i))
                         break
-
-                if valid_placement:
-                    for r, c in positions:
-                        board[r][c] = 'S'
-                    ships.append(set(positions)) # Store ships as sets of coordinates
-                    break
+                else:  # Vertical
+                    row = random.randint(0, self.board_size - 2) # At least 2 spaces for a ship of size 2
+                    col = random.randint(0, self.board_size - 1)
+                    if all(board[row + i][col] == ' ' for i in range(2)):
+                        for i in range(2):
+                            board[row + i][col] = 'S'
+                            ships.append((row + i, col))
+                        break
         return ships
 
-    def print_board(self, board, hide_ships=True):
-        """Prints the game board."""
-        print("  " + " ".join([chr(65 + i) for i in range(self.board_size)]))  # A B C ...
-        for i, row in enumerate(board):
-            print(str(i).rjust(2) + " " + " ".join(['~' if cell == 'S' and hide_ships else cell for cell in row]))
+    def print_board(self, board, hide_ships=False):
+        """
+        Prints the game board to the console.
+
+        Args:
+            board (list): The game board to print.
+            hide_ships (bool): Whether to hide the ships ('S') on the board.
+                                 Defaults to False (ships are shown).
+        """
+        print("  " + " ".join([chr(65 + i) for i in range(self.board_size)])) # A, B, C...
+        for i in range(self.board_size):
+            row_str = str(i + 1).rjust(2) + " "  # Row numbers, right-aligned
+            for j in range(self.board_size):
+                if hide_ships and board[i][j] == 'S':
+                    row_str += ' ' + " "
+                else:
+                    row_str += board[i][j] + " "
+            print(row_str)
 
     def get_player_guess(self):
-        """Gets a valid guess from the player."""
+        """
+        Gets the player's guess for a coordinate.
+
+        Returns:
+            tuple: The (row, col) coordinates of the player's guess, or None if invalid.
+        """
         while True:
             try:
-                guess = input("Enter your guess (e.g., A0): ").upper()
+                guess = input("Enter your guess (e.g., A1): ").upper()
                 if len(guess) < 2:
-                    print("Invalid input. Please enter a coordinate like A0 or B5.")
+                    print("Invalid guess.  Try again (e.g., A1).")
                     continue
+                col = ord(guess[0]) - 65  # Convert letter to column index (A=0, B=1, ...)
+                row = int(guess[1:]) - 1    # Convert number to row index (1=0, 2=1, ...)
 
-                col = ord(guess[0]) - ord('A')
-                row = int(guess[1:])
+                if 0 <= row < self.board_size and 0 <= col < self.board_size:
+                    return (row, col)
+                else:
+                    print("Invalid guess. Coordinates out of bounds.")
+            except ValueError:
+                print("Invalid guess.  Try again (e.g., A1).")
+            except IndexError:
+                print("Invalid guess.  Try again (e.g., A1).")
 
-                if not (0 <= row < self.board_size and 0 <= col < self.board_size):
-                    print("Invalid coordinates. Please enter valid row and column values.")
-                    continue
+    def computer_make_guess(self):
+        """
+        Generates a random guess for the computer.
 
-                if (row, col) in self.player_guesses:
-                    print("You already guessed that location. Try again.")
-                    continue
-
-                return row, col
-
-            except (ValueError, IndexError):
-                print("Invalid input. Please enter a coordinate like A0 or B5.")
-
-
-    def process_player_guess(self, row, col):
-        """Processes the player's guess and updates the computer's board."""
-        self.player_guesses.add((row, col))
-        if self.computer_board[row][col] == 'S':
-            print("Hit!")
-            self.computer_board[row][col] = 'X'  # Mark as hit
-            for ship in self.computer_ships:
-                if (row, col) in ship:
-                    ship.remove((row, col))
-                    if not ship:
-                        print("You sunk a battleship!")
-            return True
-        else:
-            print("Miss!")
-            self.computer_board[row][col] = 'O'  # Mark as miss
-            return False
-
-    def get_computer_guess(self):
-        """Generates a random guess for the computer."""
+        Returns:
+            tuple: The (row, col) coordinates of the computer's guess.
+        """
         while True:
             row = random.randint(0, self.board_size - 1)
             col = random.randint(0, self.board_size - 1)
             if (row, col) not in self.computer_guesses:
-                return row, col
+                self.computer_guesses.add((row, col))
+                return (row, col)
 
-    def process_computer_guess(self, row, col):
-        """Processes the computer's guess and updates the player's board."""
-        self.computer_guesses.add((row, col))
-        if self.player_board[row][col] == 'S':
-            print("Computer hit your ship at", chr(col + ord('A')) + str(row))
-            self.player_board[row][col] = 'X'  # Mark as hit
-            for ship in self.player_ships:
-                if (row, col) in ship:
-                    ship.remove((row, col))
-                    if not ship:
-                        print("Computer sunk your battleship!")
+    def check_hit(self, board, row, col):
+        """
+        Checks if a guess hits a ship on the board.
+
+        Args:
+            board (list): The game board.
+            row (int): The row coordinate of the guess.
+            col (int): The column coordinate of the guess.
+
+        Returns:
+            bool: True if the guess hits a ship, False otherwise.
+        """
+        if board[row][col] == 'S':
+            board[row][col] = 'X'  # Mark as hit
             return True
-        else:
-            print("Computer missed at", chr(col + ord('A')) + str(row))
-            self.player_board[row][col] = 'O'  # Mark as miss
+        elif board[row][col] == ' ':
+            board[row][col] = 'O'  # Mark as miss
+            return False
+        else:  # Already hit or missed
             return False
 
-    def check_win(self):
-        """Checks if either player has won the game."""
-        player_ships_sunk = all(not ship for ship in self.player_ships)
-        computer_ships_sunk = all(not ship for ship in self.computer_ships)
-
-        if player_ships_sunk:
-            print("Computer wins! All your battleships have been sunk.")
-            return "computer"
-        elif computer_ships_sunk:
-            print("You win! All computer's battleships have been sunk.")
-            return "player"
-        else:
-            return None
-
-    def play_game(self):
-        """Plays the Battleship game."""
-        print("Welcome to Battleship!")
-        print("Your board:")
+    def play_round(self):
+        """
+        Plays a single round of the game.
+        """
+        # Player's turn
+        print("\nYour board:")
         self.print_board(self.player_board)
         print("\nComputer's board:")
-        self.print_board(self.computer_board, hide_ships=True)  # Hide computer's ships initially
+        self.print_board(self.computer_board, hide_ships=True)  # Hide computer's ships
+
+        player_guess = self.get_player_guess()
+        if player_guess:
+            row, col = player_guess
+            if self.check_hit(self.computer_board, row, col):
+                print("Hit!")
+                self.computer_ships = [(r, c) for r, c in self.computer_ships if (r, c) != (row, col)]
+                if (row, col) in self.computer_ships:
+                    self.computer_ships.remove((row, col))
+                if self.computer_board[row][col] == 'X':
+                    self.computer_ships_sunk += 1
+                if self.computer_ships_sunk == self.num_ships * 2:
+                    return "player_wins"
+            else:
+                print("Miss!")
+
+
+        # Computer's turn
+        print("\nComputer's turn...")
+        computer_guess = self.computer_make_guess()
+        row, col = computer_guess
+        if self.check_hit(self.player_board, row, col):
+            print("Computer hit your ship at", chr(col + 65), row + 1, "!")
+            self.player_ships = [(r, c) for r, c in self.player_ships if (r, c) != (row, col)]
+            if (row, col) in self.player_ships:
+                self.player_ships.remove((row, col))
+
+            if self.player_board[row][col] == 'X':
+                self.player_ships_sunk += 1
+            if self.player_ships_sunk == self.num_ships * 2:
+                return "computer_wins"
+
+        else:
+            print("Computer missed at", chr(col + 65), row + 1, ".")
+
+        return None  # No winner yet
+
+    def play_game(self):
+        """
+        Starts and runs the main game loop.
+        """
+        print("Welcome to Battleship!")
+        print(f"Board size: {self.board_size}x{self.board_size}, Number of ships: {self.num_ships}")
 
         while True:
-            # Player's turn
-            print("\nYour turn:")
-            row, col = self.get_player_guess()
-            self.process_player_guess(row, col)
-            print("\nComputer's board:")
-            self.print_board(self.computer_board, hide_ships=True)
-
-            winner = self.check_win()
+            winner = self.play_round()
             if winner:
-                break
-
-            # Computer's turn
-            print("\nComputer's turn:")
-            row, col = self.get_computer_guess()
-            self.process_computer_guess(row, col)
-            print("\nYour board:")
-            self.print_board(self.player_board)
-
-            winner = self.check_win()
-            if winner:
+                if winner == "player_wins":
+                    print("\nCongratulations! You sunk all the computer's ships!")
+                elif winner == "computer_wins":
+                    print("\nOh no! The computer sunk all your ships!")
                 break
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     game = Battleship()
     game.play_game()

@@ -82,21 +82,24 @@ class CalendarUtil:
         """
         available_slots = []
         events_on_date = self.get_events(date)
-        events_on_date.sort(key=lambda x: x['start_time'])
+        if not events_on_date:
+            available_slots.append((datetime.combine(date.date(), datetime.min.time()), datetime.combine(date.date() + timedelta(days=1), datetime.min.time())))
+        else:
+            events_on_date = sorted(events_on_date, key=lambda x: x['start_time'])
+            
+            # Check availability before the first event
+            if events_on_date[0]['start_time'].time() != datetime.min.time():
+                available_slots.append((datetime.combine(date.date(), datetime.min.time()), events_on_date[0]['start_time']))
 
-        start_of_day = datetime(date.year, date.month, date.day, 0, 0, 0)
-        end_of_day = datetime(date.year, date.month, date.day, 23, 59, 59)
+            # Check availability between events
+            for i in range(len(events_on_date) - 1):
+                if events_on_date[i]['end_time'] < events_on_date[i+1]['start_time']:
+                    available_slots.append((events_on_date[i]['end_time'], events_on_date[i+1]['start_time']))
 
-        last_event_end = start_of_day
-
-        for event in events_on_date:
-            if event['start_time'] > last_event_end:
-                available_slots.append((last_event_end, event['start_time']))
-            last_event_end = event['end_time']
-
-        if last_event_end < end_of_day:
-            available_slots.append((last_event_end, end_of_day))
-
+            # Check availability after the last event
+            if events_on_date[-1]['end_time'].time() != datetime.min.time():
+                available_slots.append((events_on_date[-1]['end_time'], datetime.combine(date.date() + timedelta(days=1), datetime.min.time())))
+            
         return available_slots
 
     def get_upcoming_events(self, num_events):
@@ -111,5 +114,4 @@ class CalendarUtil:
         [{'date': datetime.datetime(2023, 1, 1, 0, 0), 'start_time': datetime.datetime(2023, 1, 1, 0, 0), 'end_time': datetime.datetime(2023, 1, 1, 23, 0), 'description': 'New Year'}, {'date': datetime.datetime(2023, 1, 2, 0, 0), 'end_time': datetime.datetime(2023, 1, 2, 1, 0), 'description': 'New Year 2'}]
 
         """
-        self.events.sort(key=lambda x: x['date'])
         return self.events[:num_events]

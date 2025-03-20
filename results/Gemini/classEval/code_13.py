@@ -29,10 +29,8 @@ class BookManagement:
         """
         if title not in self.inventory:
             return False
-        
         if quantity <= 0:
             return False
-
         if self.inventory[title] < quantity:
             return False
 

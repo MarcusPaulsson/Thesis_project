@@ -4,154 +4,174 @@ import os
 
 class Pong:
     """
-    A command-line Pong game.
+    A command-line implementation of the classic Pong game.
     """
 
-    def __init__(self, width=60, height=20, paddle_length=4, ball_speed=1, ai_speed=1):
+    def __init__(self, width=60, height=20, paddle_length=5, ball_speed=1):
         """
         Initializes the Pong game.
 
         Args:
-            width (int): Width of the game board.
-            height (int): Height of the game board.
-            paddle_length (int): Length of the paddles.
-            ball_speed (int): Initial speed of the ball.
-            ai_speed (int): Initial speed of the AI paddle.
+            width (int): The width of the game board.
+            height (int): The height of the game board.
+            paddle_length (int): The length of the paddles.
+            ball_speed (int): The speed of the ball (number of steps per update).
         """
         self.width = width
         self.height = height
         self.paddle_length = paddle_length
         self.ball_speed = ball_speed
-        self.ai_speed = ai_speed
 
-        self.player_paddle_x = 1
-        self.player_paddle_y = height // 2 - paddle_length // 2
-        self.ai_paddle_x = width - 2
-        self.ai_paddle_y = height // 2 - paddle_length // 2
-
+        self.player1_pos = height // 2 - paddle_length // 2
+        self.player2_pos = height // 2 - paddle_length // 2
         self.ball_x = width // 2
         self.ball_y = height // 2
-        self.ball_dx = random.choice([-1, 1]) * ball_speed
-        self.ball_dy = random.choice([-1, 1]) * ball_speed
-
-        self.player_score = 0
-        self.ai_score = 0
+        self.ball_dx = random.choice([-1, 1])  # Ball direction in x-axis
+        self.ball_dy = random.choice([-1, 1])  # Ball direction in y-axis
+        self.player1_score = 0
+        self.player2_score = 0
         self.game_over = False
+        self.max_score = 10
 
-    def _clear_screen(self):
-        """Clears the console screen."""
+
+    def draw_board(self):
+        """
+        Draws the game board with paddles and the ball.
+        """
+
         os.system('cls' if os.name == 'nt' else 'clear')
-
-    def _draw_board(self):
-        """Draws the game board with paddles and ball."""
 
         board = [[' ' for _ in range(self.width)] for _ in range(self.height)]
 
         # Draw paddles
         for i in range(self.paddle_length):
-            if 0 <= self.player_paddle_y + i < self.height:
-                board[self.player_paddle_y + i][self.player_paddle_x] = '|'
-            if 0 <= self.ai_paddle_y + i < self.height:
-                board[self.ai_paddle_y + i][self.ai_paddle_x] = '|'
+            if 0 <= self.player1_pos + i < self.height:
+                board[self.player1_pos + i][0] = '|'
+            if 0 <= self.player2_pos + i < self.height:
+                board[self.player2_pos + i][self.width - 1] = '|'
 
         # Draw ball
-        if 0 <= self.ball_y < self.height and 0 <= self.ball_x < self.width:
-            board[self.ball_y][self.ball_x] = 'O'
+        board[self.ball_y][self.ball_x] = 'O'
 
-        # Draw score
-        score_str = f"Player: {self.player_score}  AI: {self.ai_score}"
-        score_x = (self.width - len(score_str)) // 2
-        for i, char in enumerate(score_str):
-            if 0 <= score_x + i < self.width:
-                board[0][score_x + i] = char
-
-
-        self._clear_screen()
+        # Print board
+        print("-" * self.width)
         for row in board:
             print("".join(row))
-        print(f"Controls: W (Up), S (Down), Q (Quit)  - Ball Speed: {abs(self.ball_dx)}, AI Speed: {self.ai_speed}") #Added speed info
+        print("-" * self.width)
+        print(f"Player 1: {self.player1_score}  Player 2: {self.player2_score}")
 
 
-    def _update_ball(self):
-        """Updates the ball's position and handles collisions."""
-        self.ball_x += self.ball_dx
-        self.ball_y += self.ball_dy
+    def update_ball(self):
+        """
+        Updates the ball's position and handles collisions.
+        """
+        for _ in range(self.ball_speed):
+            new_ball_x = self.ball_x + self.ball_dx
+            new_ball_y = self.ball_y + self.ball_dy
 
-        # Bounce off top and bottom walls
-        if self.ball_y <= 0 or self.ball_y >= self.height - 1:
-            self.ball_dy *= -1
+            # Check for collisions with top/bottom walls
+            if new_ball_y <= 0 or new_ball_y >= self.height - 1:
+                self.ball_dy *= -1
+                new_ball_y = self.ball_y + self.ball_dy  # Recalculate after bounce
 
-        # Bounce off paddles
-        if (self.ball_x <= self.player_paddle_x + 1 and
-            self.player_paddle_y <= self.ball_y < self.player_paddle_y + self.paddle_length):
-            self.ball_dx *= -1
-            self.ball_dx = max(self.ball_dx * 1.1, -5) if self.ball_dx < 0 else min(self.ball_dx * 1.1, 5) # Increase ball speed after paddle hit.
+            # Check for collisions with paddles
+            if new_ball_x <= 0:
+                if self.player1_pos <= new_ball_y <= self.player1_pos + self.paddle_length - 1:
+                    self.ball_dx *= -1
+                    new_ball_x = self.ball_x + self.ball_dx  # Recalculate after bounce
+                else:
+                    self.player2_score += 1
+                    self.reset_ball()
+                    return
 
-        if (self.ball_x >= self.ai_paddle_x - 1 and
-            self.ai_paddle_y <= self.ball_y < self.ai_paddle_y + self.paddle_length):
-            self.ball_dx *= -1
-            self.ball_dx = max(self.ball_dx * 1.1, -5) if self.ball_dx < 0 else min(self.ball_dx * 1.1, 5) # Increase ball speed after paddle hit.
-        # Score
-        if self.ball_x <= 0:
-            self.ai_score += 1
-            self._reset_ball()
-        elif self.ball_x >= self.width - 1:
-            self.player_score += 1
-            self._reset_ball()
+            if new_ball_x >= self.width - 1:
+                if self.player2_pos <= new_ball_y <= self.player2_pos + self.paddle_length - 1:
+                    self.ball_dx *= -1
+                    new_ball_x = self.ball_x + self.ball_dx  # Recalculate after bounce
+                else:
+                    self.player1_score += 1
+                    self.reset_ball()
+                    return
 
-        #Check for Game Over
-        if self.player_score >= 10 or self.ai_score >= 10:
+            self.ball_x = new_ball_x
+            self.ball_y = new_ball_y
+
+    def reset_ball(self):
+         """Resets the ball to the center after a point is scored."""
+         self.ball_x = self.width // 2
+         self.ball_y = self.height // 2
+         self.ball_dx = random.choice([-1, 1])
+         self.ball_dy = random.choice([-1, 1])
+
+
+    def move_player1(self, direction):
+        """
+        Moves player 1's paddle.
+
+        Args:
+            direction (str): "up" or "down".
+        """
+        if direction == "up" and self.player1_pos > 0:
+            self.player1_pos -= 1
+        elif direction == "down" and self.player1_pos + self.paddle_length < self.height:
+            self.player1_pos += 1
+
+
+    def move_player2(self, direction):
+        """
+        Moves player 2's paddle.
+
+        Args:
+            direction (str): "up" or "down".
+        """
+        if direction == "up" and self.player2_pos > 0:
+            self.player2_pos -= 1
+        elif direction == "down" and self.player2_pos + self.paddle_length < self.height:
+            self.player2_pos += 1
+
+
+    def check_game_over(self):
+        """Checks if the game is over."""
+        if self.player1_score >= self.max_score or self.player2_score >= self.max_score:
             self.game_over = True
-
-    def _reset_ball(self):
-        """Resets the ball to the center of the board with random direction."""
-        self.ball_x = self.width // 2
-        self.ball_y = self.height // 2
-        self.ball_dx = random.choice([-1, 1]) * self.ball_speed
-        self.ball_dy = random.choice([-1, 1]) * self.ball_speed
-
-    def _update_ai(self):
-        """Updates the AI paddle's position."""
-        if self.ai_paddle_y + self.paddle_length // 2 < self.ball_y and self.ai_paddle_y < self.height - self.paddle_length:
-            self.ai_paddle_y += self.ai_speed
-        elif self.ai_paddle_y + self.paddle_length // 2 > self.ball_y and self.ai_paddle_y > 0:
-            self.ai_paddle_y -= self.ai_speed
-
-
-    def _handle_input(self, key):
-        """Handles player input."""
-        if key.lower() == 'w':
-            self.player_paddle_y = max(0, self.player_paddle_y - 1)
-        elif key.lower() == 's':
-            self.player_paddle_y = min(self.height - self.paddle_length, self.player_paddle_y + 1)
-        elif key.lower() == 'q':
-            self.game_over = True
-        elif key.lower() == 'a': #Increase AI speed
-            self.ai_speed = min(self.ai_speed + 1, 5) #Limit to 5
-        elif key.lower() == 'd': #Decrease AI speed
-            self.ai_speed = max(self.ai_speed - 1, 1) #Limit to 1
-
-
+            return True
+        return False
 
     def play(self):
-        """Starts the Pong game loop."""
+        """
+        Starts and runs the game loop.
+        """
         while not self.game_over:
-            self._draw_board()
-            self._update_ball()
-            self._update_ai()
+            self.draw_board()
 
-            key = input()  # Get player input
-            self._handle_input(key)
+            # Get player input (non-blocking)
+            player1_move = input("Player 1 (w/s): ").lower()
+            player2_move = input("Player 2 (o/l): ").lower()
 
-            time.sleep(0.05)  # Adjust for game speed
+            # Move players
+            if player1_move == "w":
+                self.move_player1("up")
+            elif player1_move == "s":
+                self.move_player1("down")
 
-        self._draw_board() #Final Draw
-        if self.player_score > self.ai_score:
-            print("Player wins!")
-        else:
-            print("AI wins!")
+            if player2_move == "o":
+                self.move_player2("up")
+            elif player2_move == "l":
+                self.move_player2("down")
+
+            self.update_ball()
+
+            if self.check_game_over():
+                self.draw_board()
+                if self.player1_score >= self.max_score:
+                    print("Player 1 wins!")
+                else:
+                    print("Player 2 wins!")
+                break
+
+            time.sleep(0.05)
 
 
 if __name__ == "__main__":
-    game = Pong(width=70, height=25, paddle_length=5, ball_speed=1, ai_speed=2)
+    game = Pong()
     game.play()

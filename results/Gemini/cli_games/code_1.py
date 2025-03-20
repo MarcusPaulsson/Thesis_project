@@ -6,92 +6,86 @@ class Hangman:
         Initializes the Hangman game.
 
         Args:
-            word_list (list): A list of strings representing possible words to guess.
+            word_list (list): A list of words to choose from.
             max_attempts (int): The maximum number of incorrect guesses allowed.
         """
         self.word_list = word_list
-        self.word_to_guess = random.choice(word_list).upper()
+        self.word = random.choice(word_list).upper()
         self.guessed_letters = set()
         self.attempts_left = max_attempts
-        self.word_display = ['_'] * len(self.word_to_guess)
+        self.word_completion = ["_" for _ in self.word]
         self.game_over = False
-        self.max_attempts = max_attempts
 
-    def display_game_state(self):
+    def display_word(self):
         """
-        Prints the current state of the game to the console.
+        Returns the current state of the word with guessed letters revealed.
         """
-        print("\n" + "=" * 30)
-        print("Word:", " ".join(self.word_display))
-        print("Guessed letters:", ", ".join(sorted(self.guessed_letters)))
-        print("Attempts left:", self.attempts_left)
-        print("=" * 30)
+        return " ".join(self.word_completion)
 
-    def get_player_guess(self):
+    def display_status(self):
         """
-        Prompts the player to enter a guess and validates the input.
+        Displays the current game status to the user.
+        """
+        print(f"\nWord: {self.display_word()}")
+        print(f"Attempts left: {self.attempts_left}")
+        print(f"Guessed letters: {', '.join(sorted(self.guessed_letters))}")
+
+    def get_guess(self):
+        """
+        Prompts the user for a letter guess and validates the input.
 
         Returns:
-            str: The player's guess (single uppercase letter).  Returns None if input is invalid.
+            str: The valid letter guess (uppercase).
         """
         while True:
             guess = input("Guess a letter: ").upper()
-            if len(guess) != 1:
-                print("Please enter only one letter.")
-            elif not guess.isalpha():
-                print("Please enter a letter (A-Z).")
+
+            if not guess.isalpha():
+                print("Invalid input. Please enter a letter.")
+            elif len(guess) != 1:
+                print("Please guess only one letter at a time.")
             elif guess in self.guessed_letters:
                 print("You already guessed that letter.")
             else:
                 return guess
-            
-            if self.attempts_left <=0 and not self.game_over:
-                self.game_over = True
-                print("You lost!")
-                return None
 
-    def update_game_state(self, guess):
+    def process_guess(self, guess):
         """
-        Updates the game state based on the player's guess.
+        Processes the user's guess, updating the game state.
 
         Args:
-            guess (str): The player's guess (single uppercase letter).
+            guess (str): The letter guessed by the user.
         """
         self.guessed_letters.add(guess)
 
-        if guess in self.word_to_guess:
-            for i, letter in enumerate(self.word_to_guess):
+        if guess in self.word:
+            for i, letter in enumerate(self.word):
                 if letter == guess:
-                    self.word_display[i] = guess
+                    self.word_completion[i] = guess
+            if "_" not in self.word_completion:
+                self.game_over = True
+                print("Congratulations! You guessed the word!")
         else:
             self.attempts_left -= 1
             print("Incorrect guess.")
-
-    def check_game_over(self):
-        """
-        Checks if the game is over (either won or lost).
-        """
-        if "_" not in self.word_display:
-            self.game_over = True
-            print("Congratulations! You guessed the word:", self.word_to_guess)
-        elif self.attempts_left <= 0:
-            self.game_over = True
-            print("You ran out of attempts. The word was:", self.word_to_guess)
+            if self.attempts_left == 0:
+                self.game_over = True
+                print(f"You ran out of attempts. The word was {self.word}.")
 
     def play(self):
         """
-        Plays the Hangman game.
+        Runs the main game loop.
         """
         print("Welcome to Hangman!")
-        self.display_game_state()
 
         while not self.game_over:
-            guess = self.get_player_guess()
-            if guess is None:
-                break #handle if the player lost on a previous turn before guessing
-            self.update_game_state(guess)
-            self.display_game_state()
-            self.check_game_over()
+            self.display_status()
+            guess = self.get_guess()
+            self.process_guess(guess)
+
+        # Display the final word if the game ended without winning.
+        if "_" in self.word_completion:
+            print(f"The word was: {self.word}")
 
 
 if __name__ == "__main__":

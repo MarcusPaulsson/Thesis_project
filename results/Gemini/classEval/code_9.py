@@ -15,17 +15,19 @@ class BigNumCalculator:
         '111111111011111111100'
 
         """
-        num1 = num1.zfill(len(max(num1, num2, key=len)))
-        num2 = num2.zfill(len(max(num1, num2, key=len)))
+        num1 = num1[::-1]
+        num2 = num2[::-1]
         carry = 0
         result = ""
-        for i in range(len(num1) - 1, -1, -1):
-            digit_sum = int(num1[i]) + int(num2[i]) + carry
-            result = str(digit_sum % 10) + result
-            carry = digit_sum // 10
-        if carry:
-            result = str(carry) + result
-        return result
+        i = 0
+        while i < len(num1) or i < len(num2) or carry:
+            digit1 = int(num1[i]) if i < len(num1) else 0
+            digit2 = int(num2[i]) if i < len(num2) else 0
+            sum_digits = digit1 + digit2 + carry
+            result += str(sum_digits % 10)
+            carry = sum_digits // 10
+            i += 1
+        return result[::-1]
 
     @staticmethod
     def subtract(num1, num2):
@@ -39,28 +41,34 @@ class BigNumCalculator:
         '-86419753208641975320'
 
         """
-        sign = ""
+        sign = 1
         if int(num1) < int(num2):
             num1, num2 = num2, num1
-            sign = "-"
-        num1 = num1.zfill(len(max(num1, num2, key=len)))
-        num2 = num2.zfill(len(max(num1, num2, key=len)))
+            sign = -1
+
+        num1 = num1[::-1]
+        num2 = num2[::-1]
         borrow = 0
         result = ""
-        for i in range(len(num1) - 1, -1, -1):
+        i = 0
+        while i < len(num1):
             digit1 = int(num1[i])
-            digit2 = int(num2[i])
+            digit2 = int(num2[i]) if i < len(num2) else 0
             diff = digit1 - digit2 - borrow
             if diff < 0:
                 diff += 10
                 borrow = 1
             else:
                 borrow = 0
-            result = str(diff) + result
-        result = result.lstrip("0")
+            result += str(diff)
+            i += 1
+
+        result = result[::-1]
+        # Remove leading zeros
+        result = result.lstrip('0')
         if not result:
             return "0"
-        return sign + result
+        return ("-" if sign == -1 else "") + result
 
     @staticmethod
     def multiply(num1, num2):
@@ -76,9 +84,11 @@ class BigNumCalculator:
         """
         if num1 == "0" or num2 == "0":
             return "0"
+
         len1 = len(num1)
         len2 = len(num2)
         result = [0] * (len1 + len2)
+
         for i in range(len1 - 1, -1, -1):
             for j in range(len2 - 1, -1, -1):
                 digit1 = int(num1[i])
@@ -87,8 +97,10 @@ class BigNumCalculator:
                 p1 = i + j
                 p2 = i + j + 1
                 sum_val = product + result[p2]
+
                 result[p2] = sum_val % 10
                 result[p1] += sum_val // 10
+
         result_str = "".join(map(str, result))
-        result_str = result_str.lstrip("0")
+        result_str = result_str.lstrip('0')
         return result_str if result_str else "0"

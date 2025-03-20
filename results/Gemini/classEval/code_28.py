@@ -72,14 +72,12 @@ class DatabaseProcessor:
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
         cursor.execute(f'''
-            SELECT * FROM {table_name} WHERE name = ?
+            SELECT * FROM {table_name}
+            WHERE name = ?
         ''', (name,))
         result = cursor.fetchall()
         conn.close()
-        if result:
-            return result
-        else:
-            return None
+        return result if result else None
 
 
     def delete_from_database(self, table_name, name):
@@ -92,7 +90,8 @@ class DatabaseProcessor:
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
         cursor.execute(f'''
-            DELETE FROM {table_name} WHERE name = ?
+            DELETE FROM {table_name}
+            WHERE name = ?
         ''', (name,))
         conn.commit()
         conn.close()

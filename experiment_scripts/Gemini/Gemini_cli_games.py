@@ -35,7 +35,7 @@ def run_task_with_gemini(task_prompt):
         temperature=0.7,
         top_p=1,
         top_k=40,
-        max_output_tokens=2500,
+        max_output_tokens=3000,
         response_mime_type="text/plain",
     )
 

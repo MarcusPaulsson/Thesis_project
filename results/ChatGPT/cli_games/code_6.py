@@ -5,58 +5,53 @@ class Battleship:
         self.size = size
         self.ships = ships
         self.board = [['~' for _ in range(size)] for _ in range(size)]
-        self.ships_coords = set()
-        self.guesses = set()
+        self.ships_locations = []
+        self.hits = 0
         self.place_ships()
 
     def place_ships(self):
-        while len(self.ships_coords) < self.ships:
-            x = random.randint(0, self.size - 1)
-            y = random.randint(0, self.size - 1)
-            self.ships_coords.add((x, y))
+        while len(self.ships_locations) < self.ships:
+            ship_location = (random.randint(0, self.size-1), random.randint(0, self.size-1))
+            if ship_location not in self.ships_locations:
+                self.ships_locations.append(ship_location)
 
-    def print_board(self, show_ships=False):
+    def print_board(self):
         print("  " + " ".join(str(i) for i in range(self.size)))
-        for i in range(self.size):
-            row = " ".join(self.board[i][j] if (i, j) not in self.ships_coords or show_ships else "~" for j in range(self.size))
-            print(f"{i} {row}")
+        for i, row in enumerate(self.board):
+            print(str(i) + " " + " ".join(row))
 
     def make_guess(self, x, y):
-        if (x, y) in self.guesses:
-            print("You already guessed that!")
-            return False
-        self.guesses.add((x, y))
-        if (x, y) in self.ships_coords:
+        if (x, y) in self.ships_locations:
             self.board[x][y] = 'X'
+            self.ships_locations.remove((x, y))
+            self.hits += 1
             print("Hit!")
             return True
-        else:
+        elif self.board[x][y] == '~':
             self.board[x][y] = 'O'
             print("Miss!")
             return False
+        else:
+            print("You already guessed that!")
+            return False
+
+    def is_game_over(self):
+        return self.hits == self.ships
 
     def play(self):
         print("Welcome to Battleship!")
-        while len(self.guesses) < self.size * self.size and len(self.ships_coords) > 0:
+        while not self.is_game_over():
             self.print_board()
             try:
-                x = int(input("Enter row (0-indexed): "))
-                y = int(input("Enter column (0-indexed): "))
+                x, y = map(int, input("Enter your guess (row and column): ").split())
                 if x < 0 or x >= self.size or y < 0 or y >= self.size:
-                    print("Invalid coordinates. Try again.")
+                    print("Out of bounds! Please try again.")
                     continue
-                hit = self.make_guess(x, y)
-                if hit and (x, y) in self.ships_coords:
-                    self.ships_coords.remove((x, y))
-                    if len(self.ships_coords) == 0:
-                        print("You've sunk all the ships! You win!")
-                        self.print_board(show_ships=True)
-                        return
+                self.make_guess(x, y)
             except ValueError:
-                print("Invalid input. Please enter numbers.")
+                print("Invalid input! Please enter row and column as two integers.")
 
-        print("Game Over! You ran out of guesses.")
-        self.print_board(show_ships=True)
+        print("Congratulations! You've sunk all the ships!")
 
 if __name__ == "__main__":
     game = Battleship()

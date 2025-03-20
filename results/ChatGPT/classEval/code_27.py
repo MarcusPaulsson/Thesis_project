@@ -1,6 +1,6 @@
 class CurrencyConverter:
     """
-    This is a class for currency conversion, which supports converting amounts between different currencies, retrieving supported currencies, adding new currency rates, and updating existing currency rates.
+    This is a class for currency conversion, which supports to convert amounts between different currencies, retrieve supported currencies, add new currency rates, and update existing currency rates.
     """
 
     def __init__(self):
@@ -29,8 +29,11 @@ class CurrencyConverter:
         10.0
         """
         if from_currency not in self.rates or to_currency not in self.rates:
-            raise ValueError("Unsupported currency")
+            raise ValueError("Unsupported currency type")
+        
+        # Convert to USD first
         amount_in_usd = amount / self.rates[from_currency]
+        # Convert from USD to the target currency
         return amount_in_usd * self.rates[to_currency]
 
     def get_supported_currencies(self):

@@ -48,6 +48,7 @@ class DataStatistics:
         """
         if not data:
             return []
+
         count = Counter(data)
         max_count = max(count.values())
         modes = [k for k, v in count.items() if v == max_count]

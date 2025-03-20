@@ -2,162 +2,191 @@ import random
 import time
 import os
 
+
 class PacmanGame:
     """
-    A command-line Pac-Man game implementation.
+    A simple command-line Pac-Man game.
     """
 
-    def __init__(self, width=15, height=10, num_ghosts=2):
+    def __init__(self, width=15, height=10):
         """
-        Initializes the game board, Pac-Man, ghosts, and food.
+        Initializes the Pac-Man game.
 
         Args:
-            width (int): The width of the game board.
-            height (int): The height of the game board.
-            num_ghosts (int): The number of ghosts in the game.
+            width (int): The width of the game grid.
+            height (int): The height of the game grid.
         """
         self.width = width
         self.height = height
-        self.num_ghosts = num_ghosts
-        self.board = [[' ' for _ in range(width)] for _ in range(height)]
         self.pacman_x = width // 2
         self.pacman_y = height // 2
-        self.board[self.pacman_y][self.pacman_x] = 'P'
-        self.ghosts = []
-        for _ in range(num_ghosts):
-            self.ghosts.append(self.create_ghost())
-        self.food_count = 0
-        self.place_food()
+        self.ghost_x = 1
+        self.ghost_y = 1
+        self.food = set()
         self.score = 0
         self.game_over = False
-        self.won = False
+        self.level = 1
+        self.ghost_speed = 0.5  # Ghost movement frequency (lower = faster)
 
-    def create_ghost(self):
-        """
-        Creates a ghost at a random location on the board, avoiding Pac-Man's starting position.
+        # Initialize food pellets
+        for x in range(width):
+            for y in range(height):
+                if (x, y) != (self.pacman_x, self.pacman_y) and (x, y) != (self.ghost_x, self.ghost_y):
+                    self.food.add((x, y))
 
-        Returns:
-            tuple: The (x, y) coordinates of the new ghost.
+    def display(self):
         """
-        while True:
-            x = random.randint(0, self.width - 1)
-            y = random.randint(0, self.height - 1)
-            if (x, y) != (self.pacman_x, self.pacman_y) and self.board[y][x] != 'G':
-                return (x, y)
+        Displays the game grid in the console.
+        """
 
-    def place_food(self):
-        """
-        Places food ('o') on the board at empty locations.
-        """
-        for y in range(self.height):
-            for x in range(self.width):
-                if self.board[y][x] == ' ':
-                    self.board[y][x] = 'o'
-                    self.food_count += 1
+        os.system('cls' if os.name == 'nt' else 'clear')  # Clear the screen
 
-    def print_board(self):
-        """
-        Prints the current state of the game board to the console.
-        """
-        os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console
-        print("-" * (self.width + 2))
-        for row in self.board:
-            print("|" + "".join(row) + "|")
-        print("-" * (self.width + 2))
-        print(f"Score: {self.score}")
-        print("Use WASD to move. Press Q to quit.")
+        # Display game information
+        print(f"Level: {self.level}  Score: {self.score}")
+
+        # Create the grid
+        grid = [[' ' for _ in range(self.width)] for _ in range(self.height)]
+
+        # Place food pellets
+        for x, y in self.food:
+            grid[y][x] = '.'
+
+        # Place Pac-Man
+        grid[self.pacman_y][self.pacman_x] = 'P'
+
+        # Place the ghost
+        grid[self.ghost_y][self.ghost_x] = 'G'
+
+        # Draw the grid
+        for row in grid:
+            print(''.join(row))
 
     def move_pacman(self, direction):
         """
-        Moves Pac-Man based on the given direction (W, A, S, D).
+        Moves Pac-Man based on the given direction.
 
         Args:
-            direction (str): The direction to move Pac-Man ('W', 'A', 'S', 'D').
+            direction (str): The direction to move (up, down, left, right).
         """
-        new_x = self.pacman_x
-        new_y = self.pacman_y
+        new_x, new_y = self.pacman_x, self.pacman_y
 
-        if direction == 'W':
+        if direction == 'up':
             new_y -= 1
-        elif direction == 'S':
+        elif direction == 'down':
             new_y += 1
-        elif direction == 'A':
+        elif direction == 'left':
             new_x -= 1
-        elif direction == 'D':
+        elif direction == 'right':
             new_x += 1
 
+        # Check for boundaries
         if 0 <= new_x < self.width and 0 <= new_y < self.height:
-            if self.board[new_y][new_x] == 'o':
-                self.score += 10
-                self.food_count -= 1
-            elif self.board[new_y][new_x] == 'G':
-                self.game_over = True
-                return
-
-            self.board[self.pacman_y][self.pacman_x] = ' '
             self.pacman_x = new_x
             self.pacman_y = new_y
-            self.board[self.pacman_y][self.pacman_x] = 'P'
 
-            if self.food_count == 0:
-                self.won = True
+            # Check if Pac-Man eats food
+            if (self.pacman_x, self.pacman_y) in self.food:
+                self.food.remove((self.pacman_x, self.pacman_y))
+                self.score += 10
+
+            # Check if Pac-Man collides with the ghost
+            if self.pacman_x == self.ghost_x and self.pacman_y == self.ghost_y:
                 self.game_over = True
 
-    def move_ghosts(self):
-        """
-        Moves each ghost randomly to an adjacent empty location.
-        """
-        for i in range(len(self.ghosts)):
-            x, y = self.ghosts[i]
-            possible_moves = []
-            if x > 0 and self.board[y][x - 1] != 'G' and self.board[y][x - 1] != 'P':
-                possible_moves.append((x - 1, y))
-            if x < self.width - 1 and self.board[y][x + 1] != 'G' and self.board[y][x + 1] != 'P':
-                possible_moves.append((x + 1, y))
-            if y > 0 and self.board[y - 1][x] != 'G' and self.board[y - 1][x] != 'P':
-                possible_moves.append((x, y - 1))
-            if y < self.height - 1 and self.board[y + 1][x] != 'G' and self.board[y + 1][x] != 'P':
-                possible_moves.append((x, y + 1))
+            # Check if the level is complete
+            if not self.food:
+                self.level_complete()
 
-            if possible_moves:
-                new_x, new_y = random.choice(possible_moves)
-                self.board[y][x] = ' '  # Clear the ghost's previous position
-
-                if (new_x, new_y) == (self.pacman_x, self.pacman_y):
-                    self.game_over = True
-                    return
-
-                self.ghosts[i] = (new_x, new_y)
-                self.board[new_y][new_x] = 'G'
-
-    def run(self):
+    def move_ghost(self):
         """
-        Runs the main game loop.
+        Moves the ghost randomly.
         """
+        possible_moves = []
+        if self.ghost_x > 0:
+            possible_moves.append('left')
+        if self.ghost_x < self.width - 1:
+            possible_moves.append('right')
+        if self.ghost_y > 0:
+            possible_moves.append('up')
+        if self.ghost_y < self.height - 1:
+            possible_moves.append('down')
+
+        direction = random.choice(possible_moves)
+        new_x, new_y = self.ghost_x, self.ghost_y
+
+        if direction == 'up':
+            new_y -= 1
+        elif direction == 'down':
+            new_y += 1
+        elif direction == 'left':
+            new_x -= 1
+        elif direction == 'right':
+            new_x += 1
+
+        self.ghost_x = new_x
+        self.ghost_y = new_y
+
+        # Check for collision with pacman
+        if self.pacman_x == self.ghost_x and self.pacman_y == self.ghost_y:
+            self.game_over = True
+
+    def level_complete(self):
+        """
+        Advances the game to the next level.
+        """
+        self.level += 1
+        print("Level Complete!")
+        time.sleep(1)  # Pause briefly
+
+        # Reset Pac-Man and Ghost positions
+        self.pacman_x = self.width // 2
+        self.pacman_y = self.height // 2
+        self.ghost_x = 1
+        self.ghost_y = 1
+
+        # Refill the food
+        self.food = set()
+        for x in range(self.width):
+            for y in range(self.height):
+                if (x, y) != (self.pacman_x, self.pacman_y) and (x, y) != (self.ghost_x, self.ghost_y):
+                    self.food.add((x, y))
+
+        # Optionally increase ghost speed each level
+        self.ghost_speed = max(0.1, self.ghost_speed - 0.05)
+
+    def play(self):
+        """
+        Starts the main game loop.
+        """
+        last_ghost_move = time.time()
+
         while not self.game_over:
-            self.print_board()
-            move = input("Enter move (W/A/S/D) or Q to quit: ").upper()
+            self.display()
 
-            if move == 'Q':
-                self.game_over = True
+            # Get player input
+            direction = input("Enter move (up, down, left, right, quit): ").lower()
+
+            if direction == 'quit':
                 break
 
-            self.move_pacman(move)
-            if self.game_over:
-                break
-            self.move_ghosts()
-            if self.game_over:
-                break
-            time.sleep(0.2)
+            # Move Pac-Man
+            self.move_pacman(direction)
 
-        self.print_board()
-        if self.won:
-            print("Congratulations! You won!")
-        elif self.game_over:
-            print("Game Over! You were caught by a ghost.")
-        print(f"Final Score: {self.score}")
+            # Move ghost based on the timer
+            current_time = time.time()
+            if current_time - last_ghost_move > self.ghost_speed:
+                self.move_ghost()
+                last_ghost_move = current_time
+
+            time.sleep(0.1)  # Control game speed
+
+        if self.game_over:
+            self.display()
+            print("Game Over! Final Score:", self.score)
+        else:
+            print("Game quit. Final Score:", self.score)
 
 
 if __name__ == "__main__":
     game = PacmanGame()
-    game.run()
+    game.play()

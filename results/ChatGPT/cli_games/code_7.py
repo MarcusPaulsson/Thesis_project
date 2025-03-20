@@ -1,47 +1,51 @@
+import numpy as np
 import os
 import time
-import random
 
 class GameOfLife:
-    def __init__(self, width=20, height=20):
-        self.width = width
-        self.height = height
-        self.grid = self._create_grid()
+    def __init__(self, rows, cols):
+        self.rows = rows
+        self.cols = cols
+        self.grid = np.zeros((rows, cols), dtype=int)
 
-    def _create_grid(self):
-        return [[random.choice([0, 1]) for _ in range(self.width)] for _ in range(self.height)]
+    def randomize(self):
+        self.grid = np.random.randint(2, size=(self.rows, self.cols))
 
-    def _print_grid(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
-        for row in self.grid:
-            print(' '.join(['█' if cell else ' ' for cell in row]))
-
-    def _count_neighbors(self, x, y):
-        directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-        count = 0
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < self.height and 0 <= ny < self.width:
-                count += self.grid[nx][ny]
-        return count
-
-    def _update_grid(self):
-        new_grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
-        for x in range(self.height):
-            for y in range(self.width):
-                neighbors = self._count_neighbors(x, y)
-                if self.grid[x][y] == 1 and neighbors in (2, 3):
-                    new_grid[x][y] = 1
-                elif self.grid[x][y] == 0 and neighbors == 3:
-                    new_grid[x][y] = 1
+    def update(self):
+        new_grid = self.grid.copy()
+        for r in range(self.rows):
+            for c in range(self.cols):
+                live_neighbors = self.count_live_neighbors(r, c)
+                if self.grid[r, c] == 1:
+                    if live_neighbors < 2 or live_neighbors > 3:
+                        new_grid[r, c] = 0
+                else:
+                    if live_neighbors == 3:
+                        new_grid[r, c] = 1
         self.grid = new_grid
 
-    def play(self, generations=10, delay=0.5):
+    def count_live_neighbors(self, r, c):
+        total = 0
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if (i == 0 and j == 0) or not (0 <= r + i < self.rows) or not (0 <= c + j < self.cols):
+                    continue
+                total += self.grid[r + i, c + j]
+        return total
+
+    def display(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(self.grid)
+
+    def run(self, generations):
+        self.randomize()
         for _ in range(generations):
-            self._print_grid()
-            self._update_grid()
-            time.sleep(delay)
+            self.display()
+            self.update()
+            time.sleep(0.5)
 
 if __name__ == "__main__":
-    game = GameOfLife()
-    game.play(generations=20, delay=0.5)
+    rows, cols = 20, 20
+    game = GameOfLife(rows, cols)
+    generations = 100
+    game.run(generations)

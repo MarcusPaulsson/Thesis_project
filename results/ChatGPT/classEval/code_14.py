@@ -24,7 +24,7 @@ class BookManagementDB:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 author TEXT NOT NULL,
-                available INTEGER NOT NULL DEFAULT 1
+                available INTEGER NOT NULL
             )
         ''')
         self.connection.commit()
@@ -36,10 +36,7 @@ class BookManagementDB:
         :param title: str, book title
         :param author: str, author name
         """
-        self.cursor.execute('''
-            INSERT INTO books (title, author, available) 
-            VALUES (?, ?, ?)
-        ''', (title, author, 1))
+        self.cursor.execute('INSERT INTO books (title, author, available) VALUES (?, ?, ?)', (title, author, 1))
         self.connection.commit()
 
     def remove_book(self, book_id):
@@ -47,9 +44,7 @@ class BookManagementDB:
         Removes a book from the database based on the given book ID.
         :param book_id: int
         """
-        self.cursor.execute('''
-            DELETE FROM books WHERE id = ?
-        ''', (book_id,))
+        self.cursor.execute('DELETE FROM books WHERE id = ?', (book_id,))
         self.connection.commit()
 
     def borrow_book(self, book_id):
@@ -57,9 +52,7 @@ class BookManagementDB:
         Marks a book as borrowed in the database based on the given book ID.
         :param book_id: int
         """
-        self.cursor.execute('''
-            UPDATE books SET available = 0 WHERE id = ?
-        ''', (book_id,))
+        self.cursor.execute('UPDATE books SET available = 0 WHERE id = ?', (book_id,))
         self.connection.commit()
 
     def return_book(self, book_id):
@@ -67,9 +60,7 @@ class BookManagementDB:
         Marks a book as returned in the database based on the given book ID.
         :param book_id: int
         """
-        self.cursor.execute('''
-            UPDATE books SET available = 1 WHERE id = ?
-        ''', (book_id,))
+        self.cursor.execute('UPDATE books SET available = 1 WHERE id = ?', (book_id,))
         self.connection.commit()
 
     def search_books(self):
@@ -77,7 +68,5 @@ class BookManagementDB:
         Retrieves all books from the database and returns their information.
         :return books: list[tuple], the information of all books in database
         """
-        self.cursor.execute('''
-            SELECT * FROM books
-        ''')
+        self.cursor.execute('SELECT * FROM books')
         return self.cursor.fetchall()

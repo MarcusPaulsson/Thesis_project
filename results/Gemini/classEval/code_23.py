@@ -90,7 +90,7 @@ class CombinationCalculator:
 
         """
         if resultIndex == len(resultList):
-            result.append(resultList[:])
+            result.append([item for item in resultList])
             return
 
         for i in range(dataIndex, len(self.datas)):

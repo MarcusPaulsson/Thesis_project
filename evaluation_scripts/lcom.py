@@ -1,6 +1,7 @@
 import ast
 import itertools
 import os
+import re  # Import the regular expression module
 
 # Define the target Python file to evaluate
 TARGET_FILE = "target.py"  # Change this to your desired file name
@@ -108,37 +109,54 @@ def analyze_file(filename):
     return results
 
 def main():
-    # Construct a full path for the target file if needed.
+    """Analyzes all Python files in the 'cli_games' folder for both models and prints comparison."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
-    chatgpt_dir = os.path.join(parent_dir, "results", "ChatGPT", "cli_games", "code_6.py")
-    gemini_dir = os.path.join(parent_dir, "results", "Gemini", "cli_games", "code_6.py")
+    chatgpt_dir = os.path.join(parent_dir, "results", "ChatGPT", "classEval")
+    gemini_dir = os.path.join(parent_dir, "results", "Gemini", "classEval")
 
+    try:
+        chatgpt_files = sorted([f for f in os.listdir(chatgpt_dir) if f.endswith(".py")])
+        gemini_files = sorted([f for f in os.listdir(gemini_dir) if f.endswith(".py")])
+    except FileNotFoundError:
+        print("One or both model directories not found.")
+        return
 
-    print(f"Analyzing file: {chatgpt_dir}")
-    results = analyze_file(chatgpt_dir)
-    if results:
-        print("LCOM (C&K) results per class:")
-        for class_name, (lcom, non_cohesive_pairs, cohesive_pairs) in results.items():
-            print(f"\nClass: {class_name}")
-            print(f"  LCOM: {lcom}")
-            print(f"  P (non-cohesive pairs, |P| = {len(non_cohesive_pairs)}): {non_cohesive_pairs}")
-            print(f"  Q (cohesive pairs,     |Q| = {len(cohesive_pairs)}): {cohesive_pairs}")
-    else:
-        print("No classes found or unable to analyze the provided file.")
+    def numerical_sort_key(filename):
+        match = re.search(r'code_(\d+)\.py', filename)
+        if match:
+            return int(match.group(1))
+        return filename  
 
+    chatgpt_files.sort(key=numerical_sort_key)
+    gemini_files.sort(key=numerical_sort_key)   
+    all_files = sorted(list(set(chatgpt_files + gemini_files)), key=numerical_sort_key)
 
-    print(f"Analyzing file: {gemini_dir}")
-    results = analyze_file(gemini_dir)
-    if results:
-        print("LCOM (C&K) results per class:")
-        for class_name, (lcom, non_cohesive_pairs, cohesive_pairs) in results.items():
-            print(f"\nClass: {class_name}")
-            print(f"  LCOM: {lcom}")
-            print(f"  P (non-cohesive pairs, |P| = {len(non_cohesive_pairs)}): {non_cohesive_pairs}")
-            print(f"  Q (cohesive pairs,     |Q| = {len(cohesive_pairs)}): {cohesive_pairs}")
-    else:
-        print("No classes found or unable to analyze the provided file.")
+    print("\n", "-" * 80)
+    print("{:<20} {:<30} {:<30}".format("File", "ChatGPT LCOM", "Gemini LCOM"))
+    print("-" * 80)
 
+    for file_name in all_files:
+        chatgpt_path = os.path.join(chatgpt_dir, file_name)
+        gemini_path = os.path.join(gemini_dir, file_name)
+
+        chatgpt_results = analyze_file(chatgpt_path)
+        gemini_results = analyze_file(gemini_path)
+
+        if chatgpt_results is None and gemini_results is None:
+            print(f"{file_name:<20} {'File not found':<61}")
+            continue
+
+        all_classes = sorted(list(set((chatgpt_results or {}).keys()) | set((gemini_results or {}).keys())))
+
+        for class_name in all_classes:
+            chatgpt_lcom = chatgpt_results.get(class_name, ("N/A",))[0] if chatgpt_results else "N/A"
+            gemini_lcom = gemini_results.get(class_name, ("N/A",))[0] if gemini_results else "N/A"
+
+            if all_classes.index(class_name) == 0:
+                print(f"{file_name:<20} {f'{class_name}: {chatgpt_lcom}':<30} {f'{class_name}: {gemini_lcom}':<30}")
+            else:
+                print(f"{'':<20} {f'{class_name}: {chatgpt_lcom}':<30} {f'{class_name}: {gemini_lcom}':<30}")
+           
 if __name__ == "__main__":
     main()

@@ -7,8 +7,7 @@ class AccessGatewayFilter:
     """
 
     def __init__(self):
-        self.allowed_paths = ['/api', '/login']
-        logging.basicConfig(level=logging.INFO)
+        self.logger = logging.getLogger(__name__)
 
     def filter(self, request):
         """
@@ -19,7 +18,7 @@ class AccessGatewayFilter:
         >>> filter.filter({'path': '/login', 'method': 'POST'})
         True
         """
-        if self.is_start_with(request['path']):
+        if self.is_start_with(request.get('path', '')):
             return True
         return False
 
@@ -33,7 +32,7 @@ class AccessGatewayFilter:
         >>> filter.is_start_with('/api/data')
         True
         """
-        return any(request_uri.startswith(prefix) for prefix in self.allowed_paths)
+        return request_uri.startswith('/api') or request_uri.startswith('/login')
 
     def get_jwt_user(self, request):
         """
@@ -42,11 +41,11 @@ class AccessGatewayFilter:
         :return: dict or None, the user information if the token is valid, None otherwise
         >>> filter = AccessGatewayFilter()
         >>> filter.get_jwt_user({'headers': {'Authorization': {'user': {'name': 'user1'}, 'jwt': 'user1'+str(datetime.date.today())}}})
-        {'user': {'name': 'user1'}}
+        {'user': {'name': 'user1'}
         """
-        auth_header = request.get('headers', {}).get('Authorization', {})
-        if 'user' in auth_header and 'jwt' in auth_header:
-            return auth_header['user']
+        auth_header = request.get('headers', {}).get('Authorization')
+        if auth_header:
+            return auth_header.get('user')
         return None
 
     def set_current_user_info_and_log(self, user):
@@ -58,4 +57,4 @@ class AccessGatewayFilter:
         >>> user = {'name': 'user1', 'address': '127.0.0.1'}
         >>> filter.set_current_user_info_and_log(user)
         """
-        logging.info(f"User accessed: {user['name']} from {user['address']} at {datetime.datetime.now()}")
+        self.logger.info(f"User accessed: {user['name']} from {user['address']} on {datetime.datetime.now()}")

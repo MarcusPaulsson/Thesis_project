@@ -19,6 +19,8 @@ class Chat:
         >>> chat = Chat()
         >>> chat.add_user('John')
         True
+        >>> chat.users
+        {'John': []}
         >>> chat.add_user('John')
         False
         """
@@ -33,8 +35,7 @@ class Chat:
         :param username: The user's name, str.
         :return: If the user is already in the Chat, returns True, otherwise, returns False.
         >>> chat = Chat()
-        >>> chat.add_user('John')
-        True
+        >>> chat.users = {'John': []}
         >>> chat.remove_user('John')
         True
         >>> chat.remove_user('John')
@@ -53,10 +54,7 @@ class Chat:
         :param message: The message, str.
         :return: If the sender or the receiver is not in the Chat, returns False, otherwise, returns True.
         >>> chat = Chat()
-        >>> chat.add_user('John')
-        True
-        >>> chat.add_user('Mary')
-        True
+        >>> chat.users = {'John': [], 'Mary': []}
         >>> chat.send_message('John', 'Mary', 'Hello')
         True
         >>> chat.send_message('John', 'Tom', 'Hello')
@@ -74,20 +72,10 @@ class Chat:
         :param username: The user's name, str.
         :return: A list of messages, each message is a dictionary with keys 'sender', 'receiver', 'message', 'timestamp'.
         >>> chat = Chat()
-        >>> chat.add_user('John')
-        True
-        >>> chat.add_user('Mary')
-        True
-        >>> chat.send_message('John', 'Mary', 'Hello')
-        True
+        >>> chat.users = {'John': [{'sender': 'John', 'receiver': 'Mary', 'message': 'Hello', 'timestamp': '2023-01-01 00:00:00'}]}
         >>> chat.get_messages('John')
-        []
+        [{'sender': 'John', 'receiver': 'Mary', 'message': 'Hello', 'timestamp': '2023-01-01 00:00:00'}]
         >>> chat.get_messages('Mary')
-        [{'sender': 'John', 'receiver': 'Mary', 'message': 'Hello', 'timestamp': '...'}]
+        []
         """
-        messages = []
-        for user in self.users:
-            for msg in self.users[user]:
-                if msg['sender'] == username or msg['receiver'] == username:
-                    messages.append(msg)
-        return messages
+        return self.users.get(username, [])

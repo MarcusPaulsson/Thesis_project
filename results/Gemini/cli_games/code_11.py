@@ -10,26 +10,26 @@ class LightsOut:
         Initializes the game board.
 
         Args:
-            size (int): The size of the board (size x size).  Defaults to 5.
-            initial_state (list of lists):  An optional initial state for the board.
-                                          If None, generates a random initial state.
+            size (int): The size of the board (size x size). Default is 5.
+            initial_state (list[list[bool]]): An optional initial state for the board.
+                                               If None, a random initial state is generated.
         """
         self.size = size
-        if initial_state is None:
-            self.board = self.generate_random_board()
-        else:
+        if initial_state:
             if len(initial_state) != size or any(len(row) != size for row in initial_state):
-                raise ValueError("Initial state must be a square matrix of the specified size.")
-            self.board = initial_state
+                raise ValueError("Initial state must be a size x size grid.")
+            self.board = [row[:] for row in initial_state]  # Deep copy
+        else:
+            self.board = self.generate_random_board()
 
     def generate_random_board(self):
         """
-        Generates a random board state.
+        Generates a random initial board state.
 
         Returns:
-            list of lists: A 2D list representing the board.
+            list[list[bool]]: A randomly generated board.
         """
-        board = [[random.randint(0, 1) for _ in range(self.size)] for _ in range(self.size)]
+        board = [[random.choice([True, False]) for _ in range(self.size)] for _ in range(self.size)]
         return board
 
     def print_board(self):
@@ -37,32 +37,32 @@ class LightsOut:
         Prints the current state of the board to the console.
         """
         for row in self.board:
-            print(" ".join(map(str, row)))
+            print(" ".join(["X" if cell else "O" for cell in row]))
 
-    def toggle_light(self, row, col):
+    def toggle_cell(self, row, col):
         """
-        Toggles the light at the given row and column.
+        Toggles the state of a cell on the board.
 
         Args:
-            row (int): The row of the light to toggle.
-            col (int): The column of the light to toggle.
+            row (int): The row index of the cell.
+            col (int): The column index of the cell.
         """
         if 0 <= row < self.size and 0 <= col < self.size:
-            self.board[row][col] = 1 - self.board[row][col]  # Flip 0 to 1 and 1 to 0
+            self.board[row][col] = not self.board[row][col]
 
     def make_move(self, row, col):
         """
-        Makes a move by toggling the selected light and its neighbors.
+        Makes a move by toggling the selected cell and its neighbors.
 
         Args:
-            row (int): The row of the light to toggle.
-            col (int): The column of the light to toggle.
+            row (int): The row index of the selected cell.
+            col (int): The column index of the selected cell.
         """
-        self.toggle_light(row, col)  # Toggle the selected light
-        self.toggle_light(row - 1, col)  # Toggle the light above
-        self.toggle_light(row + 1, col)  # Toggle the light below
-        self.toggle_light(row, col - 1)  # Toggle the light to the left
-        self.toggle_light(row, col + 1)  # Toggle the light to the right
+        self.toggle_cell(row, col)  # Toggle the selected cell
+        self.toggle_cell(row - 1, col)  # Toggle the cell above
+        self.toggle_cell(row + 1, col)  # Toggle the cell below
+        self.toggle_cell(row, col - 1)  # Toggle the cell to the left
+        self.toggle_cell(row, col + 1)  # Toggle the cell to the right
 
     def is_solved(self):
         """
@@ -71,32 +71,34 @@ class LightsOut:
         Returns:
             bool: True if the game is solved, False otherwise.
         """
-        return all(all(light == 0 for light in row) for row in self.board)
+        return all(not cell for row in self.board for cell in row)
 
-    def play(self):
+    def play_game(self):
         """
-        Plays the game through the command line.
+        Plays the Lights Out game with a command-line interface.
         """
         print("Welcome to Lights Out!")
         self.print_board()
 
         while not self.is_solved():
             try:
-                move = input(f"Enter your move (row, col) [0-{self.size-1}]: ").split(",")
+                move = input("Enter your move (row,col): ").split(",")
                 row = int(move[0].strip())
                 col = int(move[1].strip())
 
-                if 0 <= row < self.size and 0 <= col < self.size:
-                    self.make_move(row, col)
-                    self.print_board()
-                else:
-                    print("Invalid move. Row and column must be within the board boundaries.")
-            except (ValueError, IndexError):
-                print("Invalid input.  Please enter row and column as integers separated by a comma.")
+                if not (0 <= row < self.size and 0 <= col < self.size):
+                    print("Invalid move. Row and column must be between 0 and", self.size - 1)
+                    continue
 
-        print("Congratulations! You solved the puzzle!")
+                self.make_move(row, col)
+                self.print_board()
+
+            except (ValueError, IndexError):
+                print("Invalid input. Please enter row and column separated by a comma (e.g., 1,2).")
+
+        print("Congratulations! You solved the puzzle.")
 
 
 if __name__ == "__main__":
-    game = LightsOut(size=5)  # You can change the size of the board here
-    game.play()
+    game = LightsOut(size=5)  # You can change the size here
+    game.play_game()

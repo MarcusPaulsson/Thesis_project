@@ -38,10 +38,8 @@ def run_task_with_api(task_prompt):
         ],
         response_format={"type": "text"},
         temperature=0.7,
-        max_completion_tokens=1800,
+        max_completion_tokens=2500,
         top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
     )
     total_tokens = response.usage.total_tokens
     print("Token count:", total_tokens)
@@ -56,8 +54,8 @@ if __name__ == "__main__":
         sys.exit(1) 
 
     # Define the index interval for tasks
-    start_index = 0
-    end_index = 30
+    start_index = 30
+    end_index = 40
 
     results = []
     for i in range(start_index, end_index):

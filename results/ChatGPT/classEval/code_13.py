@@ -1,7 +1,6 @@
 class BookManagement:
     """
-    This is a class for managing a book system, which supports adding and removing books from the inventory dict, 
-    viewing the inventory, and checking the quantity of a specific book.
+    This is a class as managing books system, which supports to add and remove books from the inventory dict, view the inventory, and check the quantity of a specific book.
     """
 
     def __init__(self):
@@ -16,8 +15,8 @@ class BookManagement:
         :param title: str, the book title
         :param quantity: int, default value is 1.
         """
-        if quantity <= 0:
-            raise ValueError("Quantity must be a positive integer.")
+        if quantity < 1 or not isinstance(title, str):
+            raise ValueError("Invalid input.")
         if title in self.inventory:
             self.inventory[title] += quantity
         else:
@@ -27,17 +26,14 @@ class BookManagement:
     def remove_book(self, title, quantity):
         """
         Remove one or several books from inventory which is sorted by book title.
-        Raise false while getting invalid input.
+        Raise false while get invalid input.
         :param title: str, the book title
         :param quantity: int
         """
-        if quantity <= 0:
-            raise ValueError("Quantity must be a positive integer.")
-        if title not in self.inventory:
-            raise ValueError("Book not found in inventory.")
+        if quantity < 1 or title not in self.inventory:
+            raise ValueError("Invalid input.")
         if self.inventory[title] < quantity:
-            raise ValueError("Not enough quantity to remove.")
-        
+            raise ValueError("Not enough books to remove.")
         self.inventory[title] -= quantity
         if self.inventory[title] == 0:
             del self.inventory[title]

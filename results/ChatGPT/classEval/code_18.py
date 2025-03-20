@@ -13,7 +13,7 @@ class CamelCaseMap:
         """
         Return the value corresponding to the key
         :param key:str
-        :return:str, the value corresponding to the key
+        :return:str,the value corresponding to the key
         >>> camelize_map = CamelCaseMap()
         >>> camelize_map['first_name'] = 'John'
         >>> camelize_map.__getitem__('first_name')

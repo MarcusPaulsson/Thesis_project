@@ -59,12 +59,13 @@ class BoyerMooreSearch:
                 j -= 1
             if j < 0:
                 occurrences.append(i)
-                i += (self.patLen - 1 - self.match_in_pattern(self.text[i + self.patLen - 1])) if i + self.patLen < self.textLen else 1
+                i += (self.patLen - 1 - self.match_in_pattern(self.text[i + self.patLen - 1])) if self.patLen > 1 else 1
             else:
                 char = self.text[i + j]
                 r = self.match_in_pattern(char)
                 if r == -1:
-                    i += j + 1
+                    shift = j + 1
                 else:
-                    i += j - r
+                    shift = j - r
+                i += max(1, shift)
         return occurrences

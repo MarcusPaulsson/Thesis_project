@@ -22,14 +22,14 @@ class BookManagementDB:
         >>> book_db = BookManagementDB("test.db")
         >>> book_db.create_table()
         """
-        self.cursor.execute('''
+        self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS books (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 author TEXT NOT NULL,
-                availability INTEGER NOT NULL DEFAULT 1
+                available INTEGER NOT NULL DEFAULT 1
             )
-        ''')
+        """)
         self.connection.commit()
 
     def add_book(self, title, author):
@@ -42,10 +42,7 @@ class BookManagementDB:
         >>> book_db.create_table()
         >>> book_db.add_book('book1', 'author')
         """
-        self.cursor.execute('''
-            INSERT INTO books (title, author, availability)
-            VALUES (?, ?, ?)
-        ''', (title, author, 1))
+        self.cursor.execute("INSERT INTO books (title, author, available) VALUES (?, ?, 1)", (title, author))
         self.connection.commit()
 
     def remove_book(self, book_id):
@@ -55,10 +52,7 @@ class BookManagementDB:
         >>> book_db = BookManagementDB("test.db")
         >>> book_db.remove_book(1)
         """
-        self.cursor.execute('''
-            DELETE FROM books
-            WHERE id = ?
-        ''', (book_id,))
+        self.cursor.execute("DELETE FROM books WHERE id = ?", (book_id,))
         self.connection.commit()
 
     def borrow_book(self, book_id):
@@ -68,11 +62,7 @@ class BookManagementDB:
         >>> book_db = BookManagementDB("test.db")
         >>> book_db.borrow_book(1)
         """
-        self.cursor.execute('''
-            UPDATE books
-            SET availability = 0
-            WHERE id = ?
-        ''', (book_id,))
+        self.cursor.execute("UPDATE books SET available = 0 WHERE id = ?", (book_id,))
         self.connection.commit()
 
     def return_book(self, book_id):
@@ -82,11 +72,7 @@ class BookManagementDB:
         >>> book_db = BookManagementDB("test.db")
         >>> book_db.return_book(1)
         """
-        self.cursor.execute('''
-            UPDATE books
-            SET availability = 1
-            WHERE id = ?
-        ''', (book_id,))
+        self.cursor.execute("UPDATE books SET available = 1 WHERE id = ?", (book_id,))
         self.connection.commit()
 
     def search_books(self):
@@ -96,8 +82,6 @@ class BookManagementDB:
         >>> book_db.search_books()
         [(1, 'book1', 'author', 1)]
         """
-        self.cursor.execute('''
-            SELECT * FROM books
-        ''')
+        self.cursor.execute("SELECT * FROM books")
         books = self.cursor.fetchall()
         return books

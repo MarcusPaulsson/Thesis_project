@@ -1,30 +1,28 @@
 import random
-import string
 
 class Boggle:
     def __init__(self, size=4):
         self.size = size
         self.board = self.generate_board()
-        self.words_found = set()
-        self.dictionary = self.load_dictionary()
+        self.valid_words = set()
+        self.found_words = set()
 
     def generate_board(self):
         letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         return [[random.choice(letters) for _ in range(self.size)] for _ in range(self.size)]
 
-    def load_dictionary(self):
-        # A simple dictionary for demonstration; replace with a comprehensive word list.
-        return set(word.strip().upper() for word in [
-            "CAT", "DOG", "COT", "BAT", "RAT", "HAT", "HATTER", "TAT", "AT", "TO", "TOY", "BOG", "BOGGLE"
-        ])
-
-    def display_board(self):
+    def print_board(self):
         for row in self.board:
-            print(' '.join(row))
+            print(" ".join(row))
         print()
 
+    def load_dictionary(self, filename):
+        with open(filename, 'r') as f:
+            for line in f:
+                self.valid_words.add(line.strip().upper())
+
     def is_valid_word(self, word):
-        return word in self.dictionary
+        return word in self.valid_words
 
     def find_words(self):
         for row in range(self.size):
@@ -32,35 +30,28 @@ class Boggle:
                 self.search_word(row, col, "", set())
 
     def search_word(self, row, col, current_word, visited):
-        if (row < 0 or col < 0 or row >= self.size or col >= self.size or
-                (row, col) in visited):
+        if len(current_word) > 0 and self.is_valid_word(current_word):
+            self.found_words.add(current_word)
+
+        if len(current_word) >= 16:
             return
-        
-        current_word += self.board[row][col]
-        visited.add((row, col))
 
-        if self.is_valid_word(current_word):
-            self.words_found.add(current_word)
-
-        # Explore all 8 directions
-        for r in range(-1, 2):
-            for c in range(-1, 2):
-                if r == 0 and c == 0:
-                    continue
-                self.search_word(row + r, col + c, current_word, visited)
-
-        visited.remove((row, col))
+        for r in range(max(0, row - 1), min(self.size, row + 2)):
+            for c in range(max(0, col - 1), min(self.size, col + 2)):
+                if (r, c) not in visited:
+                    visited.add((r, c))
+                    self.search_word(r, c, current_word + self.board[r][c], visited)
+                    visited.remove((r, c))
 
     def play(self):
         print("Welcome to Boggle!")
-        self.display_board()
-        
+        self.print_board()
         self.find_words()
-        
-        print("Words found:")
-        for word in sorted(self.words_found):
+        print("Found Words:")
+        for word in sorted(self.found_words):
             print(word)
 
 if __name__ == "__main__":
-    game = Boggle()
-    game.play()
+    boggle = Boggle()
+    boggle.load_dictionary('dictionary.txt')  # Make sure to have a valid dictionary file
+    boggle.play()

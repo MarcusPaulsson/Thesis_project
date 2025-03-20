@@ -14,7 +14,7 @@ class DataStatistics:
         >>> ds.mean([1, 2, 3, 4, 5])
         3.00
         """
-        return round(sum(data) / len(data), 2)
+        return round(sum(data) / len(data), 2) if data else 0.00
 
     def median(self, data):
         """
@@ -25,14 +25,13 @@ class DataStatistics:
         >>> ds.median([2, 5, 1, 3, 4])
         3.00
         """
-        data = sorted(data)
-        n = len(data)
+        sorted_data = sorted(data)
+        n = len(sorted_data)
         mid = n // 2
         if n % 2 == 0:
-            median_value = (data[mid - 1] + data[mid]) / 2
+            return round((sorted_data[mid - 1] + sorted_data[mid]) / 2, 2)
         else:
-            median_value = data[mid]
-        return round(median_value, 2)
+            return round(sorted_data[mid], 2)
 
     def mode(self, data):
         """
@@ -43,7 +42,8 @@ class DataStatistics:
         >>> ds.mode([2, 2, 3, 3, 4])
         [2, 3]
         """
+        if not data:
+            return []
         count = Counter(data)
         max_count = max(count.values())
-        modes = [key for key, value in count.items() if value == max_count]
-        return modes
+        return [num for num, freq in count.items() if freq == max_count]

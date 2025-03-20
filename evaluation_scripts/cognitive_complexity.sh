@@ -25,13 +25,13 @@ GEMINI_CLASSEVAL="$UPPER_DIR/results/Gemini/classEval" # (Python)
 #TODO
 
 # Run complexipy on the hardcoded file path and capture its output
-OUTPUT=$(complexipy "$CHATGPT_CLI_GAMES")
+OUTPUT=$(complexipy "$CHATGPT_CLASSEVAL")
 
 # Extract the line containing "Total Cognitive Complexity:"
 COMPLEXITY_LINE=$(echo "$OUTPUT" | grep "Total Cognitive Complexity:")
 
 if [ -n "$COMPLEXITY_LINE" ]; then
-    echo "Cognitive Complexity for '$CHATGPT_CLI_GAMES':"
+    echo "Cognitive Complexity for '$CHATGPT_CLASSEVAL':"
     echo "$COMPLEXITY_LINE"
 else
     echo "Could not extract cognitive complexity from output."
@@ -39,13 +39,13 @@ fi
 
 
 # Run complexipy on the hardcoded file path and capture its output
-OUTPUT=$(complexipy "$GEMINI_CLI_GAMES")
+OUTPUT1=$(complexipy "$GEMINI_CLASSEVAL")
 
 # Extract the line containing "Total Cognitive Complexity:"
-COMPLEXITY_LINE=$(echo "$OUTPUT" | grep "Total Cognitive Complexity:")
+COMPLEXITY_LINE=$(echo "$OUTPUT1" | grep "Total Cognitive Complexity:")
 
 if [ -n "$COMPLEXITY_LINE" ]; then
-    echo "Cognitive Complexity for '$CHATGPT_CLI_GAMES':"
+    echo "Cognitive Complexity for '$GEMINI_CLASSEVAL':"
     echo "$COMPLEXITY_LINE"
 else
     echo "Could not extract cognitive complexity from output."

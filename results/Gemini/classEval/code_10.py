@@ -19,8 +19,7 @@ class BinaryDataProcessor:
         '0110100001100101011011000110110001101111'
 
         """
-        cleaned_string = ''.join(char for char in self.binary_string if char in '01')
-        self.binary_string = cleaned_string
+        self.binary_string = ''.join(char for char in self.binary_string if char in '01')
 
     def calculate_binary_info(self):
         """
@@ -34,8 +33,8 @@ class BinaryDataProcessor:
         num_zeroes = self.binary_string.count('0')
         num_ones = self.binary_string.count('1')
 
-        percentage_zeroes = num_zeroes / total_length if total_length > 0 else 0.0
-        percentage_ones = num_ones / total_length if total_length > 0 else 0.0
+        percentage_zeroes = num_zeroes / total_length if total_length > 0 else 0
+        percentage_ones = num_ones / total_length if total_length > 0 else 0
 
         return {
             'Zeroes': percentage_zeroes,
@@ -51,11 +50,11 @@ class BinaryDataProcessor:
         'hello'
 
         """
-        binary_data = self.binary_string
         ascii_string = ""
-        for i in range(0, len(binary_data), 8):
-            byte = binary_data[i:i + 8]
-            ascii_string += chr(int(byte, 2))
+        for i in range(0, len(self.binary_string), 8):
+            binary_chunk = self.binary_string[i:i + 8]
+            if len(binary_chunk) == 8:
+                ascii_string += chr(int(binary_chunk, 2))
         return ascii_string
 
     def convert_to_utf8(self):
@@ -66,9 +65,9 @@ class BinaryDataProcessor:
         'hello'
 
         """
-        binary_data = self.binary_string
-        utf8_string = ""
-        for i in range(0, len(binary_data), 8):
-            byte = binary_data[i:i + 8]
-            utf8_string += chr(int(byte, 2))
-        return utf8_string
+        ascii_string = ""
+        for i in range(0, len(self.binary_string), 8):
+            binary_chunk = self.binary_string[i:i + 8]
+            if len(binary_chunk) == 8:
+                ascii_string += chr(int(binary_chunk, 2))
+        return ascii_string
