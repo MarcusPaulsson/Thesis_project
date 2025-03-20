@@ -65,7 +65,7 @@ if __name__ == "__main__":
         results.append({"task_index": i, "assistant_response": assistant_response})
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "ChatGPT", "classEval")
+    results_dir = os.path.join(main_dir, "results", "ChatGPT", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
     save_results_to_json(results, json_file_path)
     extract_and_save_python_code(json_file_path, results_dir)
