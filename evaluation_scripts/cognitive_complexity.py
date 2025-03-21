@@ -14,6 +14,9 @@ upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(main_dir)
 sys.path.append(upper_dir)
 
+
+# EVALUATING ALL RESULTS 
+
 folder_paths_gemini_cli_games = {
     "Gemini cli_games Zero-shot": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot"),
     "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot-CoT"),
