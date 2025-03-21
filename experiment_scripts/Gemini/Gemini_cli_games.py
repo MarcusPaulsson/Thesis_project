@@ -95,9 +95,10 @@ if __name__ == "__main__":
             "assistant_response": assistant_response
         })
 
-    json_file_path = os.path.join(main_dir,'results/Gemini/cli_games/cli_games_raw.json')
-    # Save all results to a JSON file
+    results_dir = os.path.join(main_dir, "results", "Gemini", "cli_games", prompt.PROMPT_TECHNIQUE_SETTING)
+    json_file_path = os.path.join(results_dir, "cli_games_raw.json")
     save_results_to_json(results, json_file_path)
+    extract_and_save_python_code(json_file_path, results_dir)
 
-    output_directory = os.path.join(main_dir,'results/Gemini/cli_games')
-    extract_and_save_python_code(json_file_path, output_directory)
+
+    

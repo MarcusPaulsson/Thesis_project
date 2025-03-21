@@ -19,6 +19,7 @@ user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PRO
 
 
 # Zero-shot prompting
+''''''
 PROMPT_TECHNIQUE_SETTING = "Zero-shot" # placeholder for storing content to correct result directory
 
 SYSTEM_PROMPT=""
@@ -38,7 +39,7 @@ TAIL_PROMPT="Give only the code."
 
 # Role prompting (Expert)
 '''
-PROMPT_TECHNIQUE_SETTING = "expert-role" 
+PROMPT_TECHNIQUE_SETTING = "Expert-role" 
 
 SYSTEM_PROMPT="You are an expert software developer, skilled in producing clean and well-structured code."
 HEAD_PROMPT = ""
@@ -48,7 +49,7 @@ TAIL_PROMPT="Give only the code."
 
 # Role prompting (Student)
 '''
-PROMPT_TECHNIQUE_SETTING = "student-role" 
+PROMPT_TECHNIQUE_SETTING = "Student-role" 
 
 SYSTEM_PROMPT="You are a university student studying computer science, with basic knowledge in software enginnering."
 HEAD_PROMPT = ""

@@ -84,10 +84,11 @@ if __name__ == "__main__":
             "assistant_response": assistant_response
         })
     
-    json_file_path = os.path.join(main_dir,'results/ChatGPT/cli_games/cli_games_raw.json')  # Replace with your JSON file path
-    # Save all results to a CSV file
-    save_results_to_json(results, json_file_path)
+ 
 
-    output_directory = os.path.join(main_dir,'results/ChatGPT/cli_games') #where the python files will be saved.
-    extract_and_save_python_code(json_file_path,output_directory)
+    results_dir = os.path.join(main_dir, "results", "ChatGPT", "cli_games", prompt.PROMPT_TECHNIQUE_SETTING)
+    json_file_path = os.path.join(results_dir, "cli_games_raw.json")
+    save_results_to_json(results, json_file_path)
+    extract_and_save_python_code(json_file_path, results_dir)
+
 
