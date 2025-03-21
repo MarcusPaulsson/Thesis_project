@@ -14,18 +14,32 @@ upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(main_dir)
 sys.path.append(upper_dir)
 
-folder_paths_gemini = {
-    "Gemini Zero-shot": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot"),
-    "Gemini Zero-shot-CoT": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot-CoT"),
-    "Gemini Expert-role": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Expert-role"),
-    "Gemini Student-role": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Student-role"),
+folder_paths_gemini_cli_games = {
+    "Gemini cli_games Zero-shot": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot"),
+    "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot-CoT"),
+    "Gemini cli_games Expert-role": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Expert-role"),
+    "Gemini cli_games Student-role": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Student-role"),
 }
 
-folder_paths_chatgpt = {
-    "ChatGPT Zero-shot": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Zero-shot"),
-    "ChatGPT Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Zero-shot-CoT"),
-    "ChatGPT Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Expert-role"),
-    "ChatGPT Student-role": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Student-role"),
+folder_paths_chatgpt_cli_games = {
+    "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Zero-shot"),
+    "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Zero-shot-CoT"),
+    "ChatGPT cli_games Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Expert-role"),
+    "ChatGPT cli_games Student-role": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Student-role"),
+}
+
+folder_paths_gemini_classEval = {
+    "Gemini classEval Zero-shot": os.path.join(upper_dir, "results", "Gemini", "classEval", "Zero-shot"),
+    "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, "results", "Gemini", "classEval", "Zero-shot-CoT"),
+    "Gemini classEval Expert-role": os.path.join(upper_dir, "results", "Gemini", "classEval", "Expert-role"),
+    "Gemini classEval Student-role": os.path.join(upper_dir, "results", "Gemini", "classEval", "Student-role"),
+}
+
+folder_paths_chatgpt_classEval = {
+    "ChatGPT classEval Zero-shot": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Zero-shot"),
+    "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Zero-shot-CoT"),
+    "ChatGPT classEval Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Expert-role"),
+    "ChatGPT classEval Student-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Student-role"),
 }
 
 results = {}  # Store average and std dev for each folder
@@ -65,8 +79,10 @@ def analyze_folders(folder_paths, results):
         else:
             results[folder_name] = ("No valid files", "N/A")
 
-analyze_folders(folder_paths_gemini, results)
-analyze_folders(folder_paths_chatgpt, results)
+analyze_folders(folder_paths_gemini_cli_games, results)
+analyze_folders(folder_paths_chatgpt_cli_games, results)
+analyze_folders(folder_paths_gemini_classEval, results)
+analyze_folders(folder_paths_chatgpt_classEval, results)
 
 print("\nAverage Cognitive Complexity and Std. dev. per prompt technique:")
 for folder, (avg_complexity, std_dev) in results.items():

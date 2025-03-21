@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 40
+    end_index = 30
 
     results = []
     for i in range(start_index, end_index):
