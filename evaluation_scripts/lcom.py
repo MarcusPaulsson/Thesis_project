@@ -91,72 +91,135 @@ def analyze_file(filename):
     Parses the specified Python file and computes the LCOM value along with
     sets P and Q for each class.
     Returns a dictionary mapping class names to a tuple (LCOM, P, Q).
+    Handles syntax errors gracefully.
     """
     if not os.path.isfile(filename):
         print(f"File '{filename}' not found.")
         return {}
 
-    with open(filename, "r", encoding="utf-8") as f:
-        source = f.read()
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            source = f.read()
 
-    tree = ast.parse(source)
-    calculator = LCOMCalculator()
-    calculator.visit(tree)
+        tree = ast.parse(source)
+        calculator = LCOMCalculator()
+        calculator.visit(tree)
 
-    results = {}
-    for class_name, methods in calculator.classes.items():
-        results[class_name] = calculate_lcom(methods)
-    return results
+        results = {}
+        for class_name, methods in calculator.classes.items():
+            results[class_name] = calculate_lcom(methods)
+        return results
+    except SyntaxError as e:
+        print(f"Syntax error in file '{filename}': {e}")
+        return {"ERROR": ("Syntax Error", set(), set())}
+    except Exception as e:
+        print(f"Error analyzing file '{filename}': {e}")
+        return {"ERROR": ("Analysis Error", set(), set())}
 
 def main():
-    """Analyzes all Python files in the 'cli_games' folder for both models and prints comparison."""
+    """
+    Analyzes Python files across different model outputs and prompting strategies,
+    calculating and comparing LCOM metrics between ChatGPT and Gemini outputs.
+    Handles errors gracefully and continues processing remaining files.
+    Prints a formatted table with clear headers for each prompt technique.
+    """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
-    chatgpt_dir = os.path.join(parent_dir, "results", "ChatGPT", "classEval")
-    gemini_dir = os.path.join(parent_dir, "results", "Gemini", "classEval")
-
-    try:
-        chatgpt_files = sorted([f for f in os.listdir(chatgpt_dir) if f.endswith(".py")])
-        gemini_files = sorted([f for f in os.listdir(gemini_dir) if f.endswith(".py")])
-    except FileNotFoundError:
-        print("One or both model directories not found.")
-        return
-
+    results_dir = os.path.join(parent_dir, "results")
+    
+    # Define models and prompting strategies
+    models = ["ChatGPT", "Gemini"]
+    strategies = ["Zero-shot", "Zero-shot-CoT", "Expert-role", "Student-role"]
+    
+    # Dictionary to store file paths
+    model_files = {
+        model: {
+            strategy: {} for strategy in strategies
+        } for model in models
+    }
+    
+    # Collect all files
+    for model in models:
+        for strategy in strategies:
+            model_dir = os.path.join(results_dir, model, "cli_games", strategy)
+            try:
+                files = sorted([f for f in os.listdir(model_dir) if f.endswith(".py")])
+                # Store full paths to files
+                model_files[model][strategy] = {
+                    f: os.path.join(model_dir, f) for f in files
+                }
+            except FileNotFoundError:
+                print(f"Directory not found: {model_dir}")
+                model_files[model][strategy] = {}
+    
+    # Sort files by numerical value in the filename
     def numerical_sort_key(filename):
         match = re.search(r'code_(\d+)\.py', filename)
-        if match:
-            return int(match.group(1))
-        return filename  
-
-    chatgpt_files.sort(key=numerical_sort_key)
-    gemini_files.sort(key=numerical_sort_key)   
-    all_files = sorted(list(set(chatgpt_files + gemini_files)), key=numerical_sort_key)
-
-    print("\n", "-" * 80)
-    print("{:<20} {:<30} {:<30}".format("File", "ChatGPT LCOM", "Gemini LCOM"))
-    print("-" * 80)
-
-    for file_name in all_files:
-        chatgpt_path = os.path.join(chatgpt_dir, file_name)
-        gemini_path = os.path.join(gemini_dir, file_name)
-
-        chatgpt_results = analyze_file(chatgpt_path)
-        gemini_results = analyze_file(gemini_path)
-
-        if chatgpt_results is None and gemini_results is None:
-            print(f"{file_name:<20} {'File not found':<61}")
+        return int(match.group(1)) if match else float('inf')
+    
+    # Process files by strategy
+    for strategy in strategies:
+        # Get all files for this strategy
+        strategy_files = set()
+        for model in models:
+            strategy_files.update(model_files[model][strategy].keys())
+        
+        # Skip if no files for this strategy
+        if not strategy_files:
             continue
+            
+        strategy_files = sorted(strategy_files, key=numerical_sort_key)
+        
+        # Print header for this strategy
+        print("\n" + "-" * 120)
+        print(f"{'File':<15} {'Strategy':<15} {'ChatGPT LCOM':<40} {'Gemini LCOM':<40}")
+        print("-" * 120)
+        
+        for file_name in strategy_files:
+            # Get file paths for both models
+            chatgpt_path = model_files["ChatGPT"][strategy].get(file_name)
+            gemini_path = model_files["Gemini"][strategy].get(file_name)
+            
+            chatgpt_results = {}
+            gemini_results = {}
+            
+            # Analyze files if they exist
+            if chatgpt_path:
+                try:
+                    chatgpt_results = analyze_file(chatgpt_path)
+                except Exception as e:
+                    print(f"Error analyzing {chatgpt_path}: {e}")
+                    chatgpt_results = {"ERROR": ("Error", set(), set())}
+            
+            if gemini_path:
+                try:
+                    gemini_results = analyze_file(gemini_path)
+                except Exception as e:
+                    print(f"Error analyzing {gemini_path}: {e}")
+                    gemini_results = {"ERROR": ("Error", set(), set())}
+            
+            # Skip if both files don't exist or failed to analyze
+            if (not chatgpt_path or "ERROR" in chatgpt_results) and (not gemini_path or "ERROR" in gemini_results):
+                continue
+                
+            # Get union of class names, excluding ERROR entries
+            all_classes = sorted(set(
+                [k for k in chatgpt_results.keys() if k != "ERROR"] + 
+                [k for k in gemini_results.keys() if k != "ERROR"]
+            ))
+            
+            # Print results
+            for i, class_name in enumerate(all_classes):
+                chatgpt_lcom = chatgpt_results.get(class_name, ("N/A",))[0]
+                gemini_lcom = gemini_results.get(class_name, ("N/A",))[0]
+                
+                if i == 0:  # First class for this file
+                    print(f"{file_name:<15} {strategy:<15} "
+                          f"{f'{class_name}: {chatgpt_lcom}':<40} "
+                          f"{f'{class_name}: {gemini_lcom}':<40}")
+                else:  # Additional classes
+                    print(f"{'':<30} {f'{class_name}: {chatgpt_lcom}':<40} "
+                          f"{f'{class_name}: {gemini_lcom}':<40}")
 
-        all_classes = sorted(list(set((chatgpt_results or {}).keys()) | set((gemini_results or {}).keys())))
-
-        for class_name in all_classes:
-            chatgpt_lcom = chatgpt_results.get(class_name, ("N/A",))[0] if chatgpt_results else "N/A"
-            gemini_lcom = gemini_results.get(class_name, ("N/A",))[0] if gemini_results else "N/A"
-
-            if all_classes.index(class_name) == 0:
-                print(f"{file_name:<20} {f'{class_name}: {chatgpt_lcom}':<30} {f'{class_name}: {gemini_lcom}':<30}")
-            else:
-                print(f"{'':<20} {f'{class_name}: {chatgpt_lcom}':<30} {f'{class_name}: {gemini_lcom}':<30}")
-           
 if __name__ == "__main__":
     main()
