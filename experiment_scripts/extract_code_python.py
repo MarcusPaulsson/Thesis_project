@@ -20,8 +20,10 @@ def extract_and_save_python_code(json_file, output_dir):
 
     for key, value in data.items():
         # Use an "or" condition to match both patterns
-        code_blocks = re.findall(r'```python\n(.*?)\n```|```python\s*(.*?)\s*```', value, re.DOTALL)
-
+        try:
+            code_blocks = re.findall(r'```python\n(.*?)\n```|```python\s*(.*?)\s*```', value, re.DOTALL)
+        except:
+            pass
         if code_blocks:
             for match in code_blocks:
                 # Determine which group matched (original or flexible)

@@ -42,6 +42,20 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Student-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Student-role"),
 }
 
+folder_paths_chatgpt_APPS = {
+    "ChatGPT APPS Zero-shot": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Zero-shot"),
+    "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Zero-shot-CoT"),
+    "ChatGPT APPS Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Expert-role"),
+    "ChatGPT APPS Student-role": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Student-role"),
+}
+
+folder_paths_gemini_APPS = {
+    "Gemini APPS Zero-shot": os.path.join(upper_dir, "results", "Gemini", "APPS", "Zero-shot"),
+    "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, "results", "Gemini", "APPS", "Zero-shot-CoT"),
+    "Gemini APPS Expert-role": os.path.join(upper_dir, "results", "Gemini", "APPS", "Expert-role"),
+    "Gemini APPS Student-role": os.path.join(upper_dir, "results", "Gemini", "APPS", "Student-role"),
+}
+
 results = {}  # Store average and std dev for each folder
 
 def analyze_folders(folder_paths, results):
@@ -69,7 +83,7 @@ def analyze_folders(folder_paths, results):
                 fc = file_complexity(file_path)
                 complexities.append(fc.complexity)
             except Exception as e:
-                print(f"  Error analyzing {filename}: {e}")
+                print(f"    Error analyzing {filename}: {e}")
                 continue
 
         if complexities:
@@ -83,7 +97,9 @@ analyze_folders(folder_paths_gemini_cli_games, results)
 analyze_folders(folder_paths_chatgpt_cli_games, results)
 analyze_folders(folder_paths_gemini_classEval, results)
 analyze_folders(folder_paths_chatgpt_classEval, results)
+analyze_folders(folder_paths_chatgpt_APPS, results)
+analyze_folders(folder_paths_gemini_APPS, results)
 
 print("\nAverage Cognitive Complexity and Std. dev. per prompt technique:")
 for folder, (avg_complexity, std_dev) in results.items():
-    print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
+    print(f"    {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
