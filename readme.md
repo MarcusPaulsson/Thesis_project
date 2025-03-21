@@ -23,10 +23,10 @@ For running the API based models, addition API keys needs to be listed in a pyth
 **Virtual Environment Setup:**
 
 1.  Navigate to the project directory.
-2.  Create a virtual environment: `python3 -m venv venv`
+2.  Create a virtual environment: `python3 -m venv env`
 3.  Activate the virtual environment:
-    * On macOS/Linux: `source venv/bin/activate`
-    * On Windows: `venv\Scripts\activate`
+    * On macOS/Linux: `source env/bin/activate`
+    * On Windows: `env\Scripts\activate`
 4.  Install the required dependencies: `pip install -r requirements.txt`
 
 
