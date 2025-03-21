@@ -121,7 +121,6 @@ def main():
     Analyzes Python files across different model outputs and prompting strategies,
     calculating and comparing LCOM metrics between ChatGPT and Gemini outputs.
     Handles errors gracefully and continues processing remaining files.
-    Prints a formatted table with clear headers for each prompt technique.
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
@@ -134,7 +133,7 @@ def main():
     # Dictionary to store file paths
     model_files = {
         model: {
-            strategy: {} for strategy in strategies
+            strategy: [] for strategy in strategies
         } for model in models
     }
     
@@ -152,14 +151,26 @@ def main():
                 print(f"Directory not found: {model_dir}")
                 model_files[model][strategy] = {}
     
+    # Get unique file names across all directories
+    all_file_names = set()
+    for model in models:
+        for strategy in strategies:
+            all_file_names.update(model_files[model][strategy].keys())
+    
     # Sort files by numerical value in the filename
     def numerical_sort_key(filename):
         match = re.search(r'code_(\d+)\.py', filename)
         return int(match.group(1)) if match else float('inf')
     
+    all_file_names = sorted(all_file_names, key=numerical_sort_key)
+    
+    # Print header
+    print("\n" + "-" * 120)
+    print(f"{'File':<15} {'Strategy':<15} {'ChatGPT LCOM':<40} {'Gemini LCOM':<40}")
+    print("-" * 120)
+    
     # Process files by strategy
     for strategy in strategies:
-        # Get all files for this strategy
         strategy_files = set()
         for model in models:
             strategy_files.update(model_files[model][strategy].keys())
@@ -169,11 +180,6 @@ def main():
             continue
             
         strategy_files = sorted(strategy_files, key=numerical_sort_key)
-        
-        # Print header for this strategy
-        print("\n" + "-" * 120)
-        print(f"{'File':<15} {'Strategy':<15} {'ChatGPT LCOM':<40} {'Gemini LCOM':<40}")
-        print("-" * 120)
         
         for file_name in strategy_files:
             # Get file paths for both models
@@ -185,28 +191,24 @@ def main():
             
             # Analyze files if they exist
             if chatgpt_path:
-                try:
-                    chatgpt_results = analyze_file(chatgpt_path)
-                except Exception as e:
-                    print(f"Error analyzing {chatgpt_path}: {e}")
-                    chatgpt_results = {"ERROR": ("Error", set(), set())}
+                chatgpt_results = analyze_file(chatgpt_path)
             
             if gemini_path:
-                try:
-                    gemini_results = analyze_file(gemini_path)
-                except Exception as e:
-                    print(f"Error analyzing {gemini_path}: {e}")
-                    gemini_results = {"ERROR": ("Error", set(), set())}
+                gemini_results = analyze_file(gemini_path)
             
-            # Skip if both files don't exist or failed to analyze
-            if (not chatgpt_path or "ERROR" in chatgpt_results) and (not gemini_path or "ERROR" in gemini_results):
+            # If both files had errors or don't exist, skip
+            if not chatgpt_results and not gemini_results:
                 continue
                 
-            # Get union of class names, excluding ERROR entries
+            # Get union of class names, excluding ERROR entries used for error reporting
             all_classes = sorted(set(
                 [k for k in chatgpt_results.keys() if k != "ERROR"] + 
                 [k for k in gemini_results.keys() if k != "ERROR"]
             ))
+            
+            # Handle special ERROR entry separately
+            has_chatgpt_error = "ERROR" in chatgpt_results
+            has_gemini_error = "ERROR" in gemini_results
             
             # Print results
             for i, class_name in enumerate(all_classes):
@@ -220,6 +222,21 @@ def main():
                 else:  # Additional classes
                     print(f"{'':<30} {f'{class_name}: {chatgpt_lcom}':<40} "
                           f"{f'{class_name}: {gemini_lcom}':<40}")
+            
+            # Print error information if present
+            if has_chatgpt_error or has_gemini_error:
+                chatgpt_error = chatgpt_results.get("ERROR", ("",))[0]
+                gemini_error = gemini_results.get("ERROR", ("",))[0]
+                
+                if all_classes:  # If we've already printed other classes
+                    print(f"{'':<30} {f'ERROR: {chatgpt_error}' if has_chatgpt_error else '':<40} "
+                          f"{f'ERROR: {gemini_error}' if has_gemini_error else '':<40}")
+                else:  # First row for this file
+                    print(f"{file_name:<15} {strategy:<15} "
+                          f"{f'ERROR: {chatgpt_error}' if has_chatgpt_error else '':<40} "
+                          f"{f'ERROR: {gemini_error}' if has_gemini_error else '':<40}")
+            
+    print("-" * 120)
 
 if __name__ == "__main__":
     main()
