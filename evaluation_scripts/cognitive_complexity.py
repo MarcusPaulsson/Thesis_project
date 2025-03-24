@@ -3,6 +3,7 @@ import sys
 import os
 import re
 import statistics
+import math
 
 def numerical_sort_key(filename):
     """Sort filenames numerically if possible, otherwise alphabetically."""
@@ -14,8 +15,7 @@ upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(main_dir)
 sys.path.append(upper_dir)
 
-
-# EVALUATING ALL RESULTS 
+# EVALUATING ALL RESULTS
 
 folder_paths_gemini_cli_games = {
     "Gemini cli_games Zero-shot": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot"),
@@ -59,7 +59,8 @@ folder_paths_gemini_APPS = {
     "Gemini APPS Student-role": os.path.join(upper_dir, "results", "Gemini", "APPS", "Student-role"),
 }
 
-results = {}  # Store average and std dev for each folder
+results_chatgpt = {}  # Store average and std dev for each folder
+results_gemini = {}
 
 def analyze_folders(folder_paths, results):
     for folder_name, folder_path in folder_paths.items():
@@ -86,7 +87,7 @@ def analyze_folders(folder_paths, results):
                 fc = file_complexity(file_path)
                 complexities.append(fc.complexity)
             except Exception as e:
-                print(f"    Error analyzing {filename}: {e}")
+                print(f"  Error analyzing {filename}: {e}")
                 continue
 
         if complexities:
@@ -96,13 +97,46 @@ def analyze_folders(folder_paths, results):
         else:
             results[folder_name] = ("No valid files", "N/A")
 
-analyze_folders(folder_paths_gemini_cli_games, results)
-analyze_folders(folder_paths_chatgpt_cli_games, results)
-analyze_folders(folder_paths_gemini_classEval, results)
-analyze_folders(folder_paths_chatgpt_classEval, results)
-analyze_folders(folder_paths_chatgpt_APPS, results)
-analyze_folders(folder_paths_gemini_APPS, results)
+def geometric_mean(data):
+    if not data:
+        return "N/A"
+    product = 1
+    for x in data:
+        product *= x
+    return round(math.pow(product, 1 / len(data)), 2)
+
+analyze_folders(folder_paths_gemini_cli_games, results_gemini)
+analyze_folders(folder_paths_chatgpt_cli_games, results_chatgpt)
+analyze_folders(folder_paths_gemini_classEval, results_gemini)
+analyze_folders(folder_paths_chatgpt_classEval, results_chatgpt)
+analyze_folders(folder_paths_chatgpt_APPS, results_chatgpt)
+analyze_folders(folder_paths_gemini_APPS, results_gemini)
+
+print_std_dev = False  # Changed to True to print standard deviation
 
 print("\nAverage Cognitive Complexity and Std. dev. per prompt technique:")
-for folder, (avg_complexity, std_dev) in results.items():
-    print(f"    {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
+geo_means_gemini = []
+geo_means_chatgpt = []
+
+for folder, (avg_complexity, std_dev) in results_gemini.items():
+    if isinstance(avg_complexity, (int, float)):
+        geo_means_gemini.append(avg_complexity)
+    if print_std_dev:
+        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
+    else:
+        print(f"  {folder}: Average = {avg_complexity}")
+
+for folder, (avg_complexity, std_dev) in results_chatgpt.items():
+    if isinstance(avg_complexity, (int, float)):
+        geo_means_chatgpt.append(avg_complexity)
+    if print_std_dev:
+        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
+    else:
+        print(f"  {folder}: Average = {avg_complexity}")
+
+gemini_geo_mean = geometric_mean(geo_means_gemini)
+chatgpt_geo_mean = geometric_mean(geo_means_chatgpt)
+
+print("\nGeometric Means:")
+print(f"  Gemini Geometric Mean: {gemini_geo_mean}")
+print(f"  ChatGPT Geometric Mean: {chatgpt_geo_mean}")
