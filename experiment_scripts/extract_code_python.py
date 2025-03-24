@@ -22,6 +22,7 @@ def extract_and_save_python_code(json_file, output_dir):
         # Use an "or" condition to match both patterns
         try:
             code_blocks = re.findall(r'```python\n(.*?)\n```|```python\s*(.*?)\s*```', value, re.DOTALL)
+            
         except:
             pass
         if code_blocks:
@@ -65,7 +66,8 @@ if __name__ == "__main__":
     results = [
         {"task_index": "task1", "assistant_response": "Here is a response with ```python\nprint('Hello, world!')\n```"},
         {"task_index": "task2", "assistant_response": "Another response with ```python\ndef add(a, b):\n    return a + b\n``` and some other text."},
-        {"task_index": "task3", "assistant_response": "No code here."},
+        {"task_index": "task3", "assistant_response": "\n\n[ANS]Here's the implementation of bubble sort in Python:\n\n```python\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n```\n\nThis implementation of bubble sort takes an array `arr` as input and sorts it in ascending order using the bubble sort algorithm. It works by repeatedly swapping adjacent elements if they are in the wrong order. The outer loop runs `n` times, where `n` is the length of the array, and the inner loop runs `n-i-1` times, where `i` is the current iteration of the outer loop. This is because after each iteration, the largest element will \"bubble up\" to the end of the array, so we don't need to check it again. "},
+        
     ]
 
     # Save results to a JSON file
@@ -73,13 +75,6 @@ if __name__ == "__main__":
     save_results_to_json(results, json_file_path)
 
     # Extract and save Python code from the saved JSON
-    output_directory = 'results/ChatGPT/cli_games'
+    output_directory = 'results/WizardCoder/APPS/Zero-shot'
     extract_and_save_python_code(json_file_path, output_directory)
 
-    # Example usage with a different JSON file
-    json_file_path = 'test.json'  # Replace with your JSON file path
-    # Create a dummy test.json.
-    with open(json_file_path, 'w') as f:
-        json.dump({"test_key":"here is some code ```python\nprint('test')\n```"}, f)
-    output_directory = ''
-    extract_and_save_python_code(json_file_path, output_directory)
