@@ -115,12 +115,30 @@ analyze_folders(folder_paths_gemini_APPS, results_gemini)
 print_std_dev = False  # Changed to True to print standard deviation
 
 print("\nAverage Cognitive Complexity and Std. dev. per prompt technique:")
-geo_means_gemini = []
-geo_means_chatgpt = []
+geo_means_gemini = {}
+geo_means_chatgpt = {}
+
+# Split geometric mean calculation by technique
+geo_means_gemini["Zero-shot"] = []
+geo_means_gemini["Zero-shot-CoT"] = []
+geo_means_gemini["Expert-role"] = []
+geo_means_gemini["Student-role"] = []
+
+geo_means_chatgpt["Zero-shot"] = []
+geo_means_chatgpt["Zero-shot-CoT"] = []
+geo_means_chatgpt["Expert-role"] = []
+geo_means_chatgpt["Student-role"] = []
 
 for folder, (avg_complexity, std_dev) in results_gemini.items():
     if isinstance(avg_complexity, (int, float)):
-        geo_means_gemini.append(avg_complexity)
+        if "Zero-shot" in folder and "CoT" not in folder:
+            geo_means_gemini["Zero-shot"].append(avg_complexity)
+        elif "Zero-shot-CoT" in folder:
+            geo_means_gemini["Zero-shot-CoT"].append(avg_complexity)
+        elif "Expert-role" in folder:
+            geo_means_gemini["Expert-role"].append(avg_complexity)
+        elif "Student-role" in folder:
+            geo_means_gemini["Student-role"].append(avg_complexity)
     if print_std_dev:
         print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
     else:
@@ -128,15 +146,36 @@ for folder, (avg_complexity, std_dev) in results_gemini.items():
 
 for folder, (avg_complexity, std_dev) in results_chatgpt.items():
     if isinstance(avg_complexity, (int, float)):
-        geo_means_chatgpt.append(avg_complexity)
+        if "Zero-shot" in folder and "CoT" not in folder:
+            geo_means_chatgpt["Zero-shot"].append(avg_complexity)
+        elif "Zero-shot-CoT" in folder:
+            geo_means_chatgpt["Zero-shot-CoT"].append(avg_complexity)
+        elif "Expert-role" in folder:
+            geo_means_chatgpt["Expert-role"].append(avg_complexity)
+        elif "Student-role" in folder:
+            geo_means_chatgpt["Student-role"].append(avg_complexity)
     if print_std_dev:
         print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
     else:
         print(f"  {folder}: Average = {avg_complexity}")
 
-gemini_geo_mean = geometric_mean(geo_means_gemini)
-chatgpt_geo_mean = geometric_mean(geo_means_chatgpt)
+gemini_geo_mean = geometric_mean(
+    [val for sublist in geo_means_gemini.values() for val in sublist]
+)
+chatgpt_geo_mean = geometric_mean(
+    [val for sublist in geo_means_chatgpt.values() for val in sublist]
+)
 
 print("\nGeometric Means:")
 print(f"  Gemini Geometric Mean: {gemini_geo_mean}")
 print(f"  ChatGPT Geometric Mean: {chatgpt_geo_mean}")
+
+print("\nGeometric Means per Technique:")
+print(f"  Geometric Mean Gemini Zero-shot: {geometric_mean(geo_means_gemini['Zero-shot'])}")
+print(f"  Geometric Mean ChatGPT Zero-shot: {geometric_mean(geo_means_chatgpt['Zero-shot'])}")
+print(f"  Geometric Mean Gemini Zero-shot-CoT: {geometric_mean(geo_means_gemini['Zero-shot-CoT'])}")
+print(f"  Geometric Mean ChatGPT Zero-shot-CoT: {geometric_mean(geo_means_chatgpt['Zero-shot-CoT'])}")
+print(f"  Geometric Mean Gemini Expert-role: {geometric_mean(geo_means_gemini['Expert-role'])}")
+print(f"  Geometric Mean ChatGPT Expert-role: {geometric_mean(geo_means_chatgpt['Expert-role'])}")
+print(f"  Geometric Mean Gemini Student-role: {geometric_mean(geo_means_gemini['Student-role'])}")
+print(f"  Geometric Mean ChatGPT Student-role: {geometric_mean(geo_means_chatgpt['Student-role'])}")
