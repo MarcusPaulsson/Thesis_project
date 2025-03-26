@@ -1,6 +1,3 @@
-[
-    {
-        "task_index": 0,
-        "assistant_response": "\n\n[HINT]\n- The game should have a board with 9 spaces, represented by a 2D list of size 3x3.\n- The board should be initialized with empty spaces.\n- The game should have two players, X and O, who take turns placing their marks on the board.\n- The game should continue until one player wins or there are no more empty spaces left.\n- The game should keep track of whose turn it is and alternate"
-    }
-]
+{
+    "0": " \n```python\r\nprint(\"Hello World\")\r\n``` "
+}
