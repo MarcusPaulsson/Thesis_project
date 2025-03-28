@@ -153,64 +153,50 @@ results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_clas
 results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_APPS))
 results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_APPS))
 
-print("\nLibrary Call Counts and Standard Deviation per prompt technique:")
+print("\nTotal Library Call Counts per prompt technique:")
 
 # Split call count calculation by technique
 gemini_calls = {
-    "Zero-shot": [],
-    "Zero-shot-CoT": [],
-    "Expert-role": [],
-    "Student-role": [],
+    "Zero-shot": 0,
+    "Zero-shot-CoT": 0,
+    "Expert-role": 0,
+    "Student-role": 0,
 }
 
 chatgpt_calls = {
-    "Zero-shot": [],
-    "Zero-shot-CoT": [],
-    "Expert-role": [],
-    "Student-role": [],
+    "Zero-shot": 0,
+    "Zero-shot-CoT": 0,
+    "Expert-role": 0,
+    "Student-role": 0,
 }
 
 for folder, total_calls in results_gemini.items():
     if "Zero-shot" in folder and "CoT" not in folder:
-        gemini_calls["Zero-shot"].append(total_calls)
+        gemini_calls["Zero-shot"] += total_calls
     elif "Zero-shot-CoT" in folder:
-        gemini_calls["Zero-shot-CoT"].append(total_calls)
+        gemini_calls["Zero-shot-CoT"] += total_calls
     elif "Expert-role" in folder:
-        gemini_calls["Expert-role"].append(total_calls)
+        gemini_calls["Expert-role"] += total_calls
     elif "Student-role" in folder:
-        gemini_calls["Student-role"].append(total_calls)
+        gemini_calls["Student-role"] += total_calls
 
 for folder, total_calls in results_chatgpt.items():
     if "Zero-shot" in folder and "CoT" not in folder:
-        chatgpt_calls["Zero-shot"].append(total_calls)
+        chatgpt_calls["Zero-shot"] += total_calls
     elif "Zero-shot-CoT" in folder:
-        chatgpt_calls["Zero-shot-CoT"].append(total_calls)
+        chatgpt_calls["Zero-shot-CoT"] += total_calls
     elif "Expert-role" in folder:
-        chatgpt_calls["Expert-role"].append(total_calls)
+        chatgpt_calls["Expert-role"] += total_calls
     elif "Student-role" in folder:
-        chatgpt_calls["Student-role"].append(total_calls)
+        chatgpt_calls["Student-role"] += total_calls
 
-print("Gemini Library Calls:")
-for technique, counts in gemini_calls.items():
-    total_count = sum(counts)
-    if len(counts) > 1:
-        std_dev = statistics.stdev(counts)
-        print(f"  {technique}: Total Calls = {total_count}, Std Dev = {std_dev:.2f}")
-    elif len(counts) == 1:
-        print(f"  {technique}: Total Calls = {total_count}, Std Dev = N/A (Only one value)")
-    else:
-        print(f"  {technique}: Total Calls = 0, Std Dev = N/A (No data)")
+print("Gemini Total Library Calls:")
+for technique, count in gemini_calls.items():
+    print(f"  {technique}: {count}")
 
-print("\nChatGPT Library Calls:")
-for technique, counts in chatgpt_calls.items():
-    total_count = sum(counts)
-    if len(counts) > 1:
-        std_dev = statistics.stdev(counts)
-        print(f"  {technique}: Total Calls = {total_count}, Std Dev = {std_dev:.2f}")
-    elif len(counts) == 1:
-        print(f"  {technique}: Total Calls = {total_count}, Std Dev = N/A (Only one value)")
-    else:
-        print(f"  {technique}: Total Calls = 0, Std Dev = N/A (No data)")
+print("\nChatGPT Total Library Calls:")
+for technique, count in chatgpt_calls.items():
+    print(f"  {technique}: {count}")
 
 print("\nTotal Library Calls per Folder:")
 for folder, total_calls in results_gemini.items():
