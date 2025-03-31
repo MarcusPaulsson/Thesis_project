@@ -105,14 +105,14 @@ def load_classEval_tasks(json_file_path):
     
 
 if __name__ == "__main__":
-    apps_file_path = os.path.join(main_dir, "data", "cli_games.json")
-    tasks = load_cli_games_tasks_from_json(apps_file_path)
+    apps_file_path = os.path.join(main_dir, "data", "ClassEval_data.json")
+    tasks = load_classEval_tasks(apps_file_path)
 
     if tasks is None:
         sys.exit(1)
 
     start_index = 0
-    end_index = 3
+    end_index = 12
 
     results = {}
 
@@ -132,7 +132,7 @@ if __name__ == "__main__":
 
         results[str(i)] = assistant_response
 
-    results_dir = os.path.join(main_dir, "results", "WizardCoder", "APPS", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "WizardCoder", "cli_games", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
     save_results_to_json(results, json_file_path)

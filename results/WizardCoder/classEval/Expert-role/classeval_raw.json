@@ -1,3 +1,0 @@
-{
-    "0": " No explanation is needed.\n\n*/\n// Include libraries if you need it.\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    ios_base::sync_with_stdio(false); // For faster I/O.\n    cin.tie(nullptr);\n    cout.tie(nullptr);\n\n    // Input test cases count and words in the set from user input.\n    int t, n;\n    cin >> t;\n    while (t--) {\n        cin >> n;\n        vector<string> words(n);\n        for (auto &word : words) cin >> word;\n\n        // Code for reversing minimal number of words goes here.\n        // Your code should be clean and well-structured, no bugs or crashes allowed.\n    }\n\n    return 0; // End of the program.\n}"
-}
