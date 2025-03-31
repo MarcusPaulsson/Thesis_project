@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-from llama_cpp import Llama
+from ctransformers import AutoModelForCausalLM  # Import ctransformers
 import time
 import argparse
 
@@ -15,31 +15,30 @@ sys.path.append(upper_dir)
 from extract_code_python import extract_and_save_python_code, save_results_to_json
 import prompt_technique_templates as prompt
 
-def load_llama_model(model_path, ctx_window=16384, n_gpu_layers=-1, verbose=True):
-    """
-    Loads the Llama model and returns the Llama instance with CUDA enabled.
-    Prints information about layer offloading to verify GPU usage.
-    """
-    llm = Llama(model_path=model_path, n_ctx=ctx_window, n_gpu_layers=n_gpu_layers, n_threads=os.cpu_count(), verbose=verbose)
+def load_ctransformers_model(model_repo, model_file, gpu_layers=45, context_length=2048):
+    """Loads a model using ctransformers."""
+    llm = AutoModelForCausalLM.from_pretrained(
+        model_repo,
+        model_file=model_file,
+        gpu_layers=gpu_layers,
+        context_length=context_length
+    )
     return llm
 
-def run_task_with_llama(llm, task_prompt, temp=0.7):
-    """
-    Run a single task using the provided Llama instance, passing the task prompt.
-    """
+def run_task_with_ctransformers(llm, task_prompt, temp=0.7):
+    
     output = llm(
         task_prompt,
         temperature=temp,
-        max_tokens=-1,  # -1 means no limit
+        max_new_tokens=1500,  # Adjust as needed
         stream=True,
-        echo=False,  # do not echo the prompt.
     )
 
     full_response = ""
     for part in output:
-        content = part['choices'][0]['text']
+        content = part
         full_response += content
-        print(content, end='', flush=sys.stdout)  # Print to stdout for streaming
+        print(content, end='', flush=sys.stdout)
 
     return full_response
 
@@ -90,38 +89,50 @@ def save_results_to_json(results, json_file_path):
     with open(json_file_path, 'w', encoding='utf-8') as jsonfile:
         json.dump(results, jsonfile, ensure_ascii=False, indent=4)
 
+def load_classEval_tasks(json_file_path):
+    """Loads class evaluation tasks from a JSON file."""
+    tasks = []
+    try:
+        with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
+            data = json.load(jsonfile)
+            for item in data:
+                tasks.append(item["skeleton"]) # Assumes each item in the JSON list has a 'skeleton' key
+        return tasks
+    except FileNotFoundError:
+        print(f"Error: JSON file '{json_file_path}' not found.")
+        return None
+    
+
 if __name__ == "__main__":
-    # Load tasks from the APPS JSON file
-    apps_file_path = os.path.join(main_dir, "data", "cli_games.json")  # Adjust filename and path
+    apps_file_path = os.path.join(main_dir, "data", "cli_games.json")
     tasks = load_cli_games_tasks_from_json(apps_file_path)
 
     if tasks is None:
         sys.exit(1)
 
-    # Define the index interval for tasks
     start_index = 0
-    end_index = 3  # Adjust to the number of tasks you want to run.
+    end_index = 1
 
-    results = {}  # Change results to a dictionary
+    results = {}
 
-    # Load the Llama model once with CUDA
-    model_dir = os.path.abspath(os.path.join(upper_main_dir, "Models", "StarCoder2-15B-GGUF"))
-    model_path = os.path.join(model_dir, "starcoder2-15b-Q3_K_S.gguf")
-    llm = load_llama_model(model_path)
+    # Load the model using ctransformers
+    model_dir = os.path.abspath(os.path.join(upper_main_dir, "Models", "Yi-Coder-9B-Chat-GGUF"))
+    model_path = os.path.join(model_dir, "Yi-Coder-9B-Chat-Q4_K_M.gguf")
+    llm = load_ctransformers_model(model_dir, model_path)
+
 
     for i in range(start_index, end_index):
         task_prompt = tasks[i]
-        print(f"Processing task {i}...")
+        print(task_prompt)
+        # Construct the prompt according to the Qwen-like template
+        user_prompt = f"<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n{prompt.HEAD_PROMPT}{task_prompt}{prompt.TAIL_PROMPT}<|im_end|>\n<|im_start|>assistant"
+        # Run the task with ctransformers
+        assistant_response = run_task_with_ctransformers(llm, user_prompt)
 
-        task_prompt = "Develop a Python program snippet to Display Extreme Handwashing technique: Scrubbing for at least 20 Seconds for Decision Making for Professionals. Incorporate if/else or switch/case statements to handle various cases related to the Ethics. Dry-run, ensure your control flow logic is clear and well-commented."
-        system_prompt = prompt.SYSTEM_PROMPT  # or some other system prompt.
-        user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PROMPT
-        assistant_response = run_task_with_llama(llm, user_prompt)  # Pass the loaded llm instance
-        results[str(i)] = assistant_response  # Use task index as key
+        results[str(i)] = assistant_response
 
-    # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "WizardCoder", "cli_games", prompt.PROMPT_TECHNIQUE_SETTING)
-    os.makedirs(results_dir, exist_ok=True)  # Ensure the directory exists.
-    json_file_path = os.path.join(results_dir, "cli_games_raw.json")
+    results_dir = os.path.join(main_dir, "results", "WizardCoder", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    os.makedirs(results_dir, exist_ok=True)
+    json_file_path = os.path.join(results_dir, "classeval_raw.json")
     save_results_to_json(results, json_file_path)
     extract_and_save_python_code(json_file_path, results_dir)

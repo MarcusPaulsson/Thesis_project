@@ -1,69 +1,27 @@
-class TicTacToe:
+class Game:
     def __init__(self):
-        self.board = [' '] * 9
-        self.player = 'X'
-        self.turn = 1
-        self.game_over = False
-        self.winner = None
+        self.board = [' ']*9
+        self.reset()
 
-    def display_board(self):
-        print('\n|' + '{} | {} | {} |'.format(self.board[0], self.board[1], self.board[2]) + '|')
-        print('|' + '{} | {} | {} |'.format(self.board[3], self.board[4], self.board[5]) + '|')
-        print('|' + '{} | {} | {} |\n'.format(self.board[6], self.board[7], self.board[8]) + '|')
-        print('-----------------')
+    def mark(self, player):
+        if player == "You":
+            return "X" if self.player1 == "X" else "O"   # the opposite
+        elif player == "Me":
+            return self.player1                         # either X or O
+        else:
+             raise Exception(f'Invalid Player Mark "{mark}"')      # neither a playable player nor just a mark
+    def print_board(self):
+        print('\n'.join(' '.join(row) for row in (self.board[i*3 : i*3 + 3] for i in range(3))))
+    def reset(self, first=True):
+         self.player1 = "X" if first else "O"  # X goes first, O second
+         self.player2 = self.mark("You")   if not first else self.mark("Me")
 
-    def check_win(self):
-        for i in range(0, 9, 3):
-            if self.board[i] == self.board[i+1] == self.board[i+2] != ' ' and self.board[i] != ' ':
-                self.game_over = True
-                self.winner = self.board[i]
-                return True
-        for i in range(3):
-            if self.board[i] == self.board[i+3] == self.board[i+6] != ' ' and self.board[i] != '':
-                self.game_over = True
-                self.winner = self.board[i]
-                return True
-        if self.board[0] == self.board[4] == self.board[8] != ' ':
-            self.game_over = True
-            self.winner = self.board[0]
-            return True
-        if self.board[2] == self.board[4] == self.board[6] != '':
-            self.game_over = True
-            self.winner = self.board[2]
-            return True
-        if self.board.count(' ') == 0 and not self.game_over:
-            self.game_over = True
-            self.winner = 'Tie'
-            return True
-        return False
+    def play_turn(self):
+        self.reset(not self.player1 == "X") # if it's X's turn, reset for O; otherwise, do the opposite
 
-    def play(self):
-        self.display_board()
-        while not self.game_over:
-            try:
-                move = int(input('Player {}, enter a number (1-9) to place your symbol: '.format(self.player))) - 1
-            except ValueError:
-                print('Invalid input! Try again.')
-                continue
-            if self.board[move] != ' ':
-                print('Position already taken!')
-                continue
-            self.board[move] = self.player
-            self.check_win()
-            self.display_board()
-            if self.game_over:
-                if self.winner == 'Tie':
-                    print('Tie game!')
-                else:
-                    print('{} wins!'.format(self.winner))
-                return
-            if self.turn % 2 == 0:
-                self.player = 'O'
-            else:
-                self.player = 'X'
-            self.turn += 1
-            self.check_win()
+    def play_game(self):
+        while True:  # until a winner is decided or a draw occurs
+            self.play_turn()   # switch to the other player's turn
 
-
-game = TicTacToe()
-game.play() 
+if __name__ == "__main__":
+     Game().play_game()

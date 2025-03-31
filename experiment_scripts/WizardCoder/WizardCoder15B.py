@@ -43,6 +43,8 @@ def run_task_with_llama(llm, task_prompt, temp=0.7):
 
     return full_response
 
+    return full_response
+
 def load_cli_games_tasks_from_json(json_file_path):
     """
     Load game instructions from a JSON file.
@@ -62,26 +64,26 @@ def load_cli_games_tasks_from_json(json_file_path):
         return None
     
 
-def extract_apps_tasks(json_file_path):
-    """
-    Extracts 'question' fields from each line in a JSON file, handling potential errors.
-    """
-    tasks = []
-    try:
-        with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
-            for line in jsonfile:
-                line = line.strip()
+# def extract_apps_tasks(json_file_path):
+#     """
+#     Extracts 'question' fields from each line in a JSON file, handling potential errors.
+#     """
+#     tasks = []
+#     try:
+#         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
+#             for line in jsonfile:
+#                 line = line.strip()
                 
-                try:
-                    data = json.loads(line)
-                    if "question" in data:
-                        tasks.append(data["question"])
-                except json.JSONDecodeError:
-                    print(f"Warning: Skipping invalid JSON line: {line[:50]}...")
-        return tasks
-    except FileNotFoundError:
-        print(f"Error: JSON file '{json_file_path}' not found.")
-        return None
+#                 try:
+#                     data = json.loads(line)
+#                     if "question" in data:
+#                         tasks.append(data["question"])
+#                 except json.JSONDecodeError:
+#                     print(f"Warning: Skipping invalid JSON line: {line[:50]}...")
+#         return tasks
+#     except FileNotFoundError:
+#         print(f"Error: JSON file '{json_file_path}' not found.")
+#         return None
 
 def save_results_to_json(results, json_file_path):
     """
@@ -92,7 +94,7 @@ def save_results_to_json(results, json_file_path):
 
 if __name__ == "__main__":
     # Load tasks from the APPS JSON file
-    apps_file_path = os.path.join(main_dir, "data", "cli_games.json")  # Adjust filename and path
+    apps_file_path = os.path.join(main_dir, "data", "ultra_simple.json")
     tasks = load_cli_games_tasks_from_json(apps_file_path)
 
     if tasks is None:
@@ -105,15 +107,64 @@ if __name__ == "__main__":
     results = {}  # Change results to a dictionary
 
     # Load the Llama model once with CUDA
-    model_dir = os.path.abspath(os.path.join(upper_main_dir, "Models", "deepseek-coder-6.7B-instruct-GGUF"))
-    model_path = os.path.join(model_dir, "deepseek-coder-6.7b-instruct.Q5_K_M.gguf")
+    model_dir = os.path.abspath(os.path.join(upper_main_dir, "Models", "WizardCoder-15B-V1.0-GGUF"))
+    model_path = os.path.join(model_dir, "WizardCoder-15B-V1.0.Q4_K_S.gguf")
     llm = load_llama_model(model_path)
 
     for i in range(start_index, end_index):
         task_prompt = tasks[i]
-        print(f"Processing task {i}...")
+        task_prompt = '''
+Polycarp has a set of n distinct binary words (each word consists solely of the characters '0' and '1'). He wants to use these words in a game where:
+- The first word can be any word.
+- Every subsequent word must start with the last character of the previous word.
+Words can be reversed (i.e., their characters are in reverse order) to help form such a sequence, but after any reversals the words must remain distinct. Polycarp's goal is to reverse the minimum number of words so that the entire set can be arranged to follow the game's rule. If no valid arrangement exists even after reversals, the answer is -1.
+Input Format:
+- The first line contains an integer t (1 <= t <= 10^4) - the number of test cases.
+- For each test case:
+  - The first line contains an integer n (1 <= n <= 2x10^5) - the number of words.
+  - The next n lines each contain a non-empty binary word (each word consists only of '0' and '1').
+    The sum of the lengths of all words in all test cases is at most 4x10^6.
+    All words in a test case are distinct.
+Output Format:
+- For each test case, output:
+  - -1 if no valid ordering exists.
+  - Otherwise, output two lines:
+    - The first line contains k (0 <= k <= n) - the minimal number of words to reverse.
+    - The second line contains k distinct integers (indices from 1 to n) indicating which words to reverse.
+      (If k = 0, the second line may be omitted or left empty.)
 
-        task_prompt = "Give me a full implementation of the game Battleship with a command line interface. Do this by constructing a class for the game."
+Example:
+
+Input
+4
+4
+0001
+1000
+0011
+0111
+3
+010
+101
+0
+2
+00000
+00001
+4
+01
+001
+0001
+00001
+
+Output
+1
+3
+-1
+0
+2
+1 2
+ '''
+        print(task_prompt)
+        print(f"Processing task {i}...")
         system_prompt = prompt.SYSTEM_PROMPT  # or some other system prompt.
         user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PROMPT
         assistant_response = run_task_with_llama(llm, user_prompt)  # Pass the loaded llm instance

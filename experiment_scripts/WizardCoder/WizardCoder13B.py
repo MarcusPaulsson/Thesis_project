@@ -15,13 +15,13 @@ sys.path.append(upper_dir)
 from extract_code_python import extract_and_save_python_code, save_results_to_json
 import prompt_technique_templates as prompt
 
-def load_ctransformers_model(model_repo, model_file, model_type="starcoder", gpu_layers=10, context_length=900):
+def load_ctransformers_model(model_repo, model_file, model_type="llama", gpu_layers=30, context_length=2048):
     """Loads a model using ctransformers."""
     llm = AutoModelForCausalLM.from_pretrained(
         model_repo,
         model_file=model_file,
-        gpu_layers=gpu_layers,
         model_type=model_type,
+        gpu_layers=gpu_layers,
         context_length=context_length
     )
     return llm
@@ -105,32 +105,34 @@ def load_classEval_tasks(json_file_path):
     
 
 if __name__ == "__main__":
-    apps_file_path = os.path.join(main_dir, "data", "ClassEval_data.json")
-    tasks = load_classEval_tasks(apps_file_path)
+    apps_file_path = os.path.join(main_dir, "data", "cli_games.json")
+    tasks = load_cli_games_tasks_from_json(apps_file_path)
 
     if tasks is None:
         sys.exit(1)
 
     start_index = 0
-    end_index = 1
+    end_index = 3
 
     results = {}
 
     # Load the model using ctransformers
-    model_dir = os.path.abspath(os.path.join(upper_main_dir, "Models", "StarCoder2-15B-GGUF"))
-    model_path = os.path.join(model_dir, "starcoder2-15b-Q3_K_S.gguf")
+    model_dir = os.path.abspath(os.path.join(upper_main_dir, "Models", "WizardCoder-Python-13B-V1.0-GGUF"))
+    model_path = os.path.join(model_dir, "wizardcoder-python-13b-v1.0.Q5_K_S.gguf")
     llm = load_ctransformers_model(model_dir, model_path)
 
 
     for i in range(start_index, end_index):
         task_prompt = tasks[i]
-        task_prompt = "Develop a Python program snippet to Display Extreme Handwashing technique: Scrubbing for at least 20 Seconds for Decision Making for Professionals. Incorporate if/else or switch/case statements to handle various cases related to the Ethics. Dry-run, ensure your control flow logic is clear and well-commented."
-        system_prompt = prompt.SYSTEM_PROMPT  # or some other system prompt.
-        user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PROMPT 
+        print(f"Processing task {i}...")
+        # Construct the prompt according to WizardCoder's template
+        user_prompt = f"Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\n{prompt.SYSTEM_PROMPT}{task_prompt}{prompt.TAIL_PROMPT}\n\n### Response:"
+        # Run the task with the WizardCoder LLM (ctransformers)
         assistant_response = run_task_with_ctransformers(llm, user_prompt)
+
         results[str(i)] = assistant_response
 
-    results_dir = os.path.join(main_dir, "results", "WizardCoder", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "WizardCoder", "APPS", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
     save_results_to_json(results, json_file_path)
