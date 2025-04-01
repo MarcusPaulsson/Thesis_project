@@ -1,5 +1,0 @@
-{
-    "task1": "Here is a response with ```python\nprint('Hello, world!')\n```",
-    "task2": "Another response with ```python\ndef add(a, b):\n    return a + b\n``` and some other text.",
-    "task3": "\n\n[ANS]Here's the implementation of bubble sort in Python:\n\n```python\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n```\n\nThis implementation of bubble sort takes an array `arr` as input and sorts it in ascending order using the bubble sort algorithm. It works by repeatedly swapping adjacent elements if they are in the wrong order. The outer loop runs `n` times, where `n` is the length of the array, and the inner loop runs `n-i-1` times, where `i` is the current iteration of the outer loop. This is because after each iteration, the largest element will \"bubble up\" to the end of the array, so we don't need to check it again. "
-}

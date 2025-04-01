@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import shutil
 
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(upper_dir)
@@ -34,7 +35,7 @@ def load_classEval_tests(test_data_path):
         print(f"Error: JSON file '{test_data_path}' not found.")
         return None
 
-def run_tests_on_code_snippets(tasks, folder_path):
+def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
     """Runs the tests on the generated code snippets in the specified folder."""
     if tasks is None:
         return {"passed": 0, "total": 0}
@@ -51,21 +52,19 @@ def run_tests_on_code_snippets(tasks, folder_path):
                 with open(file_path, 'r') as f:
                     generated_code = f.read()
 
-                with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.py') as temp_file:
+                temp_file_path = os.path.join(temp_dir, f"temp_test_{i}.py")
+                with open(temp_file_path, 'w') as temp_file:
                     combined_code = generated_code + "\n\n" + task
                     temp_file.write(combined_code + "\nif __name__ == '__main__':\n    import unittest\n    unittest.main()")
-                    temp_file_name = temp_file.name
 
                 print(f"\n--- Running Test {i + 1} of {total_tests} ---")
-                process = subprocess.run(["python", temp_file_name], capture_output=True, text=True, timeout=10)
+                process = subprocess.run(["python", temp_file_path], capture_output=True, text=True, timeout=10)
 
                 if process.returncode == 0:
                     print(f"Test {i + 1} passed")
                     passed_tests += 1
                 else:
                     print(f"Test {i + 1} failed")
-
-                os.remove(temp_file_name)
 
             except subprocess.TimeoutExpired:
                 print(f"Test {i + 1} timed out.")
@@ -87,32 +86,34 @@ tasks = load_classEval_tests(test_data_path)
 # Run tests for each folder and store results
 if tasks:
     results = {}
+    temp_dir = "tempfolder"
+    os.makedirs(temp_dir, exist_ok=True) #creates the temp folder
 
     # Gemini Tests
     print("\n--- Running Gemini Zero-shot Tests ---")
-    results["Gemini Zero-shot"] = run_tests_on_code_snippets(tasks, Gemini_zero_shot_classEval_folder)
+    results["Gemini Zero-shot"] = run_tests_on_code_snippets(tasks, Gemini_zero_shot_classEval_folder, temp_dir)
 
     print("\n--- Running Gemini Zero-shot-CoT Tests ---")
-    results["Gemini Zero-shot-CoT"] = run_tests_on_code_snippets(tasks, Gemini_zero_shot_CoT_classEval_folder)
+    results["Gemini Zero-shot-CoT"] = run_tests_on_code_snippets(tasks, Gemini_zero_shot_CoT_classEval_folder, temp_dir)
 
     print("\n--- Running Gemini Student-role Tests ---")
-    results["Gemini Student-role"] = run_tests_on_code_snippets(tasks, Gemini_student_role_classEval_folder)
+    results["Gemini Student-role"] = run_tests_on_code_snippets(tasks, Gemini_student_role_classEval_folder, temp_dir)
 
     print("\n--- Running Gemini Expert-role Tests ---")
-    results["Gemini Expert-role"] = run_tests_on_code_snippets(tasks, Gemini_expert_role_classEval_folder)
+    results["Gemini Expert-role"] = run_tests_on_code_snippets(tasks, Gemini_expert_role_classEval_folder, temp_dir)
 
     # ChatGPT Tests
     print("\n--- Running ChatGPT Zero-shot Tests ---")
-    results["ChatGPT Zero-shot"] = run_tests_on_code_snippets(tasks, chatGPT_zero_shot_classEval_folder)
+    results["ChatGPT Zero-shot"] = run_tests_on_code_snippets(tasks, chatGPT_zero_shot_classEval_folder, temp_dir)
 
     print("\n--- Running ChatGPT Zero-shot-CoT Tests ---")
-    results["ChatGPT Zero-shot-CoT"] = run_tests_on_code_snippets(tasks, chatGPT_zero_shot_CoT_classEval_folder)
+    results["ChatGPT Zero-shot-CoT"] = run_tests_on_code_snippets(tasks, chatGPT_zero_shot_CoT_classEval_folder, temp_dir)
 
     print("\n--- Running ChatGPT Student-role Tests ---")
-    results["ChatGPT Student-role"] = run_tests_on_code_snippets(tasks, chatGPT_student_role_classEval_folder)
+    results["ChatGPT Student-role"] = run_tests_on_code_snippets(tasks, chatGPT_student_role_classEval_folder, temp_dir)
 
     print("\n--- Running ChatGPT Expert-role Tests ---")
-    results["ChatGPT Expert-role"] = run_tests_on_code_snippets(tasks, chatGPT_expert_role_classEval_folder)
+    results["ChatGPT Expert-role"] = run_tests_on_code_snippets(tasks, chatGPT_expert_role_classEval_folder, temp_dir)
 
     # Print overall summary
     print("\n--- Overall Test Summary ---")
@@ -122,3 +123,6 @@ if tasks:
     total_passed = sum(result['passed'] for result in results.values())
     total_all = sum(result['total'] for result in results.values())
     print(f"\nTotal Passed: {total_passed} of {total_all}")
+
+    #Cleanup temp folder
+    shutil.rmtree(temp_dir)
