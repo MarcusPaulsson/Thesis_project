@@ -26,6 +26,29 @@ def load_ctransformers_model(model_repo, model_file, model_type="llama", gpu_lay
     )
     return llm
 
+
+def extract_apps_tasks(json_file_path):
+    """
+    Extracts 'question' fields from each line in a JSON file, handling potential errors.
+    """
+    tasks = []
+    try:
+        with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
+            for line in jsonfile:
+                line = line.strip()
+
+                try:
+                    data = json.loads(line)
+                    if "question" in data:
+                        tasks.append(data["question"])
+                except json.JSONDecodeError:
+                    print(f"Warning: Skipping invalid JSON line: {line[:50]}...")
+        return tasks
+    except FileNotFoundError:
+        print(f"Error: JSON file '{json_file_path}' not found.")
+        return None
+
+
 def run_task_with_ctransformers(llm, task_prompt, temp=0.7):
     """Run a single task using ctransformers."""
     output = llm(
@@ -43,42 +66,6 @@ def run_task_with_ctransformers(llm, task_prompt, temp=0.7):
 
     return full_response
 
-def load_cli_games_tasks_from_json(json_file_path):
-    """
-    Load game instructions from a JSON file.
-    Assumes the JSON file contains a list of dictionaries, where each dictionary
-    has a 'prompt' key.
-    Returns a list of game instruction prompts.
-    """
-    instructions = []
-    try:
-        with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
-            data = json.load(jsonfile)
-            for item in data:
-                instructions.append(item["prompt"])
-        return instructions
-    except FileNotFoundError:
-        print(f"Error: JSON file '{json_file_path}' not found.")
-        return None
-
-def load_cli_games_tasks_from_json(json_file_path):
-    """
-    Load game instructions from a JSON file.
-    Assumes the JSON file contains a list of dictionaries, where each dictionary
-    has a 'prompt' key.
-    Returns a list of game instruction prompts.
-    """
-    instructions = []
-    try:
-        with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
-            data = json.load(jsonfile)
-            for item in data:
-                instructions.append(item["prompt"])
-        return instructions
-    except FileNotFoundError:
-        print(f"Error: JSON file '{json_file_path}' not found.")
-        return None
-    
 
 def save_results_to_json(results, json_file_path):
     """
@@ -86,17 +73,17 @@ def save_results_to_json(results, json_file_path):
     """
     with open(json_file_path, 'w', encoding='utf-8') as jsonfile:
         json.dump(results, jsonfile, ensure_ascii=False, indent=4)
-    
+
 
 if __name__ == "__main__":
-    apps_file_path = os.path.join(main_dir, "data", "cli_games.json")
-    tasks = load_cli_games_tasks_from_json(apps_file_path)
+    apps_file_path = os.path.join(main_dir, "data", "apps.json")
+    tasks = extract_apps_tasks(apps_file_path)
 
     if tasks is None:
         sys.exit(1)
 
-    start_index = 0
-    end_index = 12
+    start_index = 17
+    end_index = 30
 
     results = {}
 
@@ -116,8 +103,8 @@ if __name__ == "__main__":
 
         results[str(i)] = assistant_response
 
-    results_dir = os.path.join(main_dir, "results", "WizardCoder", "cli_games", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "WizardCoder", "APPS", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)
-    json_file_path = os.path.join(results_dir, "classeval_raw.json")
+    json_file_path = os.path.join(results_dir, "apps_raw.json")
     save_results_to_json(results, json_file_path)
     extract_and_save_python_code(json_file_path, results_dir)
