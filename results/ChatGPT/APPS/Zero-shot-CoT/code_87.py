@@ -1,31 +1,49 @@
-def count_ambiguous_pairs(m, d, w):
-    # The number of days in the year
-    total_days = m * d
-    
-    # Calculate the number of ambiguous pairs
-    ambiguous_count = 0
-    
-    # The number of full weeks in the year
-    full_weeks = total_days // w
-    
-    # The number of days that align with weeks
-    extra_days = total_days % w
-    
-    # We can only have ambiguous pairs for days that are within the bounds of the months
-    days_limit = min(d, w)  # no day can exceed the days in a month or the week length
-    
-    for day in range(1, days_limit + 1):
-        # Number of months that can contribute the same day of the week for the given day
-        pairs_possible = (min(m, (w - day) // w + 1)) * (min(m, (w - day + 1) // w))
-        
-        ambiguous_count += pairs_possible
-    
-    return ambiguous_count
+def max_projects(n, r, projects):
+    # Separate the projects into two groups: those that increase rating and those that decrease it
+    increase_projects = []
+    decrease_projects = []
 
-t = int(input())
-results = []
-for _ in range(t):
-    m, d, w = map(int, input().split())
-    results.append(count_ambiguous_pairs(m, d, w))
+    for a, b in projects:
+        if b >= 0:
+            increase_projects.append((a, b))
+        else:
+            decrease_projects.append((a, b))
 
-print('\n'.join(map(str, results)))
+    # Sort increasing projects by required rating
+    increase_projects.sort()
+
+    # Try to complete all increasing projects first
+    current_rating = r
+    completed_projects = 0
+
+    for a, b in increase_projects:
+        if current_rating >= a:
+            current_rating += b
+            completed_projects += 1
+
+    # Sort decreasing projects by required rating
+    decrease_projects.sort()
+
+    # Try to complete decreasing projects
+    while True:
+        any_completed = False
+        for a, b in decrease_projects:
+            if current_rating >= a:
+                current_rating += b
+                if current_rating < 0:  # If rating drops below zero, we can't complete this project
+                    current_rating -= b  # revert the change
+                else:
+                    completed_projects += 1
+                    any_completed = True
+        if not any_completed:
+            break
+
+    return completed_projects
+
+# Read input
+n, r = map(int, input().split())
+projects = [tuple(map(int, input().split())) for _ in range(n)]
+
+# Get the result and print
+result = max_projects(n, r, projects)
+print(result)

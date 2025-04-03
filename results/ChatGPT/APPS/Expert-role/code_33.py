@@ -1,30 +1,42 @@
-def minimize_final_number(t, test_cases):
-    results = []
+def count_common_terms(a1, b1, a2, b2, L, R):
+    from math import gcd
+
+    # Normalize the sequences
+    a1, b1 = a1, b1 % a1
+    a2, b2 = a2, b2 % a2
+
+    # Calculate the GCD of the differences
+    g = gcd(a1, a2)
+
+    # Check if the two sequences can produce common terms
+    if (b2 - b1) % g != 0:
+        return 0
+
+    # Find the first term in the intersection of the two sequences
+    x0 = (b2 - b1) // g * (a1 // g) % (a2 // g) * a1 + b1
     
-    for n in test_cases:
-        final_number = (n + 1) // 2  # The minimum possible number left on the board
-        results.append(str(final_number))
-        
-        # Generate operations
-        operations = []
-        # We can simulate the process of combining the numbers
-        # We will keep combining the largest number with the smallest until we reach the final number
-        numbers = list(range(1, n + 1))
-        
-        while len(numbers) > 1:
-            a = numbers.pop()
-            b = numbers.pop(0)
-            new_number = (a + b + 1) // 2  # Round up
-            operations.append(f"{a} {b}")
-            numbers.insert(0, new_number)  # Insert the new number back
-        
-        results.extend(operations)
+    # Generate the first term in the sequence
+    if x0 < L:
+        x0 += ((L - x0 + a1 * a2 // g - 1) // (a1 * a2 // g)) * (a1 * a2 // g)
+    elif x0 > R:
+        return 0
 
-    return '\n'.join(results)
+    # Calculate the step size
+    step = a1 * a2 // g
 
-# Read input
-t = int(input())
-test_cases = [int(input()) for _ in range(t)]
+    # Calculate the last term within the range
+    if x0 > R:
+        return 0
 
-# Print output
-print(minimize_final_number(t, test_cases))
+    last = R // step * step + (b1 if last % step == b1 else 0)
+
+    # Count the terms
+    if x0 > last:
+        return 0
+
+    return (last - x0) // step + 1
+
+# Input reading
+a1, b1, a2, b2, L, R = map(int, input().split())
+result = count_common_terms(a1, b1, a2, b2, L, R)
+print(result)

@@ -1,39 +1,53 @@
-def min_days_to_repair_highway(test_cases):
-    results = []
-    for n, g, b in test_cases:
-        # Calculate the minimum high-quality pavement needed
-        high_quality_needed = (n + 1) // 2
-        
-        # Calculate how many full cycles of good and bad days are needed
-        full_cycles_needed = (high_quality_needed + g - 1) // g
-        total_days = full_cycles_needed * (g + b)  # Total days for full cycles
-        
-        # Calculate how many high-quality days we can actually use
-        high_quality_days_used = full_cycles_needed * g
-        
-        # If we have used enough high-quality days, we need to check if we need more days
-        if high_quality_days_used >= high_quality_needed:
-            total_days -= (high_quality_days_used - high_quality_needed)
-        else:
-            # We need to account for the remaining high-quality days after full cycles
-            remaining_high_quality_needed = high_quality_needed - high_quality_days_used
-            total_days += remaining_high_quality_needed  # Add the needed high-quality days
+from collections import defaultdict, deque
+import sys
 
-        # Make sure we do not exceed the total length of the highway
-        total_days = max(total_days, n)
-        
-        results.append(total_days)
-    
-    return results
+input = sys.stdin.read
+data = input().splitlines()
 
+n, k = map(int, data[0].split())
+main_courses = list(map(int, data[1].split()))
 
-# Input reading
-T = int(input())
-test_cases = [tuple(map(int, input().split())) for _ in range(T)]
+# Create an adjacency list and in-degree counter for each course
+dependencies = defaultdict(list)
+in_degree = [0] * (n + 1)
 
-# Get the results
-results = min_days_to_repair_highway(test_cases)
+# Read course dependencies
+for i in range(1, n + 1):
+    line = list(map(int, data[i + 1].split()))
+    t_i = line[0]
+    for j in range(1, t_i + 1):
+        dependencies[line[j]].append(i)
+        in_degree[i] += 1
 
-# Output results
-for result in results:
-    print(result)
+# To track which courses we need to take
+to_take = set(main_courses)
+# To track all courses we need to take
+all_courses = set(main_courses)
+
+# Use a queue to perform topological sorting
+queue = deque()
+for course in range(1, n + 1):
+    if in_degree[course] == 0:
+        queue.append(course)
+
+order_of_courses = []
+
+while queue:
+    course = queue.popleft()
+    order_of_courses.append(course)
+
+    # If this course is a main course, add its dependencies to the set
+    if course in to_take:
+        all_courses.add(course)
+        for dependent in dependencies[course]:
+            in_degree[dependent] -= 1
+            if in_degree[dependent] == 0:
+                queue.append(dependent)
+
+# If we couldn't take all main courses, return -1
+if all_courses != set(main_courses):
+    print(-1)
+else:
+    # Print the result
+    print(len(order_of_courses))
+    print(" ".join(map(str, order_of_courses)))

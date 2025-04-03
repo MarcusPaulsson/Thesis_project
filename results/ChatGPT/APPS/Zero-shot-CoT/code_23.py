@@ -1,36 +1,23 @@
-def min_coins_to_win_election(test_cases):
-    results = []
+def max_permutation_not_exceeding(a, b):
+    from itertools import permutations
+
+    # Convert to string for easier manipulation
+    str_a = str(a)
+    str_b = str(b)
+
+    # Generate all unique permutations of the digits of a
+    permuted_numbers = set(int(''.join(p)) for p in permutations(str_a))
     
-    for n, voters in test_cases:
-        voters.sort(key=lambda x: (x[0], x[1]))  # Sort by m_i first, then by p_i
-        min_cost = float('inf')
-        dp = [float('inf')] * (n + 1)
-        dp[0] = 0
-        
-        for i in range(n):
-            m_i, p_i = voters[i]
-            # Update the dp array in reverse to avoid using the same voter multiple times
-            for j in range(n, m_i, -1):
-                dp[j] = min(dp[j], dp[j - m_i] + p_i)
-        
-        # The answer for this case is the minimum cost to convince all voters
-        min_cost = min(dp)
-        results.append(min_cost)
+    # Filter out numbers that start with 0 and are greater than b
+    valid_numbers = [num for num in permuted_numbers if num <= b and str(num)[0] != '0']
     
-    return results
+    # Return the maximum valid number
+    return max(valid_numbers)
 
 # Read input
-t = int(input())
-test_cases = []
+a = int(input().strip())
+b = int(input().strip())
 
-for _ in range(t):
-    n = int(input())
-    voters = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, voters))
-
-# Get results
-results = min_coins_to_win_election(test_cases)
-
-# Print results
-for result in results:
-    print(result)
+# Get the result and print it
+result = max_permutation_not_exceeding(a, b)
+print(result)

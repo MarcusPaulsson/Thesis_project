@@ -1,33 +1,33 @@
-def max_groups(test_cases):
-    results = []
-    for e in test_cases:
-        e.sort()
-        count = 0
-        group_size = 0
-        
-        for inexperience in e:
-            group_size += 1
-            if group_size >= inexperience:
-                count += 1
-                group_size = 0
-        
-        results.append(count)
+def is_valid_flag(n, m, flag):
+    # Check for horizontal stripes
+    if n % 3 == 0:
+        stripe_height = n // 3
+        colors = set()
+        for i in range(3):
+            stripe = flag[i * stripe_height:(i + 1) * stripe_height]
+            if all(row == stripe[0] for row in stripe) and stripe[0][0] not in colors:
+                colors.add(stripe[0][0])
+            else:
+                return "NO"
+        return "YES" if len(colors) == 3 else "NO"
     
-    return results
+    # Check for vertical stripes
+    if m % 3 == 0:
+        stripe_width = m // 3
+        colors = set()
+        for i in range(3):
+            stripe = [row[i * stripe_width:(i + 1) * stripe_width] for row in flag]
+            if all(row == stripe[0] for row in stripe) and stripe[0][0] not in colors:
+                colors.add(stripe[0][0])
+            else:
+                return "NO"
+        return "YES" if len(colors) == 3 else "NO"
+    
+    return "NO"
 
-import sys
-input = sys.stdin.read
+# Input reading
+n, m = map(int, input().split())
+flag = [input().strip() for _ in range(n)]
 
-data = input().splitlines()
-T = int(data[0])
-test_cases = []
-
-index = 1
-for _ in range(T):
-    N = int(data[index])  # Read N but not used
-    explorers = list(map(int, data[index + 1].split()))
-    test_cases.append(explorers)
-    index += 2
-
-results = max_groups(test_cases)
-print('\n'.join(map(str, results)))
+# Output the result
+print(is_valid_flag(n, m, flag))

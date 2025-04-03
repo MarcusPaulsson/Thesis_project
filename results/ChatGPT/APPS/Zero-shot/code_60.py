@@ -1,9 +1,35 @@
-n = int(input())
+def has_palindromic_subsequence(test_cases):
+    results = []
+    for n, a in test_cases:
+        found = False
+        # Use a dictionary to track the first occurrence of each number
+        first_occurrence = {}
+        for i in range(n):
+            if a[i] in first_occurrence:
+                # If we find a number that has appeared before
+                # and the distance between their indices is at least 2
+                if i - first_occurrence[a[i]] >= 2:
+                    found = True
+                    break
+            else:
+                first_occurrence[a[i]] = i
+        
+        if found:
+            results.append("YES")
+        else:
+            results.append("NO")
+    
+    return results
 
-# Maximum days off
-max_days_off = (n // 7) * 2 + min(2, n % 7)
+# Reading input
+t = int(input())
+test_cases = []
+for _ in range(t):
+    n = int(input())
+    a = list(map(int, input().split()))
+    test_cases.append((n, a))
 
-# Minimum days off
-min_days_off = 0 if n < 5 else (n // 7) * 2 + (1 if n % 7 > 0 else 0)
-
-print(min_days_off, max_days_off)
+# Getting results and printing
+results = has_palindromic_subsequence(test_cases)
+for result in results:
+    print(result)

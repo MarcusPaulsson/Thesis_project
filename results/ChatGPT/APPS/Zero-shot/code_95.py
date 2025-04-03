@@ -1,42 +1,24 @@
-def find_sequence(n, k):
-    if k * (k + 1) // 2 > n:
-        return -1
+def generate_string(n, s, t):
+    # Create a list of the characters we need
+    chars = ['a'] * n + ['b'] * n + ['c'] * n
     
-    # Maximum GCD we can use
-    g = n // k
+    # Check for impossible cases
+    if (s[0] == t[0] and s[1] == t[1]) or (s[0] == t[1] and s[1] == t[0]):
+        return "NO"
     
-    # Calculate the smallest sequence
-    sequence = [i for i in range(1, k + 1)]
+    # Attempt to create the result string
+    from itertools import permutations
     
-    # Calculate the sum of the smallest sequence
-    sum_sequence = sum(sequence)
+    for perm in permutations(chars):
+        res = ''.join(perm)
+        if s not in res and t not in res:
+            return f"YES\n{res}"
     
-    # Calculate the excess that needs to be added to the sequence
-    excess = n - sum_sequence
-    
-    # If there's an excess, distribute it to maximize the GCD
-    for i in range(k):
-        add = excess // k
-        sequence[i] += add
-        excess -= add
-    
-    # Distribute any remaining excess one by one
-    for i in range(k):
-        if excess > 0:
-            sequence[i] += 1
-            excess -= 1
-    
-    # Scale the sequence by the calculated GCD
-    g = n // sum(sequence)
-    scaled_sequence = [x * g for x in sequence]
-    
-    return scaled_sequence
+    return "NO"
 
-# Input reading
-n, k = map(int, input().split())
-result = find_sequence(n, k)
+n = int(input().strip())
+s = input().strip()
+t = input().strip()
 
-if result == -1:
-    print(-1)
-else:
-    print(' '.join(map(str, result)))
+result = generate_string(n, s, t)
+print(result)

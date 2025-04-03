@@ -1,22 +1,27 @@
-def count_good_substrings(s):
-    n = len(s)
-    good_count = 0
+def count_cyclic_strings(n, s):
+    from itertools import product
     
-    for l in range(n):
-        num = 0
-        for r in range(l, n):
-            # Build the number in decimal from binary
-            num = (num << 1) | (1 if s[r] == '1' else 0)
-            length = r - l + 1
-            if length == num:
-                good_count += 1
+    len_s = len(s)
+    count = 0
+    seen = set()
     
-    return good_count
+    # Generate all binary strings of length n
+    for bits in product('01', repeat=n):
+        t = ''.join(bits)
+        
+        # Check if s is a substring in any cyclic shift of t
+        if any(s in t[i:] + t[:i] for i in range(n)):
+            # Normalize t to account for cyclic shifts
+            min_rotation = min(t[i:] + t[:i] for i in range(n))
+            if min_rotation not in seen:
+                seen.add(min_rotation)
+                count += 1
 
-t = int(input())
-results = []
-for _ in range(t):
-    s = input().strip()
-    results.append(count_good_substrings(s))
+    return count
 
-print('\n'.join(map(str, results)))
+# Input reading
+n = int(input().strip())
+s = input().strip()
+
+# Function call and output
+print(count_cyclic_strings(n, s))

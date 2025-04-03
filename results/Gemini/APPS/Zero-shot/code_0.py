@@ -1,68 +1,53 @@
-def solve():
-    n = int(input())
-    edges = []
-    for _ in range(n - 1):
-        u, v = map(int, input().split())
-        edges.append((u, v))
+s = input()
+n = len(s)
+first_bracket = -1
+first_colon = -1
+last_colon = -1
+last_bracket = -1
 
-    def get_path(start, end):
-        q = [(start, [start])]
-        visited = set()
-        while q:
-            node, path = q.pop(0)
-            if node == end:
-                return path
-            visited.add(node)
-            for u, v in edges:
-                neighbor = None
-                if u == node and v not in visited:
-                    neighbor = v
-                elif v == node and u not in visited:
-                    neighbor = u
-                if neighbor:
-                    q.append((neighbor, path + [neighbor]))
-        return None
+for i in range(n):
+    if s[i] == '[':
+        first_bracket = i
+        break
 
-    def count_edges(a, b, c):
-        path_ab = get_path(a, b)
-        path_bc = get_path(b, c)
-        path_ac = get_path(a, c)
-        
-        edges_ab = set()
-        for i in range(len(path_ab) - 1):
-            u, v = sorted((path_ab[i], path_ab[i+1]))
-            edges_ab.add((u, v))
+if first_bracket == -1:
+    print(-1)
+    exit()
 
-        edges_bc = set()
-        for i in range(len(path_bc) - 1):
-            u, v = sorted((path_bc[i], path_bc[i+1]))
-            edges_bc.add((u, v))
+for i in range(first_bracket + 1, n):
+    if s[i] == ':':
+        first_colon = i
+        break
 
-        edges_ac = set()
-        for i in range(len(path_ac) - 1):
-            u, v = sorted((path_ac[i], path_ac[i+1]))
-            edges_ac.add((u, v))
+if first_colon == -1:
+    print(-1)
+    exit()
 
-        all_edges = edges_ab.union(edges_bc).union(edges_ac)
-        return len(all_edges)
+for i in range(n - 1, -1, -1):
+    if s[i] == ']':
+        last_bracket = i
+        break
 
-    best_count = -1
-    best_a, best_b, best_c = -1, -1, -1
+if last_bracket == -1:
+    print(-1)
+    exit()
 
-    for a in range(1, n + 1):
-        for b in range(1, n + 1):
-            if a == b:
-                continue
-            for c in range(1, n + 1):
-                if a == c or b == c:
-                    continue
-                
-                count = count_edges(a, b, c)
-                if count > best_count:
-                    best_count = count
-                    best_a, best_b, best_c = a, b, c
+for i in range(last_bracket - 1, -1, -1):
+    if s[i] == ':':
+        last_colon = i
+        break
 
-    print(best_count)
-    print(best_a, best_b, best_c)
+if last_colon == -1:
+    print(-1)
+    exit()
 
-solve()
+if first_bracket >= first_colon or last_bracket <= last_colon:
+    print(-1)
+    exit()
+
+count = 0
+for i in range(first_colon + 1, last_colon):
+    if s[i] == '|':
+        count += 1
+
+print(4 + count)

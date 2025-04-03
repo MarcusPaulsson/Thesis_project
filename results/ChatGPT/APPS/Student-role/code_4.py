@@ -1,27 +1,17 @@
-def beautiful_numbers(t, test_cases):
-    results = []
-    for n, p in test_cases:
-        beautiful = ['0'] * n
-        max_value = 0
-        
-        for i in range(n):
-            max_value = max(max_value, p[i])
-            if max_value == i + 1:
-                beautiful[i] = '1'
-        
-        results.append(''.join(beautiful))
-    
-    return results
+def is_lucky(hh, mm):
+    return '7' in f"{hh:02d}{mm:02d}"
 
-# Input Reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    p = list(map(int, input().split()))
-    test_cases.append((n, p))
+def minutes_before(hh, mm, x, y):
+    total_minutes = hh * 60 + mm - y * x
+    if total_minutes < 0:
+        total_minutes += 24 * 60  # wrap around to the previous day
+    return total_minutes // 60, total_minutes % 60
 
-# Process and Output
-results = beautiful_numbers(t, test_cases)
-for result in results:
-    print(result)
+x = int(input())
+hh, mm = map(int, input().split())
+
+y = 0
+while not is_lucky(*minutes_before(hh, mm, x, y)):
+    y += 1
+
+print(y)

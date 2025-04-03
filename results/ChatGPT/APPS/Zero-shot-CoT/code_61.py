@@ -1,33 +1,24 @@
-def find_indices(test_cases):
-    result = []
-    for n, p in test_cases:
-        found = False
-        for j in range(1, n-1):
-            if p[j-1] < p[j] > p[j+1]:
-                result.append(f"YES\n{j} {j+1} {j+2}")
-                found = True
-                break
-        if not found:
-            result.append("NO")
-    return result
+n = int(input().strip())
+a = input().strip()
+f = list(map(int, input().strip().split()))
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    T = int(data[0])
-    test_cases = []
-    
-    index = 1
-    for _ in range(T):
-        n = int(data[index])
-        p = list(map(int, data[index + 1].split()))
-        test_cases.append((n, p))
-        index += 2
-    
-    results = find_indices(test_cases)
-    print("\n".join(results))
+max_a = list(a)
 
-if __name__ == "__main__":
-    main()
+# Flag to indicate if we are in the process of replacing
+replacing = False
+
+for i in range(n):
+    original_digit = int(a[i])
+    new_digit = f[original_digit - 1]
+    
+    if new_digit > original_digit:
+        # Start replacing
+        max_a[i] = str(new_digit)
+        replacing = True
+    elif new_digit < original_digit and replacing:
+        # Stop replacing if we encounter a smaller digit
+        break
+    elif not replacing:
+        max_a[i] = str(original_digit)
+
+print(''.join(max_a))

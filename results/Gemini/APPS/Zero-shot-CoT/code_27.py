@@ -1,49 +1,21 @@
 def solve():
     n = int(input())
-    a = list(map(int, input().split()))
+    s = input()
     
-    moves = 0
-    seen = set()
+    ans = n
     
-    while True:
-        all_odd = True
-        for x in a:
-            if x % 2 == 0:
-                all_odd = False
-                break
-        
-        if all_odd:
-            break
-        
-        even_nums = set()
-        for x in a:
-            if x % 2 == 0:
-                even_nums.add(x)
-        
-        if not even_nums:
-            break
+    for i in range(1, n // 2 + 1):
+        prefix = s[:i]
+        if s[:2*i].startswith(prefix) and s.startswith(prefix * 2):
             
-        c = min(even_nums)
-        if c in seen:
             
-            even_nums.remove(c)
-            if not even_nums:
-                break
-            c = min(even_nums)
-        
-        
-        if c in seen:
-            break
-                
-        seen.add(c)
-        
-        for i in range(n):
-            if a[i] == c:
-                a[i] //= 2
-        moves += 1
-    
-    print(moves)
+            
+            ops = i + 1 + (n - 2*i)
+            ans = min(ans, ops)
+        elif s[:i] == s[i:2*i] and  2*i <= n:
+            ops = i + 1 + (n-2*i)
+            ans = min(ans, ops)
+            
+    print(ans)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

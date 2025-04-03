@@ -1,40 +1,22 @@
-def get_divisors(n):
-    divisors = []
-    for i in range(2, int(n**0.5) + 1):
-        if n % i == 0:
-            divisors.append(i)
-            if i != n // i:
-                divisors.append(n // i)
-    return divisors
+def min_moves_to_divisible_by_25(n):
+    s = str(n)
+    length = len(s)
+    target_ends = ["00", "25", "50", "75"]
+    min_moves = float('inf')
+    
+    for target in target_ends:
+        # Try to form the target ending
+        last_digit_pos = -1
+        for i in range(length - 1, -1, -1):
+            if last_digit_pos == -1 and s[i] == target[1]:
+                last_digit_pos = i
+            elif last_digit_pos != -1 and s[i] == target[0]:
+                # Calculate moves needed to bring these two digits to the end
+                moves = (length - 1 - last_digit_pos) + (last_digit_pos - i)
+                min_moves = min(min_moves, moves)
+                break
 
-def solve():
-    import sys
-    input = sys.stdin.read
-    data = input().split()
-    
-    t = int(data[0])
-    results = []
-    
-    for i in range(1, t + 1):
-        n = int(data[i])
-        divisors = get_divisors(n)
-        divisors.sort()
-        
-        # Initial order of divisors
-        initial_order = divisors
-        
-        # Determine the minimal moves needed
-        if len(initial_order) == 2:
-            # Two divisors are always non-coprime (since n is composite)
-            moves = 0
-        else:
-            # For three or more divisors, we can always arrange them to avoid coprime adjacencies
-            moves = 0
-            
-        results.append(" ".join(map(str, initial_order)))
-        results.append(str(moves))
-    
-    print("\n".join(results))
+    return -1 if min_moves == float('inf') else min_moves
 
-if __name__ == "__main__":
-    solve()
+n = int(input().strip())
+print(min_moves_to_divisible_by_25(n))

@@ -1,46 +1,47 @@
 def solve():
-  n, m, k = map(int, input().split())
-  
-  dp = {}
-  
-  def calculate_cost(h, w, target):
-    if (h, w, target) in dp:
-      return dp[(h, w, target)]
-    
-    if target == 0:
-      return 0
-    if h * w == target:
-      return 0
-    if h * w < target or target < 0:
-      return float('inf')
-    
-    min_cost = float('inf')
-    
-    # Horizontal cuts
-    for i in range(1, h):
-      cost = w * w
-      min_cost = min(min_cost, cost + calculate_cost(i, w, target) + calculate_cost(h - i, w, 0))
-      min_cost = min(min_cost, cost + calculate_cost(i, w, 0) + calculate_cost(h - i, w, target))
+    n = int(input())
+    f = list(map(int, input().split()))
 
-      for target1 in range(0, target + 1):
-         cost = w * w
-         min_cost = min(min_cost, cost + calculate_cost(i, w, target1) + calculate_cost(h - i, w, target - target1))
-    
-    # Vertical cuts
-    for i in range(1, w):
-      cost = h * h
-      min_cost = min(min_cost, cost + calculate_cost(h, i, target) + calculate_cost(h, w - i, 0))
-      min_cost = min(min_cost, cost + calculate_cost(h, i, 0) + calculate_cost(h, w - i, target))
-      
-      for target1 in range(0, target + 1):
-          cost = h * h
-          min_cost = min(min_cost, cost + calculate_cost(h, i, target1) + calculate_cost(h, w - i, target - target1))
-    
-    dp[(h, w, target)] = min_cost
-    return min_cost
-  
-  print(calculate_cost(n, m, k))
+    assigned = [False] * (n + 1)
+    for i in range(n):
+        if f[i] != 0:
+            assigned[f[i]] = True
 
-t = int(input())
-for _ in range(t):
-  solve()
+    unassigned_givers = []
+    unassigned_receivers = []
+    for i in range(n):
+        if f[i] == 0:
+            unassigned_givers.append(i)
+
+    for i in range(1, n + 1):
+        if not assigned[i]:
+            unassigned_receivers.append(i)
+
+    for i in range(len(unassigned_givers)):
+        f[unassigned_givers[i]] = unassigned_receivers[i]
+
+    for i in range(n):
+        if f[i] == i + 1:
+            for j in range(len(unassigned_givers)):
+                if unassigned_givers[j] == i:
+                    
+                    if len(unassigned_receivers) == 1:
+                        
+                        for k in range(n):
+                            if f[k] == unassigned_receivers[0] and k != i :
+                                temp = f[k]
+                                f[k] = f[i]
+                                f[i] = temp
+                                break
+                    else:
+                        idx = unassigned_receivers.index(f[i])
+                    
+                        temp = f[unassigned_givers[(j+1)% len(unassigned_givers)]]
+                        
+                        f[unassigned_givers[(j+1)% len(unassigned_givers)]] = f[i]
+                        f[i] = temp
+                        break
+
+    print(*f)
+
+solve()

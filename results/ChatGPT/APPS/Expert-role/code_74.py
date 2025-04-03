@@ -1,55 +1,29 @@
-def maximize_minions(t, test_cases):
-    results = []
-    for case in test_cases:
-        n, k, minions = case
-        # Sort minions by their initial power
-        minions = sorted(minions, key=lambda x: (x[0], -x[1]), reverse=True)
-        
-        actions = []
-        current_power = [0] * n
-        summoned = []
-        
-        for i in range(n):
-            a_i, b_i = minions[i]
-            if len(summoned) < k:
-                # Summon the minion
-                actions.append(i + 1)  # Summon action
-                summoned.append(i)
-                # Increase the power of already summoned minions
-                for j in range(len(summoned) - 1):
-                    current_power[summoned[j]] += b_i
-            else:
-                # If already at max capacity, consider replacing one
-                weakest_idx = min(summoned, key=lambda x: current_power[x] + minions[x][0])
-                if current_power[weakest_idx] + minions[weakest_idx][0] < a_i:
-                    # Destroy the weakest minion
-                    actions.append(-(weakest_idx + 1))  # Destroy action
-                    summoned.remove(weakest_idx)
-                    # Summon the new minion
-                    actions.append(i + 1)  # Summon action
-                    summoned.append(i)
-                    # Update the power of already summoned minions
-                    for j in range(len(summoned) - 1):
-                        current_power[summoned[j]] += b_i
-        
-        # Finalize the power levels for the summoned minions
-        for s in summoned:
-            current_power[s] += minions[s][0]
-        
-        results.append((len(actions), actions))
+def min_cost_to_obtain_set(n, k, s):
+    unique_subsequences = set()
     
-    return results
+    # Generate all unique subsequences
+    for i in range(1 << n):  # There are 2^n possible subsequences
+        subseq = []
+        for j in range(n):
+            if i & (1 << j):
+                subseq.append(s[j])
+        unique_subsequences.add(''.join(subseq))
+    
+    if len(unique_subsequences) < k:
+        return -1
+    
+    # Sort the unique subsequences based on their length (ascending)
+    sorted_subsequences = sorted(unique_subsequences, key=len)
+    
+    total_cost = 0
+    for i in range(k):
+        total_cost += n - len(sorted_subsequences[i])
+    
+    return total_cost
 
 # Input reading
-T = int(input())
-test_cases = []
-for _ in range(T):
-    n, k = map(int, input().split())
-    minions = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, k, minions))
+n, k = map(int, input().split())
+s = input().strip()
 
-# Process and output results
-results = maximize_minions(T, test_cases)
-for m, actions in results:
-    print(m)
-    print(" ".join(map(str, actions)))
+# Output the result
+print(min_cost_to_obtain_set(n, k, s))

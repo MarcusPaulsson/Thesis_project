@@ -1,43 +1,19 @@
-def min_grid_area(s):
-    # Count movements
-    count_W = s.count('W')
-    count_S = s.count('S')
-    count_A = s.count('A')
-    count_D = s.count('D')
-
-    # Calculate the dimensions of the grid without any extra commands
-    height = count_S + count_W
-    width = count_A + count_D
-
-    # Calculate the area without any extra commands
-    min_area = height * width
-
-    # Check the effect of adding one extra command
-    # Adding one 'W', 'A', 'S', or 'D' can increase height or width by 1
-    # We need to check the new areas and take the minimum
-    new_heights = [height + 1, height]
-    new_widths = [width + 1, width]
+def max_chocolates(n, a, b, p, q):
+    count_a = n // a
+    count_b = n // b
+    count_ab = n // (a * b)
     
-    for new_height in new_heights:
-        for new_width in new_widths:
-            new_area = new_height * new_width
-            min_area = min(min_area, new_area)
-
-    return min_area
-
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
+    # Calculate chocolates if red tiles are prioritized
+    chocolates_red_first = (count_a - count_ab) * p + (count_b - count_ab) * q
     
-    T = int(data[0])
-    results = []
+    # Calculate chocolates if blue tiles are prioritized
+    chocolates_blue_first = (count_b - count_ab) * q + (count_a - count_ab) * p
     
-    for i in range(1, T + 1):
-        s = data[i]
-        results.append(min_grid_area(s))
-    
-    print("\n".join(map(str, results)))
+    # Return the maximum chocolates from both strategies
+    return max(chocolates_red_first, chocolates_blue_first)
 
-if __name__ == "__main__":
-    main()
+# Read input
+n, a, b, p, q = map(int, input().split())
+
+# Calculate and print the result
+print(max_chocolates(n, a, b, p, q))

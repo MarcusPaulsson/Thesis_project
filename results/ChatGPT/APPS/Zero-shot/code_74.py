@@ -1,39 +1,38 @@
-def can_win(matrix):
-    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
+def min_cost_to_obtain_set(n, k, s):
+    # Generate all unique subsequences using a set
+    subsequences = set()
     
-    def check_win(x, y):
-        for dx, dy in directions:
-            count = 1
-            
-            for step in range(1, 5):
-                nx, ny = x + step * dx, y + step * dy
-                if 0 <= nx < 10 and 0 <= ny < 10 and matrix[nx][ny] == 'X':
-                    count += 1
-                else:
-                    break
-            
-            for step in range(1, 5):
-                nx, ny = x - step * dx, y - step * dy
-                if 0 <= nx < 10 and 0 <= ny < 10 and matrix[nx][ny] == 'X':
-                    count += 1
-                else:
-                    break
-            
-            if count >= 5:
-                return True
-        return False
-    
-    for i in range(10):
-        for j in range(10):
-            if matrix[i][j] == '.':
-                matrix[i][j] = 'X'
-                if check_win(i, j):
-                    return 'YES'
-                matrix[i][j] = '.'  # Reset the cell back
-    
-    return 'NO'
+    # Function to generate subsequences using recursion
+    def generate_subsequences(prefix, index):
+        if index == n:
+            if prefix:
+                subsequences.add(prefix)
+            return
+        # Include current character
+        generate_subsequences(prefix + s[index], index + 1)
+        # Exclude current character
+        generate_subsequences(prefix, index + 1)
 
+    # Start generating subsequences from the first character
+    generate_subsequences("", 0)
+    
+    # Check if we have enough unique subsequences
+    if len(subsequences) < k:
+        return -1
+    
+    # Calculate the total minimum cost
+    # Sort subsequences by their lengths
+    sorted_subsequences = sorted(subsequences, key=len)
+    total_cost = 0
+    for i in range(k):
+        total_cost += n - len(sorted_subsequences[i])
+    
+    return total_cost
 
 # Read input
-matrix = [list(input().strip()) for _ in range(10)]
-print(can_win(matrix))
+n, k = map(int, input().split())
+s = input().strip()
+
+# Get the result and print it
+result = min_cost_to_obtain_set(n, k, s)
+print(result)

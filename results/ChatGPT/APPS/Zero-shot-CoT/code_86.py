@@ -1,34 +1,37 @@
-def solve():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
+def solve_problems(n, k):
+    # Minimum problems that need to be solved in k days
+    min_problems = k * (k + 1) // 2
+    if n < min_problems:
+        print("NO")
+        return
     
-    t = int(data[0])
-    results = []
+    # Starting array where we will store the problems solved each day
+    a = list(range(1, k + 1))
+    total = sum(a)
     
-    index = 1
-    for _ in range(t):
-        n = int(data[index])
-        a = list(map(int, data[index + 1].split()))
-        index += 2
+    # Distributing the remaining problems
+    remaining = n - total
+    
+    # We can increment the last day until we fulfill the constraints
+    for i in range(k - 1, -1, -1):
+        # The maximum we can add to a[i] while respecting the constraints
+        max_add = 2 * a[i] - a[i] - 1  # a[i] < a[i+1] <= 2 * a[i]
+        if i < k - 1:
+            max_add = min(max_add, 2 * a[i] - a[i + 1] - 1)
         
-        count_0 = a.count(0)
-        count_1 = a.count(1)
+        add = min(remaining, max_add)
+        a[i] += add
+        remaining -= add
         
-        if count_0 >= n // 2:
-            # We can keep n//2 zeros
-            results.append(f"{count_0}")
-            results.append(" ".join(["0"] * (n // 2)))
-        elif count_1 >= n // 2:
-            # We can keep n//2 ones
-            results.append(f"{count_1}")
-            results.append(" ".join(["1"] * (n // 2)))
-        else:
-            # We can keep n//2 of each
-            results.append(f"{n}")
-            results.append(" ".join(map(str, a)))
-    
-    sys.stdout.write("\n".join(results) + "\n")
+        if remaining <= 0:
+            break
 
-if __name__ == "__main__":
-    solve()
+    if remaining > 0:
+        print("NO")
+    else:
+        print("YES")
+        print(' '.join(map(str, a)))
+
+# Example usage
+n, k = map(int, input().split())
+solve_problems(n, k)

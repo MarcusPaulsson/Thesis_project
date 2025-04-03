@@ -1,47 +1,31 @@
-def find_permutation(t, test_cases):
-    results = []
-    for _ in range(t):
-        n = test_cases[_][0]
-        q = test_cases[_][1]
-        
-        used = set()
-        p = []
-        possible = True
-        
-        for i in range(n):
-            if q[i] > (i + 1):  # Check if q[i] is greater than the current index + 1
-                possible = False
-                break
-            
-            if i == 0 or q[i] != q[i - 1]:
-                p.append(q[i])
-                used.add(q[i])
-            else:
-                # We need to find the smallest unused number
-                for num in range(1, n + 1):
-                    if num not in used:
-                        p.append(num)
-                        used.add(num)
-                        break
-        
-        if possible:
-            results.append(" ".join(map(str, p)))
-        else:
-            results.append("-1")
+def max_removable_length(s, t):
+    n, m = len(s), len(t)
     
-    return results
+    # Create arrays to store the first position of each character in t
+    left = [-1] * m
+    right = [-1] * m
 
-# Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    q = list(map(int, input().split()))
-    test_cases.append((n, q))
+    j = 0
+    for i in range(n):
+        if j < m and s[i] == t[j]:
+            left[j] = i
+            j += 1
 
-# Get results
-results = find_permutation(t, test_cases)
+    j = m - 1
+    for i in range(n - 1, -1, -1):
+        if j >= 0 and s[i] == t[j]:
+            right[j] = i
+            j -= 1
 
-# Print results
-for result in results:
-    print(result)
+    max_length = 0
+
+    for i in range(m - 1):
+        max_length = max(max_length, right[i + 1] - left[i] - 1)
+
+    max_length = max(max_length, right[0] + (n - left[m - 1] - 1))
+
+    return max_length
+
+s = input().strip()
+t = input().strip()
+print(max_removable_length(s, t))

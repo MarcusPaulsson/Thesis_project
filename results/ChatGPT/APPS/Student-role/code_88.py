@@ -1,30 +1,59 @@
-def is_possible_visible_pips(x):
-    # The minimum visible pips for one die is 14 (1 on top) and maximum is 20 (6 on top)
-    # For n dice, the number of visible pips can be calculated as:
-    # visible_pips = 14 + 7 * (n - 1), where n is the number of dice.
-    # The series produces values: 14, 21, 28, 35, ..., which is 14 + 7k for k >= 0.
+def can_construct_palindromic_matrix(n, nums):
+    from collections import Counter
     
-    if x < 14:
-        return False
-    # Check if (x - 14) is a multiple of 7
-    return (x - 14) % 7 == 0
-
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().split()
+    count = Counter(nums)
+    matrix = [[0] * n for _ in range(n)]
     
-    t = int(data[0])  # number of favourite integers
-    x_values = list(map(int, data[1:t + 1]))
+    # Count how many of each number we have
+    odd_count = 0
+    center_value = None
     
-    results = []
-    for x in x_values:
-        if is_possible_visible_pips(x):
-            results.append("YES")
+    for value, cnt in count.items():
+        if cnt % 4 != 0:
+            if cnt % 4 == 2:
+                odd_count += 1
+            elif cnt % 4 == 1:
+                odd_count += 1
+                center_value = value
+            odd_count += cnt // 4
         else:
-            results.append("NO")
-    
-    print("\n".join(results))
+            odd_count += cnt // 4
+            
+    if (n % 2 == 1 and odd_count > 1) or (n % 2 == 0 and odd_count > 0):
+        return "NO"
 
-if __name__ == "__main__":
-    main()
+    # Fill the matrix in a palindromic way
+    i, j = 0, 0
+    for value, cnt in count.items():
+        while cnt > 0:
+            if i < n // 2:
+                matrix[i][j] = value
+                matrix[n - 1 - i][j] = value
+                matrix[i][n - 1 - j] = value
+                matrix[n - 1 - i][n - 1 - j] = value
+                cnt -= 4
+                if j < n - 1:
+                    j += 1
+                else:
+                    j = 0
+                    i += 1
+            else:
+                if n % 2 == 1 and i == n // 2 and j == n // 2:
+                    matrix[i][j] = center_value
+                    cnt -= 1
+                break
+
+    return "YES", matrix
+
+# Read input
+n = int(input())
+nums = list(map(int, input().split()))
+
+result = can_construct_palindromic_matrix(n, nums)
+
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    for row in result[1]:
+        print(" ".join(map(str, row)))

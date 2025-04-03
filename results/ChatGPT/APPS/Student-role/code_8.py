@@ -1,60 +1,37 @@
-def max_chess_score(t, test_cases):
-    results = []
+def min_draws_needed(tiles):
+    suits = {'m': [], 'p': [], 's': []}
     
-    for n, k, s in test_cases:
-        current_score = 0
-        win_streaks = []
-        
-        # Calculate current score and identify segments of W's
-        i = 0
-        while i < n:
-            if s[i] == 'W':
-                streak = 0
-                while i < n and s[i] == 'W':
-                    streak += 1
-                    i += 1
-                win_streaks.append(streak)
-                current_score += 1 + (streak - 1) * 2
-            else:
-                i += 1
-        
-        # Calculate potential score gains by changing L's to W's
-        gain = []
-        for i in range(len(win_streaks) + 1):
-            if i > 0:
-                gain.append(win_streaks[i-1])  # potential gain from turning the L before the first W into W
+    # Parse the input tiles
+    for tile in tiles:
+        number = int(tile[0])
+        suit = tile[1]
+        suits[suit].append(number)
 
-            if i < len(win_streaks):
-                if i + 1 < len(win_streaks):
-                    gain.append(win_streaks[i] + win_streaks[i + 1])  # potential gain from merging two W streaks
-        
-        # Sort gains in descending order to use the most impactful changes first
-        gain.sort(reverse=True)
-        
-        # Calculate the maximum score after changing at most k outcomes
-        max_score = current_score
-        for i in range(min(k, len(gain))):
-            max_score += gain[i]
-        
-        results.append(max_score)
+    # Check for koutsu (triplet)
+    for suit in suits.values():
+        if len(suit) >= 3 and len(set(suit)) == 1:
+            return 0  # Already has a koutsu
+
+    # Check for shuntsu (sequence)
+    for suit in suits.values():
+        suit.sort()
+        for i in range(len(suit) - 1):
+            if suit[i] + 1 == suit[i + 1]:
+                # Found a sequence, no need to draw
+                return 0
+            if i < len(suit) - 2 and suit[i] + 2 == suit[i + 2]:
+                # Found a gap that can be filled with one tile
+                return 1
     
-    return results
+    # Check for missing tiles to create a shuntsu
+    for suit in suits.values():
+        if len(suit) == 2:
+            # Check if we can fill the gap for a shuntsu
+            if abs(suit[0] - suit[1]) == 2:
+                return 1  # Need to draw one tile to complete the sequence
 
-# Input reading and function call
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+    return 2  # Otherwise, we need to draw two tiles
 
-t = int(data[0])
-test_cases = []
-
-for i in range(1, 2 * t, 2):
-    n, k = map(int, data[i].split())
-    s = data[i + 1]
-    test_cases.append((n, k, s))
-
-results = max_chess_score(t, test_cases)
-
-# Print results
-for result in results:
-    print(result)
+# Input reading
+tiles = input().strip().split()
+print(min_draws_needed(tiles))

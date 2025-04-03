@@ -1,55 +1,51 @@
-def min_cost_to_clear_mines(test_cases):
-    results = []
+def find_spanning_tree(n, m, D, edges):
+    from collections import defaultdict
     
-    for a, b, mine_map in test_cases:
-        n = len(mine_map)
-        segments = []
-        i = 0
-        
-        # Identify segments of mines
-        while i < n:
-            if mine_map[i] == '1':
-                start = i
-                while i < n and mine_map[i] == '1':
-                    i += 1
-                segments.append((start, i - 1))  # Store the start and end of the segment
-            else:
-                i += 1
-        
-        # If there are no segments, cost is 0
-        if not segments:
-            results.append(0)
-            continue
-        
-        # Calculate minimum cost
-        total_cost = 0
-        last_segment_end = segments[0][1]
-        
-        # Cost for the first segment
-        total_cost += a
-        
-        # Evaluate gaps between segments
-        for j in range(1, len(segments)):
-            gap = segments[j][0] - last_segment_end - 1  # Gap between segments
-            if gap > 0:
-                # Check if placing a mine is cheaper than activating
-                total_cost += min(a, gap * b)  # Activate the next segment or fill the gap
-            total_cost += a  # Cost to activate the current segment
-            last_segment_end = segments[j][1]
-        
-        results.append(total_cost)
+    # Build the graph
+    graph = defaultdict(list)
+    for v, u in edges:
+        graph[v].append(u)
+        graph[u].append(v)
     
-    return results
+    # Check if vertex 1 has enough neighbors
+    if len(graph[1]) < D:
+        print("NO")
+        return
+    
+    # Prepare to collect the spanning tree edges
+    spanning_tree_edges = []
+    visited = set()
+    
+    # Start with vertex 1
+    visited.add(1)
+    
+    # Add edges from vertex 1 to its D neighbors
+    for i in range(D):
+        neighbor = graph[1][i]
+        spanning_tree_edges.append((1, neighbor))
+        visited.add(neighbor)
+
+    # Now we need to add edges from other vertices
+    # Use DFS or BFS to add edges to the spanning tree
+    def dfs(v):
+        for u in graph[v]:
+            if u not in visited:
+                visited.add(u)
+                spanning_tree_edges.append((v, u))
+                dfs(u)
+    
+    # Start DFS from one of the neighbors of 1
+    dfs(graph[1][0])
+    
+    # Check if we have exactly n-1 edges
+    if len(spanning_tree_edges) == n - 1:
+        print("YES")
+        for v, u in spanning_tree_edges:
+            print(v, u)
+    else:
+        print("NO")
 
 # Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    a, b = map(int, input().split())
-    mine_map = input().strip()
-    test_cases.append((a, b, mine_map))
-
-# Get results and print
-results = min_cost_to_clear_mines(test_cases)
-for result in results:
-    print(result)
+n, m, D = map(int, input().split())
+edges = [tuple(map(int, input().split())) for _ in range(m)]
+find_spanning_tree(n, m, D, edges)

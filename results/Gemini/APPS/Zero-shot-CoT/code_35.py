@@ -1,19 +1,16 @@
 def solve():
-    n = int(input())
-    e = list(map(int, input().split()))
-    e.sort()
+    n, a, b = map(int, input().split())
     
-    groups = 0
-    current_group_size = 0
+    ans = 0
+    for i in range(1, n):
+        if i > a or n - i > b:
+            continue
+        
+        x1 = a // i
+        x2 = b // (n - i)
+        
+        ans = max(ans, min(x1, x2))
     
-    for inexperience in e:
-        current_group_size += 1
-        if current_group_size >= inexperience:
-            groups += 1
-            current_group_size = 0
+    print(ans)
     
-    print(groups)
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

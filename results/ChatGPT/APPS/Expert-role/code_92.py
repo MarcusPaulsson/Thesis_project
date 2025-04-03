@@ -1,30 +1,13 @@
-def can_transform(q, queries):
-    results = []
-    for i in range(q):
-        s = queries[i][0]
-        t = queries[i][1]
-        
-        if s == t:
-            results.append("YES")
-            continue
-        
-        # Check if both strings have at least one common character
-        common_characters = set(s) & set(t)
-        
-        if common_characters:
-            results.append("YES")
-        else:
-            results.append("NO")
-    
-    return results
+x = float(input().strip())
 
-# Read input
-q = int(input())
-queries = [tuple(input().strip() for _ in range(2)) for _ in range(q)]
+# Calculate the first integer a (1 to 10)
+a = int(x) + 1
 
-# Get results
-results = can_transform(q, queries)
+# Calculate the second integer b (1 to 10)
+b = round((x - a) * 10) % 10 + 1
 
-# Print results
-for result in results:
-    print(result)
+# Adjust if b is 0
+if b == 0:
+    b = 1
+
+print(a, b)

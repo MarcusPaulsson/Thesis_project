@@ -1,15 +1,18 @@
-def is_palindrome(s):
-    return s == s[::-1]
+def can_complete_projects(n, r, projects):
+    projects.sort(key=lambda x: x[0])  # Sort projects by required rating
 
-s = input().strip()
+    for a, b in projects:
+        if r < a:  # If current rating is less than required for the project
+            return "NO"
+        r += b  # Update rating after completing the project
+        if r < 0:  # Rating should not fall below zero
+            return "NO"
+    
+    return "YES"
 
-if not is_palindrome(s):
-    print(len(s))
-else:
-    # Check for the longest non-palindromic substring
-    for i in range(len(s)):
-        for j in range(len(s), i, -1):
-            if not is_palindrome(s[i:j]):
-                print(j - i)
-                exit()
-    print(0)
+# Input reading
+n, r = map(int, input().split())
+projects = [tuple(map(int, input().split())) for _ in range(n)]
+
+# Output result
+print(can_complete_projects(n, r, projects))

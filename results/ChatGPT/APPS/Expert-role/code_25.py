@@ -1,75 +1,37 @@
-def find_cake_and_order(t, test_cases):
-    results = []
+def create_symmetric_matrix(n, k):
+    if k > n * n or k % 2 != 0 and n % 2 == 0:
+        return -1
     
-    for case in test_cases:
-        n, pieces = case
-        edges = {}
-        piece_indices = []
+    matrix = [[0] * n for _ in range(n)]
+    
+    for i in range(n):
+        if k <= 0:
+            break
+        if k >= 2:  # Place 1s on the diagonal and the symmetric position
+            matrix[i][i] = 1
+            k -= 1
         
-        for index, (a, b, c) in enumerate(pieces):
-            piece_indices.append(index + 1)
-            for u, v in [(a, b), (b, c), (c, a)]:
-                if u not in edges:
-                    edges[u] = set()
-                edges[u].add(v)
-
-        # Find the order of vertices
-        start_vertex = next(iter(edges))
-        order = []
-        visited = set()
-        current_vertex = start_vertex
-        
-        while len(order) < n:
-            order.append(current_vertex)
-            visited.add(current_vertex)
-            next_vertex = None
+        for j in range(i + 1, n):
+            if k >= 2:  # Place 1s in pairs
+                matrix[i][j] = 1
+                matrix[j][i] = 1
+                k -= 2
             
-            for neighbor in edges[current_vertex]:
-                if neighbor not in visited:
-                    next_vertex = neighbor
-                    break
-            
-            if next_vertex is None:
+            if k <= 0:
                 break
-            
-            current_vertex = next_vertex
-        
-        # Construct the order of cutting pieces
-        cut_order = []
-        for index, (a, b, c) in enumerate(pieces):
-            if a in order and b in order and c in order:
-                cut_order.append(index + 1)
 
-        results.append((order, cut_order))
-    
-    output = []
-    for order, cut_order in results:
-        output.append(" ".join(map(str, order)))
-        output.append(" ".join(map(str, cut_order)))
-    
-    return output
+    if k > 0:
+        return -1
+
+    return matrix
 
 
-# Read input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+# Input reading
+n, k = map(int, input().split())
+result = create_symmetric_matrix(n, k)
 
-t = int(data[0])
-test_cases = []
-
-line_index = 1
-for _ in range(t):
-    n = int(data[line_index])
-    pieces = []
-    for i in range(n - 2):
-        pieces.append(tuple(map(int, data[line_index + 1 + i].split())))
-    test_cases.append((n, pieces))
-    line_index += n - 1 + 1
-
-# Get results
-results = find_cake_and_order(t, test_cases)
-
-# Print results
-for line in results:
-    print(line)
+if result == -1:
+    print(-1)
+else:
+    for row in result:
+        print(' '.join(map(str, row)))

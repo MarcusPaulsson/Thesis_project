@@ -1,38 +1,49 @@
 def solve():
-    n, k, d1, d2 = map(int, input().split())
+    n, m, k = map(int, input().split())
+    a = []
+    for _ in range(n):
+        a.append(list(map(int, input().split())))
 
-    for s1 in [-1, 1]:
-        for s2 in [-1, 1]:
-            x = (k - s1 * d1 - s2 * d2) / 3
-            if x < 0 or int(x) != x:
-                continue
-            
-            w1 = x + s1 * d1
-            w2 = x
-            w3 = x + s2 * d2
-            
-            if w1 < 0 or w2 < 0 or w3 < 0:
-                continue
-            
-            max_wins = max(w1, w2, w3)
-            
-            rem1 = max_wins - w1
-            rem2 = max_wins - w2
-            rem3 = max_wins - w3
-            
-            remaining_games = n // 3 * 3 - k
-            
-            if rem1 + rem2 + rem3 <= remaining_games and (remaining_games - (rem1 + rem2 + rem3)) % 3 == 0:
-                if n % 3 == 0:
-                  print("yes")
-                  return
-                else:
-                  
-                  print("no")
-                  return
+    dp = {}
+    def get_dp(row_idx, rem):
+        if row_idx == n:
+            return 0 if rem == 0 else -float('inf')
+        
+        if (row_idx, rem) in dp:
+            return dp[(row_idx, rem)]
 
-    print("no")
+        max_sum = -float('inf')
+        
+        # Option 1: Don't choose any element from the current row
+        max_sum = max(max_sum, get_dp(row_idx + 1, rem))
 
-t = int(input())
-for _ in range(t):
-    solve()
+        # Option 2: Choose some elements from the current row
+        row = a[row_idx]
+        max_elements = m // 2
+        
+        row_dp = {}
+        def get_row_dp(col_idx, count, row_rem):
+            if col_idx == m:
+                return 0 if count <= max_elements else -float('inf')
+            
+            if (col_idx, count, row_rem) in row_dp:
+                return row_dp[(col_idx, count, row_rem)]
+            
+            # Option 1: Don't choose the current element
+            current_max = get_row_dp(col_idx + 1, count, row_rem)
+            
+            # Option 2: Choose the current element
+            current_max = max(current_max, row[col_idx] + get_row_dp(col_idx + 1, count + 1, (row_rem - row[col_idx]) % k))
+            
+            row_dp[(col_idx, count, row_rem)] = current_max
+            return current_max
+        
+        row_result = get_row_dp(0, 0, rem)
+        max_sum = max(max_sum, row_result + get_dp(row_idx + 1, rem))
+
+        dp[(row_idx, rem)] = max_sum
+        return max_sum
+
+    print(get_dp(0, 0))
+
+solve()

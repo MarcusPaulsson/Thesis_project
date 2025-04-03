@@ -1,28 +1,26 @@
-def can_construct_symmetric_square(n, m, tiles):
-    if m % 2 != 0:
-        return "NO"
-    
-    left_top = set()
-    right_bottom = set()
-    
-    for tile in tiles:
-        left_top.add((tile[0][0], tile[0][1]))  # top-left corner
-        right_bottom.add((tile[1][0], tile[1][1]))  # bottom-right corner
-    
-    # Checking if there exists a matching pair
-    for lt in left_top:
-        if (lt[1], lt[0]) in right_bottom:
-            return "YES"
-    
-    return "NO"
+import math
 
-t = int(input())
-for _ in range(t):
-    n, m = map(int, input().split())
-    tiles = []
-    for __ in range(n):
-        tile = [list(map(int, input().split())), list(map(int, input().split()))]
-        tiles.append(tile)
-    
-    result = can_construct_symmetric_square(n, m, tiles)
-    print(result)
+# Read input
+x, y, z = map(float, input().strip().split())
+
+# Define all expressions
+expressions = [
+    (x**(y**z), 'x^y^z'),
+    (x**(z**y), 'x^z^y'),
+    ((x**y)**z, '(x^y)^z'),
+    ((x**z)**y, '(x^z)^y'),
+    (y**(x**z), 'y^x^z'),
+    (y**(z**x), 'y^z^x'),
+    ((y**x)**z, '(y^x)^z'),
+    ((y**z)**x, '(y^z)^x'),
+    (z**(x**y), 'z^x^y'),
+    (z**(y**x), 'z^y^x'),
+    ((z**x)**y, '(z^x)^y'),
+    ((z**y)**x, '(z^y)^x')
+]
+
+# Find the maximum value and the corresponding index
+max_value, max_expression = max(expressions, key=lambda item: item[0])
+
+# Print the corresponding expression with the maximum value
+print(max_expression)

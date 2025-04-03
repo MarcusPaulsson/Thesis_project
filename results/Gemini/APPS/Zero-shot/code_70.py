@@ -1,46 +1,57 @@
 def solve():
-    n, k = map(int, input().split())
-    s = input()
-    
-    ans = 0
-    for i in range(k // 2):
-        counts = {}
-        for j in range(0, n, k):
-            char1 = s[i + j]
-            char2 = s[k - 1 - i + j]
-            
-            if char1 not in counts:
-                counts[char1] = 0
-            counts[char1] += 1
-            
-            if char2 not in counts:
-                counts[char2] = 0
-            counts[char2] += 1
-        
-        total_chars = sum(counts.values())
-        max_count = 0
-        for count in counts.values():
-            max_count = max(max_count, count)
-        
-        ans += total_chars - max_count
-    
-    if k % 2 == 1:
-        counts = {}
-        for j in range(0, n, k):
-            char = s[k // 2 + j]
-            if char not in counts:
-                counts[char] = 0
-            counts[char] += 1
-        
-        total_chars = sum(counts.values())
-        max_count = 0
-        for count in counts.values():
-            max_count = max(max_count, count)
-        
-        ans += total_chars - max_count
-    
-    print(ans)
+  n, m, D = map(int, input().split())
+  edges = []
+  for _ in range(m):
+    edges.append(list(map(int, input().split())))
 
-t = int(input())
-for _ in range(t):
-    solve()
+  def check_degree(tree_edges):
+    degree = 0
+    for u, v in tree_edges:
+      if u == 1 or v == 1:
+        degree += 1
+    return degree
+
+  def is_connected(tree_edges):
+    if not tree_edges:
+      return False
+
+    adj = [[] for _ in range(n + 1)]
+    for u, v in tree_edges:
+      adj[u].append(v)
+      adj[v].append(u)
+
+    visited = [False] * (n + 1)
+    q = [1]
+    visited[1] = True
+    count = 0
+    while q:
+      u = q.pop(0)
+      count += 1
+      for v in adj[u]:
+        if not visited[v]:
+          visited[v] = True
+          q.append(v)
+    return count == n
+
+  def find_spanning_tree(edges, D):
+    import itertools
+    for i in range(1 << m):
+      tree_edges = []
+      for j in range(m):
+        if (i >> j) & 1:
+          tree_edges.append(edges[j])
+
+      if len(tree_edges) == n - 1 and is_connected(tree_edges) and check_degree(tree_edges) == D:
+        return tree_edges
+    return None
+
+  spanning_tree = find_spanning_tree(edges, D)
+
+  if spanning_tree:
+    print("YES")
+    for u, v in spanning_tree:
+      print(u, v)
+  else:
+    print("NO")
+
+solve()

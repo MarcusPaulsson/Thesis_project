@@ -1,74 +1,44 @@
 def solve():
-  n, k = map(int, input().split())
-  s = input()
-  
-  wins = 0
-  for char in s:
-    if char == 'W':
-      wins += 1
-  
-  if wins + k >= n:
-    print(2 * n - 1)
-    return
-  
-  if wins == 0:
-    if k == 0:
-      print(0)
-    else:
-      print(2 * k - 1)
-    return
-  
-  
-  
-  gaps = []
-  start = -1
-  end = -1
-  
-  for i in range(n):
-    if s[i] == 'W':
-      if start == -1:
-        start = i
-      end = i
-  
-  
-  curr_gap = 0
-  for i in range(start + 1, end + 1):
-    if s[i] == 'L':
-      curr_gap += 1
-    else:
-      if curr_gap > 0:
-        gaps.append(curr_gap)
-        curr_gap = 0
-  
-  if curr_gap > 0:
-      gaps.append(curr_gap)
+    tiles = input().split()
+    
+    def check_mentsu(hand):
+        # Check for koutsu
+        counts = {}
+        for tile in hand:
+            counts[tile] = counts.get(tile, 0) + 1
+        for tile, count in counts.items():
+            if count >= 3:
+                return True
+        
+        # Check for shuntsu
+        suits = ['m', 'p', 's']
+        for suit in suits:
+            nums = []
+            for tile in hand:
+                if tile[1] == suit:
+                    nums.append(int(tile[0]))
+            nums.sort()
+            if len(nums) >= 3:
+                for i in range(len(nums) - 2):
+                    if nums[i+1] == nums[i] + 1 and nums[i+2] == nums[i] + 2:
+                        return True
+        
+        return False
+    
+    if check_mentsu(tiles):
+        print(0)
+        return
+    
+    # Try drawing 1 tile
+    for i in range(1, 10):
+        for suit in ['m', 'p', 's']:
+            new_tile = str(i) + suit
+            new_hand = tiles + [new_tile]
+            if check_mentsu(new_hand):
+                print(1)
+                return
+    
+    # Try drawing 2 tiles
+    print(2)
 
-  
-  gaps.sort()
-  
-  score = 0
-  
-  for i in range(n):
-    if s[i] == 'W':
-      if i > 0 and s[i-1] == 'W':
-        score += 2
-      else:
-        score += 1
-  
-  
-  for gap in gaps:
-    if k >= gap:
-      score += 2 * gap + 1
-      k -= gap
-    else:
-      score += 2 * k
-      k = 0
-      break
-
-  score += 2 * k
-  
-  print(score)
-
-t = int(input())
-for _ in range(t):
-  solve()
+solve()

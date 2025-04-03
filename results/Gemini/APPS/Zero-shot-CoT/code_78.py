@@ -1,34 +1,37 @@
 def solve():
-    n, m = map(int, input().split())
-    grid = [input() for _ in range(n)]
-
-    def check_cross(x, y):
-        for i in range(n):
-            if grid[i][y] == '.':
+    n = int(input())
+    s = input()
+    mod = 10**9 + 7
+    
+    def is_regular(seq):
+        balance = 0
+        for char in seq:
+            if char == '(':
+                balance += 1
+            else:
+                balance -= 1
+            if balance < 0:
                 return False
-        for j in range(m):
-            if grid[x][j] == '.':
-                return False
-        return True
+        return balance == 0
 
-    def calculate_cost(x, y):
-        cost = 0
-        for i in range(n):
-            if grid[i][y] == '.':
-                cost += 1
-        for j in range(m):
-            if grid[x][j] == '.':
-                cost += 1
-        return cost
+    def count_regular_sequences(n, s):
+        count = 0
+        
+        def generate_sequences(current_seq, open_count, close_count):
+            nonlocal count
+            if len(current_seq) == 2 * n:
+                if is_regular(current_seq) and s in current_seq:
+                    count = (count + 1) % mod
+                return
+            
+            if open_count < n:
+                generate_sequences(current_seq + '(', open_count + 1, close_count)
+            if close_count < open_count:
+                generate_sequences(current_seq + ')', open_count, close_count + 1)
 
-    min_cost = float('inf')
-    for x in range(n):
-        for y in range(m):
-            cost = calculate_cost(x, y)
-            min_cost = min(min_cost, cost)
+        generate_sequences("", 0, 0)
+        return count
 
-    print(min_cost)
-
-q = int(input())
-for _ in range(q):
-    solve()
+    print(count_regular_sequences(n, s))
+    
+solve()

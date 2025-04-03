@@ -1,40 +1,9 @@
-def find_maximum_subsequence(t, test_cases):
-    results = []
-    
-    for n, p in test_cases:
-        # Initialize variables to store the best subsequence
-        best_subsequence = []
-        
-        # We will always take the first and last element of the permutation
-        best_subsequence.append(p[0])
-        best_subsequence.append(p[-1])
-        
-        # Append the result for this test case
-        results.append((len(best_subsequence), best_subsequence))
-    
-    return results
+n = int(input())
 
-# Reading input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
-t = int(data[0])
-test_cases = []
+# Calculate maximum days off
+max_days_off = (n // 7) * 2 + min(2, n % 7)
 
-line_index = 1
-for _ in range(t):
-    n = int(data[line_index])
-    p = list(map(int, data[line_index + 1].split()))
-    test_cases.append((n, p))
-    line_index += 2
+# Calculate minimum days off
+min_days_off = 0 if n < 5 else (n // 7) * 2 + (1 if n % 7 >= 5 else 0)
 
-# Finding the results
-results = find_maximum_subsequence(t, test_cases)
-
-# Outputting results
-output = []
-for k, subsequence in results:
-    output.append(f"{k}")
-    output.append(" ".join(map(str, subsequence)))
-
-print("\n".join(output))
+print(min_days_off, max_days_off)

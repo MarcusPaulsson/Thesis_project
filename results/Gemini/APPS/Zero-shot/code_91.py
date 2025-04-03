@@ -1,36 +1,28 @@
 def solve():
-  n = int(input())
-  q = list(map(int, input().split()))
-
-  p = [0] * n
-  used = [False] * (n + 1)
-
-  p[0] = q[0]
-  used[p[0]] = True
-
-  for i in range(1, n):
-    if q[i] > q[i-1]:
-      p[i] = q[i]
-      used[p[i]] = True
-    else:
-      found = False
-      for j in range(1, q[i]):
-        if not used[j]:
-          p[i] = j
-          used[j] = True
-          found = True
-          break
-      if not found:
-        print("-1")
-        return
-
-  if len(set(p)) != n:
-    print("-1")
-    return
-
-  print(*p)
-
-
-t = int(input())
-for _ in range(t):
-  solve()
+    s = input()
+    t = input()
+    n = len(s)
+    m = len(t)
+    
+    ans = 0
+    for i in range(n + 1):
+        for j in range(i, n + 1):
+            temp = ""
+            if i > 0:
+                temp += s[:i]
+            if j < n:
+                temp += s[j:]
+                
+            k = 0
+            l = 0
+            
+            while k < len(temp) and l < m:
+                if temp[k] == t[l]:
+                    l += 1
+                k += 1
+                
+            if l == m:
+                ans = max(ans, j - i)
+    print(ans)
+    
+solve()

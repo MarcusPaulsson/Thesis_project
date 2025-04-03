@@ -1,17 +1,4 @@
-def solve():
-    n, k = map(int, input().split())
-    a = list(map(int, input().split()))
+import math
 
-    distinct_elements = sorted(list(set(a)))
-    if len(distinct_elements) > k:
-        print(-1)
-        return
-
-    b = distinct_elements + [1] * (k - len(distinct_elements))
-    
-    print(n * k)
-    print(*(b * n))
-
-t = int(input())
-for _ in range(t):
-    solve()
+a = int(input())
+print(int(math.ceil(math.log(a, 2))))

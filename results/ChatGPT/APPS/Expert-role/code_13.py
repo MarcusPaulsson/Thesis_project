@@ -1,28 +1,62 @@
-def min_days_to_repair(T, test_cases):
-    results = []
-    for n, g, b in test_cases:
-        # Calculate the minimum number of high-quality pavement needed
-        min_high_quality = (n + 1) // 2
-        
-        # Calculate how many complete cycles of good and bad days are needed
-        full_cycles = (min_high_quality - 1) // g
-        remaining_good_days = min_high_quality - full_cycles * g
-        
-        # Calculate total days required
-        total_days = full_cycles * (g + b)
-        if remaining_good_days > 0:
-            total_days += remaining_good_days
-        total_days += (n - min_high_quality)  # add remaining units of low-quality days
-        
-        results.append(max(total_days, n))
-    
-    return results
+from collections import defaultdict, deque
+import sys
 
-# Read input
-T = int(input())
-test_cases = [tuple(map(int, input().split())) for _ in range(T)]
+input = sys.stdin.read
+data = input().splitlines()
 
-# Calculate and print results
-results = min_days_to_repair(T, test_cases)
-for result in results:
-    print(result)
+n, k = map(int, data[0].split())
+main_courses = list(map(int, data[1].split()))
+
+# Dependency graph and in-degree count
+dependencies = defaultdict(list)
+in_degree = [0] * (n + 1)
+
+# Read course dependencies
+for i in range(2, n + 2):
+    line = list(map(int, data[i].split()))
+    t_i = line[0]
+    for j in range(1, t_i + 1):
+        dependencies[line[j]].append(i - 1)  # course i-2 depends on line[j]
+        in_degree[i - 1] += 1  # Increase in-degree for course i-2
+
+# Topological sorting using Kahn's algorithm
+queue = deque()
+order = []
+passed_courses = set()
+
+# Start with courses with no dependencies
+for i in range(1, n + 1):
+    if in_degree[i - 1] == 0:
+        queue.append(i)
+
+while queue:
+    course = queue.popleft()
+    order.append(course)
+    passed_courses.add(course)
+
+    # Reduce in-degree of dependent courses
+    for dependent in dependencies[course]:
+        in_degree[dependent] -= 1
+        if in_degree[dependent] == 0:
+            queue.append(dependent + 1)
+
+# Check if all main courses can be passed
+if not all(course in passed_courses for course in main_courses):
+    print(-1)
+else:
+    # We need to ensure we pass the main courses in the order needed
+    result = []
+    for course in order:
+        if course in main_courses:
+            result.append(course)
+            main_courses.remove(course)
+        if not main_courses:
+            break
+
+    # Include other passed courses if required
+    for course in order:
+        if course not in result and len(result) < len(passed_courses):
+            result.append(course)
+
+    print(len(result))
+    print(" ".join(map(str, result)))

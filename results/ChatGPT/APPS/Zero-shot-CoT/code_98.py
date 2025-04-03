@@ -1,18 +1,13 @@
-def max_perfect_teams(q, queries):
-    results = []
-    for c, m, x in queries:
-        # The maximum number of teams we can form considering the constraints
-        max_teams = min(c, m, (c + m + x) // 3)
-        results.append(max_teams)
-    return results
+def min_moves_to_reach_n(N):
+    min_moves = float('inf')
+    
+    for i in range(1, int(N**0.5) + 1):
+        if N % i == 0:
+            j = N // i
+            moves = (i - 1) + (j - 1)  # (i-1) for row moves, (j-1) for column moves
+            min_moves = min(min_moves, moves)
+    
+    return min_moves
 
-# Read input
-q = int(input())
-queries = [tuple(map(int, input().split())) for _ in range(q)]
-
-# Get results
-results = max_perfect_teams(q, queries)
-
-# Print results
-for result in results:
-    print(result)
+N = int(input())
+print(min_moves_to_reach_n(N))

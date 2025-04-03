@@ -1,20 +1,24 @@
-def count_pairs(n, m):
-    count_x = [0] * 5
-    count_y = [0] * 5
+n = int(input())
+q = list(map(int, input().split()))
 
-    for i in range(1, n + 1):
-        count_x[i % 5] += 1
+# Initialize the permutation array
+p = [0] * n
+p[0] = 0  # Start from an arbitrary point, we will adjust later
 
-    for j in range(1, m + 1):
-        count_y[j % 5] += 1
+# Build the prefix sums based on q
+for i in range(1, n):
+    p[i] = p[i - 1] + q[i - 1]
 
-    result = 0
-    for i in range(5):
-        result += count_x[i] * count_y[(5 - i) % 5]
+# Find the minimum value in p to adjust to a valid permutation
+min_p = min(p)
 
-    return result
+# Adjust all elements to ensure the smallest value is 1
+adjustment = 1 - min_p
+for i in range(n):
+    p[i] += adjustment
 
-# Input
-n, m = map(int, input().split())
-# Output
-print(count_pairs(n, m))
+# Check if the adjusted array is a valid permutation
+if len(set(p)) == n and all(1 <= x <= n for x in p):
+    print(' '.join(map(str, p)))
+else:
+    print(-1)

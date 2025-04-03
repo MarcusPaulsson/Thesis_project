@@ -1,24 +1,33 @@
 def solve():
-    n, m = map(int, input().split())
-    grid = [input() for _ in range(n)]
+    n = int(input())
+    s = input()
+    mod = 10**9 + 7
+    
+    def is_regular(seq):
+        balance = 0
+        for char in seq:
+            if char == '(':
+                balance += 1
+            else:
+                balance -= 1
+            if balance < 0:
+                return False
+        return balance == 0
 
-    ans = float('inf')
+    def count_regular_sequences(n, s):
+        count = 0
+        for i in range(1 << (2 * n)):
+            seq = ""
+            for j in range(2 * n):
+                if (i >> j) & 1:
+                    seq += '('
+                else:
+                    seq += ')'
+            
+            if is_regular(seq) and s in seq:
+                count = (count + 1) % mod
+        return count
 
-    for r in range(n):
-        for c in range(m):
-            cost = 0
-            for i in range(m):
-                if grid[r][i] == '.':
-                    cost += 1
-            for i in range(n):
-                if grid[i][c] == '.':
-                    cost += 1
-            if grid[r][c] == '.':
-                cost -= 1
-            ans = min(ans, cost)
+    print(count_regular_sequences(n, s))
 
-    print(ans)
-
-q = int(input())
-for _ in range(q):
-    solve()
+solve()

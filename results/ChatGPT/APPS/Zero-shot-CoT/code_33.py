@@ -1,25 +1,39 @@
-def minimize_final_number(t, test_cases):
-    results = []
-    
-    for n in test_cases:
-        results.append(str((n + 1) // 2))  # Minimum final number is (n + 1) // 2
-        
-        # Create the operations
-        current_numbers = list(range(1, n + 1))
-        
-        while len(current_numbers) > 1:
-            # Always pair the largest with the smallest
-            a = current_numbers.pop()   # Largest
-            b = current_numbers.pop(0)  # Smallest
-            new_number = (a + b + 1) // 2  # Rounded up
-            results.append(f"{b} {a}")  # Store the operation
-            current_numbers.append(new_number)  # Add new number back to list
-            current_numbers.sort()  # Maintain order for the next operation
-    
-    return "\n".join(results)
+def count_integers(a1, b1, a2, b2, L, R):
+    from math import gcd
 
-# Input processing
-t = int(input())
-test_cases = [int(input().strip()) for _ in range(t)]
-result = minimize_final_number(t, test_cases)
+    # Calculate the step size and the offset
+    step = abs(a1 * a2 // gcd(a1, a2))
+    
+    # Calculate the starting points for both sequences
+    start1 = (L - b1 + a1 - 1) // a1 * a1 + b1
+    start2 = (L - b2 + a2 - 1) // a2 * a2 + b2
+
+    # Calculate the first common point that is >= L
+    if start1 < L:
+        start1 += a1
+    if start2 < L:
+        start2 += a2
+
+    # Find the first common value
+    if start1 == start2:
+        first_common = start1
+    else:
+        first_common = max(start1, start2)
+        while (first_common - b1) % a1 != 0 or (first_common - b2) % a2 != 0:
+            first_common += step
+
+    # Now we need to find the last common value within [L, R]
+    if first_common > R:
+        return 0
+
+    last_common = first_common + ((R - first_common) // step) * step
+
+    # Calculate the number of integers
+    return (last_common - first_common) // step + 1
+
+# Read input
+a1, b1, a2, b2, L, R = map(int, input().split())
+# Get the result
+result = count_integers(a1, b1, a2, b2, L, R)
+# Print the result
 print(result)

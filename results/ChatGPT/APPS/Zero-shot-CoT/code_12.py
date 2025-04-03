@@ -1,29 +1,43 @@
-def can_transform(a, b):
-    n = len(a)
-    can_increase = False
-    can_decrease = False
+def max_beauty_with_swap(n, trophies):
+    max_length = 0
+    current_length = 0
+    segments = []
 
-    for i in range(n):
-        if a[i] == 1:
-            can_increase = True
-        elif a[i] == -1:
-            can_decrease = True
+    # Calculate current segments of G's
+    for trophy in trophies:
+        if trophy == 'G':
+            current_length += 1
+        else:
+            if current_length > 0:
+                segments.append(current_length)
+                max_length = max(max_length, current_length)
+            current_length = 0
+    if current_length > 0:
+        segments.append(current_length)
+        max_length = max(max_length, current_length)
 
-        if b[i] > a[i] and not can_increase:
-            return "NO"
-        if b[i] < a[i] and not can_decrease:
-            return "NO"
+    # If there are no G's
+    if max_length == 0:
+        return 0
 
-    return "YES"
+    # If we can swap one S with a G
+    if len(segments) > 1:
+        # We can connect two segments of G's with one S in between
+        for i in range(len(segments) - 1):
+            max_length = max(max_length, segments[i] + segments[i + 1])
+    
+    # If there is at least one S, we can potentially increase the max length by 1
+    if 'S' in trophies:
+        max_length += 1
 
-t = int(input())
-results = []
+    return max_length
 
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    b = list(map(int, input().split()))
-    result = can_transform(a, b)
-    results.append(result)
+# Read input
+n = int(input().strip())
+trophies = input().strip()
 
-print("\n".join(results))
+# Get the result
+result = max_beauty_with_swap(n, trophies)
+
+# Print the result
+print(result)

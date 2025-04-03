@@ -1,51 +1,25 @@
-def make_neat_and_clean(t, test_cases):
-    results = []
-    
-    for n, k, s in test_cases:
-        operations = []
-        # Start by creating a regular sequence with k prefixes
-        target = []
-        for i in range(k):
-            target.append('(')
-        for i in range(k):
-            target.append(')')
-        # Fill the rest with balanced pairs
-        for i in range(n // 2 - k):
-            target.append('(')
-            target.append(')')
-        
-        target = ''.join(target)
+n = int(input())
+a = list(map(int, input().split()))
 
-        # Find the operations to convert s to target
-        s = list(s)
-        for i in range(n):
-            if s[i] != target[i]:
-                # Find the position to swap with
-                for j in range(i + 1, n):
-                    if s[j] == target[i]:
-                        # Perform the reverse operation
-                        operations.append((i + 1, j + 1))
-                        s[i:j + 1] = s[i:j + 1][::-1]
-                        break
-        
-        results.append(operations)
-    
-    # Printing results
-    output = []
-    for operations in results:
-        output.append(str(len(operations)))
-        for l, r in operations:
-            output.append(f"{l} {r}")
-    
-    return "\n".join(output)
+distances = [0] * n
+last_zero_index = -1
 
-# Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n, k = map(int, input().split())
-    s = input().strip()
-    test_cases.append((n, k, s))
+# Forward pass to find distances to the nearest zero on the left
+for i in range(n):
+    if a[i] == 0:
+        last_zero_index = i
+        distances[i] = 0
+    else:
+        if last_zero_index != -1:
+            distances[i] = i - last_zero_index
 
-# Get results and print
-print(make_neat_and_clean(t, test_cases))
+# Backward pass to find distances to the nearest zero on the right
+last_zero_index = -1
+for i in range(n - 1, -1, -1):
+    if a[i] == 0:
+        last_zero_index = i
+    else:
+        if last_zero_index != -1:
+            distances[i] = min(distances[i], last_zero_index - i)
+
+print(' '.join(map(str, distances)))

@@ -1,50 +1,34 @@
-def solve():
-    import sys
-    from collections import defaultdict
+def max_accordion_length(s):
+    n = len(s)
+    left_bracket_index = -1
+    right_bracket_index = -1
 
-    input = sys.stdin.read
-    data = input().splitlines()
+    for i in range(n):
+        if s[i] == '[':
+            left_bracket_index = i
+        elif s[i] == ']':
+            right_bracket_index = i
     
-    index = 0
-    t = int(data[index])
-    index += 1
-    results = []
+    if left_bracket_index == -1 or right_bracket_index == -1 or left_bracket_index >= right_bracket_index:
+        return -1
 
-    for _ in range(t):
-        n = int(data[index])
-        index += 1
-        
-        words = []
-        word_set = set()
-        reversals = []
-        for i in range(n):
-            word = data[index]
-            index += 1
-            
-            words.append(word)
-            word_set.add(word)
-            reversals.append((word[::-1], i + 1))  # (reversed word, original index)
+    colon_index_left = -1
+    colon_index_right = -1
 
-        reverse_map = defaultdict(int)
-        for word in words:
-            reverse_map[(word[0], word[-1])] += 1
-        
-        total_reversals = 0
-        to_reverse = []
+    for i in range(left_bracket_index + 1, right_bracket_index):
+        if s[i] == ':':
+            if colon_index_left == -1:
+                colon_index_left = i
+            colon_index_right = i
+    
+    if colon_index_left == -1 or colon_index_right == -1 or colon_index_left == colon_index_right:
+        return -1
 
-        for rev_word, orig_index in reversals:
-            if reverse_map[(rev_word[0], rev_word[-1])] > 0:
-                reverse_map[(rev_word[0], rev_word[-1])] -= 1
-                to_reverse.append(orig_index)
-                total_reversals += 1
+    vertical_lines_count = sum(1 for i in range(colon_index_left + 1, colon_index_right) if s[i] == '|')
 
-        if total_reversals == n:
-            results.append(f"{total_reversals}")
-            results.append(" ".join(map(str, to_reverse)))
-        else:
-            results.append("-1")
+    return 4 + vertical_lines_count  # 4 for the fixed characters in the accordion
 
-    print("\n".join(results))
-
-if __name__ == "__main__":
-    solve()
+# Read input
+s = input().strip()
+# Output the result
+print(max_accordion_length(s))

@@ -1,27 +1,11 @@
-def min_operations_to_alternating(t, test_cases):
-    results = []
-    for n, s in test_cases:
-        # Count the number of mismatches for both patterns
-        pattern1_mismatches = sum(1 for i in range(n) if s[i] != '01'[(i % 2)])
-        pattern2_mismatches = sum(1 for i in range(n) if s[i] != '10'[(i % 2)])
-        
-        # The number of operations needed is half the number of mismatches
-        min_operations = min(pattern1_mismatches, pattern2_mismatches) // 2
-        results.append(min_operations)
+def min_traps(m, x):
+    # To catch the x-mouse, we need to cover all reachable rooms.
+    # The number of unique rooms visited by the x-mouse is given by Euler's Totient Function.
+    # Since GCD(x, m) = 1, we can directly use m - 1 as the number of traps needed.
     
-    return results
+    return m - 1
 
 # Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    s = input().strip()
-    test_cases.append((n, s))
-
-# Get results
-results = min_operations_to_alternating(t, test_cases)
-
-# Print results
-for result in results:
-    print(result)
+m, x = map(int, input().split())
+# Output the result
+print(min_traps(m, x))

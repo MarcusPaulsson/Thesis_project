@@ -1,34 +1,54 @@
-def min_jars_to_empty(t, test_cases):
-    results = []
-    for n, jars in test_cases:
-        count_strawberry = jars.count(1)
-        count_blueberry = jars.count(2)
-        
-        # Calculate the difference
-        diff = abs(count_strawberry - count_blueberry)
-        
-        # The number of jars to empty to equalize
-        jars_to_empty = diff // 2
-        
-        # Total jars that would be left
-        total_jars_left = n - jars_to_empty
-        
-        # Minimum jars to eat to achieve equal count
-        results.append(total_jars_left * 2)
+from collections import defaultdict, deque
+
+def bfs(start, graph):
+    visited = [-1] * (n + 1)
+    visited[start] = 0
+    queue = deque([start])
+    farthest_node = start
     
-    return results
+    while queue:
+        node = queue.popleft()
+        for neighbor in graph[node]:
+            if visited[neighbor] == -1:
+                visited[neighbor] = visited[node] + 1
+                queue.append(neighbor)
+                if visited[neighbor] > visited[farthest_node]:
+                    farthest_node = neighbor
+    return farthest_node, visited
 
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    jars = list(map(int, input().split()))
-    test_cases.append((n, jars))
+n = int(input().strip())
+graph = defaultdict(list)
 
-# Get results
-results = min_jars_to_empty(t, test_cases)
+for _ in range(n - 1):
+    a, b = map(int, input().strip().split())
+    graph[a].append(b)
+    graph[b].append(a)
 
-# Output results
-for result in results:
-    print(result)
+# Step 1: Find the farthest node from an arbitrary node (node 1)
+farthest_node, _ = bfs(1, graph)
+
+# Step 2: Find the farthest node from the farthest node found
+other_farthest_node, dist_from_first = bfs(farthest_node, graph)
+
+# Step 3: Use the path from farthest_node to other_farthest_node to find the maximum
+path = []
+current = other_farthest_node
+while current != farthest_node:
+    path.append(current)
+    for neighbor in graph[current]:
+        if dist_from_first[neighbor] == dist_from_first[current] - 1:
+            current = neighbor
+            break
+path.append(farthest_node)
+path.reverse()
+
+# Step 4: Choose three distinct vertices a, b, c from the path
+a = path[0]
+b = path[len(path) // 2]  # Middle of the path
+c = path[-1]
+
+# Step 5: The number of edges in the union of paths is |E| = |V| - 1 + |V| - 1 + |V| - 1 - 3 = 3*len(path) - 3
+res = len(path) - 1 + len(path) - 1 + len(path) - 1 - 3
+
+print(res)
+print(a, b, c)

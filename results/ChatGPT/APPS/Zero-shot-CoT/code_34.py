@@ -1,25 +1,16 @@
-def greatest_integer(t, cases):
-    # The segments needed to display each digit from 0 to 9
-    segments = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6]
+def max_min_pieces(n, a, b):
+    low, high = 1, max(a, b)
     
-    results = []
-    for n in cases:
-        if n % 2 == 0:
-            # If n is even, we can use n // 2 digits of '1'
-            results.append('1' * (n // 2))
+    while low < high:
+        mid = (low + high + 1) // 2
+        if (a // mid) + (b // mid) >= n:
+            low = mid
         else:
-            # If n is odd, we can use one '7' and (n - 3) // 2 digits of '1'
-            results.append('7' + '1' * ((n - 3) // 2))
-    
-    return results
+            high = mid - 1
+            
+    return low
 
 # Read input
-t = int(input())
-cases = [int(input()) for _ in range(t)]
-
-# Get results
-results = greatest_integer(t, cases)
-
-# Print results
-for result in results:
-    print(result)
+n, a, b = map(int, input().split())
+# Calculate and print the result
+print(max_min_pieces(n, a, b))

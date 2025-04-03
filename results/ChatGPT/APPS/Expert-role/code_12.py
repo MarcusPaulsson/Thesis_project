@@ -1,48 +1,44 @@
-def can_transform(t, test_cases):
-    results = []
-    for i in range(t):
-        n = test_cases[i][0]
-        a = test_cases[i][1]
-        b = test_cases[i][2]
+def max_beauty_with_swap(n, trophies):
+    if 'G' not in trophies:
+        return 0
+    
+    # Find lengths of segments of golden trophies
+    segments = []
+    current_length = 0
+    
+    for trophy in trophies:
+        if trophy == 'G':
+            current_length += 1
+        else:
+            if current_length > 0:
+                segments.append(current_length)
+            current_length = 0
+    
+    if current_length > 0:
+        segments.append(current_length)
+        
+    if len(segments) == 0:
+        return 0
+    
+    # Calculate maximum length without any swap
+    max_length = max(segments)
+    
+    # If there's only one segment, no swap can increase the beauty
+    if len(segments) == 1:
+        return max_length
+    
+    # Now consider swapping the first S in between two segments
+    max_possible = max_length
+    
+    for i in range(len(segments) - 1):
+        # The longest segment can be increased by 1 if we swap an 'S' between two 'G' segments
+        max_possible = max(max_possible, segments[i] + segments[i + 1])
+    
+    return min(max_possible + 1, n)
 
-        can_increase = False
-        can_decrease = False
-        possible = True
+# Input reading
+n = int(input())
+trophies = input().strip()
 
-        for j in range(n):
-            if a[j] == 1:
-                can_increase = True
-            elif a[j] == -1:
-                can_decrease = True
-
-            if b[j] > a[j] and not can_increase:
-                possible = False
-                break
-            elif b[j] < a[j] and not can_decrease:
-                possible = False
-                break
-
-        results.append("YES" if possible else "NO")
-
-    return results
-
-
-# Input processing
-import sys
-input = sys.stdin.read
-data = input().splitlines()
-
-t = int(data[0])
-test_cases = []
-
-line_index = 1
-for _ in range(t):
-    n = int(data[line_index])
-    a = list(map(int, data[line_index + 1].split()))
-    b = list(map(int, data[line_index + 2].split()))
-    test_cases.append((n, a, b))
-    line_index += 3
-
-# Get the result and print
-output = can_transform(t, test_cases)
-print("\n".join(output))
+# Output the result
+print(max_beauty_with_swap(n, trophies))

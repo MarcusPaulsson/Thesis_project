@@ -1,19 +1,24 @@
-import math
+from collections import deque
 
-def minimum_square_side_length(n):
-    # For a 2n-gon, the minimum square side length required to embed it
-    # can be calculated using the formula derived from the geometry of the situation.
-    return math.sqrt(2) * n / math.sin(math.pi / (2 * n))
+s = input().strip()
+t = deque()
+u = []
 
-def main():
-    T = int(input())
-    results = []
-    for _ in range(T):
-        n = int(input())
-        result = minimum_square_side_length(n)
-        results.append(f"{result:.9f}")
+for char in s:
+    t.append(char)
+
+while t:
+    # Find the smallest character in the remaining part of t
+    min_char = min(t)
+    # Find the index of the first occurrence of this character
+    min_index = t.index(min_char)
     
-    print("\n".join(results))
+    # Move characters from t to u until we reach the min_char
+    for _ in range(min_index + 1):
+        u.append(t.popleft())
+    
+    # Move the min_char to u
+    u.append(t.popleft())
 
-if __name__ == "__main__":
-    main()
+# Join the list to form the final string u
+print(''.join(u))

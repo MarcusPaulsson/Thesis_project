@@ -1,22 +1,36 @@
 def solve():
-    a, b, x, y = map(int, input().split())
-    
-    ans = 0
-    
-    # Case 1: Window above the dead pixel
-    ans = max(ans, a * y)
-    
-    # Case 2: Window below the dead pixel
-    ans = max(ans, a * (b - y - 1))
-    
-    # Case 3: Window to the left of the dead pixel
-    ans = max(ans, b * x)
-    
-    # Case 4: Window to the right of the dead pixel
-    ans = max(ans, b * (a - x - 1))
-    
-    print(ans)
+    n, k = map(int, input().split())
+    p = list(map(int, input().split()))
 
-t = int(input())
-for _ in range(t):
-    solve()
+    used = set(p)
+    remaining = []
+    for i in range(n, 0, -1):
+        if i not in used:
+            remaining.append(i)
+
+    p += remaining
+
+    def is_stack_sortable(arr):
+        s = []
+        b = []
+        i = 0
+        while i < len(arr) or len(s) > 0:
+            if len(s) > 0 and s[-1] == min(arr[i:] + s):
+                b.append(s.pop())
+            elif i < len(arr):
+                s.append(arr[i])
+                i += 1
+            else:
+                return False
+        
+        for i in range(len(b) - 1):
+            if b[i] > b[i+1]:
+                return False
+        return True
+
+    if is_stack_sortable(p):
+        print(*p)
+    else:
+        print(-1)
+
+solve()

@@ -1,45 +1,15 @@
-def reconstruct_string(t, test_cases):
-    results = []
-    for case in test_cases:
-        s, x = case
-        n = len(s)
-        # Initialize w with all '0's
-        w = ['0'] * n
-        
-        for i in range(n):
-            if s[i] == '1':
-                if i - x >= 0:
-                    w[i - x] = '1'
-                if i + x < n:
-                    w[i + x] = '1'
-        
-        # Validate if w can produce s
-        valid = True
-        for i in range(n):
-            if s[i] == '1':
-                if not ((i - x >= 0 and w[i - x] == '1') or (i + x < n and w[i + x] == '1')):
-                    valid = False
-                    break
-            else:
-                if (i - x >= 0 and w[i - x] == '1') or (i + x < n and w[i + x] == '1'):
-                    valid = False
-                    break
-        
-        if valid:
-            results.append(''.join(w))
-        else:
-            results.append('-1')
-    
-    return results
+import sys
+import math
 
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    s = input().strip()
-    x = int(input().strip())
-    test_cases.append((s, x))
+A, B = map(int, sys.stdin.read().strip().split())
 
-# Get results and print
-results = reconstruct_string(t, test_cases)
-print("\n".join(results))
+def find_price(A, B):
+    for price in range(1, 10000):  # Set a reasonable upper limit
+        tax_8 = math.floor(price * 0.08)
+        tax_10 = math.floor(price * 0.10)
+        if tax_8 == A and tax_10 == B:
+            return price
+    return -1
+
+result = find_price(A, B)
+print(result)

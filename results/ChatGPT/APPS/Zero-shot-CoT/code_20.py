@@ -1,55 +1,34 @@
-def can_satisfy_customers(test_cases):
-    results = []
-    for n, m, customers in test_cases:
-        current_temp = m
-        current_time = 0
-        min_temp = m
-        max_temp = m
-        possible = True
-        
-        for t, l, h in customers:
-            time_passed = t - current_time
-            min_temp -= time_passed
-            max_temp += time_passed
-            
-            # Update the temperature range based on the preferred range of the customer
-            min_temp = max(min_temp, l)
-            max_temp = min(max_temp, h)
-            
-            if min_temp > max_temp:
-                possible = False
-                break
-            
-            current_time = t
-        
-        if possible:
-            results.append("YES")
-        else:
-            results.append("NO")
+def is_palindrome(time):
+    return time == time[::-1]
+
+def next_palindrome_time(hh, mm):
+    while True:
+        mm += 1
+        if mm == 60:
+            mm = 0
+            hh += 1
+            if hh == 24:
+                hh = 0
+        time = f"{hh:02}:{mm:02}"
+        if is_palindrome(time):
+            return time
+
+def min_minutes_to_palindrome(current_time):
+    hh, mm = map(int, current_time.split(':'))
+    minutes = 0
     
-    return results
+    while True:
+        if is_palindrome(f"{hh:02}:{mm:02}"):
+            return minutes
+        minutes += 1
+        mm += 1
+        if mm == 60:
+            mm = 0
+            hh += 1
+            if hh == 24:
+                hh = 0
 
-# Read input and prepare test cases
-import sys
-input = sys.stdin.read
-data = input().splitlines()
-
-q = int(data[0])
-test_cases = []
-index = 1
-
-for _ in range(q):
-    n, m = map(int, data[index].split())
-    customers = []
-    for i in range(n):
-        t, l, h = map(int, data[index + 1 + i].split())
-        customers.append((t, l, h))
-    test_cases.append((n, m, customers))
-    index += n + 1
-
-# Get the results
-results = can_satisfy_customers(test_cases)
-
-# Print results
-for result in results:
-    print(result)
+# Input
+current_time = input().strip()
+# Output
+print(min_minutes_to_palindrome(current_time))

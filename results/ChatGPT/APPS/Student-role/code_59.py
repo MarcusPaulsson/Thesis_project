@@ -1,37 +1,20 @@
-def solve():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
+def min_operations(n, x, y, number):
+    # Target remainder is 10^y, which means we need to have the y-th position as '1'
+    # and all positions from y+1 to x-1 as '0'
+    target = ['0'] * x
+    target[y] = '1'
     
-    index = 0
-    t = int(data[index])
-    index += 1
-    results = []
-    
-    for _ in range(t):
-        n = int(data[index])
-        index += 1
-        a = list(map(int, data[index].split()))
-        index += 1
-        
-        # Find the minimum and maximum of the known values
-        known_values = [x for x in a if x != -1]
-        min_known = min(known_values)
-        max_known = max(known_values)
-        
-        # If no known values, we can choose k freely, let's say 0
-        if not known_values:
-            results.append("0 0")
-            continue
-        
-        # The minimum possible value of m
-        m = max(max_known - min_known, abs(min_known - 0), abs(max_known - 0))
-        
-        # The optimal k
-        k = (min_known + max_known) // 2
-        
-        results.append(f"{m} {k}")
-    
-    print("\n".join(results))
+    # Count the number of changes needed
+    changes = 0
+    for i in range(x):
+        if number[n - 1 - i] != target[x - 1 - i]:
+            changes += 1
+            
+    return changes
 
-solve()
+# Input reading
+n, x, y = map(int, input().split())
+number = input().strip()
+
+# Output the result
+print(min_operations(n, x, y, number))

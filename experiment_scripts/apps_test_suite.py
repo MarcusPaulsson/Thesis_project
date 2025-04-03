@@ -25,14 +25,14 @@ wizardCoder_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Wiz
 
 # Define a list of folder paths and their corresponding names
 folder_paths = {
-   # "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
-    #"Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
-    "Gemini Student-role": Gemini_student_role_apps_folder,
-   # "Gemini Expert-role": Gemini_expert_role_apps_folder,
-   # "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
-  #  "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
-   # "ChatGPT Student-role": chatGPT_student_role_apps_folder,
-    #"ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
+     "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
+     "Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
+     #"Gemini Student-role": Gemini_student_role_apps_folder,
+    # "Gemini Expert-role": Gemini_expert_role_apps_folder,
+    "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
+    "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
+    # "ChatGPT Student-role": chatGPT_student_role_apps_folder,
+    # "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
 }
 
 test_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
@@ -40,20 +40,30 @@ test_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
 def load_apps_tests(json_file_path):
     try:
         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
-            return [json.loads(line.strip())["input_output"] for line in jsonfile if "input_output" in json.loads(line.strip())]
+            return [json.loads(line.strip()) for line in jsonfile if "input_output" in json.loads(line.strip())]
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"Error: {e}")
         return None
 
 def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
     if not tasks:
-        return {"passed": 0, "total": 0}
+        return {"passed": 0, "total": 0, "passed_ids": []}
 
     passed_tests = 0
-    total_tests = min(30, len(tasks))
-    for i, task in enumerate(tasks[:30]):
+    total_tests = 100
+    passed_ids = []
+    for i, task_data in enumerate(tasks):
+        task = task_data["input_output"]
+
+        # Extract task_id from the filename
+        file_name = f"code_{i}.py"
+        try:
+            code_id = int(file_name.split("_")[1].split(".")[0])
+        except (IndexError, ValueError):
+            print(f"Warning: Could not extract task_id from filename '{file_name}'. Skipping test.")
+            continue
+
         file_path = os.path.join(folder_path, f"code_{i}.py")
-        print(file_path)
         if not os.path.exists(file_path):
             print(f"Warning: File '{file_path}' not found for test {i + 1}.")
             continue
@@ -69,20 +79,30 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
             print(f"\n--- Running Test {i + 1} of {total_tests} ---")
             json_data = json.loads(task)
             inputs, outputs = json_data["inputs"], json_data["outputs"]
-            process = subprocess.Popen(["python", temp_file_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            stdout, stderr = process.communicate(input="\n".join(inputs), timeout=5)
+            max_numb_test, placeholder = 5, 5
+            output_list = []
+            for test_i, item in enumerate(inputs):
+                if max_numb_test:
+                    max_numb_test -= 1
+                else:
+                    break
+                process = subprocess.Popen(["python", temp_file_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
+                stdout, stderr = process.communicate(item, timeout=5)
+                output_list.append(stdout[:-1])
+                output_list
             if process.returncode == 0:
-                output_lines = [line.strip() for line in stdout.strip().split('\n')]
-                expected_lines = [line.strip() for expected_output in outputs for line in expected_output.strip().split('\n')]
+                expected_lines = outputs[:placeholder]
+                expected_lines = [item.strip() for item in expected_lines]
 
-                if output_lines == expected_lines:
+                if output_list == expected_lines:
                     print(f"Test {i + 1} passed")
                     passed_tests += 1
+                    passed_ids.append(code_id)
                 else:
                     print(f"Test {i + 1} failed: Output mismatch")
                     print(f"Expected: {expected_lines}")
-                    print(f"Actual: {output_lines}")
+                    print(f"Actual: {output_list}")
                     print(f"Stderr: {stderr}")
                     print(f"Stdout: {stdout}")
             else:
@@ -94,14 +114,12 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
             print(f"Test {i + 1} timed out.")
         except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
             print(f"Error: {e}")
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
 
     print(f"\n--- Test Summary ---")
     print(f"Total tests: {total_tests}")
     print(f"Passed tests: {passed_tests}")
     print(f"Failed tests: {total_tests - passed_tests}")
-    return {"passed": passed_tests, "total": total_tests}
+    return {"passed": passed_tests, "total": total_tests, "passed_ids": passed_ids}
 
 tasks = load_apps_tests(test_data_path)
 
@@ -115,11 +133,23 @@ if tasks:
         results[folder_name] = run_tests_on_code_snippets(tasks, folder_path, temp_dir)
 
     print("\n--- Overall Test Summary ---")
+    total_passed = 0
+    total_all = 0
+    all_passed_ids = {} # Change to dict for id count
     for folder, result in results.items():
         print(f"{folder}: Passed {result['passed']} of {result['total']}")
+        total_passed += result['passed']
+        total_all += result['total']
+        for id in result['passed_ids']:
+            if id in all_passed_ids:
+                all_passed_ids[id] += 1
+            else:
+                all_passed_ids[id] = 1
 
-    total_passed = sum(result['passed'] for result in results.values())
-    total_all = sum(result['total'] for result in results.values())
     print(f"\nTotal Passed: {total_passed} of {total_all}")
+
+    # Find IDs that passed in all folders
+    passed_in_all = [id for id, count in all_passed_ids.items() if count == len(folder_paths)]
+    print(f"\nPassed in all folders: {sorted(passed_in_all)}")
 
     shutil.rmtree(temp_dir)

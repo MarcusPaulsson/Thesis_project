@@ -1,20 +1,14 @@
-def minimal_string(n, k, t):
-    # Find the longest suffix of t which is also a prefix
-    for i in range(n - 1, -1, -1):
-        if t[:i] == t[n - i:]:
-            overlap_length = i
-            break
-    else:
-        overlap_length = 0
+cnt1 = int(input().strip())
+cnt2 = int(input().strip())
+cnt3 = int(input().strip())
+cnt4 = int(input().strip())
 
-    # Construct the resulting string
-    result = t + (t[overlap_length:] * (k - 1))
-    return result
+# Total open and close brackets
+open_brackets = cnt1 + cnt2
+close_brackets = cnt3 + cnt4
 
-# Read input
-n, k = map(int, input().split())
-t = input().strip()
-
-# Get the result and print it
-result = minimal_string(n, k, t)
-print(result)
+# Condition for a regular bracket sequence
+if open_brackets >= close_brackets and (open_brackets - close_brackets) <= cnt2:
+    print(1)
+else:
+    print(0)

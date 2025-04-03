@@ -1,49 +1,12 @@
-def solve():
-    n, k = map(int, input().split())
-    s = input()
-    
-    ans = 0
-    for i in range(k // 2):
-        counts = {}
-        for j in range(0, n, k):
-            char1 = s[i + j]
-            char2 = s[k - 1 - i + j]
-            
-            if char1 not in counts:
-                counts[char1] = 0
-            if char2 not in counts:
-                counts[char2] = 0
-                
-            counts[char1] += 1
-            counts[char2] += 1
-            
-        total = 0
-        max_count = 0
-        for char in counts:
-            total += counts[char]
-            max_count = max(max_count, counts[char])
-        
-        ans += (total - max_count)
+h1, m1 = map(int, input().replace(':', ' ').split())
+h2, m2 = map(int, input().replace(':', ' ').split())
 
-    if k % 2 == 1:
-        counts = {}
-        mid = k // 2
-        for j in range(0, n, k):
-            char = s[mid + j]
-            if char not in counts:
-                counts[char] = 0
-            counts[char] += 1
-            
-        total = 0
-        max_count = 0
-        for char in counts:
-            total += counts[char]
-            max_count = max(max_count, counts[char])
-            
-        ans += (total - max_count)
+start_minutes = h1 * 60 + m1
+end_minutes = h2 * 60 + m2
 
-    print(ans)
+mid_minutes = (start_minutes + end_minutes) // 2
 
-t = int(input())
-for _ in range(t):
-    solve()
+h3 = mid_minutes // 60
+m3 = mid_minutes % 60
+
+print(f"{h3:02d}:{m3:02d}")

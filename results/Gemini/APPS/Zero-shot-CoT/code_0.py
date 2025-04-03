@@ -1,64 +1,64 @@
 def solve():
-    n = int(input())
-    words = []
-    for _ in range(n):
-        words.append(input())
-
-    def reverse_word(word):
-        return word[::-1]
-
-    def check(reversed_indices):
-        modified_words = []
-        for i in range(n):
-            if i in reversed_indices:
-                modified_words.append(reverse_word(words[i]))
-            else:
-                modified_words.append(words[i])
-        
-        if len(set(modified_words)) != n:
-            return False
-
-        def can_arrange(arr):
-            if not arr:
-                return True
-            
-            import itertools
-            
-            for p in itertools.permutations(arr):
-                valid = True
-                for i in range(len(p) - 1):
-                    if p[i][-1] != p[i+1][0]:
-                        valid = False
-                        break
-                if valid:
-                    return True
-            return False
-        
-        return can_arrange(modified_words)
-
+    s = input()
+    n = len(s)
     
-    min_reversed = float('inf')
-    best_reversed_indices = []
-
-    for i in range(1 << n):
-        reversed_indices = []
-        for j in range(n):
-            if (i >> j) & 1:
-                reversed_indices.append(j)
-        
-        if check(reversed_indices):
-            if len(reversed_indices) < min_reversed:
-                min_reversed = len(reversed_indices)
-                best_reversed_indices = reversed_indices
+    best_len = -1
     
-    if min_reversed == float('inf'):
-        print("-1")
-    else:
-        print(min_reversed)
-        if min_reversed > 0:
-            print(*(x + 1 for x in best_reversed_indices))
-        
+    for i in range(n):
+        if s[i] == '[':
+            for j in range(i + 1, n):
+                if s[j] == ':':
+                    for k in range(j + 1, n):
+                        for l in range(k, n):
+                            if s[l] == ':':
+                                for m in range(l + 1, n):
+                                    if s[m] == ']':
+                                        
+                                        sub = s[i:m+1]
+                                        
+                                        
+                                        first_bracket = -1
+                                        first_colon = -1
+                                        second_colon = -1
+                                        second_bracket = -1
+                                        
+                                        
+                                        for idx in range(len(sub)):
+                                            if sub[idx] == '[':
+                                                first_bracket = idx
+                                                break
+                                                
+                                        for idx in range(first_bracket + 1, len(sub)):
+                                            if sub[idx] == ':':
+                                                first_colon = idx
+                                                break
+                                                
+                                        for idx in range(len(sub) - 1, first_colon, -1):
+                                            if sub[idx] == ']':
+                                                second_bracket = idx
+                                                break
+                                                
+                                        if second_bracket == -1:
+                                            continue
+                                        
+                                        for idx in range(second_bracket - 1, first_colon, -1):
+                                            if sub[idx] == ':':
+                                                second_colon = idx
+                                                break
+                                                
+                                        if first_bracket != 0 or first_colon == -1 or second_colon == -1 or second_bracket != len(sub) -1:
+                                            continue
+                                        
+                                        
+                                        num_pipes = 0
+                                        for idx in range(first_colon + 1, second_colon):
+                                            if sub[idx] == '|':
+                                                num_pipes += 1
+                                        
+                                        curr_len = 2 + 2 + num_pipes
+                                        
+                                        best_len = max(best_len, curr_len)
+                                        
+    print(best_len)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

@@ -1,11 +1,18 @@
 def solve():
-    n = int(input())
+    n, a, b = map(int, input().split())
     
-    if n % 2 == 0:
-        print("1" * (n // 2))
-    else:
-        print("7" + "1" * ((n - 3) // 2))
+    max_x = 0
+    for plates_a in range(1, n):
+        plates_b = n - plates_a
+        
+        if plates_a > a or plates_b > b:
+            continue
+            
+        x_a = a // plates_a
+        x_b = b // plates_b
+        
+        max_x = max(max_x, min(x_a, x_b))
+        
+    print(max_x)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

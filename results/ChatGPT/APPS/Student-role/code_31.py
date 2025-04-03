@@ -1,40 +1,36 @@
-def skier_time(test_cases):
-    results = []
-    
-    for moves in test_cases:
-        visited_segments = set()
-        current_position = (0, 0)
-        total_time = 0
-        
-        for move in moves:
-            if move == 'N':
-                new_position = (current_position[0], current_position[1] + 1)
-            elif move == 'S':
-                new_position = (current_position[0], current_position[1] - 1)
-            elif move == 'E':
-                new_position = (current_position[0] + 1, current_position[1])
-            elif move == 'W':
-                new_position = (current_position[0] - 1, current_position[1])
-            
-            segment = (current_position, new_position) if current_position < new_position else (new_position, current_position)
-            
-            if segment not in visited_segments:
-                total_time += 5
-                visited_segments.add(segment)
-            else:
-                total_time += 1
-            
-            current_position = new_position
-            
-        results.append(total_time)
-    
-    return results
+def gcd(x, y):
+    while y:
+        x, y = y, x % y
+    return x
 
-# Input handling
-t = int(input())
-test_cases = [input().strip() for _ in range(t)]
-results = skier_time(test_cases)
+def probability_of_shared_birthday(n, k):
+    days = 2 ** n
+    if k > days:
+        return 1, 1  # Guaranteed at least one shared birthday
 
-# Output results
-for result in results:
-    print(result)
+    # Calculate the probability of no shared birthdays
+    num = 1
+    denom = days ** k
+    for i in range(k):
+        num *= (days - i)
+    
+    # The probability of at least two having the same birthday
+    A = denom - num
+    B = denom
+
+    # Reduce A and B by their gcd
+    common_gcd = gcd(A, B)
+    A //= common_gcd
+    B //= common_gcd
+    
+    # Take modulo
+    mod = 10**6 + 3
+    A %= mod
+    B %= mod
+    
+    return A, B
+
+# Read input
+n, k = map(int, input().split())
+A, B = probability_of_shared_birthday(n, k)
+print(A, B)

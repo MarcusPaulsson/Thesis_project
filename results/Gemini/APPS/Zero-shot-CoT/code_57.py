@@ -1,26 +1,39 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
+  n = int(input())
+  f = list(map(int, input().split()))
 
-    def can_reduce(arr):
-        if len(arr) == 1:
-            return True
-        
-        for i in range(len(arr) - 1):
-            if arr[i] < arr[i+1]:
-                arr1 = arr[:i] + arr[i+1:]
-                if can_reduce(arr1):
-                    return True
-                arr2 = arr[:i+1] + arr[i+2:]
-                if can_reduce(arr2):
-                    return True
-        return False
+  assigned = [False] * (n + 1)
+  for i in range(n):
+    if f[i] != 0:
+      assigned[f[i]] = True
 
-    if can_reduce(a):
-        print("YES")
-    else:
-        print("NO")
+  unassigned_givers = []
+  unassigned_receivers = []
+  for i in range(n):
+    if f[i] == 0:
+      unassigned_givers.append(i)
 
-t = int(input())
-for _ in range(t):
-    solve()
+  for i in range(1, n + 1):
+    if not assigned[i]:
+      unassigned_receivers.append(i)
+
+  for i in range(len(unassigned_givers)):
+    giver_idx = unassigned_givers[i]
+    receiver = unassigned_receivers[i]
+    
+    if giver_idx + 1 == receiver:
+      if i + 1 < len(unassigned_givers):
+        unassigned_receivers[i], unassigned_receivers[i+1] = unassigned_receivers[i+1], unassigned_receivers[i]
+      else:
+        for j in range(len(unassigned_givers)):
+            if unassigned_givers[j] + 1 != unassigned_receivers[0] and j != i:
+                unassigned_receivers[0], unassigned_receivers[i] = unassigned_receivers[i], unassigned_receivers[0]
+                break
+
+
+  for i in range(len(unassigned_givers)):
+    f[unassigned_givers[i]] = unassigned_receivers[i]
+
+  print(*f)
+
+solve()

@@ -1,26 +1,25 @@
-def maximize_wins(test_cases):
-    results = []
-    for s in test_cases:
-        count_R = s.count('R')
-        count_S = s.count('S')
-        count_P = s.count('P')
-        
-        # We choose the move that beats the most frequent move of the bot
-        if count_R >= count_S and count_R >= count_P:
-            results.append('P' * len(s))  # Paper beats Rock
-        elif count_S >= count_R and count_S >= count_P:
-            results.append('R' * len(s))  # Rock beats Scissors
-        else:
-            results.append('S' * len(s))  # Scissors beat Paper
-    return results
+def count_pairs(n, m):
+    # Count the number of integers in the ranges that give specific remainders when divided by 5
+    count_x = [0] * 5
+    count_y = [0] * 5
+    
+    for i in range(1, n + 1):
+        count_x[i % 5] += 1
+    
+    for j in range(1, m + 1):
+        count_y[j % 5] += 1
 
-# Input reading
-t = int(input())
-test_cases = [input().strip() for _ in range(t)]
+    # Calculate the number of valid pairs
+    result = (
+        count_x[0] * count_y[0] +  # (0, 0)
+        count_x[1] * count_y[4] +  # (1, 4)
+        count_x[2] * count_y[3] +  # (2, 3)
+        count_x[3] * count_y[2] +  # (3, 2)
+        count_x[4] * count_y[1]    # (4, 1)
+    )
+    
+    return result
 
-# Getting the results
-results = maximize_wins(test_cases)
-
-# Output the results
-for result in results:
-    print(result)
+# Input
+n, m = map(int, input().split())
+print(count_pairs(n, m))

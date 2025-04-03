@@ -1,43 +1,24 @@
-def min_area_after_insertion(s):
-    # Count the moves in each direction
-    up = s.count('W')
-    down = s.count('S')
-    left = s.count('A')
-    right = s.count('D')
+def max_chocolates(n, a, b, p, q):
+    # Count the number of tiles that can be painted Red
+    count_red = n // a
+    # Count the number of tiles that can be painted Blue
+    count_blue = n // b
+    # Count the number of tiles that can be painted both Red and Blue
+    count_both = n // (a * b // gcd(a, b))
     
-    # Calculate the initial area of the grid
-    height = up + down + 1
-    width = left + right + 1
-    min_area = height * width
+    # Calculate the total chocolates for both scenarios
+    total_chocolates_red_first = (count_red - count_both) * p + count_blue * q
+    total_chocolates_blue_first = (count_blue - count_both) * q + count_red * p
     
-    # Check if inserting an extra command can reduce the area
-    # We will consider each of the four possible insertions
-    for extra in ['W', 'S', 'A', 'D']:
-        # Create a new counts based on the extra command
-        if extra == 'W':
-            new_height = (up + 1) + down + 1
-        elif extra == 'S':
-            new_height = up + (down + 1) + 1
-        else:
-            new_height = up + down + 1
-        
-        if extra == 'A':
-            new_width = (left + 1) + right + 1
-        elif extra == 'D':
-            new_width = left + (right + 1) + 1
-        else:
-            new_width = left + right + 1
-        
-        new_area = new_height * new_width
-        min_area = min(min_area, new_area)
-    
-    return min_area
+    # Return the maximum chocolates obtainable
+    return max(total_chocolates_red_first, total_chocolates_blue_first)
 
-T = int(input())
-results = []
+def gcd(x, y):
+    while y:
+        x, y = y, x % y
+    return x
 
-for _ in range(T):
-    s = input().strip()
-    results.append(min_area_after_insertion(s))
-
-print('\n'.join(map(str, results)))
+# Read input
+n, a, b, p, q = map(int, input().split())
+# Calculate and print the maximum chocolates
+print(max_chocolates(n, a, b, p, q))

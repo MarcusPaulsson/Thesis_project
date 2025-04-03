@@ -1,26 +1,37 @@
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-
-    index = 0
-    T = int(data[index])
-    index += 1
+def min_blows_to_defeat_zmei(t, queries):
     results = []
-
-    for _ in range(T):
-        n, m = map(int, data[index].split())
-        index += 1
+    for query in queries:
+        n, x, blows = query
+        min_blows = float('inf')
+        possible = False
         
-        # We will close the last (4/7)n spots
-        k = min(n, (4 * n) // 7)
-        # We can safely close the last k spots
-        closed_spots = list(range(n - k + 1, n + 1))
+        for d, h in blows:
+            if d >= x:
+                # Can defeat with this blow in one hit
+                min_blows = min(min_blows, 1)
+                possible = True
+            else:
+                # Calculate the effective decrease in heads after the blow
+                effective_decrease = d - h
+                if effective_decrease < 0:
+                    continue  # This blow is not effective
+                # Calculate how many blows needed
+                blows_needed = (x - d + effective_decrease - 1) // effective_decrease + 1
+                min_blows = min(min_blows, blows_needed)
+                possible = True
+        
+        results.append(min_blows if possible else -1)
+    
+    return results
 
-        results.append(f"{k}")
-        results.append(" ".join(map(str, closed_spots)))
+# Example usage
+t = 3
+queries = [
+    (3, 10, [(6, 3), (8, 2), (1, 4)]),
+    (4, 10, [(4, 1), (3, 2), (2, 6), (1, 100)]),
+    (2, 15, [(10, 11), (14, 100)])
+]
 
-    print("\n".join(results))
-
-if __name__ == "__main__":
-    main()
+results = min_blows_to_defeat_zmei(t, queries)
+for result in results:
+    print(result)

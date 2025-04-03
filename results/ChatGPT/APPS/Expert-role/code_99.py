@@ -1,32 +1,26 @@
-def clean_string(t, test_cases):
-    results = []
-    for i in range(t):
-        n = test_cases[i][0]
-        s = test_cases[i][1]
-        
-        # Count the number of 0s and 1s
-        count_0 = s.count('0')
-        count_1 = s.count('1')
-        
-        # Construct the clean string
-        if count_0 > 0 and count_1 > 0:
-            results.append('0' * count_0 + '1' * count_1)
-        else:
-            results.append('0' * count_0 + '1' * count_1)
+def calculate_wins(n, a, b):
+    # Maximum wins calculation
+    max_wins = min(a[0], b[2]) + min(a[1], b[0]) + min(a[2], b[1])
+
+    # Minimum wins calculation
+    # First, calculate losses:
+    losses = 0
+    losses += max(0, b[0] - a[2])  # Bob's rock beats Alice's paper
+    losses += max(0, b[1] - a[0])  # Bob's scissors beat Alice's rock
+    losses += max(0, b[2] - a[1])  # Bob's paper beats Alice's scissors
     
-    return results
+    # Minimum wins is total rounds minus losses
+    min_wins = n - losses
+
+    return min_wins, max_wins
 
 # Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    s = input().strip()
-    test_cases.append((n, s))
+n = int(input())
+a = list(map(int, input().split()))
+b = list(map(int, input().split()))
 
-# Get results
-results = clean_string(t, test_cases)
+# Calculate results
+min_wins, max_wins = calculate_wins(n, a, b)
 
-# Print results
-for result in results:
-    print(result)
+# Output results
+print(min_wins, max_wins)

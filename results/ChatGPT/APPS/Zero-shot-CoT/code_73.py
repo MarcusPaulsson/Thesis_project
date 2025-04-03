@@ -1,44 +1,15 @@
-def mex(arr):
-    present = [False] * (len(arr) + 1)
-    for num in arr:
-        if 0 <= num <= len(arr):
-            present[num] = True
-    for i in range(len(present)):
-        if not present[i]:
-            return i
+n = int(input())
+a = list(map(int, input().split()))
 
-def solve():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    t = int(data[0])
-    index = 1
-    results = []
-    
-    for _ in range(t):
-        n = int(data[index])
-        a = list(map(int, data[index + 1].split()))
-        index += 2
-        
-        operations = []
-        
-        while True:
-            current_mex = mex(a)
-            if all(a[i] <= a[i+1] for i in range(n - 1)):
-                break
-            
-            # Find the first index that we can replace
-            for i in range(n):
-                if a[i] > current_mex:
-                    operations.append(i + 1)  # Store 1-based index
-                    a[i] = current_mex
-                    break
-        
-        results.append(f"{len(operations)}")
-        results.append(" ".join(map(str, operations)))
-    
-    print("\n".join(results))
+max_height = max(a)
+total_bricks_needed = 0
+current_bricks_available = 0
 
-# Uncomment the line below to run the solve function
-# solve()
+for height in a:
+    if height < max_height:
+        total_bricks_needed += (max_height - height)
+    elif height > max_height:
+        print("NO")
+        break
+else:
+    print("YES")

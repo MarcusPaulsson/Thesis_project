@@ -1,53 +1,40 @@
-def can_form_keyboard(s):
-    from collections import defaultdict, deque
+def min_operations(t, test_cases):
+    results = []
+    
+    for a, b, c in test_cases:
+        min_moves = float('inf')
+        best_triplet = (0, 0, 0)
 
-    # Create an adjacency list and a degree count for each character
-    graph = defaultdict(set)
-    degree = defaultdict(int)
+        # Iterate through possible values for A
+        for A in range(1, 10001):  # A can be from 1 to 10000
+            # B must be a multiple of A
+            B = ((b + A - 1) // A) * A  # smallest multiple of A >= b
+            if B < b:
+                B += A  # ensure B is at least b
+            
+            # C must be a multiple of B
+            C = ((c + B - 1) // B) * B  # smallest multiple of B >= c
+            if C < c:
+                C += B  # ensure C is at least c
 
-    # Build the graph based on adjacent characters in the string
-    for i in range(len(s) - 1):
-        a, b = s[i], s[i + 1]
-        if b not in graph[a]:
-            graph[a].add(b)
-            graph[b].add(a)
-            degree[a] += 1
-            degree[b] += 1
+            # Calculate the number of operations
+            operations = max(0, A - a) + max(0, B - b) + max(0, C - c)
+            
+            # Check if the operations are minimal
+            if operations < min_moves:
+                min_moves = operations
+                best_triplet = (A, B, C)
 
-    # Check for vertices with degree > 2
-    if any(deg > 2 for deg in degree.values()):
-        return "NO", ""
+        results.append((min_moves, best_triplet))
+    
+    return results
 
-    # Perform a BFS/DFS to create the layout
-    visited = set()
-    order = []
+# Input reading and function execution
+t = int(input())
+test_cases = [tuple(map(int, input().split())) for _ in range(t)]
+results = min_operations(t, test_cases)
 
-    def dfs(node):
-        visited.add(node)
-        order.append(node)
-        for neighbor in graph[node]:
-            if neighbor not in visited:
-                dfs(neighbor)
-
-    # Start DFS from any character with degree 1 or any character that exists
-    for char in degree:
-        if char not in visited:
-            dfs(char)
-
-    # Fill in the remaining characters which are not in the password
-    all_chars = set(chr(i) for i in range(ord('a'), ord('z') + 1))
-    remaining_chars = all_chars - set(order)
-    order.extend(sorted(remaining_chars))
-
-    return "YES", ''.join(order)
-
-# Read input
-T = int(input())
-for _ in range(T):
-    s = input().strip()
-    result, layout = can_form_keyboard(s)
-    if result == "NO":
-        print(result)
-    else:
-        print(result)
-        print(layout)
+# Output results
+for moves, (A, B, C) in results:
+    print(moves)
+    print(A, B, C)

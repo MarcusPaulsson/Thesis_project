@@ -1,22 +1,47 @@
-def can_distribute(x, n, a, b):
-    plates_for_a = (a + x - 1) // x  # Ceil division for pieces of cake A
-    plates_for_b = (b + x - 1) // x  # Ceil division for pieces of cake B
-    return plates_for_a + plates_for_b <= n
-
-def max_min_pieces(n, a, b):
-    left, right = 1, max(a, b)
-    answer = 0
+def can_color_string(n, s):
+    # Create a list to store the positions of each character
+    positions = {}
     
-    while left <= right:
-        mid = (left + right) // 2
-        if can_distribute(mid, n, a, b):
-            answer = mid  # mid is a valid minimum
-            left = mid + 1
-        else:
-            right = mid - 1
-            
-    return answer
+    for i, char in enumerate(s):
+        if char not in positions:
+            positions[char] = []
+        positions[char].append(i)
+    
+    # Prepare to create the coloring
+    color = [''] * n
+    current_color = 0
+    
+    # Sort the keys to iterate in alphabetical order
+    sorted_chars = sorted(positions.keys())
+    
+    for char in sorted_chars:
+        # Get the indices for this character
+        indices = positions[char]
+        
+        # Check if we can color without conflict
+        for index in indices:
+            if color[index] == '':
+                color[index] = str(current_color)
+            else:
+                # Conflict in coloring
+                if color[index] != str(current_color):
+                    return "NO"
+        
+        # Switch color for the next character
+        current_color = 1 - current_color
+    
+    return "YES", ''.join(color)
 
-# Input reading
-n, a, b = map(int, input().split())
-print(max_min_pieces(n, a, b))
+# Read input
+n = int(input().strip())
+s = input().strip()
+
+# Get the result
+result = can_color_string(n, s)
+
+# Print the output
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    print(result[1])

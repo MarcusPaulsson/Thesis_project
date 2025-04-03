@@ -1,44 +1,36 @@
-def count_exterminable_subarrays(n, a):
-    count = 0
-    stack = []
-    last_position = {}
-    
+def can_color_string(n, s):
+    # Create a list to hold the count of each character
+    count = {}
+    for char in s:
+        if char in count:
+            count[char] += 1
+        else:
+            count[char] = 1
+
+    # Check if we can color the string
+    color = []
     for i in range(n):
-        if stack and stack[-1] == a[i]:
-            stack.pop()
+        if i > 0 and s[i] < s[i - 1]:
+            # If current character is less than previous, we need to color differently
+            if color and color[-1] == '0':
+                color.append('1')
+            else:
+                color.append('0')
         else:
-            stack.append(a[i])
-        
-        if not stack:
-            count += (i + 1)
-        else:
-            last_position[tuple(stack)] = i
+            color.append('0')
 
-        if tuple(stack) in last_position:
-            count += last_position[tuple(stack)]
+    # Check if there are any adjacent characters that are the same but have different colors
+    for i in range(1, n):
+        if s[i] == s[i - 1] and color[i] != color[i - 1]:
+            return "NO"
 
-    return count
+    return "YES\n" + ''.join(color)
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().split()
-    
-    index = 0
-    q = int(data[index])
-    index += 1
-    results = []
-    
-    for _ in range(q):
-        n = int(data[index])
-        index += 1
-        a = list(map(int, data[index:index + n]))
-        index += n
-        
-        result = count_exterminable_subarrays(n, a)
-        results.append(result)
-    
-    print('\n'.join(map(str, results)))
 
-if __name__ == "__main__":
-    main()
+# Read input
+n = int(input())
+s = input().strip()
+
+# Get the result and print it
+result = can_color_string(n, s)
+print(result)

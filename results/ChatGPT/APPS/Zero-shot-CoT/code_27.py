@@ -1,35 +1,16 @@
-def min_moves_to_odd(test_cases):
-    results = []
-    
-    for case in test_cases:
-        n, a = case
-        moves = 0
-        seen = set()
+n = int(input())
+s = input().strip()
 
-        for number in a:
-            while number % 2 == 0:
-                if number not in seen:
-                    seen.add(number)
-                    moves += 1
-                number //= 2
-        
-        results.append(moves)
-    
-    return results
+min_operations = n  # Start with the assumption that we need to type all characters one by one
 
+# Check for every possible length to copy
+for i in range(1, n // 2 + 1):
+    if s[:i] == s[i:2 * i]:  # Check if the first i characters are the same as the next i characters
+        # If they are equal, we can copy and then type the rest
+        total_length = 2 * i
+        remaining_length = n - total_length
+        operations = i + 1 + remaining_length  # i (type first part) + 1 (copy) + remaining_length (type remaining)
+        min_operations = min(min_operations, operations)
 
-# Input reading
-t = int(input())
-test_cases = []
-
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    test_cases.append((n, a))
-
-# Get results
-results = min_moves_to_odd(test_cases)
-
-# Output results
-for result in results:
-    print(result)
+# Output the minimum operations found
+print(min_operations)

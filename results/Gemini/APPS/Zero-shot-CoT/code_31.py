@@ -1,34 +1,27 @@
 def solve():
-  s = input()
-  n = len(s)
-  x, y = 0, 0
-  visited = set()
-  total_time = 0
-  
-  for move in s:
-    nx, ny = x, y
-    if move == 'N':
-      ny += 1
-    elif move == 'S':
-      ny -= 1
-    elif move == 'W':
-      nx -= 1
-    else:
-      nx += 1
+    n, k = map(int, input().split())
+    mod = 10**6 + 3
     
-    segment = tuple(sorted([(x, y), (nx, ny)]))
+    if k > 2**n:
+        print(1, 1)
+        return
     
-    if segment in visited:
-      total_time += 1
-    else:
-      total_time += 5
-      visited.add(segment)
-      
-    x, y = nx, ny
+    num = 1
+    den = 1
     
-  print(total_time)
-  
+    for i in range(int(k)):
+        num = (num * (pow(2, n, mod) - i)) % mod
+        den = (den * pow(2, n, mod)) % mod
+    
+    gcd = 1
+    
+    inv_den = pow(den, mod - 2, mod)
+    
+    p_diff = (num * inv_den) % mod
+    
+    a = (1 - p_diff + mod) % mod
+    b = 1
+    
+    print(a, 1)
 
-t = int(input())
-for _ in range(t):
-  solve()
+solve()

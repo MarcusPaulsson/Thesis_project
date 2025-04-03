@@ -1,17 +1,27 @@
-def minimum_time(n, a):
-    # Sort the laziness levels and task difficulties
-    a.sort()
+def max_sum_divisible_by_k(n, m, k, matrix):
+    from itertools import combinations
     
-    total_time = 0
-    for i in range(n):
-        total_time += a[i] * a[n - 1 - i]
-        total_time %= 10007  # Taking modulo 10007
+    max_choose = m // 2
+    total_max_sum = 0
+    
+    for row in matrix:
+        best_mod_sums = [0] * k
+        
+        # Check all combinations of choosing elements in the row
+        for r in range(max_choose + 1):
+            for comb in combinations(row, r):
+                current_sum = sum(comb)
+                best_mod_sums[current_sum % k] = max(best_mod_sums[current_sum % k], current_sum)
+        
+        # Update the total max sum considering the best choices for each row
+        total_max_sum += max(best_mod_sums)
+    
+    return total_max_sum
 
-    return total_time
+# Input handling
+n, m, k = map(int, input().split())
+matrix = [list(map(int, input().split())) for _ in range(n)]
 
-# Read input
-n = int(input())
-a = [int(input()) for _ in range(n)]
-
-# Calculate and print the minimum time
-print(minimum_time(n, a))
+# Get the result and print it
+result = max_sum_divisible_by_k(n, m, k, matrix)
+print(result)

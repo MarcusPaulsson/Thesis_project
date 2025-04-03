@@ -1,68 +1,45 @@
 def solve():
-    n, l = map(int, input().split())
-    a = list(map(int, input().split()))
-
-    def calculate_time(time):
-        pos1 = 0
-        speed1 = 1
-        idx1 = 0
-        time1 = 0
-        
-        while time1 < time:
-            if idx1 < n:
-                dist_to_flag = a[idx1] - pos1
-                time_to_flag = dist_to_flag / speed1
-                
-                if time1 + time_to_flag <= time:
-                    time1 += time_to_flag
-                    pos1 = a[idx1]
-                    speed1 += 1
-                    idx1 += 1
-                else:
-                    pos1 += speed1 * (time - time1)
-                    time1 = time
-            else:
-                pos1 += speed1 * (time - time1)
-                time1 = time
-
-        pos2 = l
-        speed2 = 1
-        idx2 = n - 1
-        time2 = 0
-        
-        while time2 < time:
-            if idx2 >= 0:
-                dist_to_flag = pos2 - a[idx2]
-                time_to_flag = dist_to_flag / speed2
-                
-                if time2 + time_to_flag <= time:
-                    time2 += time_to_flag
-                    pos2 = a[idx2]
-                    speed2 += 1
-                    idx2 -= 1
-                else:
-                    pos2 -= speed2 * (time - time2)
-                    time2 = time
-            else:
-                pos2 -= speed2 * (time - time2)
-                time2 = time
-        
-        return pos1, pos2
+    n, m = map(int, input().split())
+    exams = []
+    for i in range(m):
+        s, d, c = map(int, input().split())
+        exams.append((s, d, c, i + 1))
     
-    low = 0
-    high = l
+    schedule = [0] * n
+    exam_days = {}
+    for s, d, c, i in exams:
+        if d in exam_days:
+            print("-1")
+            return
+        exam_days[d] = i
+        schedule[d-1] = m + 1
     
-    for _ in range(100):
-        mid = (low + high) / 2
-        pos1, pos2 = calculate_time(mid)
+    prep_counts = [0] * (m + 1)
+    
+    for day in range(n):
+        if schedule[day] == m + 1:
+            continue
         
-        if pos1 < pos2:
-            low = mid
-        else:
-            high = mid
-            
-    print(f"{low:.12f}")
+        best_exam = -1
+        for s, d, c, i in exams:
+            if s <= day + 1 < d and prep_counts[i] < c:
+                if best_exam == -1:
+                    best_exam = i
+                else:
+                    
+                    if d < exams[best_exam - 1][1]:
+                        best_exam = i
+        
+        if best_exam != -1:
+            schedule[day] = best_exam
+            prep_counts[best_exam] += 1
+    
+    
+    for s, d, c, i in exams:
+        if prep_counts[i] != c:
+            print("-1")
+            return
+    
+    print(*schedule)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

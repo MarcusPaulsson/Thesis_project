@@ -1,16 +1,28 @@
 def solve():
-    n, k, d = map(int, input().split())
-    a = list(map(int, input().split()))
+  n = int(input())
+  stats = []
+  for _ in range(n):
+    stats.append(list(map(int, input().split())))
 
-    min_shows = float('inf')
+  possible = True
+  for i in range(n):
+    if stats[i][1] > stats[i][0]:
+      possible = False
+      break
+    if i > 0:
+      if stats[i][0] < stats[i-1][0] or stats[i][1] < stats[i-1][1]:
+        possible = False
+        break
+      if stats[i][1] - stats[i-1][1] > stats[i][0] - stats[i-1][0]:
+        possible = False
+        break
 
-    for i in range(n - d + 1):
-        segment = a[i:i+d]
-        unique_shows = len(set(segment))
-        min_shows = min(min_shows, unique_shows)
+  if possible:
+    print("YES")
+  else:
+    print("NO")
 
-    print(min_shows)
 
 t = int(input())
 for _ in range(t):
-    solve()
+  solve()

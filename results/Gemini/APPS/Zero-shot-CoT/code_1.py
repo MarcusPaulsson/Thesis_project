@@ -1,18 +1,29 @@
 def solve():
-    q = int(input())
-    for _ in range(q):
-        n, m, k = map(int, input().split())
-        
-        if n > k or m > k:
-            print(-1)
-            continue
-        
-        if n == m:
-            print(k)
-        else:
-            if (k - max(n, m)) % 2 == 0:
-                print(k)
-            else:
-                print(k - 2)
+  x = int(input())
+  s = str(x)
+  n = len(s)
+  
+  best_num = x
+  best_sum = sum(int(digit) for digit in s)
+  
+  for i in range(n):
+    if s[i] == '0':
+      continue
+      
+    num_str = s[:i] + str(int(s[i]) - 1) + '9' * (n - i - 1)
+    num = int(num_str)
+    
+    if num <= 0:
+        continue
+    
+    curr_sum = sum(int(digit) for digit in num_str)
+    
+    if curr_sum > best_sum:
+      best_sum = curr_sum
+      best_num = num
+    elif curr_sum == best_sum and num > best_num:
+      best_num = num
+      
+  print(best_num)
 
 solve()

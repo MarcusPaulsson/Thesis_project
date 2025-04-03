@@ -1,16 +1,20 @@
 def solve():
-  n, k1, k2 = map(int, input().split())
-  a = list(map(int, input().split()))
-  b = list(map(int, input().split()))
-  
-  max_a = max(a)
-  max_b = max(b)
-  
-  if max_a > max_b:
-    print("YES")
-  else:
+    n, l = map(int, input().split())
+    kefa = list(map(int, input().split()))
+    sasha = list(map(int, input().split()))
+
+    for shift in range(l):
+        shifted_sasha = []
+        for dist in sasha:
+            shifted_dist = (dist + shift) % l
+            shifted_sasha.append(shifted_dist)
+        
+        shifted_sasha.sort()
+        
+        if shifted_sasha == kefa:
+            print("YES")
+            return
+    
     print("NO")
 
-t = int(input())
-for _ in range(t):
-  solve()
+solve()

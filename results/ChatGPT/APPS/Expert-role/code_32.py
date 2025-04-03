@@ -1,24 +1,32 @@
-def maximum_coins(n):
-    # If n is odd, Mr. Chanek can only take one coin
-    if n % 2 == 1:
-        return n // 2
-    # If n is even, he can take half
-    else:
-        return n // 2
+n = int(input())
+current_position = 0  # 0 means North Pole, 20000 means South Pole
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().split()
-    
-    T = int(data[0])
-    results = []
-    
-    for i in range(1, T + 1):
-        N = int(data[i])
-        results.append(maximum_coins(N))
-    
-    print("\n".join(map(str, results)))
+valid = True
 
-if __name__ == "__main__":
-    main()
+for _ in range(n):
+    t, direction = input().split()
+    t = int(t)
+
+    if current_position == 0 and direction != "South":
+        valid = False
+        break
+    if current_position == 20000 and direction != "North":
+        valid = False
+        break
+
+    if direction == "South":
+        current_position += t
+    elif direction == "North":
+        current_position -= t
+    elif direction in ["West", "East"]:
+        # West and East do not affect the north-south position
+        continue
+
+    if current_position < 0 or current_position > 20000:
+        valid = False
+        break
+
+if valid and current_position == 0:
+    print("YES")
+else:
+    print("NO")

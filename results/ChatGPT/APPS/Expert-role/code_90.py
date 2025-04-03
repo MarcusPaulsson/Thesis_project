@@ -1,39 +1,27 @@
-def rearrange_array(t, test_cases):
-    results = []
-    for i in range(t):
-        n = test_cases[i][0]
-        a = test_cases[i][1]
-        l = test_cases[i][2]
+n, m, d = map(int, input().split())
+c = list(map(int, input().split()))
 
-        unlocked_values = [a[j] for j in range(n) if l[j] == 0]
-        unlocked_values.sort()
+# Initialize the river cells with zeros
+a = [0] * n
 
-        result = []
-        unlocked_index = 0
-        for j in range(n):
-            if l[j] == 1:
-                result.append(a[j])
-            else:
-                result.append(unlocked_values[unlocked_index])
-                unlocked_index += 1
+# Calculate the total length of platforms
+total_length = sum(c)
 
-        results.append(result)
-
-    return results
-
-
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    l = list(map(int, input().split()))
-    test_cases.append((n, a, l))
-
-# Get the rearranged arrays
-results = rearrange_array(t, test_cases)
-
-# Output the results
-for result in results:
-    print(' '.join(map(str, result)))
+# Check if we can reach n + 1
+if total_length + (m - 1) * d < n:
+    print("NO")
+else:
+    print("YES")
+    
+    # Place platforms in the array
+    position = 0
+    for i in range(m):
+        # Set the platform index in the cells
+        for j in range(c[i]):
+            a[position] = i + 1
+            position += 1
+        # Move the position by d after each platform, if not the last platform
+        if i < m - 1:
+            position += d
+            
+    print(' '.join(map(str, a)))

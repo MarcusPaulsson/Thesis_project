@@ -1,35 +1,30 @@
-def can_have_no_winner(t, test_cases):
-    results = []
-    for n, k, d1, d2 in test_cases:
-        # Calculate the maximum wins for each team based on the differences
-        a1 = (k + d1 + d2) // 2
-        a2 = (k - d1 + d2) // 2
-        a3 = (k + d1 - d2) // 2
-        
-        # Check the conditions for equal wins
-        if (k + d1 + d2) % 2 != 0 or (k - d1 + d2) % 2 != 0 or (k + d1 - d2) % 2 != 0:
-            results.append("no")
-            continue
-        
-        # Check if the total wins can be balanced with the remaining games
-        total_wins = a1 + a2 + a3
-        remaining_games = n - k
-        
-        if total_wins % 3 == 0 and total_wins // 3 <= remaining_games:
-            results.append("yes")
-        else:
-            results.append("no")
+from collections import Counter
+
+def find_x_y(n, divisors):
+    counter = Counter(divisors)
+    gcd = 1
     
-    return results
+    # Finding the GCD of the numbers that appear twice
+    for d in counter:
+        if counter[d] == 2:
+            gcd *= d
+    
+    x = gcd
+    y = 1
+    
+    # Finding the other number using the divisors
+    for d in counter:
+        if counter[d] == 1:
+            y *= d
 
-# Input reading
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+    return x, y
 
-t = int(data[0])
-test_cases = [tuple(map(int, line.split())) for line in data[1:t + 1]]
+# Read input
+n = int(input())
+divisors = list(map(int, input().split()))
 
-# Process and output results
-results = can_have_no_winner(t, test_cases)
-print("\n".join(results))
+# Get x and y
+x, y = find_x_y(n, divisors)
+
+# Print output
+print(x, y)

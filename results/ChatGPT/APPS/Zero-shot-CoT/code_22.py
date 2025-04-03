@@ -1,19 +1,12 @@
-def minDigit(x):
-    return min(int(d) for d in str(x))
+def is_s_palindrome(s):
+    mirror_chars = {'A': 'A', 'b': 'd', 'd': 'b', 'H': 'H', 'I': 'I', 'M': 'M', 'O': 'O', 'p': 'q', 'q': 'p', 'T': 'T', 'U': 'U', 'v': 'v', 'W': 'W', 'X': 'X', 'Y': 'Y', 'o': 'o', 'x': 'x'}
+    
+    n = len(s)
+    for i in range((n + 1) // 2):
+        if s[i] not in mirror_chars or s[n - 1 - i] != mirror_chars[s[i]]:
+            print("NIE")
+            return
+    print("TAK")
 
-def maxDigit(x):
-    return max(int(d) for d in str(x))
-
-def calculate_a_k(a1, K):
-    a_n = a1
-    for _ in range(K - 1):
-        min_digit = minDigit(a_n)
-        max_digit = maxDigit(a_n)
-        a_n += min_digit * max_digit
-    return a_n
-
-t = int(input())
-for _ in range(t):
-    a1, K = map(int, input().split())
-    result = calculate_a_k(a1, K)
-    print(result)
+s = input().strip()
+is_s_palindrome(s)

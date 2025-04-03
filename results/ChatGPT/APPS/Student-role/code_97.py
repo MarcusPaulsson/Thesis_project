@@ -1,41 +1,11 @@
-def lexicographically_smaller(t, test_cases):
-    results = []
-    
-    for s, c in test_cases:
-        n = len(s)
-        found = False
-        best_name = s
-        
-        # Check if the original name is already smaller
-        if s < c:
-            results.append(s)
-            continue
-        
-        # Try to find a valid swap
-        for i in range(n):
-            for j in range(i + 1, n):
-                # Create a new list to swap characters
-                new_name = list(s)
-                new_name[i], new_name[j] = new_name[j], new_name[i]
-                new_name = ''.join(new_name)
-                
-                # Check if the new name is smaller than c
-                if new_name < c:
-                    if not found or new_name < best_name:
-                        best_name = new_name
-                        found = True
-        
-        results.append(best_name if found else '---')
-    
-    return results
+def min_coins_to_move_chips(n, chips):
+    even_count = sum(1 for x in chips if x % 2 == 0)
+    odd_count = n - even_count
+    return min(even_count, odd_count)
 
-# Read number of test cases
-t = int(input())
-test_cases = [input().split() for _ in range(t)]
+# Input reading
+n = int(input())
+chips = list(map(int, input().split()))
 
-# Get results
-results = lexicographically_smaller(t, test_cases)
-
-# Print results
-for result in results:
-    print(result)
+# Calculate and print the result
+print(min_coins_to_move_chips(n, chips))

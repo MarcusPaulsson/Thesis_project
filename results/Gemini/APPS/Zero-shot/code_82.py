@@ -1,14 +1,21 @@
 def solve():
-    n = int(input())
-    p = list(map(int, input().split()))
+    n, k = map(int, input().split())
+    a = list(map(int, input().split()))
     
-    if n == 2:
-        print(p[1], p[0])
-        return
+    l = 0
+    r = n - 1
+    count = 0
     
-    p_prime = list(reversed(p))
-    print(*p_prime)
+    while l <= r:
+        if a[l] <= k:
+            count += 1
+            l += 1
+        elif a[r] <= k:
+            count += 1
+            r -= 1
+        else:
+            break
+            
+    print(count)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

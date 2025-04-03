@@ -1,36 +1,25 @@
-def minimize_k(test_cases):
-    results = []
-    
-    for n, a, l in test_cases:
-        unlocked_values = [a[i] for i in range(n) if l[i] == 0]
-        unlocked_values.sort()  # Sort unlocked values in ascending order
-        index = 0
-        
-        new_a = []
-        for i in range(n):
-            if l[i] == 1:
-                new_a.append(a[i])  # Keep locked values as is
-            else:
-                new_a.append(unlocked_values[index])  # Place sorted unlocked values
-                index += 1
-        
-        results.append(new_a)
-    
-    return results
+n, m, d = map(int, input().split())
+c = list(map(int, input().split()))
 
-# Read input and process each test case
-t = int(input())
-test_cases = []
+# Calculate the total length required for the platforms including gaps
+total_length = sum(c) + (m - 1)
 
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    l = list(map(int, input().split()))
-    test_cases.append((n, a, l))
+# Maximum reach from the first position (0)
+max_reach = d * (total_length // d)
 
-# Get the result for each test case
-results = minimize_k(test_cases)
+if total_length > n or max_reach < n:
+    print("NO")
+else:
+    print("YES")
+    a = [0] * n
+    position = 0
 
-# Print the results
-for result in results:
-    print(' '.join(map(str, result)))
+    for i in range(m):
+        for j in range(c[i]):
+            if position < n:
+                a[position] = i + 1
+                position += 1
+        if i < m - 1:
+            position += 1  # Leave a gap of at least 1 cell between platforms
+
+    print(" ".join(map(str, a)))

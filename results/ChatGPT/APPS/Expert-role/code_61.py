@@ -1,32 +1,39 @@
-def find_indices(test_cases):
-    results = []
-    for n, p in test_cases:
-        found = False
-        for j in range(1, n - 1):
-            if p[j - 1] < p[j] > p[j + 1]:
-                results.append(f"YES\n{j}\n{j + 1}\n{j + 2}")
-                found = True
-                break
-        if not found:
-            results.append("NO")
-    return results
-
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
+def max_transformed_number(n, a, f):
+    # Convert the function into a mapping from digit to its transformed value
+    f_map = {str(i + 1): str(f[i]) for i in range(9)}
     
-    T = int(data[0])
-    test_cases = []
-    index = 1
-    for _ in range(T):
-        n = int(data[index])
-        p = list(map(int, data[index + 1].split()))
-        test_cases.append((n, p))
-        index += 2
+    # Create a list to store the transformed number
+    transformed = []
+    transformation_started = False
+    
+    for digit in a:
+        if not transformation_started and f_map[digit] > digit:
+            # Start transforming if the current digit can be improved
+            transformation_started = True
+        if transformation_started:
+            # Replace the digit with its transformed value
+            transformed.append(f_map[digit])
+        else:
+            transformed.append(digit)
+    
+    # If we finished transforming and the transformation was started
+    # We should ensure we keep transforming till the end if it's beneficial
+    if transformation_started:
+        for i in range(len(transformed)):
+            if transformed[i] < a[i]:
+                break
+            transformed[i] = f_map[a[i]]
+    
+    result = ''.join(transformed)
+    return result
 
-    results = find_indices(test_cases)
-    print("\n".join(results))
+# Input reading
+n = int(input().strip())
+a = input().strip()
+f = list(map(int, input().strip().split()))
 
-if __name__ == "__main__":
-    main()
+# Getting the result
+result = max_transformed_number(n, a, f)
+
+# Printing the result
+print(result)

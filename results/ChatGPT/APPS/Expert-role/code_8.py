@@ -1,63 +1,36 @@
-def max_score(t, test_cases):
-    results = []
+def min_tiles_to_draw(tiles):
+    counts = {'m': {}, 'p': {}, 's': {}}
     
-    for n, k, s in test_cases:
-        score = 0
-        consecutive_wins = 0
-        changes = []
+    for tile in tiles:
+        num, suit = int(tile[0]), tile[1]
+        if num not in counts[suit]:
+            counts[suit][num] = 0
+        counts[suit][num] += 1
+    
+    # Check for koutsu
+    for suit in counts:
+        if any(count >= 3 for count in counts[suit].values()):
+            return 0
+    
+    # Check for shuntsu
+    for suit in counts:
+        nums = sorted(counts[suit].keys())
+        if len(nums) >= 3:
+            for i in range(len(nums) - 2):
+                if nums[i + 1] == nums[i] + 1 and nums[i + 2] == nums[i] + 2:
+                    return 0
+    
+    # Check if we can make a shuntsu by drawing one tile
+    for suit in counts:
+        nums = sorted(counts[suit].keys())
+        for num in nums:
+            if num - 1 >= 1 and num + 1 <= 9:
+                if (num - 1 in counts[suit] and num + 1 in counts[suit]):
+                    return 1
+    
+    # If no mentsu can be formed with one draw, we will need at least 2
+    return 2
 
-        # Calculate initial score and track segments of losses
-        for i in range(n):
-            if s[i] == 'W':
-                consecutive_wins += 1
-                score += 2 if i > 0 and s[i - 1] == 'W' else 1
-            else:
-                if consecutive_wins > 0:
-                    changes.append(consecutive_wins)
-                consecutive_wins = 0
-
-        if consecutive_wins > 0:
-            changes.append(consecutive_wins)
-
-        # Count losses
-        losses = s.count('L')
-        
-        # If we can change more losses than we have, we can convert all losses
-        if k >= losses:
-            # All wins can become consecutive
-            score += (losses * 2) + 1  # All become W, first gets 1, others get 2
-        else:
-            # We can only change k losses
-            changes.sort(reverse=True)
-            
-            # Total points from k changes
-            score += k * 2  # Each change gives 2 points
-            # Plus the initial score
-            score += sum(changes[:k])  # Add scores from the remaining wins
-            
-            # If we can only change some of the losses
-            if k > 0 and changes:
-                # First game gets 1 point
-                score += 1
-
-        results.append(score)
-
-    return results
-
-# Input handling
-import sys
-input = sys.stdin.read
-data = input().splitlines()
-
-t = int(data[0])
-test_cases = []
-
-for i in range(1, 2*t, 2):
-    n, k = map(int, data[i].split())
-    s = data[i + 1]
-    test_cases.append((n, k, s))
-
-results = max_score(t, test_cases)
-
-# Output results
-sys.stdout.write('\n'.join(map(str, results)) + '\n')
+# Input reading
+tiles = input().strip().split()
+print(min_tiles_to_draw(tiles))

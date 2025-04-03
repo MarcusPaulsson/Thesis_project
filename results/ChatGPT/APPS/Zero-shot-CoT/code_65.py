@@ -1,39 +1,22 @@
-def min_skip_points(t, test_cases):
-    results = []
+def min_moves(n, m):
+    if m % n != 0:
+        return -1
     
-    for i in range(t):
-        n = test_cases[i][0]
-        a = test_cases[i][1]
-        
-        skip_points = 0
-        i = 0
-        
-        while i < n:
-            if a[i] == 1:  # If the boss is hard
-                if i + 1 < n and a[i + 1] == 1:  # If the next boss is also hard
-                    skip_points += 1  # Use a skip point for the first hard boss
-                    i += 2  # Move past both
-                else:
-                    skip_points += 1  # Use a skip point for the hard boss
-                    i += 1  # Move past the hard boss
-            else:
-                i += 1  # Move past the easy boss
-                
-        results.append(skip_points)
+    k = m // n
+    moves = 0
     
-    return results
+    while k > 1:
+        if k % 2 == 0:
+            k //= 2
+            moves += 1
+        elif k % 3 == 0:
+            k //= 3
+            moves += 1
+        else:
+            return -1
+    
+    return moves
 
-# Reading input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    test_cases.append((n, a))
-
-# Getting results
-results = min_skip_points(t, test_cases)
-
-# Printing results
-for result in results:
-    print(result)
+# Read input
+n, m = map(int, input().split())
+print(min_moves(n, m))

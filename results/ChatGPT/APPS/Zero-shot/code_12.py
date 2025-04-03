@@ -1,41 +1,43 @@
-def min_operations(t, test_cases):
-    results = []
-    for a, b, c in test_cases:
-        min_ops = float('inf')
-        best_triplet = (a, b, c)
+def max_beauty_after_swap(n, trophies):
+    # Count the current longest segment of golden trophies
+    current_max = 0
+    current_count = 0
+    segments = []
 
-        # Iterate over possible values of A
-        for A in range(1, a + 1):
-            # Calculate possible B values that are multiples of A
-            for k in range(1, (c // A) + 2):
-                B = A * k
-                if B < b:
-                    continue
+    for trophy in trophies:
+        if trophy == 'G':
+            current_count += 1
+        else:
+            if current_count > 0:
+                segments.append(current_count)
+                current_max = max(current_max, current_count)
+            current_count = 0
+    
+    if current_count > 0:
+        segments.append(current_count)
+        current_max = max(current_max, current_count)
 
-                # Calculate possible C values that are multiples of B
-                for m in range(1, (c // B) + 2):
-                    C = B * m
-                    if C < c:
-                        continue
+    # If there are no golden trophies, max beauty is 0
+    if not segments:
+        return 0
 
-                    # Calculate operations needed
-                    ops = abs(A - a) + abs(B - b) + abs(C - c)
-                    if ops < min_ops:
-                        min_ops = ops
-                        best_triplet = (A, B, C)
+    # Calculate the maximum possible beauty after one swap
+    max_beauty = current_max
 
-        results.append((min_ops, best_triplet))
+    for i in range(len(segments) - 1):
+        # Consider merging two segments by swapping one silver to golden
+        combined = segments[i] + segments[i + 1]
+        max_beauty = max(max_beauty, combined)
 
-    return results
+    # Check if we can increase the max length by 1 if there's at least one silver trophy
+    if 'S' in trophies:
+        max_beauty = max(max_beauty, current_max + 1)
 
-# Read input data
-t = int(input())
-test_cases = [tuple(map(int, input().split())) for _ in range(t)]
+    return max_beauty
 
-# Get results
-results = min_operations(t, test_cases)
+# Input reading
+n = int(input())
+trophies = input().strip()
 
-# Print output
-for res in results:
-    print(res[0])
-    print(res[1][0], res[1][1], res[1][2])
+# Output the result
+print(max_beauty_after_swap(n, trophies))

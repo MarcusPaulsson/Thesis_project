@@ -1,48 +1,45 @@
 def solve():
-    n = int(input())
+    n, k = map(int, input().split())
     s = input()
+
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    dp[0][0] = 1
+
+    for i in range(1, n + 1):
+        for j in range(i + 1):
+            dp[i][0] = 1
+            if j > 0:
+                dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j]
+
+    subsequence_counts = [dp[n][i] for i in range(n + 1)]
+
+    unique_subsequence_counts = [0] * (n + 1)
+    last_occurrence = {}
+
+    for i in range(n):
+        char = s[i]
+        if char in last_occurrence:
+            index = last_occurrence[char]
+            for j in range(1, i + 1):
+                unique_subsequence_counts[j] = unique_subsequence_counts[j] + dp[i][j] - dp[index][j - 1]
+        else:
+            for j in range(1, i + 1):
+                unique_subsequence_counts[j] = unique_subsequence_counts[j] + dp[i][j]
+        unique_subsequence_counts[0] += 1
+        last_occurrence[char] = i
+
+    total_cost = 0
+    remaining_k = k
     
-    def calculate_operations(string):
-        count = 0
-        while string:
-            max_ops = 0
-            best_string = ""
-            
-            for i in range(len(string)):
-                temp_string = string[:i] + string[i+1:]
-                
-                if temp_string:
-                    first_char = temp_string[0]
-                    prefix_len = 0
-                    for j in range(len(temp_string)):
-                        if temp_string[j] == first_char:
-                            prefix_len += 1
-                        else:
-                            break
-                    
-                    new_string = temp_string[prefix_len:]
-                else:
-                    new_string = ""
-                
-                
-                if len(string) > 0:
-                  
-                  if len(new_string) > len(best_string):
-                    best_string = new_string
-                    
-                  elif len(new_string) == len(best_string) and len(best_string) > 0 :
-                    if new_string < best_string:
-                      best_string = new_string
-                  elif len(best_string) == 0:
-                      best_string = new_string
+    for length in range(n, -1, -1):
+        count = min(remaining_k, unique_subsequence_counts[length])
+        total_cost += count * (n - length)
+        remaining_k -= count
+        
+        if remaining_k == 0:
+            print(total_cost)
+            return
 
-            string = best_string
-            count += 1
-        return count
+    print(-1)
 
-    print(calculate_operations(s))
-
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

@@ -1,53 +1,23 @@
-def min_operations_to_sort(q, queries):
-    results = []
-    
-    for n, a in queries:
-        # Count frequency of each element
-        from collections import Counter
-        count = Counter(a)
-        
-        # Create a sorted version of the array
-        sorted_a = sorted(a)
-        
-        # Find the longest prefix of the sorted array that can be formed
-        max_length = 0
-        current_length = 0
-        
-        for i in range(n):
-            if i == 0 or sorted_a[i] == sorted_a[i-1]:
-                current_length += count[sorted_a[i]]
-            else:
-                # Reset the current length for new element
-                max_length = max(max_length, current_length)
-                current_length = count[sorted_a[i]]
-        
-        # Final check for the last element
-        max_length = max(max_length, current_length)
-        
-        # Minimum operations needed is total elements minus the size of the longest valid prefix
-        min_operations = n - max_length
-        results.append(min_operations)
-    
-    return results
+n = int(input())
+ratings = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Read input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+rated = False
+unrated = False
 
-q = int(data[0])
-queries = []
+for a, b in ratings:
+    if a != b:
+        rated = True
+        break
 
-index = 1
-for _ in range(q):
-    n = int(data[index])
-    a = list(map(int, data[index + 1].split()))
-    queries.append((n, a))
-    index += 2
+if rated:
+    print("rated")
+else:
+    for i in range(n - 1):
+        if ratings[i][0] < ratings[i + 1][0]:
+            unrated = True
+            break
 
-# Get results
-results = min_operations_to_sort(q, queries)
-
-# Print results
-for result in results:
-    print(result)
+    if unrated:
+        print("unrated")
+    else:
+        print("maybe")

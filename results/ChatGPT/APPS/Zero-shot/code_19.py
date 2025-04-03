@@ -1,76 +1,38 @@
-from collections import defaultdict, deque
-import sys
-
-input = sys.stdin.readline
-
-def find_spanning_tree(n, m, D, edges):
-    graph = defaultdict(list)
-    
-    for u, v in edges:
-        graph[u].append(v)
-        graph[v].append(u)
-    
-    if len(graph[1]) < D:  # First vertex cannot have degree D
-        return "NO"
-    
-    # Start building the spanning tree
-    spanning_tree = []
-    visited = [False] * (n + 1)
-    
-    def bfs(start):
-        queue = deque([start])
-        visited[start] = True
-        degree_count = 0
+def check_records(test_cases):
+    results = []
+    for case in test_cases:
+        n = case[0]
+        records = case[1]
         
-        while queue:
-            if degree_count == D:
+        valid = True
+        previous_plays, previous_clears = 0, 0
+        
+        for p, c in records:
+            if p < previous_plays or c < previous_clears or c > p:
+                valid = False
                 break
-            current = queue.popleft()
-            connections = 0
             
-            for neighbor in graph[current]:
-                if not visited[neighbor]:
-                    if current == 1 and connections < D:
-                        spanning_tree.append((current, neighbor))
-                        connections += 1
-                        visited[neighbor] = True
-                        queue.append(neighbor)
-                    elif current != 1:
-                        spanning_tree.append((current, neighbor))
-                        visited[neighbor] = True
-                        queue.append(neighbor)
-
-            if current == 1:
-                degree_count += connections
-        
-        return degree_count
-    
-    if bfs(1) < D:  # If we couldn't satisfy the degree requirement
-        return "NO"
-    
-    # Ensure we have n-1 edges
-    if len(spanning_tree) < n - 1:
-        remaining_edges = []
-        for u in range(1, n + 1):
-            for v in graph[u]:
-                if u < v and (u, v) not in spanning_tree and (v, u) not in spanning_tree:
-                    remaining_edges.append((u, v))
-        
-        for u, v in remaining_edges:
-            if len(spanning_tree) == n - 1:
+            if p - previous_plays < c - previous_clears:
+                valid = False
                 break
-            spanning_tree.append((u, v))
-
-    if len(spanning_tree) != n - 1:
-        return "NO"
+            
+            previous_plays, previous_clears = p, c
+        
+        results.append("YES" if valid else "NO")
     
-    result = ["YES"]
-    result.extend(f"{u} {v}" for u, v in spanning_tree)
-    return "\n".join(result)
+    return results
 
-# Read input
-n, m, D = map(int, input().split())
-edges = [tuple(map(int, input().split())) for _ in range(m)]
+# Reading input
+T = int(input())
+test_cases = []
+for _ in range(T):
+    n = int(input())
+    records = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, records))
 
-# Output result
-print(find_spanning_tree(n, m, D, edges))
+# Checking records
+results = check_records(test_cases)
+
+# Printing results
+for result in results:
+    print(result)

@@ -1,21 +1,16 @@
-def is_palindrome(time):
-    return time == time[::-1]
+h1, m1 = map(int, input().split(':'))
+h2, m2 = map(int, input().split(':'))
 
-def next_palindrome_time(hh, mm):
-    minutes_passed = 0
-    while True:
-        mm += 1
-        if mm == 60:
-            mm = 0
-            hh += 1
-            if hh == 24:
-                hh = 0
-        minutes_passed += 1
-        time_str = f"{hh:02}:{mm:02}"
-        if is_palindrome(time_str):
-            return minutes_passed
+# Convert start and end times to minutes
+start_minutes = h1 * 60 + m1
+end_minutes = h2 * 60 + m2
 
-time_input = input().strip()
-hh, mm = map(int, time_input.split(':'))
-result = next_palindrome_time(hh, mm)
-print(result)
+# Calculate the midpoint in minutes
+mid_minutes = (start_minutes + end_minutes) // 2
+
+# Convert back to hours and minutes
+h3 = mid_minutes // 60
+m3 = mid_minutes % 60
+
+# Print the result in the specified format
+print(f"{h3:02}:{m3:02}")

@@ -1,45 +1,20 @@
-def reconstruct_string(t, test_cases):
-    results = []
+import sys
+import math
+
+# Read input
+A, B = map(int, sys.stdin.read().strip().split())
+
+# Initialize the minimum price found
+min_price = -1
+
+# Check all prices from 1 to 1000 (since A and B are <= 100, we can limit the search)
+for price in range(1, 1001):
+    tax_8 = math.floor(price * 0.08)
+    tax_10 = math.floor(price * 0.1)
     
-    for s, x in test_cases:
-        n = len(s)
-        w = ['0'] * n
-        
-        # Step 1: Mark potential 1's in w based on s
-        for i in range(n):
-            if s[i] == '1':
-                if i - x >= 0:
-                    w[i - x] = '1'
-                if i + x < n:
-                    w[i + x] = '1'
-        
-        # Step 2: Verify if this w can produce s
-        valid = True
-        for i in range(n):
-            s_generated = '0'
-            if (i - x >= 0 and w[i - x] == '1') or (i + x < n and w[i + x] == '1'):
-                s_generated = '1'
-            if s_generated != s[i]:
-                valid = False
-                break
-        
-        if valid:
-            results.append(''.join(w))
-        else:
-            results.append('-1')
-    
-    return results
+    if tax_8 == A and tax_10 == B:
+        if min_price == -1 or price < min_price:
+            min_price = price
 
-
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    s = input().strip()
-    x = int(input().strip())
-    test_cases.append((s, x))
-
-# Get results and print them
-results = reconstruct_string(t, test_cases)
-for result in results:
-    print(result)
+# Output the result
+print(min_price)

@@ -1,66 +1,30 @@
 def solve():
-    l, r = map(int, input().split())
-    
-    count = 0
-    for a in range(l, r + 1):
-        for b in range(l, r + 1):
-            if a + b == (a ^ b):
-                count += 1
-    print(count)
+    n = int(input())
+    strings = []
+    for _ in range(n):
+        strings.append(input())
 
-def solve_efficient():
-    l, r = map(int, input().split())
-    range_size = r - l + 1
-    count = 0
-    
-    for a in range(l, r + 1):
-        count += (a & (r - a + a)) == a
-    
-    total = r - l + 1
-    
-    
-    
-    
-    count = 0
-    for a in range(l, r + 1):
-      for b in range(l, r + 1):
-        if (a + b) == (a ^ b):
-          count += 1
-          
-    print(count)
-    
-def solve_even_more_efficient():
-  l, r = map(int, input().split())
-  
-  count = 0
-  for a in range(l, r + 1):
-    for b in range(l, r + 1):
-      if (a & b) == 0:
-        count += 1
-  
-  print(count)
+    def is_substring(a, b):
+        return a in b
 
-def solve_final():
-  l, r = map(int, input().split())
-  n = r - l + 1
-  ans = 0
-  
-  for a in range(l, r + 1):
-    for b in range(l, r + 1):
-      if (a & b) == 0:
-        ans += 1
-  print(ans)
-
-def solve_final_correct():
-    l, r = map(int, input().split())
+    import itertools
     
-    count = 0
-    for a in range(l, r + 1):
-        for b in range(l, r + 1):
-            if (a & b) == 0:
-                count += 1
-    print(count)
+    for perm in itertools.permutations(strings):
+        valid = True
+        for i in range(1, len(perm)):
+            for j in range(i):
+                if not is_substring(perm[j], perm[i]):
+                    valid = False
+                    break
+            if not valid:
+                break
+        
+        if valid:
+            print("YES")
+            for s in perm:
+                print(s)
+            return
+    
+    print("NO")
 
-t = int(input())
-for _ in range(t):
-    solve_final_correct()
+solve()

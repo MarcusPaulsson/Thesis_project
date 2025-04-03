@@ -1,37 +1,31 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
+  n, m = map(int, input().split())
+  
+  if n == m:
+    print(0)
+    return
+  
+  if m % n != 0:
+    print(-1)
+    return
+  
+  diff = m // n
+  
+  count2 = 0
+  count3 = 0
+  
+  while diff % 2 == 0:
+    diff //= 2
+    count2 += 1
+    
+  while diff % 3 == 0:
+    diff //= 3
+    count3 += 1
+    
+  if diff != 1:
+    print(-1)
+    return
+  
+  print(count2 + count3)
 
-    dp = {}
-
-    def calculate_min_skips(index, turn):
-        if index == n:
-            return 0
-
-        if (index, turn) in dp:
-            return dp[(index, turn)]
-
-        if turn == 0: 
-            ans = float('inf')
-            
-            ans = min(ans, a[index] + calculate_min_skips(index + 1, 1))
-            
-            if index + 1 < n:
-                ans = min(ans, a[index] + a[index+1] + calculate_min_skips(index + 2, 1))
-
-            dp[(index, turn)] = ans
-            return ans
-        else:
-            
-            ans = calculate_min_skips(index + 1, 0)
-            if index + 1 < n:
-                ans = min(ans, calculate_min_skips(index + 2, 0))
-            
-            dp[(index, turn)] = ans
-            return ans
-
-    print(calculate_min_skips(0, 0))
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

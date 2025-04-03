@@ -1,20 +1,40 @@
-def can_reorder_strings(n, strings):
-    # Sort strings by length
-    strings.sort(key=len)
-    
-    # Check if each string is a substring of the next strings in the sorted list
-    for i in range(n):
-        for j in range(i + 1, n):
-            if strings[i] not in strings[j]:
-                print("NO")
-                return
-    
-    print("YES")
-    print("\n".join(strings))
+def mod_inv(a, p):
+    return pow(a, p - 2, p)
 
-# Read input
-n = int(input())
-strings = [input().strip() for _ in range(n)]
+def birthday_paradox(n, k):
+    MOD = 10**6 + 3
+    days = 1 << n  # 2^n
+    
+    if k > days:
+        return 1, 1  # Guaranteed at least two people share a birthday
+    
+    # P(no shared birthday) = days / days * (days - 1) / days * ... * (days - k + 1) / days
+    numerator = days
+    denominator = 1
+    
+    for i in range(1, k):
+        numerator *= (days - i)
+        denominator *= days
+        numerator %= MOD
+        denominator %= MOD
+    
+    # P(at least one shared birthday) = 1 - P(no shared birthday)
+    A = (denominator - numerator + MOD) % MOD
+    B = denominator
+    
+    # Reduce A and B
+    gcd_ab = gcd(A, B)
+    A //= gcd_ab
+    B //= gcd_ab
+    
+    return A, B
 
-# Call the function
-can_reorder_strings(n, strings)
+def gcd(x, y):
+    while y:
+        x, y = y, x % y
+    return x
+
+if __name__ == "__main__":
+    n, k = map(int, input().split())
+    A, B = birthday_paradox(n, k)
+    print(A, B)

@@ -1,42 +1,54 @@
-def secure_ski_resort(test_cases):
+def min_blows_to_defeat_zmei(t, queries):
     results = []
     
-    for n, m, tracks in test_cases:
-        # We can just pick the last n//2 spots to close as a simple solution
-        spots_to_close = []
+    for query in queries:
+        n, x, blows = query
+        min_blows = float('inf')
         
-        # We can close the last n//2 spots (if n is odd, we close (n//2)+1 spots)
-        for i in range((n + 1) // 2, n + 1):
-            spots_to_close.append(i)
+        # Determine the best blow
+        effective_blows = []
+        for d, h in blows:
+            if d > 0:
+                effective_blows.append((d, h))
         
-        results.append((len(spots_to_close), spots_to_close))
-    
+        # If no effective blows, Zmei can't be defeated
+        if not effective_blows:
+            results.append(-1)
+            continue
+        
+        # Find the minimum blows needed
+        for d, h in effective_blows:
+            # Calculate the net effect of this blow
+            net_effect = d - h
+            if net_effect >= 0:
+                # If the blow does not reduce heads effectively
+                if x <= d:
+                    # We can defeat Gorynich in one blow
+                    min_blows = min(min_blows, 1)
+            else:
+                # Calculate how many blows are needed
+                blows_needed = (x + net_effect - 1) // net_effect
+                if blows_needed >= 0:
+                    min_blows = min(min_blows, blows_needed)
+
+        if min_blows == float('inf'):
+            results.append(-1)
+        else:
+            results.append(min_blows)
+
     return results
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    T = int(data[0])
-    index = 1
-    test_cases = []
-    
-    for _ in range(T):
-        n, m = map(int, data[index].split())
-        index += 1
-        tracks = []
-        for __ in range(m):
-            x, y = map(int, data[index].split())
-            tracks.append((x, y))
-            index += 1
-        test_cases.append((n, m, tracks))
-    
-    results = secure_ski_resort(test_cases)
-    
-    for k, spots in results:
-        print(k)
-        print(" ".join(map(str, spots)))
+# Reading input
+t = int(input())
+queries = []
+for _ in range(t):
+    n, x = map(int, input().split())
+    blows = [tuple(map(int, input().split())) for _ in range(n)]
+    queries.append((n, x, blows))
 
-if __name__ == "__main__":
-    main()
+# Getting results
+results = min_blows_to_defeat_zmei(t, queries)
+
+# Printing results
+for result in results:
+    print(result)

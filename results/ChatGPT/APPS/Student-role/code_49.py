@@ -1,17 +1,17 @@
-def count_classy_integers(L, R):
-    count = 0
-    for i in range(1, R + 1):
-        if L <= i <= R:
-            if len(str(i).replace('0', '')) <= 3:
-                count += 1
-    return count
+def find_kth_digit(k):
+    length = 1
+    count = 9
+    start = 1
+    
+    while k > length * count:
+        k -= length * count
+        length += 1
+        count *= 10
+        start *= 10
+    
+    start += (k - 1) // length
+    num_str = str(start)
+    return int(num_str[(k - 1) % length])
 
-T = int(input())
-results = []
-
-for _ in range(T):
-    L, R = map(int, input().split())
-    results.append(count_classy_integers(L, R))
-
-for result in results:
-    print(result)
+k = int(input())
+print(find_kth_digit(k))

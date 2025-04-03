@@ -1,51 +1,41 @@
-def make_beautiful_array(t, test_cases):
-    results = []
-    for case in test_cases:
-        n, k, a = case
-        # Initialize frequency array
-        freq = [0] * (n + 1)
-        
-        # Count occurrences of each number in the array
-        for num in a:
-            freq[num] += 1
-        
-        # To store the sequence of unique elements for the beautiful array
-        unique_elements = []
-        
-        # Collect unique elements that we can use from 1 to n
-        for i in range(1, n + 1):
-            if freq[i] > 0:
-                unique_elements.append(i)
-        
-        # Check if we can form a beautiful array
-        if len(unique_elements) > k:
-            results.append("-1")
-            continue
-        
-        # Create the beautiful array
-        m = max(10000, len(unique_elements) * k)
-        beautiful_array = []
-        
-        # Repeat the unique elements to fill up to m
-        while len(beautiful_array) < m:
-            for element in unique_elements:
-                if len(beautiful_array) < m:
-                    beautiful_array.append(element)
-        
-        results.append(f"{len(beautiful_array)}")
-        results.append(" ".join(map(str, beautiful_array)))
+def maximal_intersection_length(n, segments):
+    # Separate the segments into left and right endpoints
+    l = [segments[i][0] for i in range(n)]
+    r = [segments[i][1] for i in range(n)]
     
-    return results
+    # Precompute the max of left endpoints and min of right endpoints
+    max_left = [0] * n
+    min_right = [0] * n
+    
+    max_left[0] = l[0]
+    for i in range(1, n):
+        max_left[i] = max(max_left[i - 1], l[i])
+    
+    min_right[n - 1] = r[n - 1]
+    for i in range(n - 2, -1, -1):
+        min_right[i] = min(min_right[i + 1], r[i])
+    
+    max_length = 0
+    
+    for i in range(n):
+        if i == 0:
+            left_bound = max_left[1]
+            right_bound = min_right[1]
+        elif i == n - 1:
+            left_bound = max_left[n - 2]
+            right_bound = min_right[n - 2]
+        else:
+            left_bound = max(max_left[i - 1], l[i + 1])
+            right_bound = min(min_right[i + 1], r[i - 1])
+        
+        intersection_length = max(0, right_bound - left_bound)
+        max_length = max(max_length, intersection_length)
+    
+    return max_length
 
-# Example usage
-t = 4
-test_cases = [
-    (4, 2, [1, 2, 2, 1]),
-    (4, 3, [1, 2, 2, 1]),
-    (3, 2, [1, 2, 3]),
-    (4, 4, [4, 3, 4, 2])
-]
+# Read input
+n = int(input())
+segments = [tuple(map(int, input().split())) for _ in range(n)]
 
-output = make_beautiful_array(t, test_cases)
-for line in output:
-    print(line)
+# Calculate and print the result
+print(maximal_intersection_length(n, segments))

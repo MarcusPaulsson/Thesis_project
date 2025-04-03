@@ -1,19 +1,20 @@
-n = int(input().strip())
-f = list(map(int, input().strip().split()))
+def day_when_barn_empty(n, m):
+    day = 0
+    total_eaten = 0
+    
+    while n > 0:
+        day += 1
+        total_eaten += day  # Total sparrows that have come until today
+        n += m  # Grains brought to the barn
+        
+        # If barn is full, it can only hold n grains
+        if n > n:
+            n = n  # Barn remains full
+            
+        n -= total_eaten  # Sparrows eat from the barn
+        
+    return day
 
-# Find the friends who want to give gifts (f_i != 0) and those who have not decided (f_i == 0)
-givers = set(range(1, n + 1)) - set(f)
-unknowns = [i + 1 for i in range(n) if f[i] == 0]
-
-# Create a mapping of who should give gifts to whom
-result = f[:]
-
-# We need to ensure that we can fill in the zeros without giving a gift to oneself
-for u in unknowns:
-    for g in givers:
-        if g != u:
-            result[u - 1] = g
-            givers.remove(g)
-            break
-
-print(' '.join(map(str, result)))
+# Input
+n, m = map(int, input().split())
+print(day_when_barn_empty(n, m))

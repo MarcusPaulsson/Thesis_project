@@ -1,45 +1,48 @@
-def min_subscriptions(t, cases):
+def is_stats_correct(test_cases):
     results = []
-    for n, k, d, shows in cases:
-        # To store the unique shows in the current window of size d
-        unique_shows = set()
-        # Initialize the first window
-        for i in range(d):
-            unique_shows.add(shows[i])
+    
+    for case in test_cases:
+        n, stats = case
+        valid = True
         
-        # The minimum number of subscriptions needed is the size of the unique set
-        min_subs = len(unique_shows)
-        
-        # Slide the window across the shows
-        for i in range(d, n):
-            # Remove the show that is left behind and add the new show in the window
-            unique_shows.add(shows[i])  # Add the new show
-            unique_shows.discard(shows[i - d])  # Remove the show that is sliding out
+        for i in range(1, n):
+            p_prev, c_prev = stats[i-1]
+            p_curr, c_curr = stats[i]
             
-            # Update the minimum subscriptions if current unique shows are less
-            min_subs = min(min_subs, len(unique_shows))
-        
-        results.append(min_subs)
+            # Check for non-decreasing plays and clears
+            if p_curr < p_prev or c_curr < c_prev:
+                valid = False
+                break
+            
+            # Check if clears do not exceed plays
+            if c_curr > p_curr:
+                valid = False
+                break
+            
+            # Check the increase in plays and clears
+            if (c_curr - c_prev) > (p_curr - p_prev):
+                valid = False
+                break
+            
+        # Check the first entry
+        p_first, c_first = stats[0]
+        if c_first > p_first:
+            valid = False
+            
+        results.append("YES" if valid else "NO")
     
     return results
 
+# Read input
+T = int(input())
+test_cases = []
 
-# Input handling
-import sys
-input = sys.stdin.read
+for _ in range(T):
+    n = int(input())
+    stats = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, stats))
 
-data = input().splitlines()
-t = int(data[0])
-cases = []
-index = 1
-for _ in range(t):
-    n, k, d = map(int, data[index].split())
-    shows = list(map(int, data[index + 1].split()))
-    cases.append((n, k, d, shows))
-    index += 2
-
-# Get the results
-results = min_subscriptions(t, cases)
-
-# Print the results
-print('\n'.join(map(str, results)))
+# Get results and print
+results = is_stats_correct(test_cases)
+for result in results:
+    print(result)

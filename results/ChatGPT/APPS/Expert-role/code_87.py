@@ -1,33 +1,23 @@
-def count_ambiguous_pairs(m, d, w):
-    # Calculate the number of days in the year
-    total_days = m * d
+def max_projects(n, r, projects):
+    # Sort projects by their required rating a_i
+    projects.sort(key=lambda x: x[0])
     
-    # Calculate the number of complete weeks in the total days
-    complete_weeks = total_days // w
+    count = 0
+    current_rating = r
     
-    # Calculate the number of extra days after complete weeks
-    extra_days = total_days % w
+    for a, b in projects:
+        if current_rating >= a:  # Check if Polycarp can start the project
+            count += 1  # Increment the count of projects
+            current_rating += b  # Update the rating after completing the project
+            if current_rating < 0:  # Ensure rating does not drop below zero
+                current_rating = 0
     
-    # Create a list to hold the count of days of the week
-    days_count = [0] * w
-    
-    # Distribute the days across the weeks
-    for i in range(w):
-        days_count[i] = complete_weeks + (1 if i < extra_days else 0)
-    
-    # Calculate the number of ambiguous pairs
-    ambiguous_pairs = 0
-    
-    # Count pairs (x, y) such that x < y
-    for i in range(1, w):
-        ambiguous_pairs += days_count[i] * days_count[i - 1]
-    
-    return ambiguous_pairs
+    return count
 
-t = int(input())
-results = []
-for _ in range(t):
-    m, d, w = map(int, input().split())
-    results.append(count_ambiguous_pairs(m, d, w))
+# Read input
+n, r = map(int, input().split())
+projects = [tuple(map(int, input().split())) for _ in range(n)]
 
-print("\n".join(map(str, results)))
+# Get the result and print it
+result = max_projects(n, r, projects)
+print(result)

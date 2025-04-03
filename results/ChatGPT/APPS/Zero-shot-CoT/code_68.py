@@ -1,26 +1,32 @@
-def max_operations(t, cases):
-    results = []
-    for n, s in cases:
-        count = 0
-        current_char = ''
-        for char in s:
-            if char != current_char:
-                count += 1
-                current_char = char
-        results.append(count)
-    return results
+from itertools import combinations
 
-# Input reading
-t = int(input())
-cases = []
-for _ in range(t):
-    n = int(input())
-    s = input().strip()
-    cases.append((n, s))
+def min_cost_to_obtain_set(n, k, s):
+    subsequences = set()
+    
+    # Generate all unique subsequences
+    for i in range(n + 1):
+        for combo in combinations(s, i):
+            subsequences.add(''.join(combo))
+    
+    # If the number of unique subsequences is less than k, return -1
+    if len(subsequences) < k:
+        return -1
+    
+    # Calculate the cost for the k smallest subsequences
+    costs = []
+    for t in subsequences:
+        costs.append(n - len(t))  # Cost is n - |t|
+    
+    costs.sort()
+    
+    return sum(costs[:k])
 
-# Get results
-results = max_operations(t, cases)
+# Read input
+n, k = map(int, input().split())
+s = input().strip()
 
-# Output results
-for result in results:
-    print(result)
+# Get the result
+result = min_cost_to_obtain_set(n, k, s)
+
+# Print the result
+print(result)

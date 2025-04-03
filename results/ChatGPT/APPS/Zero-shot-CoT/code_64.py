@@ -1,65 +1,47 @@
-def time_to_meet(t, test_cases):
-    results = []
+def schedule_exams(n, m, exams):
+    days = [0] * n  # Initialize days with 0 (rest days)
     
-    for case in test_cases:
-        n, l, flags = case
-        pos1 = 0  # position of the first car
-        pos2 = l  # position of the second car
-        speed1 = 1  # initial speed of the first car
-        speed2 = 1  # initial speed of the second car
-        time = 0.0  # total time taken
-        
-        # Indices for flags
-        index1 = 0  # for car 1
-        index2 = n - 1  # for car 2
-        
-        while index1 < n and index2 >= 0:
-            # Time until car 1 reaches the next flag or car 2 reaches its flag
-            time_to_flag1 = (flags[index1] - pos1) / speed1 if speed1 > 0 else float('inf')
-            time_to_flag2 = (pos2 - flags[index2]) / speed2 if speed2 > 0 else float('inf')
-            
-            if time_to_flag1 < time_to_flag2:
-                time += time_to_flag1
-                pos1 = flags[index1]
-                index1 += 1
-                speed1 += 1  # speed increases
-                # Now update the position of car 2
-                pos2 -= speed2 * time_to_flag1
-            else:
-                time += time_to_flag2
-                pos2 = flags[index2]
-                index2 -= 1
-                speed2 += 1  # speed increases
-                # Now update the position of car 1
-                pos1 += speed1 * time_to_flag2
-        
-        # After all flags are processed, calculate the time until they meet
-        if pos1 < pos2:
-            remaining_distance = pos2 - pos1
-            final_speed1 = speed1
-            final_speed2 = speed2
-            
-            # They are now moving towards each other
-            time_to_meet = remaining_distance / (final_speed1 + final_speed2)
-            time += time_to_meet
-        
-        results.append(time)
+    # Sort exams based on the day of the exam
+    exams.sort(key=lambda x: x[1])
     
-    return results
+    # Preparation tracking
+    preparation_days = [0] * m  # How many days are allocated for preparation for each exam
+    exam_days = [0] * m  # When exams are scheduled 
 
-# Input Reading
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+    for i in range(m):
+        s_i, d_i, c_i = exams[i]
+        s_i -= 1  # Convert to 0-indexed
+        d_i -= 1  # Convert to 0-indexed
+        exam_days[i] = d_i
+        
+        # Try to allocate preparation days
+        count = 0
+        for j in range(s_i, d_i):
+            if days[j] == 0 and count < c_i:  # Only prepare on rest days
+                days[j] = i + 1  # Marking preparation for exam i
+                count += 1
+        
+        preparation_days[i] = count
+        
+        # If we couldn't allocate enough preparation days, return -1
+        if count < c_i:
+            return -1
+    
+    # Mark exam days
+    for i in range(m):
+        days[exam_days[i]] = m + 1  # Marking exam day
+    
+    return days
 
-t = int(data[0])
-test_cases = []
+# Read input
+n, m = map(int, input().split())
+exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-for i in range(1, 2 * t, 2):
-    n, l = map(int, data[i].split())
-    flags = list(map(int, data[i + 1].split()))
-    test_cases.append((n, l, flags))
+# Get the schedule
+result = schedule_exams(n, m, exams)
 
-results = time_to_meet(t, test_cases)
-for result in results:
-    print(f"{result:.12f}")
+# Print the result
+if result == -1:
+    print(result)
+else:
+    print(' '.join(map(str, result)))

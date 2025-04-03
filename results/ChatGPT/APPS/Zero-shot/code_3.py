@@ -1,28 +1,34 @@
-def longest_increasing_sequence(n, a):
-    left, right = 0, n - 1
-    last_taken = -1
-    result = []
-    moves = []
+def max_painted_sections(n, q, painters):
+    painted = [0] * (n + 1)
     
-    while left <= right:
-        if a[left] > last_taken and (a[right] <= last_taken or a[left] < a[right]):
-            result.append(a[left])
-            moves.append('L')
-            last_taken = a[left]
-            left += 1
-        elif a[right] > last_taken:
-            result.append(a[right])
-            moves.append('R')
-            last_taken = a[right]
-            right -= 1
-        else:
-            break
+    for l, r in painters:
+        for i in range(l, r + 1):
+            painted[i] += 1
+            
+    total_sections = sum(1 for i in range(1, n + 1) if painted[i] > 0)
     
-    print(len(result))
-    print(''.join(moves))
+    max_painted = 0
+    
+    for i in range(q):
+        # Create a copy of painted sections
+        painted_copy = painted[:]
+        
+        # Remove the influence of the i-th painter
+        l, r = painters[i]
+        for j in range(l, r + 1):
+            painted_copy[j] -= 1
+            
+        # Count how many sections are still painted
+        sections = sum(1 for k in range(1, n + 1) if painted_copy[k] > 0)
+        
+        # We want to maximize the painted sections
+        max_painted = max(max_painted, sections)
+    
+    return max_painted
 
-# Input reading
-n = int(input())
-a = list(map(int, input().split()))
+# Read input
+n, q = map(int, input().split())
+painters = [tuple(map(int, input().split())) for _ in range(q)]
 
-longest_increasing_sequence(n, a)
+# Output the result
+print(max_painted_sections(n, q, painters))

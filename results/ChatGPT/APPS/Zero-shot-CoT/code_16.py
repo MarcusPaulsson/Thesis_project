@@ -1,52 +1,25 @@
-def max_score(tc, test_cases):
-    results = []
-    
-    for case in test_cases:
-        n, (C, T), problems = case
-        problems.sort(key=lambda x: (-x[1] / (x[0] / 1.0), x[0]))  # sort by score/difficulty ratio and then by difficulty
-        
-        max_score = 0
-        
-        for training_time in range(int(T) + 1):
-            if training_time % 10 != 0:
-                continue
-            
-            # Calculate the new skill after training
-            s = 1.0 + C * (training_time / 60.0)  # Convert training_time to hours for C
-            
-            total_time = training_time
-            score = 0
-            
-            for a_i, p_i in problems:
-                if total_time + 10 > T:
-                    break  # Not enough time to watch the episode
-                
-                total_time += 10  # Watch an episode
-                s *= 0.9  # Skill decreases by 10%
-                
-                time_needed = a_i / s
-                if total_time + time_needed > T:
-                    break  # Not enough time to solve the problem
-                
-                total_time += time_needed
-                score += p_i
-            
-            max_score = max(max_score, score)
-        
-        results.append(max_score)
-    
-    return results
+cnt_1 = int(input().strip())
+cnt_2 = int(input().strip())
+cnt_3 = int(input().strip())
+cnt_4 = int(input().strip())
 
+# To form a valid bracket sequence:
+# - The number of opening brackets must be equal to the number of closing brackets.
+# - At no point in the sequence should the number of closing brackets exceed the number of opening brackets.
 
-# Input reading and function calling
-tc = int(input())
-test_cases = []
-for _ in range(tc):
-    n = int(input())
-    C, T = map(float, input().split())
-    problems = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, (C, T), problems))
+# Count of opening and closing brackets
+opening_brackets = cnt_1 + cnt_2
+closing_brackets = cnt_3 + cnt_4
 
-results = max_score(tc, test_cases)
-for result in results:
-    print(result)
+# The total number of opening brackets should be equal to the total number of closing brackets
+if opening_brackets == closing_brackets:
+    # The number of closing brackets should not exceed the number of opening brackets at any point
+    # This can be ensured by checking:
+    # The number of closing brackets that can be used at the start of the sequence (cnt_3)
+    # should not exceed the number of opening brackets that can be opened before them (cnt_1 + cnt_2)
+    if cnt_3 <= opening_brackets:
+        print(1)
+    else:
+        print(0)
+else:
+    print(0)

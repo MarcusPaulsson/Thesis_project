@@ -105,16 +105,16 @@ def geometric_mean(data):
         product *= x
     return round(math.pow(product, 1 / len(data)), 2)
 
-analyze_folders(folder_paths_gemini_cli_games, results_gemini)
-analyze_folders(folder_paths_chatgpt_cli_games, results_chatgpt)
-analyze_folders(folder_paths_gemini_classEval, results_gemini)
-analyze_folders(folder_paths_chatgpt_classEval, results_chatgpt)
+# analyze_folders(folder_paths_gemini_cli_games, results_gemini)
+# analyze_folders(folder_paths_chatgpt_cli_games, results_chatgpt)
+# analyze_folders(folder_paths_gemini_classEval, results_gemini)
+# analyze_folders(folder_paths_chatgpt_classEval, results_chatgpt)
 analyze_folders(folder_paths_chatgpt_APPS, results_chatgpt)
-analyze_folders(folder_paths_gemini_APPS, results_gemini)
+#analyze_folders(folder_paths_gemini_APPS, results_gemini)
 
 print_std_dev = False  # Changed to True to print standard deviation
 
-print("\nAverage Cognitive Complexity and Std. dev. per prompt technique:")
+print("\nAverage Cognitive Complexity per prompt technique:")
 geo_means_gemini = {}
 geo_means_chatgpt = {}
 
@@ -166,16 +166,16 @@ chatgpt_geo_mean = geometric_mean(
     [val for sublist in geo_means_chatgpt.values() for val in sublist]
 )
 
-print("\nGeometric Means:")
-print(f"  Gemini Geometric Mean: {gemini_geo_mean}")
-print(f"  ChatGPT Geometric Mean: {chatgpt_geo_mean}")
+# print("\nGeometric Means:")
+# print(f"  Gemini Geometric Mean: {gemini_geo_mean}")
+# print(f"  ChatGPT Geometric Mean: {chatgpt_geo_mean}")
 
-print("\nGeometric Means per Technique:")
-print(f"  Geometric Mean Gemini Zero-shot: {geometric_mean(geo_means_gemini['Zero-shot'])}")
-print(f"  Geometric Mean ChatGPT Zero-shot: {geometric_mean(geo_means_chatgpt['Zero-shot'])}")
-print(f"  Geometric Mean Gemini Zero-shot-CoT: {geometric_mean(geo_means_gemini['Zero-shot-CoT'])}")
-print(f"  Geometric Mean ChatGPT Zero-shot-CoT: {geometric_mean(geo_means_chatgpt['Zero-shot-CoT'])}")
-print(f"  Geometric Mean Gemini Expert-role: {geometric_mean(geo_means_gemini['Expert-role'])}")
-print(f"  Geometric Mean ChatGPT Expert-role: {geometric_mean(geo_means_chatgpt['Expert-role'])}")
-print(f"  Geometric Mean Gemini Student-role: {geometric_mean(geo_means_gemini['Student-role'])}")
-print(f"  Geometric Mean ChatGPT Student-role: {geometric_mean(geo_means_chatgpt['Student-role'])}")
+# print("\nGeometric Means per Technique:")
+# print(f"  Geometric Mean Gemini Zero-shot: {geometric_mean(geo_means_gemini['Zero-shot'])}")
+# print(f"  Geometric Mean ChatGPT Zero-shot: {geometric_mean(geo_means_chatgpt['Zero-shot'])}")
+# print(f"  Geometric Mean Gemini Zero-shot-CoT: {geometric_mean(geo_means_gemini['Zero-shot-CoT'])}")
+# print(f"  Geometric Mean ChatGPT Zero-shot-CoT: {geometric_mean(geo_means_chatgpt['Zero-shot-CoT'])}")
+# print(f"  Geometric Mean Gemini Expert-role: {geometric_mean(geo_means_gemini['Expert-role'])}")
+# print(f"  Geometric Mean ChatGPT Expert-role: {geometric_mean(geo_means_chatgpt['Expert-role'])}")
+# print(f"  Geometric Mean Gemini Student-role: {geometric_mean(geo_means_gemini['Student-role'])}")
+# print(f"  Geometric Mean ChatGPT Student-role: {geometric_mean(geo_means_chatgpt['Student-role'])}")

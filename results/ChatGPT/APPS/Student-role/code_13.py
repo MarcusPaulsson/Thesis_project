@@ -1,28 +1,56 @@
-def min_days_to_repair(T, cases):
-    results = []
-    for n, g, b in cases:
-        # Calculate the minimum high-quality units needed
-        min_high_quality = (n + 1) // 2
-        
-        # Calculate the number of full cycles needed and remaining days
-        full_cycles = (min_high_quality + g - 1) // g
-        remaining_high_quality = min_high_quality - (full_cycles - 1) * g
-        
-        # Total days needed including the bad days
-        total_days = (full_cycles - 1) * (g + b) + remaining_high_quality
-        
-        # The total days cannot be less than n
-        results.append(max(n, total_days))
+from collections import deque, defaultdict
+
+def find_course_order(n, k, main_courses, dependencies):
+    # Create a graph for courses and track in-degrees
+    graph = defaultdict(list)
+    in_degree = [0] * (n + 1)
     
-    return results
+    # Fill the graph and in-degree based on dependencies
+    for i in range(1, n + 1):
+        t_i, *deps = dependencies[i - 1]
+        in_degree[i] = t_i
+        for dep in deps:
+            graph[dep].append(i)
 
-# Read input
-T = int(input())
-cases = [tuple(map(int, input().split())) for _ in range(T)]
+    # Queue for courses that can be taken (in-degree == 0)
+    queue = deque()
+    for i in range(1, n + 1):
+        if in_degree[i] == 0:
+            queue.append(i)
 
-# Get results
-results = min_days_to_repair(T, cases)
+    # List of courses to take
+    order = []
+    taken_courses = set()
+    
+    while queue:
+        course = queue.popleft()
+        order.append(course)
+        taken_courses.add(course)
+        
+        for neighbor in graph[course]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
 
-# Print results
-for result in results:
-    print(result)
+    # Check if we can take all main courses
+    if not all(course in taken_courses for course in main_courses):
+        return -1
+
+    # Return the result
+    return len(order), order
+
+# Input reading
+n, k = map(int, input().split())
+main_courses = list(map(int, input().split()))
+dependencies = [list(map(int, input().split())) for _ in range(n)]
+
+# Finding the course order
+result = find_course_order(n, k, main_courses, dependencies)
+
+# Output result
+if result == -1:
+    print(-1)
+else:
+    m, order = result
+    print(m)
+    print(' '.join(map(str, order)))

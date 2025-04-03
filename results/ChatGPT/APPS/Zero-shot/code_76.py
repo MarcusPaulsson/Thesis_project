@@ -1,26 +1,44 @@
-import math
+def can_construct_symmetric_square(t, test_cases):
+    results = []
+    for case in test_cases:
+        n, m, tiles = case
+        if m % 2 != 0:
+            results.append("NO")
+            continue
+        
+        # To construct a symmetric m x m square, we need to check if we have
+        # at least one tile type that can fulfill the symmetry requirement.
+        found = False
+        for tile in tiles:
+            # tile is a tuple of tuples: ((a, b), (c, d))
+            a, b = tile[0]
+            c, d = tile[1]
+            if b == c:
+                found = True
+                break
+        
+        if found:
+            results.append("YES")
+        else:
+            results.append("NO")
+    
+    return results
 
 # Read input
-x, y, z = map(float, input().split())
+t = int(input())
+test_cases = []
+for _ in range(t):
+    n, m = map(int, input().split())
+    tiles = []
+    for __ in range(n):
+        top = tuple(map(int, input().split()))
+        bottom = tuple(map(int, input().split()))
+        tiles.append((top, bottom))
+    test_cases.append((n, m, tiles))
 
-# Define the expressions
-expressions = [
-    (x**(y**z), "x^y^z"),
-    (x**(z**y), "x^z^y"),
-    ((x**y)**z, "(x^y)^z"),
-    ((x**z)**y, "(x^z)^y"),
-    (y**(x**z), "y^x^z"),
-    (y**(z**x), "y^z^x"),
-    ((y**x)**z, "(y^x)^z"),
-    ((y**z)**x, "(y^z)^x"),
-    (z**(x**y), "z^x^y"),
-    (z**(y**x), "z^y^x"),
-    ((z**x)**y, "(z^x)^y"),
-    ((z**y)**x, "(z^y)^x"),
-]
+# Get results
+results = can_construct_symmetric_square(t, test_cases)
 
-# Find the maximum value and its corresponding expression
-max_value, max_expr = max(expressions, key=lambda item: (item[0], -expressions.index(item)))
-
-# Output the corresponding expression
-print(max_expr)
+# Print results
+for result in results:
+    print(result)

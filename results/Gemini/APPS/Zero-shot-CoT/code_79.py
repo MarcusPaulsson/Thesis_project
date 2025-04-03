@@ -1,54 +1,56 @@
-import math
-
-def gcd(a, b):
-    if b == 0:
-        return a
-    return gcd(b, a % b)
-
 def solve():
-    n = int(input())
-    divisors = []
-    for i in range(2, int(math.sqrt(n)) + 1):
-        if n % i == 0:
-            divisors.append(i)
-            if i * i != n:
-                divisors.append(n // i)
-    divisors.append(n)
-    divisors.sort()
-
-    import itertools
+    n = input()
+    n_len = len(n)
     
-    best_order = None
-    min_moves = float('inf')
-
-    for order in itertools.permutations(divisors):
+    ans = float('inf')
+    
+    for suffix in ["00", "25", "50", "75"]:
+        
+        temp_n = list(n)
         moves = 0
         
-        current_list = list(order)
+        # Find the last digit of the suffix
+        last_digit_idx = -1
+        for i in range(n_len - 1, -1, -1):
+            if temp_n[i] == suffix[1]:
+                last_digit_idx = i
+                break
         
-        is_decrypted = False
+        if last_digit_idx == -1:
+            continue
         
-        while not is_decrypted:
-            is_decrypted = True
-            new_list = []
-            for i in range(len(current_list)):
-                new_list.append(current_list[i])
+        moves += (n_len - 1 - last_digit_idx)
+        temp_n.pop(last_digit_idx)
+        
+        # Find the first digit of the suffix
+        first_digit_idx = -1
+        for i in range(len(temp_n) - 1, -1, -1):
+            if temp_n[i] == suffix[0]:
+                first_digit_idx = i
+                break
+        
+        if first_digit_idx == -1:
+            continue
+        
+        moves += (len(temp_n) - 1 - first_digit_idx)
+        temp_n.pop(first_digit_idx)
+        
+        # Remove trailing zeroes
+        trailing_zeroes = 0
+        for i in range(0, len(temp_n)):
+            if temp_n[i] == '0':
+                trailing_zeroes += 1
+            else:
+                break
                 
-                
-                if gcd(current_list[i], current_list[(i+1) % len(current_list)]) == 1:
-                    is_decrypted = False
-                    lcm = (current_list[i] * current_list[(i+1) % len(current_list)]) // gcd(current_list[i], current_list[(i+1) % len(current_list)])
-                    new_list.append(lcm)
-                    moves += 1
-            current_list = new_list
+        moves += trailing_zeroes
         
-        if moves < min_moves:
-            min_moves = moves
-            best_order = order
+        
+        ans = min(ans, moves)
+        
+    if ans == float('inf'):
+        print("-1")
+    else:
+        print(ans)
 
-    print(*best_order)
-    print(min_moves)
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

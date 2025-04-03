@@ -1,15 +1,28 @@
-def count_pairs(l, r):
-    count = 0
-    for a in range(l, r + 1):
-        for b in range(l, r + 1):
-            if a + b == a ^ b:
-                count += 1
-    return count
+def min_colors_to_sort(n, s):
+    # Create a list to store the colors
+    color = [0] * n
+    # Create a dictionary to store last positions of each character
+    last_position = {}
+    
+    # Iterate through the string to assign colors
+    for i in range(n):
+        char = s[i]
+        if char in last_position:
+            # Determine the color to use for this character
+            color[i] = (last_position[char] + 1) % (max_color + 1)
+        else:
+            color[i] = 1  # Start new color
+        last_position[char] = color[i]  # Update last position for this character
 
-t = int(input())
-results = []
-for _ in range(t):
-    l, r = map(int, input().split())
-    results.append(count_pairs(l, r))
+    # Calculate the maximum color used
+    max_color = max(color)
 
-print('\n'.join(map(str, results)))
+    # Output the result
+    print(max_color)
+    print(' '.join(map(str, color)))
+
+# Input reading
+n = int(input())
+s = input()
+
+min_colors_to_sort(n, s)

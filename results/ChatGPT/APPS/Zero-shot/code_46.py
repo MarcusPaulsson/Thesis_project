@@ -1,25 +1,18 @@
-def restore_permutation(n, q):
-    p = [0] * n
-    p[0] = 0  # We will adjust this later
-    for i in range(1, n):
-        p[i] = p[i - 1] + q[i - 1]
+n, m = map(int, input().split())
 
-    # Finding the minimum value to shift the permutation to start from 1
-    min_p = min(p)
-    shift = 1 - min_p
+# Count how many numbers in the range 1 to n give each remainder when divided by 5
+count_x = [0] * 5
+for i in range(1, n + 1):
+    count_x[i % 5] += 1
 
-    # Adjusting the permutation
-    for i in range(n):
-        p[i] += shift
+# Count how many numbers in the range 1 to m give each remainder when divided by 5
+count_y = [0] * 5
+for j in range(1, m + 1):
+    count_y[j % 5] += 1
 
-    # Check if the result is a valid permutation
-    if len(set(p)) == n and all(1 <= x <= n for x in p):
-        print(" ".join(map(str, p)))
-    else:
-        print(-1)
+# Calculate the number of valid pairs (x, y)
+result = 0
+for r in range(5):
+    result += count_x[r] * count_y[(5 - r) % 5]
 
-# Read input
-n = int(input())
-q = list(map(int, input().split()))
-
-restore_permutation(n, q)
+print(result)

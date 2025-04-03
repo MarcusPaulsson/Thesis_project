@@ -1,32 +1,27 @@
-def max_diagonal_moves(q, queries):
-    results = []
-    for n, m, k in queries:
-        # Calculate the minimum required moves to reach (n, m)
-        min_moves = max(n, m)
-        
-        # Check if it's possible to reach (n, m) in exactly k moves
-        if k < min_moves or (k - min_moves) % 2 != 0:
-            results.append(-1)
-        else:
-            # Maximum diagonal moves possible
-            total_diagonal_moves = min(n, m)
-            remaining_moves = k - min_moves
-            
-            # We can use remaining moves to either remain at the diagonal or go straight
-            # Each remaining move can be either diagonal or straight, but we want to maximize diagonals
-            max_diagonal_moves = total_diagonal_moves + remaining_moves
-            
-            results.append(max_diagonal_moves)
+def sum_of_digits(n):
+    return sum(int(digit) for digit in str(n))
+
+def max_digit_sum(x):
+    max_sum = sum_of_digits(x)
+    best_number = x
     
-    return results
+    # Check numbers by reducing the last digits to 9
+    str_x = str(x)
+    for i in range(len(str_x)):
+        if str_x[i] == '0':
+            continue
+        
+        # Create a candidate by reducing the current digit and setting all following digits to 9
+        candidate = str_x[:i] + str(int(str_x[i]) - 1) + '9' * (len(str_x) - i - 1)
+        candidate = int(candidate)
+        
+        if candidate > 0 and candidate <= x:
+            current_sum = sum_of_digits(candidate)
+            if current_sum > max_sum or (current_sum == max_sum and candidate > best_number):
+                max_sum = current_sum
+                best_number = candidate
+    
+    return best_number
 
-# Read input
-q = int(input())
-queries = [tuple(map(int, input().split())) for _ in range(q)]
-
-# Get results
-results = max_diagonal_moves(q, queries)
-
-# Output results
-for res in results:
-    print(res)
+x = int(input().strip())
+print(max_digit_sum(x))

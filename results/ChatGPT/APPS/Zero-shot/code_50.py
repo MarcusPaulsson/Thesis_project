@@ -1,42 +1,60 @@
-def max_accordion_length(s):
-    n = len(s)
-    left_bracket = -1
-    right_bracket = -1
-    max_length = -1
+from collections import defaultdict, deque
 
-    # Find the last occurrence of '['
-    for i in range(n):
-        if s[i] == '[':
-            left_bracket = i
-
-    # Find the first occurrence of ']'
-    for i in range(n-1, -1, -1):
-        if s[i] == ']':
-            right_bracket = i
-
-    # If no valid brackets found
-    if left_bracket == -1 or right_bracket == -1 or left_bracket >= right_bracket:
-        return -1
-
-    # Now we look for the colons and vertical bars
-    first_colon = -1
-    last_colon = -1
+def bfs(start, n, graph):
+    dist = [-1] * (n + 1)
+    dist[start] = 0
+    q = deque([start])
+    farthest_node = start
     
-    for i in range(left_bracket + 1, right_bracket):
-        if s[i] == ':':
-            if first_colon == -1:
-                first_colon = i
-            last_colon = i
+    while q:
+        node = q.popleft()
+        for neighbor in graph[node]:
+            if dist[neighbor] == -1:  # Not visited
+                dist[neighbor] = dist[node] + 1
+                q.append(neighbor)
+                if dist[neighbor] > dist[farthest_node]:
+                    farthest_node = neighbor
 
-    # If we find at least one colon
-    if first_colon != -1 and last_colon != -1 and first_colon < last_colon:
-        count_bars = s[first_colon + 1:last_colon].count('|')
-        max_length = 2 + (last_colon - first_colon - 1) + 2  # [ + : + bars + : + ]
-        return max_length
+    return farthest_node, dist
 
-    return -1
+def main():
+    n = int(input())
+    graph = defaultdict(list)
 
-# Input
-s = input().strip()
-# Output
-print(max_accordion_length(s))
+    for _ in range(n - 1):
+        u, v = map(int, input().split())
+        graph[u].append(v)
+        graph[v].append(u)
+
+    # Find the farthest point from an arbitrary starting point (1)
+    farthest_node_from_start, _ = bfs(1, n, graph)
+    
+    # Find the farthest point from the previously found farthest node
+    opposite_node, dist_from_opposite = bfs(farthest_node_from_start, n, graph)
+
+    # Get the farthest node from the opposite node
+    farthest_node_from_opposite, dist_from_farthest = bfs(opposite_node, n, graph)
+
+    # Now we have the diameter ends: farthest_node_from_start and farthest_node_from_opposite
+    # Let's find the third node that maximizes the edge count
+    # We can take the farthest node from the first node we started with (or any node in the tree)
+    
+    # Collect nodes with maximum distance from either endpoint
+    max_distance = -1
+    third_node = -1
+    for i in range(1, n + 1):
+        if dist_from_opposite[i] > max_distance:
+            max_distance = dist_from_opposite[i]
+            third_node = i
+            
+    # The three nodes are:
+    a = farthest_node_from_start
+    b = opposite_node
+    c = third_node
+    
+    # Output the result
+    print(len(set([a, b, c])) + 2)  # The edges involved are the distinct edges in the paths
+    print(a, b, c)
+
+if __name__ == "__main__":
+    main()

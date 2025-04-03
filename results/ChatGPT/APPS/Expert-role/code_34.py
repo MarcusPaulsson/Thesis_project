@@ -1,23 +1,25 @@
-def greatest_integer(t, cases):
-    # Segments required for each digit
-    segments = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6]
-    
-    results = []
-    for n in cases:
-        if n % 2 == 0:
-            # If n is even, we can use all segments to form the digit '1'
-            results.append('1' * (n // 2))
+def can_distribute(x, n, a, b):
+    # Calculate how many plates can be filled with at least x pieces
+    plates_from_a = a // x
+    plates_from_b = b // x
+    # Check if we can fill at least n plates with the pieces
+    return plates_from_a + plates_from_b >= n
+
+def maximum_minimum_pieces(n, a, b):
+    left, right = 1, max(a, b)  # x should be at least 1 and at most max(a, b)
+    answer = 0
+
+    while left <= right:
+        mid = (left + right) // 2
+        if can_distribute(mid, n, a, b):
+            answer = mid  # mid is a possible solution
+            left = mid + 1  # try for a bigger x
         else:
-            # If n is odd, we can use one '7' and the rest as '1's
-            results.append('7' + '1' * ((n - 3) // 2))
-    
-    return results
+            right = mid - 1  # try for a smaller x
+
+    return answer
 
 # Read input
-t = int(input())
-cases = [int(input()) for _ in range(t)]
-
-# Get results and print
-results = greatest_integer(t, cases)
-for result in results:
-    print(result)
+n, a, b = map(int, input().split())
+# Get the result and print it
+print(maximum_minimum_pieces(n, a, b))

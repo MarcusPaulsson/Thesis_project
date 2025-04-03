@@ -1,25 +1,33 @@
-def find_number(n):
-    if n == 1:
-        return -1  # No single digit number satisfies the condition
-    else:
-        # Create a number with n digits, all digits are > 0 and none are divisible by themselves
-        # For example, using digits from 2 to 9 can help avoid divisibility.
-        # Using a pattern like 23, 24, 25, ..., to ensure that the number is not divisible by any of its digits.
-        return ''.join(str((i % 9) + 1) for i in range(n))
+def can_construct_string(n, s, t):
+    # Create a base string with n 'a's, n 'b's, and n 'c's
+    base = 'a' * n + 'b' * n + 'c' * n
+    
+    # Check if we can find positions to create a valid string
+    # We can use a simple approach to rearrange
+    for i in range(3):
+        for j in range(3):
+            if i != j:
+                # Create a potential result by interleaving different characters
+                res = []
+                for k in range(n):
+                    res.append(chr(97 + i))  # 'a' + i
+                    res.append(chr(97 + j))  # 'a' + j
+                res.append(chr(97 + (3 - i - j)))  # add the remaining character
+                result = ''.join(res)
+                
+                # Check if neither s nor t is a substring
+                if s not in result and t not in result:
+                    return "YES", result
+    
+    return "NO", ""
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().split()
-    
-    t = int(data[0])
-    results = []
-    
-    for i in range(1, t + 1):
-        n = int(data[i])
-        results.append(find_number(n))
-    
-    print("\n".join(map(str, results)))
+# Read input
+n = int(input().strip())
+s = input().strip()
+t = input().strip()
 
-if __name__ == "__main__":
-    main()
+# Generate and print the result
+result = can_construct_string(n, s, t)
+print(result[0])
+if result[0] == "YES":
+    print(result[1])

@@ -1,33 +1,31 @@
-def solve():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    idx = 0
-    t = int(data[idx])
-    idx += 1
-    results = []
-    
-    for _ in range(t):
-        n = int(data[idx])
-        idx += 1
-        a = list(map(int, data[idx].split()))
-        idx += 1
-        
-        count_0 = a.count(0)
-        count_1 = a.count(1)
+def polycarp_training(n, k):
+    # Calculate the minimum sum of problems required with the given constraints
+    min_sum = k * (k + 1) // 2  # Minimum problems if we solve 1, 2, ..., k problems
+    if n < min_sum:
+        print("NO")
+        return
 
-        if count_0 >= n // 2:
-            # Enough zeros to satisfy the condition
-            result = [0] * (n // 2)
-        else:
-            # We have more ones, we can only take enough ones to balance
-            result = [1] * (n // 2)
+    # Start with the minimum valid array
+    a = list(range(1, k + 1))
+    current_sum = min_sum
 
-        results.append(f"{len(result)}")
-        results.append(" ".join(map(str, result)))
+    # Distribute the remaining problems
+    remaining = n - current_sum
 
-    print("\n".join(results))
+    for i in range(k - 1, -1, -1):
+        # Max we can add to a[i] is 2 * a[i] - a[i] = a[i] (to satisfy a[i] < a[i+1] <= 2 * a[i])
+        max_increase = a[i]  # We can at most double the previous day's count
+        if remaining > 0:
+            increase = min(max_increase, remaining)
+            a[i] += increase
+            remaining -= increase
 
-if __name__ == "__main__":
-    solve()
+    if remaining > 0:
+        print("NO")
+    else:
+        print("YES")
+        print(" ".join(map(str, a)))
+
+# Example usage
+n, k = map(int, input().split())
+polycarp_training(n, k)

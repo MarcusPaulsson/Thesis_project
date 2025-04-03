@@ -1,45 +1,42 @@
-def skier_time(test_cases):
-    results = []
-    
-    for path in test_cases:
-        visited_segments = set()
-        x, y = 0, 0  # Start position
-        total_time = 0
-        
-        for move in path:
-            if move == 'N':
-                new_pos = (x, y + 1)
-            elif move == 'S':
-                new_pos = (x, y - 1)
-            elif move == 'E':
-                new_pos = (x + 1, y)
-            elif move == 'W':
-                new_pos = (x - 1, y)
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
 
-            # Create a segment as a frozenset of the two points (to ensure uniqueness)
-            segment = frozenset([new_pos, (x, y)])
-            
-            if segment not in visited_segments:
-                total_time += 5
-                visited_segments.add(segment)
-            else:
-                total_time += 1
-            
-            # Move to the new position
-            x, y = new_pos
-        
-        results.append(total_time)
+def prob_birthday_paradox(n, k):
+    days = 1 << n  # 2^n
     
-    return results
-
+    if k > days:
+        return 1, 1  # Guaranteed at least one shared birthday
+    
+    # Calculate the probability of no shared birthdays
+    num = 1
+    den = days ** k
+    
+    for i in range(k):
+        num *= (days - i)
+    
+    # Probability of at least one shared birthday
+    prob_not_shared = num / den
+    prob_shared = 1 - prob_not_shared
+    
+    # Convert to fraction A/B
+    A = den - num
+    B = den
+    
+    # Reduce A/B by their gcd
+    g = gcd(A, B)
+    A //= g
+    B //= g
+    
+    # Take modulo
+    mod = 10**6 + 3
+    A %= mod
+    B %= mod
+    
+    return A, B
 
 # Read input
-t = int(input())
-test_cases = [input().strip() for _ in range(t)]
-
-# Get results
-results = skier_time(test_cases)
-
-# Print output
-for res in results:
-    print(res)
+n, k = map(int, input().split())
+A, B = prob_birthday_paradox(n, k)
+print(A, B)

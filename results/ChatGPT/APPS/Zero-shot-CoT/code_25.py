@@ -1,77 +1,38 @@
-def find_cake_permutations(t, test_cases):
-    results = []
+def create_matrix(n, k):
+    if k > n * n or k % 2 != 0 and n % 2 == 0:
+        return -1
     
-    for case in test_cases:
-        n, pieces = case
-        degree = [0] * (n + 1)
-        edges = {}
-
-        # Count degrees and store edges
-        for i, (a, b, c) in enumerate(pieces):
-            degree[a] += 1
-            degree[b] += 1
-            degree[c] += 1
-            edges[i + 1] = (a, b, c)
-
-        # Find the starting vertex which has degree 2
-        start_vertex = next(i for i in range(1, n + 1) if degree[i] == 2)
-
-        # Reconstruct the order of vertices
-        order = []
-        visited_edges = set()
-        current_vertex = start_vertex
-
-        while len(order) < n:
-            order.append(current_vertex)
-            next_vertex = None
-            
-            for i in range(1, len(pieces) + 1):
-                if i in visited_edges:
-                    continue
-                a, b, c = edges[i]
-                if current_vertex in (a, b, c):
-                    next_vertex = a if a != current_vertex else (b if b != current_vertex else c)
-                    visited_edges.add(i)
-                    break
-            
-            current_vertex = next_vertex
-
-        # Create the permutation of vertices
-        p = order
-
-        # Create the order of cuts
-        q = []
-        for i in range(1, len(pieces) + 1):
-            a, b, c = edges[i]
-            if (a in p and b in p and c in p):
-                idx = p.index(a)
-                if p[(idx + 1) % n] == b and p[(idx + 2) % n] == c:
-                    q.append(i)
-        
-        results.append((p, q))
+    matrix = [[0] * n for _ in range(n)]
     
-    return results
+    # Fill the diagonal first
+    for i in range(n):
+        if k > 0:
+            matrix[i][i] = 1
+            k -= 1
+            
+    # Fill the upper triangle (excluding the diagonal)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if k >= 2:
+                matrix[i][j] = 1
+                matrix[j][i] = 1
+                k -= 2
+            if k <= 0:
+                break
+    
+    # If we still have k ones left, it's impossible
+    if k > 0:
+        return -1
+    
+    return matrix
 
-# Reading input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+# Input reading
+n, k = map(int, input().split())
+result = create_matrix(n, k)
 
-t = int(data[0])
-test_cases = []
-idx = 1
-for _ in range(t):
-    n = int(data[idx])
-    pieces = [tuple(map(int, data[idx + i + 1].split())) for i in range(n - 2)]
-    test_cases.append((n, pieces))
-    idx += n - 1
-
-# Getting results
-results = find_cake_permutations(t, test_cases)
-
-# Printing output
-output = []
-for p, q in results:
-    output.append(" ".join(map(str, p)))
-    output.append(" ".join(map(str, q)))
-print("\n".join(output))
+# Output the result
+if result == -1:
+    print(-1)
+else:
+    for row in result:
+        print(' '.join(map(str, row)))

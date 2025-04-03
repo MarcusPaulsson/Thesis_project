@@ -1,30 +1,53 @@
-def is_possible_visible_pips(x):
-    # The minimum number of visible pips for 1 die is 14 (when 6 is at the bottom)
-    # The maximum number of visible pips for 1 die is 20 (when 1 is at the top)
-    # For n dice, the visible pips can be calculated as follows:
-    # Min visible pips when n dice: 14 + 5*(n-1) = 9 + 5n (the 5n comes from each die contributing 5 pips on the sides)
-    # Max visible pips when n dice: 20 + 5*(n-1) = 15 + 5n
-    # Therefore, the range of visible pips for n dice is [9 + 5n, 15 + 5n]
+def create_palindromic_matrix(n, elements):
+    from collections import Counter
 
-    # We want to check if x can be expressed as:
-    # x = 9 + 5n + k where k is in [0, 6] (because the top die can show 1 to 6)
-    # Thus x can be expressed as: x - 9 = 5n + k with k in [0, 6]
-    # Therefore, for some integer n, (x - 9 - k) must be divisible by 5.
+    count = Counter(elements)
+    odd_count = sum(1 for v in count.values() if v % 2 != 0)
 
-    if x < 9:
-        return False
+    # Check if it's possible to create a palindromic matrix
+    if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
+        return "NO"
+
+    # Preparing the matrix
+    matrix = [[0] * n for _ in range(n)]
     
-    x_minus_9 = x - 9
-    return (x_minus_9 % 5) in range(7)  # k can be 0 to 6
+    # Fill the matrix with the elements
+    half = n // 2
+    center = (n - 1) // 2
+    sorted_elements = sorted(count.items(), key=lambda x: -x[1])
+    
+    for value, freq in sorted_elements:
+        while freq > 0:
+            if n % 2 == 1 and freq >= 1 and odd_count == 1:
+                matrix[center][center] = value
+                freq -= 1
+                odd_count -= 1
+                continue
 
-t = int(input())
-x_values = list(map(int, input().split()))
+            # Fill the quadrants
+            for i in range(half + 1):
+                for j in range(half + 1):
+                    if freq > 0:
+                        if matrix[i][j] == 0:
+                            matrix[i][j] = value
+                            matrix[i][n - 1 - j] = value
+                            matrix[n - 1 - i][j] = value
+                            matrix[n - 1 - i][n - 1 - j] = value
+                            freq -= 4
+                            if freq < 0:
+                                return "NO"
+    
+    return "YES", matrix
 
-results = []
-for x in x_values:
-    if is_possible_visible_pips(x):
-        results.append("YES")
-    else:
-        results.append("NO")
+# Input handling
+n = int(input().strip())
+elements = list(map(int, input().strip().split()))
 
-print("\n".join(results))
+result = create_palindromic_matrix(n, elements)
+
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    for row in result[1]:
+        print(" ".join(map(str, row)))

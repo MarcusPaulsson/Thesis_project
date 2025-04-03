@@ -1,19 +1,33 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
-    l = list(map(int, input().split()))
-    
-    unlocked_indices = [i for i in range(n) if l[i] == 0]
-    unlocked_values = [a[i] for i in unlocked_indices]
-    unlocked_values.sort()
-    
-    new_a = a[:]
-    
-    for i in range(len(unlocked_indices)):
-        new_a[unlocked_indices[i]] = unlocked_values[i]
-        
-    print(*new_a)
+    n, m, d = map(int, input().split())
+    c = list(map(int, input().split()))
 
-t = int(input())
-for _ in range(t):
-    solve()
+    total_length = sum(c)
+    min_empty = m - 1
+    max_empty = n - total_length
+    
+    if d * (m + 1) <= n + 1:
+        if d == 1:
+            if sum(c) < n:
+                print("NO")
+                return
+        
+    
+    
+    arr = [0] * n
+    
+    pos = 0
+    for i in range(m):
+        
+        needed_space = min(d-1, n - pos - sum(c[i:]))
+        
+        pos += needed_space
+        
+        for j in range(c[i]):
+            arr[pos] = i + 1
+            pos += 1
+
+    print("YES")
+    print(*arr)
+
+solve()

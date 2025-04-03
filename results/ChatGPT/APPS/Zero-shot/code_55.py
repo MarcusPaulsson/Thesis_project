@@ -1,30 +1,21 @@
-n, pos, l, r = map(int, input().split())
+def is_visible(x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6):
+    # Check if the white sheet is completely covered by both black sheets
+    covered_left = max(x1, x3, x5)
+    covered_right = min(x2, x4, x6)
+    covered_bottom = max(y1, y3, y5)
+    covered_top = min(y2, y4, y6)
 
-if l == 1 and r == n:
-    print(0)
-else:
-    time = 0
-    # Close tabs to the left of l
-    if pos < l:
-        time += l - pos  # Move cursor to l
-        time += 1        # Close left tabs
-    elif pos > r:
-        time += pos - r  # Move cursor to r
-        time += 1        # Close right tabs
-    else:
-        # Move to the closest end to start closing
-        if pos < l:
-            time += l - pos  # Move cursor to l
-            time += 1        # Close left tabs
-            time += (r - l)  # Move right to r
-            time += 1        # Close right tabs
-        elif pos > r:
-            time += pos - r  # Move cursor to r
-            time += 1        # Close right tabs
-            time += (r - l)  # Move left to l
-            time += 1        # Close left tabs
-        else:
-            # If in the range [l, r], we can close both sides
-            time += min(pos - l, r - pos) + 1 + (r - l) + 2  # Move to one side, close, move to other side, close
+    # If the covered area does not overlap with the white sheet
+    if covered_left < covered_right and covered_bottom < covered_top:
+        return "NO"
+    
+    return "YES"
 
-    print(time)
+# Read input
+x1, y1, x2, y2 = map(int, input().split())
+x3, y3, x4, y4 = map(int, input().split())
+x5, y5, x6, y6 = map(int, input().split())
+
+# Determine if some part of the white sheet can be seen
+result = is_visible(x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6)
+print(result)

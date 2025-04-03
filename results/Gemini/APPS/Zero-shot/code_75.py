@@ -1,48 +1,45 @@
-def solve():
-    n, k = map(int, input().split())
-    minions = []
-    for _ in range(n):
-        minions.append(list(map(int, input().split())))
+a, b, c = map(int, input().split())
 
-    best_actions = []
-    max_power = -1
+week = [0, 1, 2, 0, 2, 1, 0]
+week_a = week.count(0)
+week_b = week.count(1)
+week_c = week.count(2)
 
-    import itertools
+weeks = min(a // week_a, b // week_b, c // week_c)
 
-    for perm in itertools.permutations(range(n)):
-        for i in range(1 << n):
-            actions = []
-            army = []
-            current_power = 0
-            
-            for idx in perm:
-                actions.append(idx + 1)
-                
-                power_increase = 0
-                for minion_idx in army:
-                    power_increase += minions[idx][1]
-                
-                new_minion_power = minions[idx][0] + power_increase
-                
-                army.append(idx)
-                current_power += new_minion_power
-                
-                if len(army) > k:
-                    current_power -= new_minion_power
-                    army.remove(idx)
-                    current_power -= minions[idx][0]
-                    
-                    remove_idx = idx
-                    actions.append(-(idx+1))
-                    
-                
-            if current_power > max_power:
-                max_power = current_power
-                best_actions = actions
+a -= weeks * week_a
+b -= weeks * week_b
+c -= weeks * week_c
+
+ans = weeks * 7
+max_days = 0
+
+for start in range(7):
+    temp_a, temp_b, temp_c = a, b, c
+    days = 0
     
-    print(len(best_actions))
-    print(*best_actions)
+    for i in range(7):
+        day_index = (start + i) % 7
+        
+        if week[day_index] == 0:
+            if temp_a > 0:
+                temp_a -= 1
+                days += 1
+            else:
+                break
+        elif week[day_index] == 1:
+            if temp_b > 0:
+                temp_b -= 1
+                days += 1
+            else:
+                break
+        else:
+            if temp_c > 0:
+                temp_c -= 1
+                days += 1
+            else:
+                break
+    
+    max_days = max(max_days, days)
 
-t = int(input())
-for _ in range(t):
-    solve()
+print(ans + max_days)

@@ -1,41 +1,24 @@
-def max_remove_length(s, t):
-    n, m = len(s), len(t)
-    
-    # Precompute the first occurrence of each character in t
-    left = [-1] * m
-    j = 0
-    for i in range(n):
-        if j < m and s[i] == t[j]:
-            left[j] = i
-            j += 1
-            
-    # Precompute the last occurrence of each character in t
-    right = [-1] * m
-    j = m - 1
-    for i in range(n - 1, -1, -1):
-        if j >= 0 and s[i] == t[j]:
-            right[j] = i
-            j -= 1
-    
-    # Calculate the maximum removable length
-    max_length = 0
-    for i in range(m - 1):
-        if left[i] != -1 and right[i + 1] != -1 and left[i] < right[i + 1]:
-            max_length = max(max_length, right[i + 1] - left[i] - 1)
-    
-    # Check for the case where we can remove up to the first character of t
-    if right[0] != -1:
-        max_length = max(max_length, right[0] + 1)
-    
-    # Check for the case where we can remove from the last character of t
-    if left[m - 1] != -1:
-        max_length = max(max_length, n - left[m - 1] - 1)
-    
-    return max_length
+n = int(input())
+a = list(map(int, input().split()))
 
-# Input reading
-s = input().strip()
-t = input().strip()
+# Initialize the distance array with a large number
+distances = [float('inf')] * n
 
-# Output the result
-print(max_remove_length(s, t))
+# First pass: from left to right
+last_zero = -1
+for i in range(n):
+    if a[i] == 0:
+        last_zero = i
+        distances[i] = 0
+    elif last_zero != -1:
+        distances[i] = i - last_zero
+
+# Second pass: from right to left
+last_zero = -1
+for i in range(n - 1, -1, -1):
+    if a[i] == 0:
+        last_zero = i
+    elif last_zero != -1:
+        distances[i] = min(distances[i], last_zero - i)
+
+print(' '.join(map(str, distances)))

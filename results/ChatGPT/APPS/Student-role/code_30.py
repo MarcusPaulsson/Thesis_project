@@ -1,32 +1,23 @@
-def min_operations_to_alternating(t, test_cases):
-    results = []
-    for n, s in test_cases:
-        count_01 = count_10 = 0
-        for i in range(n):
-            expected_char = '0' if i % 2 == 0 else '1'
-            if s[i] != expected_char:
-                count_01 += 1
-        for i in range(n):
-            expected_char = '1' if i % 2 == 0 else '0'
-            if s[i] != expected_char:
-                count_10 += 1
-        
-        # Minimum number of operations needed to make the string alternating
-        results.append(min(count_01, count_10) // 2)
+def minimum_traps(m, x):
+    # Since GCD(x, m) = 1, the x-mouse will visit all rooms by moving through them
+    # The number of distinct rooms visited corresponds to Euler's Totient function φ(m)
+    # which is the count of numbers up to m that are coprime to m.
     
-    return results
+    # To find the number of traps needed, we can just consider the number of rooms
+    # that will be visited in one cycle.
+    
+    visited_rooms = 0
+    room = 0
+    
+    while True:
+        visited_rooms += 1
+        room = (room * x) % m
+        if room == 0:
+            break
+            
+    return visited_rooms
 
-# Input reading section
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    s = input().strip()
-    test_cases.append((n, s))
-
-# Get results
-results = min_operations_to_alternating(t, test_cases)
-
-# Output results
-for res in results:
-    print(res)
+# Read input
+m, x = map(int, input().split())
+# Output the result
+print(minimum_traps(m, x))

@@ -1,36 +1,14 @@
-d = int(input())
-n, m = map(int, input().split())
+n, x, y = map(int, input().split())
+number = input().strip()
 
-sofas = []
-for i in range(d):
-    x1, y1, x2, y2 = map(int, input().split())
-    if x1 > x2 or (x1 == x2 and y1 > y2):
-        x1, y1, x2, y2 = x2, y2, x1, y1
-    sofas.append((x1, y1, x2, y2))
+# We need the last x digits to be '000...010...0' where there are y zeros followed by a one
+target = ['0'] * x
+target[y] = '1'
 
-cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
+# Count the number of changes needed
+changes = 0
+for i in range(x):
+    if number[n - 1 - i] != target[x - 1 - i]:
+        changes += 1
 
-def count_relations(sofa):
-    x1, y1, x2, y2 = sofa
-    left = right = top = bottom = 0
-    for other in sofas:
-        if other == sofa:
-            continue
-        ox1, oy1, ox2, oy2 = other
-        if x1 < ox1 and x2 < ox1:  # sofa is to the left
-            left += 1
-        elif x1 > ox2 and x2 > ox2:  # sofa is to the right
-            right += 1
-        if y1 < oy1 and y2 < oy1:  # sofa is above
-            top += 1
-        elif y1 > oy2 and y2 > oy2:  # sofa is below
-            bottom += 1
-    return left, right, top, bottom
-
-for i in range(d):
-    left, right, top, bottom = count_relations(sofas[i])
-    if left == cnt_l and right == cnt_r and top == cnt_t and bottom == cnt_b:
-        print(i + 1)
-        break
-else:
-    print(-1)
+print(changes)

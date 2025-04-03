@@ -1,54 +1,32 @@
-def can_satisfy_customers(test_cases):
-    results = []
-    
-    for n, m, customers in test_cases:
-        current_temp = m
-        current_time = 0
-        min_temp = m
-        max_temp = m
-        
-        for t_i, l_i, h_i in customers:
-            time_diff = t_i - current_time
-            
-            # Update the possible temperature range
-            min_temp -= time_diff
-            max_temp += time_diff
-            
-            # Update the possible range based on customer preference
-            min_temp = max(min_temp, l_i)
-            max_temp = min(max_temp, h_i)
-            
-            # If the range is invalid, it's impossible to satisfy this customer
-            if min_temp > max_temp:
-                results.append("NO")
-                break
-            
-            # Update current time
-            current_time = t_i
-        else:
-            results.append("YES")
-    
-    return results
+def is_palindrome(time):
+    return time == time[::-1]
 
-# Reading input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+def next_palindrome_time(hh, mm):
+    while True:
+        mm += 1
+        if mm == 60:
+            mm = 0
+            hh += 1
+            if hh == 24:
+                hh = 0
+        current_time = f"{hh:02}:{mm:02}"
+        if is_palindrome(current_time):
+            return hh, mm
 
-q = int(data[0])
-test_cases = []
+def minutes_until_palindrome(current_time):
+    hh, mm = map(int, current_time.split(':'))
+    count = 0
+    while not is_palindrome(f"{hh:02}:{mm:02}"):
+        mm += 1
+        count += 1
+        if mm == 60:
+            mm = 0
+            hh += 1
+            if hh == 24:
+                hh = 0
+    return count
 
-index = 1
-for _ in range(q):
-    n, m = map(int, data[index].split())
-    customers = []
-    for i in range(1, n + 1):
-        t_i, l_i, h_i = map(int, data[index + i].split())
-        customers.append((t_i, l_i, h_i))
-    test_cases.append((n, m, customers))
-    index += n + 1
-
-# Getting results and printing them
-results = can_satisfy_customers(test_cases)
-for result in results:
-    print(result)
+# Read input
+current_time = input().strip()
+# Calculate and print the result
+print(minutes_until_palindrome(current_time))

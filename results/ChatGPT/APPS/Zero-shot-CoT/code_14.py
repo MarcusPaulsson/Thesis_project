@@ -1,14 +1,38 @@
-t = int(input())
-results = []
+def is_stack_sortable(p):
+    s = []
+    b = []
+    for num in p:
+        while s and (not b or s[-1] < b[-1]):
+            b.append(s.pop())
+        s.append(num)
+    while s:
+        b.append(s.pop())
+    return b == sorted(b)
 
-for _ in range(t):
-    a1, b1 = map(int, input().split())
-    a2, b2 = map(int, input().split())
+def restore_permutation(n, k, given):
+    used = set(given)
+    remaining = [x for x in range(1, n + 1) if x not in used]
+    
+    if not is_stack_sortable(given + remaining):
+        return -1
 
-    # Check if a square can be formed
-    if (a1 == a2 and b1 + b2 == a1) or (a1 == b2 and b1 + a2 == a1) or (b1 == a2 and a1 + b2 == b1) or (b1 == b2 and a1 + a2 == b1):
-        results.append("YES")
-    else:
-        results.append("NO")
+    # Construct the lexicographically maximal permutation
+    result = given.copy()
+    remaining.sort(reverse=True)
+    
+    # Add the remaining elements to result
+    result += remaining
+    return result
 
-print("\n".join(results))
+# Input reading
+n, k = map(int, input().split())
+given = list(map(int, input().split()))
+
+# Get the result
+result = restore_permutation(n, k, given)
+
+# Output the result
+if result == -1:
+    print(result)
+else:
+    print(' '.join(map(str, result)))

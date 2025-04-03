@@ -1,66 +1,55 @@
 def solve():
-    l, r = map(int, input().split())
+    n = int(input())
+    s = input()
     
-    count = 0
-    for a in range(l, r + 1):
-        for b in range(l, r + 1):
-            if a + b == (a ^ b):
-                count += 1
-    print(count)
+    def check(colors):
+        colored_string = ""
+        color_arr = []
+        for i in range(n):
+            color_arr.append(0)
+        
+        for i in range(n):
+            color_arr[i] = colors[i]
+            colored_string += s[i]
+        
+        
+        
+        def can_sort(arr, colors):
+            
+            n = len(arr)
+            
+            
+            
+            def bubble_sort(arr, colors):
+                
+                
+                swapped = True
+                while swapped:
+                    swapped = False
+                    for i in range(n - 1):
+                        if arr[i] > arr[i + 1] and colors[i] != colors[i + 1]:
+                            arr[i], arr[i + 1] = arr[i + 1], arr[i]
+                            colors[i], colors[i + 1] = colors[i + 1], colors[i]
+                            swapped = True
+                return arr
+                
+            sorted_arr = bubble_sort(list(arr), list(colors))
 
-def solve_efficient():
-    l, r = map(int, input().split())
-    range_size = r - l + 1
-    count = 0
-    
-    for a in range(l, r + 1):
-        count += (a & (r - a + a)) == a
-    
-    total = r - l + 1
-    
-    
-    
-    
-    count = 0
-    for a in range(l, r + 1):
-      for b in range(l, r + 1):
-        if (a + b) == (a ^ b):
-          count += 1
-          
-    print(count)
-    
-def solve_even_more_efficient():
-  l, r = map(int, input().split())
-  
-  count = 0
-  for a in range(l, r + 1):
-    for b in range(l, r + 1):
-      if (a & b) == 0:
-        count += 1
-  
-  print(count)
+            return sorted_arr == sorted(arr)
 
-def solve_final():
-  l, r = map(int, input().split())
-  n = r - l + 1
-  ans = 0
-  
-  for a in range(l, r + 1):
-    for b in range(l, r + 1):
-      if (a & b) == 0:
-        ans += 1
-  print(ans)
-
-def solve_final_correct():
-    l, r = map(int, input().split())
+        return can_sort(list(s), color_arr), color_arr
     
-    count = 0
-    for a in range(l, r + 1):
-        for b in range(l, r + 1):
-            if (a & b) == 0:
-                count += 1
-    print(count)
+    for num_colors in range(1, n + 1):
+        
+        import itertools
+        
+        for colors_tuple in itertools.product(range(1,num_colors+1), repeat=n):
+            colors = list(colors_tuple)
+            can_be_sorted, color_arr = check(colors)
+            
+            if can_be_sorted:
+                print(num_colors)
+                print(*color_arr)
+                return
 
-t = int(input())
-for _ in range(t):
-    solve_final_correct()
+solve()

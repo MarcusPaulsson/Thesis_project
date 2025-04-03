@@ -1,29 +1,24 @@
+def is_palindrome(time):
+  return time[0] == time[4] and time[1] == time[3]
+
 def solve():
-  n, m = map(int, input().split())
-  customers = []
-  for _ in range(n):
-    customers.append(list(map(int, input().split())))
+  time_str = input()
+  hh = int(time_str[:2])
+  mm = int(time_str[3:])
 
-  low = m
-  high = m
-  prev_time = 0
-
-  for t, l, h in customers:
-    time_diff = t - prev_time
-    low -= time_diff
-    high += time_diff
-
-    if high < l or low > h:
-      print("NO")
+  minutes_slept = 0
+  while True:
+    if is_palindrome(f"{hh:02}:{mm:02}"):
+      print(minutes_slept)
       return
 
-    low = max(low, l)
-    high = min(high, h)
-    prev_time = t
+    mm += 1
+    if mm == 60:
+      mm = 0
+      hh += 1
+      if hh == 24:
+        hh = 0
+    
+    minutes_slept += 1
 
-  print("YES")
-
-
-q = int(input())
-for _ in range(q):
-  solve()
+solve()

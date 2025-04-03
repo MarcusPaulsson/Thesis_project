@@ -1,18 +1,16 @@
-import math
+s = input().strip()
+t = []
+u = []
 
-def minimum_square_size(n):
-    # The length of the side of the square needed to embed the 2n-gon
-    # is derived using the formula: 2 * (1 + sin(π/n))
-    return math.sqrt(2) * (1 + math.sin(math.pi / n))
+while s or t:
+    if s:
+        t.append(s[0])
+        s = s[1:]
+    
+    while t:
+        if not u or t[-1] <= u[-1]:
+            u.append(t.pop())
+        else:
+            break
 
-def main():
-    T = int(input())
-    results = []
-    for _ in range(T):
-        n = int(input())
-        result = minimum_square_size(n)
-        results.append(f"{result:.9f}")
-    print("\n".join(results))
-
-if __name__ == "__main__":
-    main()
+print(''.join(u))

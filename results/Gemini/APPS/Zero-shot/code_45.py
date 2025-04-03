@@ -1,17 +1,32 @@
 def solve():
-  x = int(input())
-  count = 0
-  staircase_size = 1
-  while True:
-    cells_needed = staircase_size * (staircase_size + 1) // 2
-    if cells_needed <= x:
-      x -= cells_needed
-      count += 1
-      staircase_size = staircase_size * 2 + 1
-    else:
-      break
-  print(count)
+    n, k = map(int, input().split())
 
-t = int(input())
-for _ in range(t):
-  solve()
+    def find_gcd(n, k):
+        best_gcd = -1
+        for i in range(1, int(n**0.5) + 1):
+            if n % i == 0:
+                if n // i >= k * (k + 1) // 2:
+                    best_gcd = max(best_gcd, i)
+                if i >= k * (k + 1) // 2:
+                    best_gcd = max(best_gcd, n // i)
+        return best_gcd
+    
+    gcd = find_gcd(n, k)
+    
+    if gcd == -1:
+        print(-1)
+        return
+    
+    result = []
+    for i in range(1, k):
+        result.append(i * gcd)
+    
+    result.append(n - sum(result))
+    
+    if result[-1] <= result[-2]:
+        print(-1)
+        return
+        
+    print(*result)
+
+solve()

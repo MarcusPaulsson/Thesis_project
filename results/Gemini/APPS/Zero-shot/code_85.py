@@ -1,32 +1,15 @@
 def solve():
-    s = input()
-    x = int(input())
-    n = len(s)
-    w = ['0'] * n
+    a, b = map(int, input().split())
     
-    for i in range(n):
-        if s[i] == '1':
-            if i - x >= 0:
-                w[i - x] = '1'
-            if i + x < n:
-                w[i + x] = '1'
+    ans = -1
+    for price in range(1, 2000):
+        tax_8 = int(price * 0.08)
+        tax_10 = int(price * 0.10)
+        
+        if tax_8 == a and tax_10 == b:
+            ans = price
+            break
     
-    w_str = "".join(w)
-    
-    s_reconstructed = ['0'] * n
-    for i in range(n):
-        if i - x >= 0 and w_str[i - x] == '1':
-            s_reconstructed[i] = '1'
-        if i + x < n and w_str[i + x] == '1':
-            s_reconstructed[i] = '1'
-            
-    s_reconstructed_str = "".join(s_reconstructed)
-    
-    if s_reconstructed_str == s:
-        print(w_str)
-    else:
-        print("-1")
+    print(ans)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

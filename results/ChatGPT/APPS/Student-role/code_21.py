@@ -1,38 +1,23 @@
-def find_minimum_k(test_cases):
-    results = []
-    
-    for s in test_cases:
-        S = set(s)
-        found = False
-        min_k = float('inf')
+n = int(input())
+a = list(map(int, input().split()))
 
-        for x in S:
-            k = x ^ 0  # This is essentially just x, since k must be > 0.
-            new_set = {y ^ k for y in S}
-            if new_set == S and k > 0:
-                found = True
-                min_k = min(min_k, k)
+min_index = a.index(1)
+max_index = a.index(n)
 
-        if found:
-            results.append(min_k)
-        else:
-            results.append(-1)
+# Calculate initial distance
+initial_distance = abs(min_index - max_index)
 
-    return results
+# Possible positions for min and max after a swap
+new_positions = [
+    (0, n - 1),  # swap min with first element or max with last element
+    (n - 1, 0)   # swap max with first element or min with last element
+]
 
+max_distance = initial_distance
 
-# Read input
-t = int(input())
-test_cases = []
+for min_pos, max_pos in new_positions:
+    new_min_index = min_pos if a[min_pos] == 1 else max_index
+    new_max_index = max_pos if a[max_pos] == n else min_index
+    max_distance = max(max_distance, abs(new_min_index - new_max_index))
 
-for _ in range(t):
-    n = int(input())
-    s = list(map(int, input().split()))
-    test_cases.append(s)
-
-# Get results
-results = find_minimum_k(test_cases)
-
-# Print results
-for result in results:
-    print(result)
+print(max_distance)

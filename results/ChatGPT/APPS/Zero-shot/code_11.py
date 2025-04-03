@@ -1,18 +1,22 @@
-n = int(input())
-a = input().strip()
-f = list(map(int, input().split()))
-
-result = list(a)
-changed = False
-
-for i in range(n):
-    original_digit = int(a[i])
-    new_digit = f[original_digit - 1]
+def max_chocolates(n, a, b, p, q):
+    # Count tiles that can be painted Red
+    count_red = n // a
+    # Count tiles that can be painted Blue
+    count_blue = n // b
+    # Count tiles that can be painted both Red and Blue
+    count_both = n // (a * b // gcd(a, b))
     
-    if new_digit > original_digit:
-        result[i] = str(new_digit)
-        changed = True
-    elif new_digit < original_digit and changed:
-        break
+    # Calculate chocolates
+    total_chocolates = (count_red * p) + (count_blue * q) - (count_both * min(p, q))
+    
+    return total_chocolates
 
-print(''.join(result))
+def gcd(x, y):
+    while y:
+        x, y = y, x % y
+    return x
+
+# Read input
+n, a, b, p, q = map(int, input().split())
+# Print the result
+print(max_chocolates(n, a, b, p, q))

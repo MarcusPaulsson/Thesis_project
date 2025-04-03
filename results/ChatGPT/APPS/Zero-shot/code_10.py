@@ -1,25 +1,8 @@
-def has_palindrome_subsequence(test_cases):
-    results = []
-    for case in test_cases:
-        n, a = case
-        found = False
-        # Check for any element that appears at least twice with at least one element between them
-        indices = {}
-        for i in range(n):
-            if a[i] in indices:
-                if i - indices[a[i]] >= 2:
-                    found = True
-                    break
-            indices[a[i]] = i
-        results.append("YES" if found else "NO")
-    return results
+n = int(input())
 
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    test_cases.append((n, a))
+# Calculate minimum days off
+min_days_off = (n // 7) * 2
+# Calculate maximum days off
+max_days_off = min(n, (n // 7) * 2 + (2 if n % 7 > 5 else n % 7))
 
-results = has_palindrome_subsequence(test_cases)
-print("\n".join(results))
+print(min_days_off, max_days_off)

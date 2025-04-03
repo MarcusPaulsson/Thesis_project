@@ -1,30 +1,19 @@
-n = int(input())
-current_distance = 0  # Distance from the North Pole
+n, k = map(int, input().split())
+a = list(map(int, input().split()))
 
-for _ in range(n):
-    t, direction = input().split()
-    t = int(t)
+count = 0
 
-    if current_distance == 0 and direction != "South":
-        print("NO")
-        exit()
-    if current_distance == 20000 and direction != "North":
-        print("NO")
-        exit()
+# Solve from the left
+while count < n and a[count] <= k:
+    count += 1
 
-    if direction == "North":
-        current_distance -= t
-    elif direction == "South":
-        current_distance += t
-    elif direction in ["West", "East"]:
-        # Moving west or east does not change the distance from the poles
-        continue
+# Solve from the right
+while count < n and a[n - 1 - (count - count)] <= k:
+    count += 1
 
-    if current_distance < 0 or current_distance > 20000:
-        print("NO")
-        exit()
+# The count could have counted the overlap in the middle
+# So we need to ensure we don't double count the last problem
+if count > n:
+    count = n
 
-if current_distance != 0:
-    print("NO")
-else:
-    print("YES")
+print(count)

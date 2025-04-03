@@ -1,36 +1,16 @@
-def min_replacements_to_k_complete(t, test_cases):
-    results = []
-    for n, k, s in test_cases:
-        m = n // k
-        replacements = 0
-        
-        for j in range(k):
-            count = [0] * 26  # Count occurrences of each character in this group
-            for i in range(m):
-                count[ord(s[j + i * k]) - ord('a')] += 1
-            
-            # Calculate the minimum changes needed to make the characters in this group the same
-            max_count = max(count)
-            replacements += m - max_count
-        
-        results.append(replacements)
+h1, m1 = map(int, input().split(':'))
+h2, m2 = map(int, input().split(':'))
 
-    return results
+# Convert start and end times to total minutes
+start_minutes = h1 * 60 + m1
+end_minutes = h2 * 60 + m2
 
-# Input handling
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+# Calculate the midpoint in total minutes
+midpoint_minutes = (start_minutes + end_minutes) // 2
 
-t = int(data[0])
-test_cases = []
+# Convert back to hours and minutes
+h3 = midpoint_minutes // 60
+m3 = midpoint_minutes % 60
 
-for i in range(1, 2 * t, 2):
-    n, k = map(int, data[i].split())
-    s = data[i + 1]
-    test_cases.append((n, k, s))
-
-results = min_replacements_to_k_complete(t, test_cases)
-
-# Output results
-sys.stdout.write('\n'.join(map(str, results)) + '\n')
+# Print result in the required format
+print(f"{h3:02}:{m3:02}")

@@ -1,40 +1,17 @@
-def min_replacements_to_k_complete(t, test_cases):
-    results = []
-    for n, k, s in test_cases:
-        # n is divisible by k
-        m = n // k
-        changes = 0
-        
-        # Check each group of k characters
-        for i in range(k):
-            count = {}
-            for j in range(m):
-                char = s[i + j * k]
-                if char in count:
-                    count[char] += 1
-                else:
-                    count[char] = 1
-            
-            # The most frequent character in this group
-            max_freq = max(count.values(), default=0)
-            # We need to change the other characters in this group
-            changes += (m - max_freq)
-        
-        results.append(changes)
-    
-    return results
-
 # Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n, k = map(int, input().split())
-    s = input().strip()
-    test_cases.append((n, k, s))
+h1, m1 = map(int, input().split(':'))
+h2, m2 = map(int, input().split(':'))
 
-# Get results
-results = min_replacements_to_k_complete(t, test_cases)
+# Convert start and end times to minutes
+start_minutes = h1 * 60 + m1
+end_minutes = h2 * 60 + m2
 
-# Print results
-for result in results:
-    print(result)
+# Calculate midpoint in minutes
+midpoint_minutes = (start_minutes + end_minutes) // 2
+
+# Convert back to hours and minutes
+h3 = midpoint_minutes // 60
+m3 = midpoint_minutes % 60
+
+# Print the result with leading zeros
+print(f"{h3:02}:{m3:02}")

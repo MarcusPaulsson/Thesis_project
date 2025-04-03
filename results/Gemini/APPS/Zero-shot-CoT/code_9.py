@@ -1,142 +1,44 @@
 def solve():
-  s = input()
-  groups = []
-  i = 0
-  while i < len(s):
-    j = i
-    while j < len(s) and s[j] == s[i]:
-      j += 1
-    groups.append(s[i])
-    i = j
-  
-  alice_score = 0
-  
-  while len(groups) > 0:
-    max_len = 0
-    max_index = -1
-    
-    curr_len = 1
-    for i in range(1, len(groups)):
-      if groups[i] == groups[i-1]:
-        curr_len+=1
-      else:
-        if curr_len > max_len:
-          max_len = curr_len
-          max_index = i-1
-        curr_len = 1
-    if curr_len > max_len:
-        max_len = curr_len
-        max_index = len(groups)-1
-    
-    
-    if max_index != -1:
-        
-        start_index = max_index
-        while start_index >= 0 and groups[start_index] == groups[max_index]:
-            start_index -= 1
+    d = int(input())
+    n, m = map(int, input().split())
+    sofas = []
+    for i in range(d):
+        x1, y1, x2, y2 = map(int, input().split())
+        sofas.append((x1, y1, x2, y2))
+    cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
+
+    for i in range(d):
+        l, r, t, b = 0, 0, 0, 0
+        for j in range(d):
+            if i == j:
+                continue
+
+            x1_i, y1_i, x2_i, y2_i = sofas[i]
+            x1_j, y1_j, x2_j, y2_j = sofas[j]
+
+            min_x_i = min(x1_i, x2_i)
+            max_x_i = max(x1_i, x2_i)
+            min_y_i = min(y1_i, y2_i)
+            max_y_i = max(y1_i, y2_i)
+
+            min_x_j = min(x1_j, x2_j)
+            max_x_j = max(x1_j, x2_j)
+            min_y_j = min(y1_j, y2_j)
+            max_y_j = max(y1_j, y2_j)
             
-        start_index+=1
-        
-        end_index = max_index
-        
-        while end_index < len(groups) and groups[end_index] == groups[max_index]:
-          end_index+=1
-        
-        end_index-=1
-        
-        
-        count_ones = 0
-        for i in range(start_index, end_index+1):
-          if groups[i] == '1':
-            count_ones+=1
-        
-        alice_score+=count_ones
-        
-        
-        new_groups = []
-        for i in range(0, start_index):
-            new_groups.append(groups[i])
-        
-        for i in range(end_index+1, len(groups)):
-            new_groups.append(groups[i])
-            
-        groups = new_groups
-        
-        
-        
-        
-    else:
-        count_ones = 0
-        for i in range(0, len(groups)):
-          if groups[i] == '1':
-            count_ones+=1
-        
-        alice_score+=count_ones
-        groups = []
-        
-        
-        
-        
-        
-        
-    
-    if len(groups) == 0:
-        break
-    
-    
-    max_len = 0
-    max_index = -1
-    
-    curr_len = 1
-    for i in range(1, len(groups)):
-      if groups[i] == groups[i-1]:
-        curr_len+=1
-      else:
-        if curr_len > max_len:
-          max_len = curr_len
-          max_index = i-1
-        curr_len = 1
-    if curr_len > max_len:
-        max_len = curr_len
-        max_index = len(groups)-1
-    
-    
-    if max_index != -1:
-        
-        start_index = max_index
-        while start_index >= 0 and groups[start_index] == groups[max_index]:
-            start_index -= 1
-            
-        start_index+=1
-        
-        end_index = max_index
-        
-        while end_index < len(groups) and groups[end_index] == groups[max_index]:
-          end_index+=1
-        
-        end_index-=1
-        
-        
-        
-        
-        new_groups = []
-        for i in range(0, start_index):
-            new_groups.append(groups[i])
-        
-        for i in range(end_index+1, len(groups)):
-            new_groups.append(groups[i])
-            
-        groups = new_groups
-        
-        
-        
-        
-    else:
-        groups = []
-    
-        
-  print(alice_score)
-  
-t = int(input())
-for _ in range(t):
-  solve()
+            if min_x_i > max_x_j:
+                l += 1
+            if max_x_i < min_x_j:
+                r += 1
+            if min_y_i > max_y_j:
+                t += 1
+            if max_y_i < min_y_j:
+                b += 1
+
+        if l == cnt_l and r == cnt_r and t == cnt_t and b == cnt_b:
+            print(i + 1)
+            return
+
+    print(-1)
+
+solve()

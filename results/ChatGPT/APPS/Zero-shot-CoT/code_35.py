@@ -1,35 +1,38 @@
-def max_groups(test_cases):
-    results = []
-    for e in test_cases:
-        e.sort()
-        count = 0
-        group_size = 0
-        
-        for i in range(len(e)):
-            group_size += 1
-            if group_size >= e[i]:
-                count += 1
-                group_size = 0
-        
-        results.append(count)
+def is_valid_flag(n, m, field):
+    colors = {'R', 'G', 'B'}
     
-    return results
+    # Check for horizontal stripes
+    stripe_height = n // 3
+    if n % 3 != 0 or stripe_height == 0:
+        return "NO"
+    
+    used_colors = set()
+    for i in range(0, n, stripe_height):
+        stripe = field[i]
+        if len(set(stripe)) != 1 or stripe[0] in used_colors:
+            return "NO"
+        used_colors.add(stripe[0])
+    
+    if used_colors == colors:
+        return "YES"
+    
+    # Check for vertical stripes
+    stripe_width = m // 3
+    if m % 3 != 0 or stripe_width == 0:
+        return "NO"
+    
+    used_colors.clear()
+    for j in range(0, m, stripe_width):
+        stripe = [field[i][j] for i in range(n)]
+        if len(set(stripe)) != 1 or stripe[0] in used_colors:
+            return "NO"
+        used_colors.add(stripe[0])
+    
+    return "YES" if used_colors == colors else "NO"
 
-import sys
-input = sys.stdin.read
+# Input reading
+n, m = map(int, input().split())
+field = [input().strip() for _ in range(n)]
 
-data = input().splitlines()
-T = int(data[0])
-test_cases = []
-index = 1
-
-for _ in range(T):
-    N = int(data[index])
-    explorers = list(map(int, data[index + 1].split()))
-    test_cases.append(explorers)
-    index += 2
-
-results = max_groups(test_cases)
-
-for result in results:
-    print(result)
+# Output result
+print(is_valid_flag(n, m, field))

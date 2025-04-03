@@ -1,15 +1,18 @@
-def can_transform(s, t):
-    return set(s) & set(t) != set()
+x = float(input().strip())
 
-def main():
-    q = int(input())
-    for _ in range(q):
-        s = input().strip()
-        t = input().strip()
-        if can_transform(s, t):
-            print("YES")
-        else:
-            print("NO")
+# Scale x to a range that fits into integers 1 to 10
+# We can use a simple transformation
+a = int((x * 10) % 10) + 1
+b = int((x * 10) // 10) + 1
 
-if __name__ == "__main__":
-    main()
+# Ensure both are in the range of 1 to 10
+if a < 1:
+    a = 1
+if b < 1:
+    b = 1
+if a > 10:
+    a = 10
+if b > 10:
+    b = 10
+
+print(a, b)

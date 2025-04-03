@@ -1,33 +1,25 @@
 def solve():
-  n = int(input())
-  a = list(map(int, input().split()))
+    n, r = map(int, input().split())
+    projects = []
+    for _ in range(n):
+        projects.append(list(map(int, input().split())))
 
-  depth = [0] * n
-  parents = [0] * n
-  
-  q = [a[0]]
-  idx = 1
-  
-  while q:
-    curr = q.pop(0)
-    children = []
-    
-    while idx < n:
-      children.append(a[idx])
-      idx += 1
-      if idx < n and any(a[idx] < x for x in children):
-        idx -= 1
-        children.pop()
-        break
+    def check(order):
+        current_rating = r
+        for i in order:
+            a, b = projects[i]
+            if current_rating < a:
+                return False
+            current_rating += b
+            if current_rating < 0:
+                return False
+        return True
 
-    for child in children:
-      parents[child - 1] = curr
-      depth[child - 1] = depth[curr - 1] + 1
-      q.append(child)
-  
-  print(max(depth))
-    
+    import itertools
+    for perm in itertools.permutations(range(n)):
+        if check(perm):
+            print("YES")
+            return
+    print("NO")
 
-t = int(input())
-for _ in range(t):
-  solve()
+solve()

@@ -1,45 +1,39 @@
-def min_subscriptions(t, test_cases):
+def check_records(test_cases):
     results = []
     
     for case in test_cases:
-        n, k, d = case[0]
-        a = case[1]
+        n, stats = case
+        valid = True
         
-        min_subs = float('inf')
-        count = {}
-        
-        for i in range(n):
-            if i >= d:
-                # Remove the element that is out of the window
-                count[a[i - d]] -= 1
-                if count[a[i - d]] == 0:
-                    del count[a[i - d]]
+        for i in range(1, n):
+            p_prev, c_prev = stats[i - 1]
+            p_curr, c_curr = stats[i]
             
-            # Add the current element
-            if a[i] in count:
-                count[a[i]] += 1
-            else:
-                count[a[i]] = 1
+            if p_curr < p_prev or c_curr < c_prev or c_curr > p_curr:
+                valid = False
+                break
             
-            # When we have a valid window of size d, check the number of unique shows
-            if i >= d - 1:
-                min_subs = min(min_subs, len(count))
+            if c_curr - c_prev > p_curr - p_prev:
+                valid = False
+                break
         
-        results.append(min_subs)
+        if valid:
+            results.append("YES")
+        else:
+            results.append("NO")
     
     return results
 
-# Reading input
-t = int(input())
+# Input processing
+T = int(input())
 test_cases = []
-for _ in range(t):
-    n, k, d = map(int, input().split())
-    a = list(map(int, input().split()))
-    test_cases.append(((n, k, d), a))
 
-# Get results
-results = min_subscriptions(t, test_cases)
+for _ in range(T):
+    n = int(input())
+    stats = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, stats))
 
-# Output results
+# Get results and print
+results = check_records(test_cases)
 for result in results:
     print(result)

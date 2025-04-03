@@ -1,20 +1,28 @@
-def can_reduce_to_one(test_cases):
-    results = []
-    for n, a in test_cases:
-        possible = False
-        for i in range(n - 1):
-            if a[i] < a[i + 1]:
-                possible = True
-                break
-        results.append("YES" if possible else "NO")
-    return results
+def fill_gift_choices(n, f):
+    # Find the indices of friends who don't know whom to give gifts to (f_i = 0)
+    unknown_indices = [i for i in range(n) if f[i] == 0]
+    
+    # Create a set of all possible friends (1 to n)
+    all_friends = set(range(1, n + 1))
+    
+    # Find the set of friends who already have a known gift target
+    known_gift_targets = set(f[i] for i in range(n) if f[i] != 0)
+    
+    # Find the remaining friends who need to receive gifts
+    remaining_friends = list(all_friends - known_gift_targets)
+    
+    # Fill in the unknowns
+    for i in range(len(unknown_indices)):
+        friend_idx = unknown_indices[i]
+        # Assign the gift target ensuring no one gives a gift to themselves
+        f[friend_idx] = remaining_friends[i]
 
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    test_cases.append((n, a))
+    return f
 
-results = can_reduce_to_one(test_cases)
-print("\n".join(results))
+# Input reading
+n = int(input())
+f = list(map(int, input().split()))
+
+# Process and output the result
+result = fill_gift_choices(n, f)
+print(" ".join(map(str, result)))

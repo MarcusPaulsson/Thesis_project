@@ -1,20 +1,31 @@
-def get_lexicographically_minimal_string(s):
-    t = []
-    u = []
+def min_cost_to_obtain_set(n, k, s):
+    subsequence_count = {}
     
-    for char in s:
-        t.append(char)
-        while t:
-            if not u or t[-1] <= u[-1]:
-                u.append(t.pop())
-            else:
-                break
+    # Generate all unique subsequences and their respective costs
+    from itertools import combinations
     
-    return ''.join(u)
+    for length in range(1, n + 1):
+        for indices in combinations(range(n), length):
+            subsequence = ''.join(s[i] for i in indices)
+            cost = n - length
+            if subsequence not in subsequence_count:
+                subsequence_count[subsequence] = cost
+    
+    # If we cannot reach k unique subsequences
+    if len(subsequence_count) < k:
+        return -1
+    
+    # Collect costs and sort them to minimize total cost
+    costs = sorted(subsequence_count.values())
+    
+    # Calculate the minimum total cost for the first k unique subsequences
+    total_cost = sum(costs[:k])
+    
+    return total_cost
 
-# Read input
+# Input reading
+n, k = map(int, input().split())
 s = input().strip()
-# Get the resulting string u
-result = get_lexicographically_minimal_string(s)
-# Print the result
-print(result)
+
+# Output the result
+print(min_cost_to_obtain_set(n, k, s))

@@ -1,52 +1,46 @@
-def min_minutes_to_cross(q, queries):
-    results = []
-    for n, m, grid in queries:
-        # Count black cells in each row and each column
-        row_black_counts = [0] * n
-        col_black_counts = [0] * m
-        
-        for i in range(n):
-            for j in range(m):
-                if grid[i][j] == '*':
-                    row_black_counts[i] += 1
-                    col_black_counts[j] += 1
-        
-        # Find the minimum number of paints required for each possible cross
-        min_paints = float('inf')
-        
-        for x in range(n):
-            for y in range(m):
-                if grid[x][y] == '.':
-                    # Calculate needed paints for cross at (x, y)
-                    total_paints = (n - row_black_counts[x]) + (m - col_black_counts[y])
-                    min_paints = min(min_paints, total_paints)
-        
-        # If there's already a cross, no need to paint
-        if min_paints == float('inf'):
-            min_paints = 0
-        
-        results.append(min_paints)
+def count_regular_sequences(n, s):
+    MOD = 1000000007
+    m = len(s)
     
-    return results
+    # Precompute Catalan numbers up to 2n
+    catalan = [0] * (n + 1)
+    catalan[0] = 1
+    for i in range(1, n + 1):
+        catalan[i] = 0
+        for j in range(i):
+            catalan[i] += catalan[j] * catalan[i - 1 - j]
+            catalan[i] %= MOD
+            
+    # Check validity of s
+    balance = 0
+    for char in s:
+        if char == '(':
+            balance += 1
+        else:
+            balance -= 1
+        if balance < 0:
+            return 0
+            
+    if balance + (n - (m - balance)) < 0:
+        return 0
+    
+    # Count valid sequences by placing s in various positions
+    result = 0
+    for start in range(n - (m // 2) + 1):
+        left_needed = (m // 2) + start
+        right_needed = n - left_needed
+        if left_needed < 0 or right_needed < 0:
+            continue
+            
+        result += (catalan[left_needed] * catalan[right_needed]) % MOD
+        result %= MOD
+        
+    return result
 
 # Read input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+n = int(input())
+s = input().strip()
 
-q = int(data[0])
-queries = []
-index = 1
-
-for _ in range(q):
-    n, m = map(int, data[index].split())
-    grid = data[index + 1:index + 1 + n]
-    queries.append((n, m, grid))
-    index += 1 + n
-
-# Get results
-results = min_minutes_to_cross(q, queries)
-
-# Print results
-for result in results:
-    print(result)
+# Get the result and print it
+result = count_regular_sequences(n, s)
+print(result)

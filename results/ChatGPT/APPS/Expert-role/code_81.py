@@ -1,28 +1,27 @@
-def can_make_equal(t, test_cases):
-    results = []
-    for i in range(t):
-        a, b, c = test_cases[i]
-        n = len(a)
-        possible = True
-        
-        for j in range(n):
-            if a[j] != b[j]:
-                # Check if we can swap with c[j]
-                if c[j] != a[j] and c[j] != b[j]:
-                    possible = False
-                    break
-        
-        results.append("YES" if possible else "NO")
+def can_reorder_strings(strings):
+    # Sort strings by their lengths
+    strings.sort(key=len)
     
-    return results
+    # Check if the order is valid
+    for i in range(len(strings)):
+        for j in range(i):
+            if strings[j] not in strings[i]:
+                return "NO"
+    
+    # If valid, return the ordered strings
+    return "YES", strings
 
 # Read input
-t = int(input())
-test_cases = [tuple(input().strip() for _ in range(3)) for _ in range(t)]
+n = int(input())
+strings = [input().strip() for _ in range(n)]
 
-# Get results
-results = can_make_equal(t, test_cases)
+# Get the result
+result = can_reorder_strings(strings)
 
-# Print results
-for result in results:
+# Print the result
+if result == "NO":
     print(result)
+else:
+    print(result[0])
+    for s in result[1]:
+        print(s)

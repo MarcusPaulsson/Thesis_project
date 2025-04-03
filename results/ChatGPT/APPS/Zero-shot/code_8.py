@@ -1,44 +1,45 @@
-def color_array(n, k, a):
-    from collections import defaultdict
+def can_form_koutsu(tiles):
+    from collections import Counter
+    count = Counter(tiles)
+    return any(v >= 3 for v in count.values())
 
-    # Dictionary to hold the indices of each number
-    positions = defaultdict(list)
-    
-    for index, value in enumerate(a):
-        positions[value].append(index)
+def can_form_shuntsu(tiles):
+    suits = {'m': [], 'p': [], 's': []}
+    for tile in tiles:
+        number = int(tile[0])
+        suit = tile[1]
+        suits[suit].append(number)
 
-    # If any number appears more than k times, it's impossible
-    if any(len(positions[num]) > k for num in positions):
-        return "NO"
+    for numbers in suits.values():
+        numbers.sort()
+        for i in range(len(numbers) - 2):
+            if (numbers[i] + 1 in numbers) and (numbers[i] + 2 in numbers):
+                return True
+    return False
 
-    # Prepare the result array and color allocation
-    result = [0] * n
-    color = 1
+def min_draws(tiles):
+    if can_form_koutsu(tiles) or can_form_shuntsu(tiles):
+        return 0
 
-    # Assign colors to each number's positions
-    for num, indices in positions.items():
-        for idx in indices:
-            result[idx] = color
-            color += 1
-            if color > k:
-                color = 1
+    # Check for koutsu possibility by adding a tile
+    for tile in tiles:
+        if tiles.count(tile) < 2:
+            return 1  # Drawing a third tile for a koutsu
 
-    # Check if we have used all colors
-    if len(set(result)) < k:
-        return "NO"
+    # Check for shuntsu possibility by adding a tile
+    suits = {'m': [], 'p': [], 's': []}
+    for tile in tiles:
+        number = int(tile[0])
+        suit = tile[1]
+        suits[suit].append(number)
 
-    return "YES", result
+    for suit in suits:
+        numbers = sorted(suits[suit])
+        for number in numbers:
+            if number - 1 not in numbers and number + 1 not in numbers:
+                return 1  # Drawing a tile to complete a shuntsu
 
-# Input reading
-n, k = map(int, input().split())
-a = list(map(int, input().split()))
+    return 2  # At worst, we need to draw 2 tiles
 
-# Get the result
-result = color_array(n, k, a)
-
-# Print the output
-if result == "NO":
-    print(result)
-else:
-    print(result[0])
-    print(' '.join(map(str, result[1])))
+tiles = input().split()
+print(min_draws(tiles))

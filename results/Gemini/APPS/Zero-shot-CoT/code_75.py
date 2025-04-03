@@ -1,47 +1,44 @@
 def solve():
-    n, k = map(int, input().split())
-    minions = []
-    for _ in range(n):
-        minions.append(list(map(int, input().split())))
+    a, b, c = map(int, input().split())
+    
+    weekly_schedule = [0, 1, 2, 0, 2, 1, 0] 
+    
+    best_days = 0
+    
+    for start_day in range(7):
+        days = 0
+        temp_a = a
+        temp_b = b
+        temp_c = c
+        
+        current_day = start_day
+        
+        while True:
+            food_type = weekly_schedule[current_day % 7]
+            
+            if food_type == 0:
+                if temp_a > 0:
+                    temp_a -= 1
+                    days += 1
+                else:
+                    break
+            elif food_type == 1:
+                if temp_b > 0:
+                    temp_b -= 1
+                    days += 1
+                else:
+                    break
+            else:
+                if temp_c > 0:
+                    temp_c -= 1
+                    days += 1
+                else:
+                    break
+            
+            current_day += 1
+        
+        best_days = max(best_days, days)
+    
+    print(best_days)
 
-    best_actions = []
-    max_power = -1
-
-    import itertools
-    for r in range(n + 1):
-        for summoned_indices in itertools.permutations(range(n), r):
-            if r > 0:
-                for kept_indices_set in itertools.combinations(summoned_indices, min(k, r)):
-                    
-                    actions = []
-                    power = 0
-                    army = {}
-                    
-                    for i in summoned_indices:
-                        actions.append(i + 1)
-                        army[i] = minions[i][0] 
-                        
-                        for j in army:
-                            if j != i:
-                                army[j] += minions[i][1]
-                    
-                    current_army = list(army.keys())
-                    
-                    for minion_index in current_army:
-                        if minion_index not in kept_indices_set:
-                            actions.append(-(minion_index + 1))
-                            del army[minion_index]
-                    
-                    current_power = sum(army.values())
-                    
-                    if current_power > max_power:
-                        max_power = current_power
-                        best_actions = actions
-
-    print(len(best_actions))
-    print(*best_actions)
-
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

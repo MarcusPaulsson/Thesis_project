@@ -1,30 +1,23 @@
-def minimum_cost(n, k, s):
-    unique_subsequences = set()
-    
-    # Generate all unique subsequences using bit manipulation
-    for i in range(1 << n):
-        subsequence = []
-        for j in range(n):
-            if i & (1 << j):
-                subsequence.append(s[j])
-        unique_subsequences.add(''.join(subsequence))
-    
-    # If we cannot form k unique subsequences
-    if len(unique_subsequences) < k:
-        return -1
-    
-    # Calculate the costs
-    costs = []
-    for subseq in unique_subsequences:
-        costs.append(n - len(subseq))
-    
-    # Sort the costs and take the sum of the smallest k costs
-    costs.sort()
-    return sum(costs[:k])
+from collections import deque
 
-# Input reading
-n, k = map(int, input().split())
 s = input().strip()
+t = deque()
+u = []
 
-# Output the result
-print(minimum_cost(n, k, s))
+for char in s:
+    t.append(char)
+
+while t:
+    # Check the smallest character in t and the remaining characters in s
+    min_char = min(t)
+    # If the front character in s is smaller or equal to min_char, we can add it to t
+    while s and (not t or s[0] <= min_char):
+        t.appendleft(s[0])
+        s = s[1:]
+        min_char = min(t)  # Update min_char after adding to t
+        
+    # Extract the last character from t to append to u
+    u.append(t.pop())
+
+# Join the list into a string and print the result
+print(''.join(u[::-1]))  # Reverse u to get the correct order

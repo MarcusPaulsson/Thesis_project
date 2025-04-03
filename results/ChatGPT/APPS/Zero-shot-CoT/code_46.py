@@ -1,26 +1,18 @@
-def maximize_wins(t, test_cases):
-    results = []
-    for s in test_cases:
-        count_R = s.count('R')
-        count_P = s.count('P')
-        count_S = s.count('S')
-        
-        # Choose the move that beats the most common move of the bot
-        if count_R >= count_P and count_R >= count_S:
-            results.append('P' * len(s))  # Paper beats Rock
-        elif count_P >= count_R and count_P >= count_S:
-            results.append('S' * len(s))  # Scissors beat Paper
-        else:
-            results.append('R' * len(s))  # Rock beats Scissors
-    return results
+def count_pairs(n, m):
+    count_x = [0] * 5
+    count_y = [0] * 5
 
-# Input reading
-t = int(input())
-test_cases = [input().strip() for _ in range(t)]
+    for i in range(1, n + 1):
+        count_x[i % 5] += 1
 
-# Getting the results
-results = maximize_wins(t, test_cases)
+    for j in range(1, m + 1):
+        count_y[j % 5] += 1
 
-# Printing the results
-for res in results:
-    print(res)
+    total_pairs = 0
+    for i in range(5):
+        total_pairs += count_x[i] * count_y[(5 - i) % 5]
+
+    return total_pairs
+
+n, m = map(int, input().split())
+print(count_pairs(n, m))

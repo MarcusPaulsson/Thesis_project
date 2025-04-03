@@ -1,40 +1,39 @@
-def calculate_time(test_cases):
-    results = []
-    for moves in test_cases:
-        visited_segments = set()
-        time = 0
-        position = (0, 0)
+def gcd(x, y):
+    while y:
+        x, y = y, x % y
+    return x
 
-        for move in moves:
-            if move == 'N':
-                new_position = (position[0], position[1] + 1)
-            elif move == 'S':
-                new_position = (position[0], position[1] - 1)
-            elif move == 'E':
-                new_position = (position[0] + 1, position[1])
-            elif move == 'W':
-                new_position = (position[0] - 1, position[1])
-
-            segment = (position, new_position)
-            if segment in visited_segments or (new_position, position) in visited_segments:
-                time += 1  # Previously visited segment
-            else:
-                time += 5  # New segment
-                visited_segments.add(segment)
-
-            position = new_position
-
-        results.append(time)
+def probability_of_shared_birthday(n, k):
+    MOD = 10**6 + 3
+    days = 1 << n  # This is 2^n
     
-    return results
+    if k > days:
+        return (1, 1)  # If k > days, probability is 1
+    
+    # Total ways to choose k birthdays
+    total_ways = pow(days, k, MOD)
+    
+    # Calculate the ways to choose k birthdays with no shared birthday
+    non_shared_ways = 1
+    for i in range(k):
+        non_shared_ways *= (days - i)
+        non_shared_ways %= MOD
+    
+    # Probability of at least two having the same birthday
+    shared_ways = (total_ways - non_shared_ways) % MOD
+    
+    # A and B
+    A = shared_ways
+    B = total_ways
+    
+    # Reduce A/B to its irreducible form
+    divisor = gcd(A, B)
+    A //= divisor
+    B //= divisor
+    
+    return (A % MOD, B % MOD)
 
-# Read input
-t = int(input())
-test_cases = [input().strip() for _ in range(t)]
-
-# Calculate results
-results = calculate_time(test_cases)
-
-# Print output
-for result in results:
-    print(result)
+# Input reading
+n, k = map(int, input().split())
+result = probability_of_shared_birthday(n, k)
+print(result[0], result[1])

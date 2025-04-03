@@ -1,10 +1,14 @@
-import math
+s = input()
+n = len(s)
+min_suffix = [''] * (n + 1)
+min_suffix[n] = 'z'
+for i in range(n - 1, -1, -1):
+    min_suffix[i] = min(s[i], min_suffix[i + 1])
 
-def solve():
-    n = int(input())
-    ans = 1 / math.tan(math.pi / (2 * n))
-    print(ans)
-
-t = int(input())
-for _ in range(t):
-    solve()
+t = []
+u = ''
+for i in range(n):
+    t.append(s[i])
+    while t and t[-1] <= min_suffix[i + 1]:
+        u += t.pop()
+print(u + ''.join(reversed(t)))

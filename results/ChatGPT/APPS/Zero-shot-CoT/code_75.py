@@ -1,18 +1,48 @@
-import math
+def max_days(a, b, c):
+    # Food requirements based on day of the week
+    days = [
+        (1, 0, 0),  # Monday - fish food
+        (1, 0, 0),  # Tuesday - fish food
+        (0, 1, 0),  # Wednesday - rabbit stew
+        (0, 1, 0),  # Thursday - rabbit stew
+        (0, 0, 1),  # Friday - chicken stake
+        (0, 0, 1),  # Saturday - chicken stake
+        (1, 0, 0)   # Sunday - fish food
+    ]
 
-def minimum_square_side_length(n):
-    # Calculate the radius of the circumscribed circle of the 2n-gon
-    radius = 1 / (2 * math.sin(math.pi / (2 * n)))
-    # The side of the square needed to embed the 2n-gon
-    side_length = radius * math.sqrt(2)
-    return side_length
+    max_days_count = 0
 
-T = int(input())
-results = []
-for _ in range(T):
-    n = int(input())
-    result = minimum_square_side_length(n)
-    results.append(result)
+    for start_day in range(7):
+        fish = a
+        rabbit = b
+        chicken = c
+        days_count = 0
+        
+        for i in range(7):
+            current_day = (start_day + i) % 7
+            if days[current_day][0] > 0:  # Fish food required
+                if fish > 0:
+                    fish -= 1
+                    days_count += 1
+                else:
+                    break
+            elif days[current_day][1] > 0:  # Rabbit stew required
+                if rabbit > 0:
+                    rabbit -= 1
+                    days_count += 1
+                else:
+                    break
+            elif days[current_day][2] > 0:  # Chicken stake required
+                if chicken > 0:
+                    chicken -= 1
+                    days_count += 1
+                else:
+                    break
 
-for res in results:
-    print(f"{res:.9f}")
+        max_days_count = max(max_days_count, days_count)
+
+    return max_days_count
+
+# Input
+a, b, c = map(int, input().split())
+print(max_days(a, b, c))

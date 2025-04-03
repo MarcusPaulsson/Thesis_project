@@ -1,26 +1,37 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
-
-    results = []
-    for k in range(1, n + 1):
-        amazing_number = -1
+    s = input()
+    digits = [int(c) for c in s]
+    
+    ans = 6
+    
+    for i in range(1000):
         
-        candidates = set()
-        for i in range(n - k + 1):
-            subsegment = a[i:i+k]
-            if i == 0:
-                candidates = set(subsegment)
-            else:
-                candidates = candidates.intersection(set(subsegment))
+        s1 = str(i).zfill(3)
+        digits1 = [int(c) for c in s1]
         
-        if candidates:
-            amazing_number = min(candidates)
-
-        results.append(amazing_number)
-
-    print(*results)
-
-t = int(input())
-for _ in range(t):
-    solve()
+        for j in range(1000):
+            s2 = str(j).zfill(3)
+            digits2 = [int(c) for c in s2]
+            
+            if sum(digits1) == sum(digits2):
+                
+                temp_ans = 0
+                
+                if digits[0] != digits1[0]:
+                    temp_ans += 1
+                if digits[1] != digits1[1]:
+                    temp_ans += 1
+                if digits[2] != digits1[2]:
+                    temp_ans += 1
+                if digits[3] != digits2[0]:
+                    temp_ans += 1
+                if digits[4] != digits2[1]:
+                    temp_ans += 1
+                if digits[5] != digits2[2]:
+                    temp_ans += 1
+                    
+                ans = min(ans, temp_ans)
+    
+    print(ans)
+    
+solve()

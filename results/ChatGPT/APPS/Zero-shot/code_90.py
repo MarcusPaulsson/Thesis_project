@@ -1,15 +1,32 @@
-n = int(input())
-ratings = [tuple(map(int, input().split())) for _ in range(n)]
+n, m, d = map(int, input().split())
+c = list(map(int, input().split()))
 
-# Check if any rating has changed
-rated = any(a != b for a, b in ratings)
-
-# Check if standings are in non-increasing order of the ratings
-ordered = all(ratings[i][0] >= ratings[i + 1][0] for i in range(n - 1))
-
-if rated:
-    print("rated")
-elif not ordered:
-    print("unrated")
+# If the maximum jump distance d is greater than or equal to n, it's always possible
+if d >= n:
+    print("YES")
+    print("0 " * (n - sum(c)) + " ".join(str(i + 1) for i in range(m) for _ in range(c[i])))
 else:
-    print("maybe")
+    # Calculate the total length of platforms
+    total_length = sum(c)
+    
+    # Calculate the maximum number of gaps needed
+    gaps_needed = m - 1
+    
+    # Check if we can fit the platforms with the gaps
+    if total_length + gaps_needed * d < n:
+        print("NO")
+    else:
+        print("YES")
+        result = [0] * n
+        position = 0
+        
+        for i in range(m):
+            # Place the platform
+            for j in range(c[i]):
+                result[position + j] = i + 1
+            position += c[i]
+            # If it's not the last platform, leave a gap
+            if i < m - 1:
+                position += d
+        
+        print(" ".join(map(str, result)))

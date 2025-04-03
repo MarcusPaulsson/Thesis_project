@@ -1,44 +1,20 @@
-def reconstruct_string(t, test_cases):
-    results = []
+import math
+import sys
+
+# Read input
+A, B = map(int, sys.stdin.read().strip().split())
+
+# Initialize the result variable to None
+result = None
+
+# Check prices from 1 to 1000 (a reasonable range)
+for price in range(1, 1001):
+    tax_8 = math.floor(price * 0.08)
+    tax_10 = math.floor(price * 0.10)
     
-    for s, x in test_cases:
-        n = len(s)
-        w = ['0'] * n
-        
-        # Mark positions in w based on s
-        for i in range(n):
-            if s[i] == '1':
-                if i - x >= 0:
-                    w[i - x] = '1'
-                if i + x < n:
-                    w[i + x] = '1'
-        
-        # Validate the constructed w against s
-        valid = True
-        for i in range(n):
-            if s[i] == '1':
-                if not (i - x >= 0 and w[i - x] == '1') and not (i + x < n and w[i + x] == '1'):
-                    valid = False
-                    break
-        
-        if valid:
-            results.append(''.join(w))
-        else:
-            results.append('-1')
-    
-    return results
+    if tax_8 == A and tax_10 == B:
+        result = price
+        break
 
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    s = input().strip()
-    x = int(input().strip())
-    test_cases.append((s, x))
-
-# Process the test cases
-results = reconstruct_string(t, test_cases)
-
-# Output results
-for result in results:
-    print(result)
+# Print the result or -1 if no valid price was found
+print(result if result is not None else -1)

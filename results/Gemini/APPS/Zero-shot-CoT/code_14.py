@@ -1,26 +1,36 @@
 def solve():
-  a1, b1 = map(int, input().split())
-  a2, b2 = map(int, input().split())
+    n, k = map(int, input().split())
+    p = list(map(int, input().split()))
 
-  if a1 == a2 and a1 + b1 == b2:
-    print("YES")
-  elif a1 == b2 and a1 + b1 == a2:
-    print("YES")
-  elif b1 == a2 and b1 + a1 == b2:
-    print("YES")
-  elif b1 == b2 and b1 + a1 == a2:
-    print("YES")
-  elif a1 == a2 and a1 + b2 == b1:
-    print("YES")
-  elif a1 == b2 and a1 + a2 == b1:
-    print("YES")
-  elif b1 == a2 and b1 + b2 == a1:
-    print("YES")
-  elif b1 == b2 and b1 + a2 == a1:
-    print("YES")
-  else:
-    print("NO")
+    used = set(p)
+    remaining = []
+    for i in range(n, 0, -1):
+        if i not in used:
+            remaining.append(i)
 
-t = int(input())
-for _ in range(t):
-  solve()
+    p += remaining
+
+    def is_stack_sortable(arr):
+        s = []
+        b = []
+        i = 0
+        while i < len(arr) or len(s) > 0:
+            if len(s) > 0 and s[-1] == min(arr[i:] + s):
+                b.append(s.pop())
+            elif i < len(arr):
+                s.append(arr[i])
+                i += 1
+            else:
+                return False
+        
+        for i in range(len(b) - 1):
+            if b[i] > b[i+1]:
+                return False
+        return True
+
+    if is_stack_sortable(p):
+        print(*p)
+    else:
+        print(-1)
+
+solve()

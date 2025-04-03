@@ -1,45 +1,34 @@
 def solve():
-    n, k, d1, d2 = map(int, input().split())
-    
-    def check(x, y, z):
-        if x < 0 or y < 0 or z < 0:
-            return False
-        if x + y + z > k:
-            return False
-        
-        mx = max(x, y, z)
-        rem = n // 3 * 3 - (x + y + z)
-        if rem < 0:
-            return False
-        
-        if rem % 3 != 0:
-            return False
-            
-        need = mx * 3 - (x+y+z)
-        
-        if need > n-k:
-            return False
-        
-        if (n-k-need)%3 !=0:
-            return False
-            
-        return True
+    n, m, k = map(int, input().split())
+    a = []
+    for _ in range(n):
+        a.append(list(map(int, input().split())))
 
-    for sgn1 in [-1, 1]:
-        for sgn2 in [-1, 1]:
-            x = (d1 * sgn1 - d2 * sgn2)
-            if x % 3 != 0:
-                continue
-            x //= 3
-            y = x + d2 * sgn2
-            z = y - d1 * sgn1
-            
-            if check(x, y, z):
-                print("yes")
-                return
+    dp = [[-1] * k for _ in range(n + 1)]
+    dp[0][0] = 0
 
-    print("no")
+    for i in range(n):
+        row = a[i]
+        max_choices = m // 2
+        
+        row_dp = [[-1] * k for _ in range(max_choices + 1)]
+        row_dp[0][0] = 0
+        
+        for val in row:
+            for count in range(max_choices, 0, -1):
+                for rem in range(k):
+                    if row_dp[count-1][rem] != -1:
+                        new_rem = (rem + val) % k
+                        row_dp[count][new_rem] = max(row_dp[count][new_rem], row_dp[count-1][rem] + val)
+        
+        for prev_rem in range(k):
+            if dp[i][prev_rem] != -1:
+                for count in range(max_choices + 1):
+                    for row_rem in range(k):
+                        if row_dp[count][row_rem] != -1:
+                            new_rem = (prev_rem + row_rem) % k
+                            dp[i+1][new_rem] = max(dp[i+1][new_rem], dp[i][prev_rem] + row_dp[count][row_rem])
 
-t = int(input())
-for _ in range(t):
-    solve()
+    print(dp[n][0])
+
+solve()

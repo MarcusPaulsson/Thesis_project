@@ -1,42 +1,17 @@
-def mex(arr):
-    present = [False] * (len(arr) + 1)
-    for num in arr:
-        if num < len(present):
-            present[num] = True
-    for i in range(len(present)):
-        if not present[i]:
-            return i
-    return len(present)
+def can_complete_wall(n, heights):
+    max_height = max(heights)
+    total_bricks_needed = 0
+    total_bricks_available = 0
 
-def make_non_decreasing(arr):
-    n = len(arr)
-    operations = []
-    
-    for _ in range(2 * n):
-        current_mex = mex(arr)
-        if all(arr[i] <= arr[i + 1] for i in range(n - 1)):  # Check if already non-decreasing
-            break
-        # Replace any element with the current_mex
-        for i in range(n):
-            if arr[i] != current_mex:  # We can safely replace
-                arr[i] = current_mex
-                operations.append(i + 1)  # Store 1-based index
-                break
+    for height in heights:
+        total_bricks_needed += max_height - height
+        total_bricks_available += height
 
-    return operations
-
-t = int(input())
-results = []
-for _ in range(t):
-    n = int(input())
-    arr = list(map(int, input().split()))
-    
-    operations = make_non_decreasing(arr)
-    
-    results.append(f"{len(operations)}")
-    if operations:
-        results.append(" ".join(map(str, operations)))
+    if total_bricks_needed <= total_bricks_available:
+        return "YES"
     else:
-        results.append("")
+        return "NO"
 
-print("\n".join(results))
+n = int(input())
+heights = list(map(int, input().split()))
+print(can_complete_wall(n, heights))

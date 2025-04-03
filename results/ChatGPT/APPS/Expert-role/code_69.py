@@ -1,44 +1,60 @@
-def min_cost_to_clear_mines(test_cases):
-    results = []
-    for a, b, mine_map in test_cases:
-        n = len(mine_map)
-        total_cost = 0
-        i = 0
-        
-        while i < n:
-            if mine_map[i] == '1':
-                # We found a segment of mines
-                while i < n and mine_map[i] == '1':
-                    i += 1
-                total_cost += a  # Activate the segment
-            else:
-                # Check if we are at the end of a segment of '0's
-                start = i
-                while i < n and mine_map[i] == '0':
-                    i += 1
-                if i < n and mine_map[i] == '1':  # There's a mine segment after
-                    total_cost += b  # Place a mine to connect the segments
-        
-        results.append(total_cost)
-    
-    return results
+def find_spanning_tree(n, m, D, edges):
+    from collections import defaultdict, deque
 
-# Reading input
-import sys
-input = sys.stdin.read
+    graph = defaultdict(list)
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
 
-data = input().splitlines()
-t = int(data[0])
-test_cases = []
+    if len(graph[1]) < D:
+        print("NO")
+        return
 
-for i in range(t):
-    a, b = map(int, data[2 * i + 1].split())
-    mine_map = data[2 * i + 2]
-    test_cases.append((a, b, mine_map))
+    # Start with vertex 1 and try to build the spanning tree
+    chosen_edges = []
+    degree_count = {i: 0 for i in range(1, n + 1)}
+    degree_count[1] = 0
 
-# Getting results
-results = min_cost_to_clear_mines(test_cases)
+    # Select D edges from vertex 1
+    for neighbor in graph[1][:D]:
+        chosen_edges.append((1, neighbor))
+        degree_count[1] += 1
+        degree_count[neighbor] += 1
 
-# Output results
-for result in results:
-    print(result)
+    # Now we need to add edges for the remaining vertices to connect them
+    visited = set([1] + [neighbor for neighbor in graph[1][:D]])
+    queue = deque()
+
+    # Add remaining neighbors of vertex 1 to the queue to explore
+    for neighbor in graph[1][D:]:
+        if degree_count[neighbor] == 0:
+            queue.append(neighbor)
+
+    for i in range(2, n + 1):
+        if i not in visited:
+            queue.append(i)
+
+    while queue:
+        current = queue.popleft()
+        for neighbor in graph[current]:
+            if degree_count[neighbor] < 1 and neighbor not in visited:
+                chosen_edges.append((current, neighbor))
+                degree_count[current] += 1
+                degree_count[neighbor] += 1
+                visited.add(neighbor)
+                if len(chosen_edges) == n - 1:
+                    break
+        if len(chosen_edges) == n - 1:
+            break
+
+    if len(chosen_edges) != n - 1:
+        print("NO")
+    else:
+        print("YES")
+        for u, v in chosen_edges:
+            print(u, v)
+
+# Example usage:
+n, m, D = map(int, input().split())
+edges = [tuple(map(int, input().split())) for _ in range(m)]
+find_spanning_tree(n, m, D, edges)

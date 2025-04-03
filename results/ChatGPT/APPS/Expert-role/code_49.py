@@ -1,25 +1,22 @@
-def count_classy_integers(L, R):
-    classy_count = 0
-    
-    for x in range(L, R + 1):
-        if len([d for d in str(x) if d != '0']) <= 3:
-            classy_count += 1
-            
-    return classy_count
+def find_kth_digit(k):
+    length = 1
+    count = 9
+    start = 1
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    T = int(data[0])
-    results = []
-    
-    for i in range(1, T + 1):
-        L, R = map(int, data[i].split())
-        results.append(count_classy_integers(L, R))
-    
-    print('\n'.join(map(str, results)))
+    # Determine the length of the number that contains the k-th digit
+    while k > length * count:
+        k -= length * count
+        length += 1
+        count *= 10
+        start *= 10
 
-if __name__ == "__main__":
-    main()
+    # Find the actual number that contains the k-th digit
+    start += (k - 1) // length
+    num_str = str(start)
+    
+    # Find the specific digit
+    digit_index = (k - 1) % length
+    return num_str[digit_index]
+
+k = int(input())
+print(find_kth_digit(k))

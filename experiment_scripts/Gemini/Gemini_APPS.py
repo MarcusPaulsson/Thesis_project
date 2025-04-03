@@ -51,24 +51,21 @@ def run_task_with_gemini(task_prompt):
     return response.text
 
 def extract_apps_tasks(json_file_path):
+    """
+    Extracts 'question' fields from each line in a JSON file, handling potential errors.
+    """
     tasks = []
     try:
         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
-            try:
-                # Load the entire JSON array at once
-                data_array = json.load(jsonfile)
-                
-                # Process each item in the array
-                for item in data_array:
-                    if "question" in item:
-                        tasks.append(item["question"])
-                    else:
-                        print(f"Warning: Skipping item with missing 'question' field: {str(item)[:50]}...")
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-                return None
-                
-        print(f"Successfully extracted {len(tasks)} questions from {json_file_path}")
+            for line in jsonfile:
+                line = line.strip()
+
+                try:
+                    data = json.loads(line)
+                    if "question" in data:
+                        tasks.append(data["question"])
+                except json.JSONDecodeError:
+                    print(f"Warning: Skipping invalid JSON line: {line[:50]}...")
         return tasks
     except FileNotFoundError:
         print(f"Error: JSON file '{json_file_path}' not found.")
@@ -84,7 +81,7 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 49  # Adjust to the number of tasks you want to run.
+    end_index = 100  # Adjust to the number of tasks you want to run.
 
     results = []
     for i in range(start_index, end_index):

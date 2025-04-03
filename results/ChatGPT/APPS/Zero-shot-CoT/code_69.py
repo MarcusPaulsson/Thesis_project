@@ -1,48 +1,63 @@
-def min_cost_to_clear_mines(test_cases):
-    results = []
-    for a, b, mine_map in test_cases:
-        n = len(mine_map)
-        segments = 0
-        i = 0
-        
-        # Count segments of continuous '1's
-        while i < n:
-            if mine_map[i] == '1':
-                segments += 1
-                while i < n and mine_map[i] == '1':
-                    i += 1
-            else:
-                i += 1
+def find_spanning_tree(n, m, D, edges):
+    from collections import defaultdict, deque
 
-        # Cost calculation
-        if segments == 0:
-            # No mines, no cost
-            results.append(0)
+    # Build the graph
+    graph = defaultdict(list)
+    for v, u in edges:
+        graph[v].append(u)
+        graph[u].append(v)
+
+    # Check if we can form a valid spanning tree
+    if D >= n or len(graph[1]) < D:
+        print("NO")
+        return
+
+    # Start building the spanning tree
+    tree_edges = []
+    visited = set()
+    visited.add(1)
+    degree_1 = 0
+
+    # Choose D edges from vertex 1
+    for neighbor in graph[1]:
+        if degree_1 < D:
+            tree_edges.append((1, neighbor))
+            visited.add(neighbor)
+            degree_1 += 1
         else:
-            # Cost to activate all existing segments
-            cost_to_activate_segments = segments * a
-            
-            # Cost to create a mine and then activate (if it is cheaper)
-            # This is only applicable if there are gaps between mines
-            cost_to_fill_gaps = (segments - 1) * b + a if segments > 1 else float('inf')
-            
-            # Minimum cost
-            minimum_cost = min(cost_to_activate_segments, cost_to_fill_gaps)
-            results.append(minimum_cost)
+            break
 
-    return results
+    # BFS/DFS to add the remaining edges
+    queue = deque()
+    for neighbor in graph[1]:
+        if degree_1 < D:
+            continue
+        if neighbor not in visited:
+            queue.append(neighbor)
 
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    a, b = map(int, input().split())
-    mine_map = input().strip()
-    test_cases.append((a, b, mine_map))
+    while queue:
+        current = queue.popleft()
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                tree_edges.append((current, neighbor))
+                visited.add(neighbor)
+                queue.append(neighbor)
+                if len(tree_edges) == n - 1:
+                    break
+        if len(tree_edges) == n - 1:
+            break
 
-# Get results
-results = min_cost_to_clear_mines(test_cases)
+    # If we have exactly n-1 edges, we have a spanning tree
+    if len(tree_edges) == n - 1:
+        print("YES")
+        for v, u in tree_edges:
+            print(v, u)
+    else:
+        print("NO")
 
-# Output results
-for result in results:
-    print(result)
+# Read input
+n, m, D = map(int, input().split())
+edges = [tuple(map(int, input().split())) for _ in range(m)]
+
+# Find a spanning tree
+find_spanning_tree(n, m, D, edges)

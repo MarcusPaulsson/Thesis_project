@@ -1,29 +1,29 @@
-def max_diagonal_moves(q, queries):
-    results = []
-    for n, m, k in queries:
-        # Calculate the minimum moves required to reach (n, m)
-        min_moves = max(n, m)
-        # Check if it's possible to reach (n, m) in exactly k moves
-        if k < min_moves or (k - min_moves) % 2 != 0:
-            results.append(-1)
-        else:
-            # The maximum number of diagonal moves we can make
-            diagonal_moves = min(n, m)
-            # Remaining moves after reaching the target
-            remaining_moves = k - min_moves
-            # Remaining moves can be used to move back and forth
-            max_diagonal = diagonal_moves + min(remaining_moves, (n + m) - diagonal_moves)
-            results.append(max_diagonal)
-    
-    return results
+def sum_of_digits(n):
+    return sum(int(digit) for digit in str(n))
 
-# Read input
-q = int(input())
-queries = [tuple(map(int, input().split())) for _ in range(q)]
+def max_digit_sum(x):
+    # Start by considering x itself
+    max_sum = sum_of_digits(x)
+    result = x
 
-# Get results
-results = max_diagonal_moves(q, queries)
+    # Check numbers by reducing the last digits to 9
+    str_x = str(x)
+    length = len(str_x)
 
-# Print results
-for result in results:
-    print(result)
+    # Generate candidates by changing digits to 9
+    for i in range(length):
+        if str_x[i] == '0':
+            continue
+        # Create a new number by reducing the current digit and making all following digits 9
+        candidate = str_x[:i] + str(int(str_x[i]) - 1) + '9' * (length - i - 1)
+        candidate = int(candidate)
+        if candidate <= x:
+            candidate_sum = sum_of_digits(candidate)
+            if candidate_sum > max_sum or (candidate_sum == max_sum and candidate > result):
+                max_sum = candidate_sum
+                result = candidate
+
+    return result
+
+x = int(input())
+print(max_digit_sum(x))

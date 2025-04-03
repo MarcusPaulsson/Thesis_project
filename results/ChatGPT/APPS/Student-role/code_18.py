@@ -1,21 +1,21 @@
-import math
-
-def min_square_side_length(n):
-    # Calculate the minimum square side length required to embed a 2n-gon
-    angle = math.pi / n
-    # The formula derived is side_length = 2 * sin(angle) / cos(angle / 2)
-    side_length = 2 * math.sin(angle) / math.cos(angle / 2)
-    return side_length
-
-def main():
-    T = int(input())
-    results = []
-    for _ in range(T):
-        n = int(input())
-        side_length = min_square_side_length(n)
-        results.append(f"{side_length:.9f}")
+def lexicographically_minimal_string(s):
+    t = []
+    u = []
     
-    print("\n".join(results))
+    for char in s:
+        t.append(char)
+        # Maintain the order of characters in t for forming u
+        while t and (not u or t[-1] <= u[-1]):
+            u.append(t.pop())
+    
+    # If there are still characters left in t after processing s
+    while t:
+        u.append(t.pop())
+    
+    # Join the list to form the final string
+    return ''.join(u)
 
-if __name__ == "__main__":
-    main()
+# Input
+s = input().strip()
+# Output the result
+print(lexicographically_minimal_string(s))

@@ -1,24 +1,34 @@
-import math
+def can_win(board):
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # horizontal, vertical, diagonal down-right, diagonal down-left
 
-def find_a_b(d):
-    # The case when d == 0
-    if d == 0:
-        return "Y 0.000000000 0.000000000"
-    
-    # Using the quadratic formula to find the roots of the equation:
-    # x^2 - dx + d = 0 -> x = (d ± sqrt(d^2 - 4d)) / 2
-    discriminant = d * d - 4 * d
-    
-    if discriminant < 0:
-        return "N"
-    
-    sqrt_discriminant = math.sqrt(discriminant)
-    a = (d + sqrt_discriminant) / 2
-    b = (d - sqrt_discriminant) / 2
-    
-    return f"Y {a:.9f} {b:.9f}"
+    def check_win(x, y):
+        for dx, dy in directions:
+            count = 1  # Count the current move
+            # Check in the positive direction
+            nx, ny = x + dx, y + dy
+            while 0 <= nx < 10 and 0 <= ny < 10 and board[nx][ny] == 'X':
+                count += 1
+                nx += dx
+                ny += dy
+            # Check in the negative direction
+            nx, ny = x - dx, y - dy
+            while 0 <= nx < 10 and 0 <= ny < 10 and board[nx][ny] == 'X':
+                count += 1
+                nx -= dx
+                ny -= dy
+            if count >= 5:
+                return True
+        return False
 
-t = int(input())
-for _ in range(t):
-    d = int(input())
-    print(find_a_b(d))
+    for i in range(10):
+        for j in range(10):
+            if board[i][j] == '.':
+                board[i][j] = 'X'  # Place a cross
+                if check_win(i, j):
+                    return 'YES'
+                board[i][j] = '.'  # Remove the cross
+    return 'NO'
+
+# Read input
+board = [input().strip() for _ in range(10)]
+print(can_win(board))

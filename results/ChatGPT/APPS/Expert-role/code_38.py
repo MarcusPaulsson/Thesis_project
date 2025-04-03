@@ -1,14 +1,21 @@
-t = int(input())
-for _ in range(t):
-    n, k1, k2 = map(int, input().split())
-    player1_cards = list(map(int, input().split()))
-    player2_cards = list(map(int, input().split()))
+def can_run_same_track(n, L, kefa_distances, sasha_distances):
+    # Calculate the distances between barriers for Kefa
+    kefa_diffs = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
+    # Calculate the distances between barriers for Sasha
+    sasha_diffs = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
     
-    # The winner will be the player with the highest card
-    highest_card_player1 = max(player1_cards)
-    highest_card_player2 = max(player2_cards)
+    # Check if Kefa's distances can be rotated to match Sasha's distances
+    doubled_kefa_diffs = kefa_diffs * 2
+    for i in range(n):
+        if doubled_kefa_diffs[i:i+n] == sasha_diffs:
+            return "YES"
     
-    if highest_card_player1 > highest_card_player2:
-        print("YES")
-    else:
-        print("NO")
+    return "NO"
+
+# Read input
+n, L = map(int, input().split())
+kefa_distances = list(map(int, input().split()))
+sasha_distances = list(map(int, input().split()))
+
+# Output the result
+print(can_run_same_track(n, L, kefa_distances, sasha_distances))

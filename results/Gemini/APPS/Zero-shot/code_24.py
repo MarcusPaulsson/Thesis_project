@@ -1,25 +1,62 @@
-def minDigit(x):
-    s = str(x)
-    min_digit = 9
-    for digit in s:
-        min_digit = min(min_digit, int(digit))
-    return min_digit
+def solve():
+    grid = []
+    for _ in range(10):
+        grid.append(input())
 
-def maxDigit(x):
-    s = str(x)
-    max_digit = 0
-    for digit in s:
-        max_digit = max(max_digit, int(digit))
-    return max_digit
+    def check_win(grid):
+        for i in range(10):
+            for j in range(10):
+                if grid[i][j] == 'X':
+                    # Check horizontal
+                    if j <= 5:
+                        count = 0
+                        for k in range(5):
+                            if grid[i][j+k] == 'X':
+                                count += 1
+                        if count == 5:
+                            return True
 
-t = int(input())
-for _ in range(t):
-    a1, K = map(int, input().split())
-    a = a1
-    for i in range(1, int(min(K, 1000))):
-        min_d = minDigit(a)
-        max_d = maxDigit(a)
-        if min_d == 0:
-            break
-        a = a + min_d * max_d
-    print(a)
+                    # Check vertical
+                    if i <= 5:
+                        count = 0
+                        for k in range(5):
+                            if grid[i+k][j] == 'X':
+                                count += 1
+                        if count == 5:
+                            return True
+                    
+                    # Check diagonal (top-left to bottom-right)
+                    if i <= 5 and j <= 5:
+                        count = 0
+                        for k in range(5):
+                            if grid[i+k][j+k] == 'X':
+                                count += 1
+                        if count == 5:
+                            return True
+
+                    # Check diagonal (top-right to bottom-left)
+                    if i <= 5 and j >= 4:
+                        count = 0
+                        for k in range(5):
+                            if grid[i+k][j-k] == 'X':
+                                count += 1
+                        if count == 5:
+                            return True
+        return False
+
+    for i in range(10):
+        for j in range(10):
+            if grid[i][j] == '.':
+                new_grid = []
+                for row in grid:
+                    new_grid.append(list(row))
+                new_grid[i][j] = 'X'
+                new_grid = ["".join(row) for row in new_grid]
+                
+                if check_win(new_grid):
+                    print("YES")
+                    return
+
+    print("NO")
+
+solve()

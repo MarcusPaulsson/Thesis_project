@@ -1,47 +1,35 @@
-def perfect_keyboard(test_cases):
+def min_operations(t, test_cases):
     results = []
     
-    for s in test_cases:
-        adjacency = {}
-        for i in range(len(s) - 1):
-            if s[i] not in adjacency:
-                adjacency[s[i]] = set()
-            if s[i + 1] not in adjacency:
-                adjacency[s[i + 1]] = set()
-            adjacency[s[i]].add(s[i + 1])
-            adjacency[s[i + 1]].add(s[i])
+    for a, b, c in test_cases:
+        # Initialize minimum operations and best triple
+        min_ops = float('inf')
+        best_triple = (0, 0, 0)
 
-        visited = {}
-        layout = []
+        # Iterate over possible values for A
+        for A in range(1, a + 1):
+            # B must be a multiple of A, find suitable B
+            for B in range(A, c + 1, A):
+                # C must be a multiple of B, find suitable C
+                for C in range(B, c + 1, B):
+                    # Calculate operations needed
+                    ops = abs(A - a) + abs(B - b) + abs(C - c)
+                    if ops < min_ops:
+                        min_ops = ops
+                        best_triple = (A, B, C)
 
-        def dfs(node):
-            if node in visited:
-                return
-            visited[node] = True
-            layout.append(node)
-            for neighbor in adjacency[node]:
-                dfs(neighbor)
-
-        for char in adjacency.keys():
-            if char not in visited:
-                dfs(char)
-
-        if len(visited) < len(adjacency):
-            results.append("NO")
-            continue
-
-        remaining_chars = set("abcdefghijklmnopqrstuvwxyz") - set(layout)
-        layout.extend(remaining_chars)
-        results.append("YES")
-        results.append("".join(layout))
+        results.append((min_ops, best_triple))
 
     return results
 
 # Input reading
-T = int(input())
-test_cases = [input().strip() for _ in range(T)]
-results = perfect_keyboard(test_cases)
+t = int(input().strip())
+test_cases = [tuple(map(int, input().strip().split())) for _ in range(t)]
+
+# Get results
+results = min_operations(t, test_cases)
 
 # Output results
-for result in results:
-    print(result)
+for res in results:
+    print(res[0])
+    print(*res[1])

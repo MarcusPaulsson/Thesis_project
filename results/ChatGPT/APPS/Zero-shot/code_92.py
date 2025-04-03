@@ -1,24 +1,9 @@
-def count_cyclical_strings(n, s):
-    from itertools import product
+x = float(input().strip())
 
-    m = len(s)
-    total_count = 0
-    seen = set()
-
-    # Generate all binary strings of length n
-    for bits in product('01', repeat=n):
-        t = ''.join(bits)
-        # Check for all cyclical shifts
-        for i in range(n):
-            if s in t[i:] + t[:i]:  # Check if s is a substring in this shift
-                seen.add(t)
-                break
-
-    return len(seen)
-
-# Input reading
-n = int(input().strip())
-s = input().strip()
-
-# Output the result
-print(count_cyclical_strings(n, s))
+# We need to find integers a and b such that 1 <= a, b <= 10 and a * b is approximately equal to x
+# The simplest approach is to iterate through all possible values for a and b
+for a in range(1, 11):
+    for b in range(1, 11):
+        if abs(a * b - x) < 1e-6:  # Use a small tolerance for floating point comparison
+            print(a, b)
+            break

@@ -1,32 +1,16 @@
-def solve():
-  c, m, x = map(int, input().split())
-  
-  low = 0
-  high = min(c, m, x)
-  ans = 0
-  
-  while low <= high:
-    mid = (low + high) // 2
-    
-    if c >= mid and m >= mid and x >= mid:
-      ans = mid
-      low = mid + 1
-    else:
-      high = mid - 1
-      
-  
-  remaining_c = c - ans
-  remaining_m = m - ans
-  remaining_x = x - ans
-  
-  
-  
-  
-  
-  ans += min(remaining_c, remaining_m, (remaining_c + remaining_m) // 3)
-  
-  print(ans)
+import math
 
-q = int(input())
-for _ in range(q):
-  solve()
+def solve():
+    n = int(input())
+    
+    best_moves = float('inf')
+    
+    for i in range(1, int(math.sqrt(n)) + 2):
+        if n % i == 0:
+            j = n // i
+            moves = (i - 1) + (j - 1)
+            best_moves = min(best_moves, moves)
+            
+    print(best_moves)
+    
+solve()

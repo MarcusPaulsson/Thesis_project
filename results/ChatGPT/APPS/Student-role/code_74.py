@@ -1,49 +1,32 @@
-def maximize_army(T, test_cases):
-    results = []
+def min_cost_to_obtain_set(n, k, s):
+    unique_subsequences = set()
     
-    for case in test_cases:
-        n, k, minions = case
-        # Sort minions based on their initial power and boost effect
-        minions.sort(key=lambda x: (-x[0], -x[1]))
-        
-        actions = []
-        current_minions = []
-        current_power = 0
-        
-        for i in range(n):
-            a_i, b_i = minions[i]
-            # Summon the minion
-            actions.append(i + 1)  # Summon minion i (1-based index)
-            current_minions.append(a_i + sum(b for _, b in current_minions))
-            current_power += current_minions[-1]
-            
-            # If we exceed the number of controllable minions, destroy the weakest one
-            if len(current_minions) > k:
-                # Find the index of the weakest minion
-                weakest_index = current_minions.index(min(current_minions))
-                # Destroy that minion
-                actions.append(-(weakest_index + 1))  # Destroy minion (1-based index)
-                current_power -= current_minions[weakest_index]
-                current_minions.pop(weakest_index)
-        
-        # Result for this case
-        results.append((len(actions), actions))
+    # Generate all unique subsequences using a bitmask approach
+    for i in range(1 << n):
+        subsequence = []
+        for j in range(n):
+            if i & (1 << j):
+                subsequence.append(s[j])
+        unique_subsequences.add(''.join(subsequence))
     
-    return results
+    # If the number of unique subsequences is less than k, return -1
+    if len(unique_subsequences) < k:
+        return -1
+    
+    # Calculate the minimum cost
+    costs = []
+    for subseq in unique_subsequences:
+        cost = n - len(subseq)
+        costs.append(cost)
+    
+    # Sort costs and take the sum of the smallest k costs
+    costs.sort()
+    return sum(costs[:k])
 
-# Input reading
-T = int(input())
-test_cases = []
+# Read input
+n, k = map(int, input().split())
+s = input().strip()
 
-for _ in range(T):
-    n, k = map(int, input().split())
-    minions = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, k, minions))
-
-# Get results
-results = maximize_army(T, test_cases)
-
-# Output results
-for m, actions in results:
-    print(m)
-    print(" ".join(map(str, actions)))
+# Calculate and print the result
+result = min_cost_to_obtain_set(n, k, s)
+print(result)

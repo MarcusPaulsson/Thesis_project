@@ -1,58 +1,45 @@
-def time_to_meet(test_cases):
-    results = []
-    for n, l, flags in test_cases:
-        left_speed = 1.0
-        right_speed = 1.0
-        left_position = 0.0
-        right_position = l
-        time = 0.0
-        
-        flags = [0] + flags + [l]  # Add start and end positions as flags
-        
-        for i in range(1, len(flags)):
-            left_time_to_flag = (flags[i] - left_position) / left_speed
-            right_time_to_flag = (right_position - flags[-i]) / right_speed
-            
-            if left_time_to_flag < right_time_to_flag:
-                time += left_time_to_flag
-                left_position = flags[i]
-                left_speed += 1.0
-                right_position -= right_speed * left_time_to_flag
-                right_speed += 0.0  # Right car speed remains the same
-            else:
-                time += right_time_to_flag
-                right_position = flags[-i]
-                right_speed += 1.0
-                left_position += left_speed * right_time_to_flag
-                left_speed += 0.0  # Left car speed remains the same
-            
-            # Check if they meet before reaching the next flag
-            if left_position >= right_position:
-                # They meet
-                time += (right_position - left_position) / (left_speed + right_speed)
-                break
-        
-        results.append(f"{time:.12f}")
+def schedule_exams(n, m, exams):
+    # Create a schedule initialized to rest days
+    schedule = [0] * n
     
-    return results
+    # Sort exams by their exam day
+    exams = sorted(exams, key=lambda x: x[1])
+    
+    # Keep track of preparation days needed
+    preparation_needed = [0] * m
+    
+    for i in range(m):
+        s_i, d_i, c_i = exams[i]
+        preparation_needed[i] = c_i  # days needed for preparation
+        # Mark the exam day
+        schedule[d_i - 1] = m + 1  # m + 1 indicates it's an exam day
+    
+    # Try to allocate preparation days
+    for i in range(m):
+        s_i, d_i, c_i = exams[i]
+        days_allocated = 0
+        
+        # Allocate preparation days from s_i to d_i - 1
+        for j in range(s_i - 1, d_i - 1):
+            if days_allocated < c_i and schedule[j] == 0:
+                schedule[j] = i + 1  # Mark as preparing for exam i + 1
+                days_allocated += 1
+        
+        # Check if we allocated enough preparation days
+        if days_allocated < c_i:
+            return -1  # Not enough preparation days
 
-# Reading input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+    return schedule
 
-t = int(data[0])
-test_cases = []
+# Read input
+n, m = map(int, input().split())
+exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-index = 1
-for _ in range(t):
-    n, l = map(int, data[index].split())
-    flags = list(map(int, data[index + 1].split()))
-    test_cases.append((n, l, flags))
-    index += 2
+# Get the schedule
+result = schedule_exams(n, m, exams)
 
-# Getting results
-results = time_to_meet(test_cases)
-
-# Output results
-print("\n".join(results))
+# Print output
+if result == -1:
+    print(-1)
+else:
+    print(' '.join(map(str, result)))

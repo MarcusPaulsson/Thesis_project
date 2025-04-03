@@ -1,38 +1,31 @@
-def maximize_army_strength(test_cases):
-    results = []
-    for n, k, minions in test_cases:
-        # Sort minions based on their initial power and the boost they provide
-        minions.sort(key=lambda x: (x[0] + x[1] * (n - 1)), reverse=True)
-
-        actions = []
-        current_army = []
-
-        for i in range(n):
-            a_i, b_i = minions[i]
-            actions.append(i + 1)  # summon minion i
-            current_army.append((a_i, b_i))
-
-            # If we exceed k, we need to destroy the weakest summoned minion
-            if len(current_army) > k:
-                # Find the minion with the lowest effective power after boost
-                current_army.sort(key=lambda x: x[0] + x[1] * (len(current_army) - 1))
-                weakest_minion = current_army.pop(0)
-                actions.append(-(minions.index(weakest_minion) + 1))  # destroy that minion
-
-        # Gather the results for this test case
-        results.append(f"{len(actions)}")
-        results.append(" ".join(map(str, actions)))
+def min_cost_to_obtain_set(n, k, s):
+    unique_characters = set(s)
+    count_unique = len(unique_characters)
     
-    return "\n".join(results)
+    # If number of unique characters is less than k, it's impossible
+    if count_unique < k:
+        return -1
+    
+    # Calculate the total number of unique subsequences we can generate
+    total_subsequences = 0
+    cost = 0
+    power_of_two = 1  # 2^0
+    
+    for length in range(1, n + 1):
+        power_of_two *= 2
+        total_subsequences += power_of_two - 1  # We exclude the empty subsequence
+        cost += n - length  # Cost to add subsequences of this length
+        
+        if total_subsequences >= k:
+            return cost - (total_subsequences - k)  # Adjust cost if we have extras
+    
+    # If we still don't have enough subsequences after considering all lengths
+    return -1
 
 # Read input
-T = int(input())
-test_cases = []
-for _ in range(T):
-    n, k = map(int, input().split())
-    minions = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, k, minions))
+n, k = map(int, input().split())
+s = input().strip()
 
-# Get results
-output = maximize_army_strength(test_cases)
-print(output)
+# Calculate and output the result
+result = min_cost_to_obtain_set(n, k, s)
+print(result)

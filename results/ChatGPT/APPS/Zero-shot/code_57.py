@@ -1,20 +1,32 @@
-def find_empty_day(n, m):
-    day = 0
-    total_eaten = 0
+def fill_gifts(n, f):
+    # Identify givers and takers
+    givers = set(range(1, n + 1)) - set(filter(lambda x: x != 0, f))
+    takers = set(filter(lambda x: x != 0, f))
     
-    while True:
-        day += 1
-        total_eaten += day
-        
-        # Calculate the amount of grain in the barn at the start of the day
-        n = min(n + m, n)  # Barn cannot exceed its capacity
-        
-        # Subtract the eaten grains
-        n -= total_eaten
-        
-        if n <= 0:
-            return day
+    # Find the friends who do not have a recipient (f_i = 0)
+    zero_indices = [i for i in range(n) if f[i] == 0]
+    
+    # Prepare a list for the final output
+    nf = f[:]
+    
+    # Assign gifts to friends who have f_i = 0
+    for i in zero_indices:
+        # Find a suitable gift recipient
+        for recipient in givers:
+            if recipient not in takers and recipient != (i + 1):
+                nf[i] = recipient
+                givers.remove(recipient)
+                takers.add(recipient)
+                break
 
-# Read input
-n, m = map(int, input().split())
-print(find_empty_day(n, m))
+    return nf
+
+# Input reading
+n = int(input().strip())
+f = list(map(int, input().strip().split()))
+
+# Fill in the gifts
+result = fill_gifts(n, f)
+
+# Output the result
+print(' '.join(map(str, result)))

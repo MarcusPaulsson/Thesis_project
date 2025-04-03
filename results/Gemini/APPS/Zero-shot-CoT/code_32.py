@@ -1,28 +1,45 @@
 def solve():
     n = int(input())
-    chanek_coins = 0
-    turn = True  # True for Chanek, False for opponent
     
-    while n > 0:
-        if n % 2 == 0:
-            if n == 2:
-                move = 1
-            else:
-                if (n // 2) % 2 == 0 or (n // 2) == 1:
-                    move = n // 2
-                else:
-                    move = 1
+    current_pos = 0  # 0 is North Pole, 20000 is South Pole
+    
+    for _ in range(n):
+        t, direction = input().split()
+        t = int(t)
+        
+        if current_pos == 0:
+            if direction != "South":
+                print("NO")
+                return
+            current_pos += t
+            if current_pos > 20000:
+                print("NO")
+                return
+        elif current_pos == 20000:
+            if direction != "North":
+                print("NO")
+                return
+            current_pos -= t
+            if current_pos < 0:
+                print("NO")
+                return
         else:
-            move = 1
-            
-        if turn:
-            chanek_coins += move
-        
-        n -= move
-        turn = not turn
-        
-    print(chanek_coins)
+            if direction == "North":
+                current_pos -= t
+                if current_pos < 0:
+                    print("NO")
+                    return
+            elif direction == "South":
+                current_pos += t
+                if current_pos > 20000:
+                    print("NO")
+                    return
+            else:
+                pass 
+                
+    if current_pos == 0:
+        print("YES")
+    else:
+        print("NO")
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

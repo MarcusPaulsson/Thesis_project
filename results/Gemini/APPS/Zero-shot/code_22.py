@@ -1,25 +1,43 @@
-def minDigit(x):
-    s = str(x)
-    min_digit = 9
-    for digit in s:
-        min_digit = min(min_digit, int(digit))
-    return min_digit
+def solve():
+    s = input()
+    n = len(s)
+    
+    mirror = {
+        'b': 'd',
+        'd': 'b',
+        'p': 'q',
+        'q': 'p',
+        'o': 'o',
+        'x': 'x',
+        'X': 'X',
+        'H': 'H',
+        'I': 'I',
+        'M': 'M',
+        'O': 'O',
+        'T': 'T',
+        'U': 'U',
+        'V': 'V',
+        'v': 'v',
+        'W': 'W',
+        'w': 'w',
+        'Y': 'Y',
+        'A': 'A',
+        'm': 'm',
+        't': 't',
+        'i': 'i',
+        'u': 'u'
+    }
+    
+    for i in range(n // 2):
+        if s[i] not in mirror or mirror[s[i]] != s[n - 1 - i]:
+            print("NIE")
+            return
+    
+    if n % 2 == 1:
+        if s[n // 2] not in mirror or mirror[s[n // 2]] != s[n // 2]:
+            print("NIE")
+            return
+    
+    print("TAK")
 
-def maxDigit(x):
-    s = str(x)
-    max_digit = 0
-    for digit in s:
-        max_digit = max(max_digit, int(digit))
-    return max_digit
-
-t = int(input())
-for _ in range(t):
-    a1, K = map(int, input().split())
-    a = a1
-    for i in range(1, int(min(K, 1000))):
-        min_d = minDigit(a)
-        max_d = maxDigit(a)
-        if min_d == 0:
-            break
-        a = a + min_d * max_d
-    print(a)
+solve()

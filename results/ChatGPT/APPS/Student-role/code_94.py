@@ -1,44 +1,55 @@
-def minimize_misfortune(t, test_cases):
-    results = []
-    for n, T, a in test_cases:
-        color = [0] * n
-        freq = {}
-        
-        for i in range(n):
-            if a[i] in freq:
-                freq[a[i]].append(i)
-            else:
-                freq[a[i]] = [i]
-
-        for num in freq:
-            complement = T - num
-            if num == complement:
-                # If num and complement are the same, we can paint half and half
-                indices = freq[num]
-                for i in range(len(indices)):
-                    color[indices[i]] = i % 2
-            elif complement in freq:
-                # Paint all `num` in one color and `complement` in the other
-                for index in freq[num]:
-                    color[index] = 0
-                for index in freq[complement]:
-                    color[index] = 1
-
-        results.append(color)
+def construct_binary_string(a, b, x):
+    # Initialize an empty string
+    s = []
     
-    return results
+    # Determine which character to start with based on the number of 0s and 1s
+    if a > b:
+        start = '0'
+    else:
+        start = '1'
+    
+    # We need to create x transitions
+    # If x is odd, we will finish with the opposite character
+    transition = 0
+    while a > 0 or b > 0:
+        if (transition % 2 == 0 and a > 0) or b == 0:
+            s.append('0')
+            a -= 1
+        else:
+            s.append('1')
+            b -= 1
+        
+        # Increase the transition count
+        if a > 0 and b > 0:
+            transition += 1
+    
+    # If we have used all transitions but still have characters left, fill them
+    while a > 0:
+        s.append('0')
+        a -= 1
+    while b > 0:
+        s.append('1')
+        b -= 1
+    
+    # Adjust the string to have exactly x transitions
+    result = []
+    for i in range(len(s)):
+        result.append(s[i])
+        if i < len(s) - 1 and s[i] != s[i + 1]:
+            transition -= 1
+        if transition < 0:
+            break
+    
+    # If we have more transitions than needed, we can adjust the last part
+    while transition < 0 and len(result) > 1:
+        if result[-1] == '0':
+            result[-1] = '1'
+        else:
+            result[-1] = '0'
+        transition += 1
+    
+    print(''.join(result))
 
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n, T = map(int, input().split())
-    a = list(map(int, input().split()))
-    test_cases.append((n, T, a))
-
-# Get results
-results = minimize_misfortune(t, test_cases)
-
-# Output results
-for result in results:
-    print(" ".join(map(str, result)))
+# Read input values
+a, b, x = map(int, input().split())
+construct_binary_string(a, b, x)

@@ -1,32 +1,21 @@
-def find_min_k(test_cases):
-    results = []
-    for case in test_cases:
-        n, S = case
-        S_set = set(S)
-        possible_k = -1
-        
-        for k in range(1, 1024):
-            transformed_set = {s ^ k for s in S}
-            if transformed_set == S_set:
-                possible_k = k
-                break
-        
-        results.append(possible_k)
-    
-    return results
+n = int(input())
+a = list(map(int, input().split()))
 
+min_index = a.index(1)
+max_index = a.index(n)
 
-# Reading input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    S = list(map(int, input().split()))
-    test_cases.append((n, S))
+# Calculate the current distance
+current_distance = abs(min_index - max_index)
 
-# Finding results
-results = find_min_k(test_cases)
+# Possible new positions after swaps
+new_positions = [
+    abs(min_index - 0),        # Swap with first element
+    abs(min_index - (n - 1)),  # Swap with last element
+    abs(max_index - 0),        # Swap with first element
+    abs(max_index - (n - 1))   # Swap with last element
+]
 
-# Printing results
-for result in results:
-    print(result)
+# The maximum possible distance after one swap
+max_distance = max(new_positions)
+
+print(max(max_distance, current_distance))

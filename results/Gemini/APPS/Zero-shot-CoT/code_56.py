@@ -1,30 +1,21 @@
+def f(x):
+    x += 1
+    while x % 10 == 0:
+        x //= 10
+    return x
+
 def solve():
-    n, k = map(int, input().split())
+    n = int(input())
+    reachable = {n}
+    q = [n]
     
-    grid = [[0] * n for _ in range(n)]
-    
-    row = 0
-    col = 0
-    
-    for _ in range(k):
-        grid[row][col] = 1
-        row = (row + 1) % n
-        col = (col + 1) % n
-        if grid[row][col] == 1:
-            col = (col + 1) % n
+    while q:
+        curr = q.pop(0)
+        next_val = f(curr)
+        if next_val not in reachable:
+            reachable.add(next_val)
+            q.append(next_val)
+            
+    print(len(reachable))
 
-    
-    rows_sums = [sum(row) for row in grid]
-    cols_sums = [sum(grid[i][j] for i in range(n)) for j in range(n)]
-    
-    f_a = (max(rows_sums) - min(rows_sums))**2 + (max(cols_sums) - min(cols_sums))**2
-    
-    print(f_a)
-    for row in grid:
-        print("".join(map(str, row)))
-    
-
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

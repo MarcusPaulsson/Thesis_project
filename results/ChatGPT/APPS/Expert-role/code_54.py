@@ -1,28 +1,25 @@
-def can_win_game(queries):
-    results = []
-    for query in queries:
-        n, s = query
-        if 2048 in s:
-            results.append("YES")
-        else:
-            total = sum(x for x in s if x < 2048)
-            if total >= 2048:
-                results.append("YES")
-            else:
-                results.append("NO")
-    return results
+def find_minimum_D(n, a):
+    min_a = min(a)
+    max_a = max(a)
+    
+    if min_a == max_a:
+        return 0
+    
+    # Calculate the difference
+    diff = max_a - min_a
+    
+    # If the difference is odd, we cannot split it evenly into two parts
+    if diff % 2 != 0:
+        return -1
+    
+    # The required D is half of the difference
+    D = diff // 2
+    return D
 
-# Read input
-q = int(input())
-queries = []
-for _ in range(q):
-    n = int(input())
-    s = list(map(int, input().split()))
-    queries.append((n, s))
+# Reading input
+n = int(input())
+a = list(map(int, input().split()))
 
-# Get results
-results = can_win_game(queries)
-
-# Print output
-for result in results:
-    print(result)
+# Finding and printing the result
+result = find_minimum_D(n, a)
+print(result)

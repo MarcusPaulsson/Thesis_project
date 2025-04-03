@@ -1,76 +1,35 @@
-def time_to_meet(n, l, flags):
-    # Initial positions and speeds
-    car1_pos = 0
-    car2_pos = l
-    car1_speed = 1
-    car2_speed = 1
+n, m = map(int, input().split())
+exams = [tuple(map(int, input().split())) for _ in range(m)]
+
+# Initialize the schedule with zeros (rest days)
+schedule = [0] * n
+
+# To track the preparation days needed for each exam
+preparation_needed = [0] * m
+
+# Mark exam days in the schedule
+for i in range(m):
+    s_i, d_i, c_i = exams[i]
+    schedule[d_i - 1] = m + 1  # Mark the exam day
+
+# Prepare for exams
+for i in range(m):
+    s_i, d_i, c_i = exams[i]
+    days_to_prepare = []
     
-    flags1 = flags.copy()  # For the first car
-    flags2 = [l - a for a in reversed(flags)]  # Mirror positions for the second car
-
-    # Initialize the time taken until the next flag
-    time1 = 0
-    time2 = 0
-
-    while flags1 or flags2:
-        if not flags1:
-            # Only car2 is moving
-            time_to_next_flag = (flags2[-1] - car2_pos) / car2_speed
-            time2 += time_to_next_flag
-            car2_pos = flags2.pop()
-            car2_speed += 1
-        elif not flags2:
-            # Only car1 is moving
-            time_to_next_flag = (flags1[0] - car1_pos) / car1_speed
-            time1 += time_to_next_flag
-            car1_pos = flags1.pop(0)
-            car1_speed += 1
-        else:
-            # Both cars are moving towards their next flags
-            time_to_next_flag1 = (flags1[0] - car1_pos) / car1_speed
-            time_to_next_flag2 = (flags2[-1] - car2_pos) / car2_speed
-            
-            if time_to_next_flag1 < time_to_next_flag2:
-                time1 += time_to_next_flag1
-                car1_pos = flags1.pop(0)
-                car1_speed += 1
-                # Move car2 during the time taken by car1
-                car2_pos += car2_speed * time_to_next_flag1
-                if car1_pos >= car2_pos:  # They meet
-                    return time1
-            else:
-                time2 += time_to_next_flag2
-                car2_pos = flags2.pop()
-                car2_speed += 1
-                # Move car1 during the time taken by car2
-                car1_pos += car1_speed * time_to_next_flag2
-                if car1_pos >= car2_pos:  # They meet
-                    return time2 + time1
-
-    # Final meeting time calculation if we exhaust all flags
-    if car1_pos < car2_pos:
-        meeting_time = (car2_pos - car1_pos) / (car1_speed + car2_speed)
-        return time1 + time2 + meeting_time
-    return time1 + time2
-
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
+    # Find available days for preparation
+    for j in range(s_i - 1, d_i - 1):
+        if schedule[j] == 0 and len(days_to_prepare) < c_i:
+            days_to_prepare.append(j)
     
-    t = int(data[0])
-    output = []
+    # Check if we have enough days to prepare
+    if len(days_to_prepare) < c_i:
+        print(-1)
+        exit()
     
-    index = 1
-    for _ in range(t):
-        n, l = map(int, data[index].split())
-        flags = list(map(int, data[index + 1].split()))
-        index += 2
-        
-        result = time_to_meet(n, l, flags)
-        output.append(f"{result:.12f}")
-    
-    print("\n".join(output))
+    # Mark preparation days in the schedule
+    for day in days_to_prepare:
+        schedule[day] = i + 1  # Mark preparation for exam i+1
 
-if __name__ == "__main__":
-    main()
+# Print the final schedule
+print(' '.join(map(str, schedule)))

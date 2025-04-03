@@ -1,34 +1,14 @@
-def min_colors_to_sort(n, s):
-    # Create a list to hold the positions of each character
-    from collections import defaultdict
-
-    char_positions = defaultdict(list)
-    for index, char in enumerate(s):
-        char_positions[char].append(index)
-
-    # Create a list to store the color assignments
-    colors = [0] * n
-    color = 1
-    max_color = 0
-
-    # Assign colors based on the positions
-    for char in sorted(char_positions.keys()):
-        positions = char_positions[char]
-        for i in range(len(positions)):
-            colors[positions[i]] = color
-            max_color = max(max_color, color)
-            if i < len(positions) - 1:
-                color += 1
-
-        color = 1  # Reset color for the next character group
-
-    # Output the result
-    print(max_color)
-    print(' '.join(map(str, colors)))
+def minimum_traps(m, x):
+    # Since GCD(x, m) = 1, the sequence will visit all m rooms.
+    # The number of distinct rooms visited corresponds to the order of x modulo m.
+    
+    # The minimum number of traps needed is equal to the number of distinct
+    # rooms the x-mouse can visit before repeating, which is m.
+    
+    return m - 1  # We can put traps in m-1 rooms.
 
 # Input reading
-n = int(input().strip())
-s = input().strip()
+m, x = map(int, input().strip().split())
 
-# Function call
-min_colors_to_sort(n, s)
+# Output the result
+print(minimum_traps(m, x))

@@ -1,23 +1,32 @@
-def can_solve_puzzle(n, m):
-    # The puzzle can be solved if either n or m is odd
-    return (n % 2 == 1) or (m % 2 == 1)
+import math
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    t = int(data[0])
-    results = []
-    
-    for i in range(1, t + 1):
-        n, m = map(int, data[i].split())
-        if can_solve_puzzle(n, m):
-            results.append("YES")
-        else:
-            results.append("NO")
-    
-    print("\n".join(results))
+# Read input
+x, y, z = map(float, input().split())
 
-if __name__ == "__main__":
-    main()
+# Define expressions and their corresponding outputs
+expressions = [
+    (x**(y**z), "x^y^z"),
+    (x**(z**y), "x^z^y"),
+    ((x**y)**z, "(x^y)^z"),
+    ((x**z)**y, "(x^z)^y"),
+    (y**(x**z), "y^x^z"),
+    (y**(z**x), "y^z^x"),
+    ((y**x)**z, "(y^x)^z"),
+    ((y**z)**x, "(y^z)^x"),
+    (z**(x**y), "z^x^y"),
+    (z**(y**x), "z^y^x"),
+    ((z**x)**y, "(z^x)^y"),
+    ((z**y)**x, "(z^y)^x"),
+]
+
+# Find the maximum value and the smallest index with that value
+max_value = -float('inf')
+best_index = -1
+
+for index, (value, expression) in enumerate(expressions):
+    if value > max_value:
+        max_value = value
+        best_index = index
+
+# Output the corresponding expression
+print(expressions[best_index][1])

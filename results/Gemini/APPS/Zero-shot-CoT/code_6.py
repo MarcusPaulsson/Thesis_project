@@ -1,46 +1,46 @@
 def solve():
-    n, m = map(int, input().split())
-    edges = []
-    for _ in range(m):
-        edges.append(list(map(int, input().split())))
+    n, x = map(int, input().split())
+    blows = []
+    for _ in range(n):
+        blows.append(list(map(int, input().split())))
 
-    def is_safe(closed_spots):
-        adj = {}
-        for i in range(1, n + 1):
-            adj[i] = []
-        
-        for u, v in edges:
-            if u not in closed_spots and v not in closed_spots:
-                adj[u].append(v)
+    ans = float('inf')
 
-        for start_node in range(1, n + 1):
-            if start_node in closed_spots:
-                continue
+    for i in range(n):
+        if blows[i][0] >= x:
+            ans = min(ans, 1)
             
-            q = [(start_node, [start_node])]
-            
-            while q:
-                curr_node, path = q.pop(0)
-                
-                if len(path) > 1:
-                    return False
-                
-                for neighbor in adj[curr_node]:
-                    q.append((neighbor, path + [neighbor]))
-
-        return True
-
-    for i in range(1 << n):
-        closed_spots = []
-        for j in range(n):
-            if (i >> j) & 1:
-                closed_spots.append(j + 1)
+    if ans == 1:
+        print(1)
+        return
         
-        if len(closed_spots) <= (4/7) * n:
-            if is_safe(closed_spots):
-                print(len(closed_spots))
-                print(*closed_spots)
-                return
+    
+    max_diff = 0
+    max_damage = 0
+    
+    for d, h in blows:
+        max_diff = max(max_diff, d - h)
+        max_damage = max(max_damage, d)
+        
+    if max_diff <= 0:
+        if max_damage >= x:
+            print(1)
+        else:
+            print(-1)
+        return
+
+    
+    remaining = x - max_damage
+    
+    if remaining <= 0:
+        print(1)
+        return
+    
+    
+    num_blows = (remaining + max_diff - 1) // max_diff
+    
+    print(num_blows + 1)
+
 
 t = int(input())
 for _ in range(t):

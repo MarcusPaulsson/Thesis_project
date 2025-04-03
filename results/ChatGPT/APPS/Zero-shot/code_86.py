@@ -1,46 +1,33 @@
-def get_hexagon_coordinates(n):
-    if n == 0:
-        return (0, 0)
-
-    # Determine the layer (ring) of the hexagonal spiral
-    layer = 0
-    while n > 3 * layer * (layer + 1):
-        layer += 1
-
-    # Calculate the number of moves within the layer
-    moves_in_layer = n - 3 * layer * (layer - 1)
+def solve_problems(n, k):
+    # Minimum problems needed with strictly increasing sequence
+    min_needed = k * (k + 1) // 2
     
-    # Determine the coordinates based on the position in the layer
-    x = layer
-    y = 0
+    if n < min_needed:
+        print("NO")
+        return
+    
+    # Start with the minimum valid sequence
+    a = list(range(1, k + 1))
+    remaining = n - min_needed
+    
+    # Distribute the remaining problems as optimally as possible
+    for i in range(k - 1, -1, -1):
+        if remaining == 0:
+            break
+        
+        # Maximum we can add to a[i] while respecting the constraints
+        max_possible_increase = min(remaining, 2 * a[i] - a[i + 1] if i < k - 1 else float('inf'))
+        
+        a[i] += max_possible_increase
+        remaining -= max_possible_increase
+    
+    # Check if we have exactly n problems solved
+    if sum(a) == n:
+        print("YES")
+        print(" ".join(map(str, a)))
+    else:
+        print("NO")
 
-    if moves_in_layer <= layer:
-        x -= moves_in_layer
-        return (x, y)
-    moves_in_layer -= layer
-
-    if moves_in_layer <= layer:
-        x = -layer
-        y += moves_in_layer
-        return (x, y)
-    moves_in_layer -= layer
-
-    if moves_in_layer <= layer:
-        y = layer
-        x += moves_in_layer
-        return (x, y)
-    moves_in_layer -= layer
-
-    if moves_in_layer <= layer:
-        x += layer
-        y -= moves_in_layer
-        return (x, y)
-    moves_in_layer -= layer
-
-    x = layer - moves_in_layer
-    y = -layer
-    return (x, y)
-
-n = int(input().strip())
-x, y = get_hexagon_coordinates(n)
-print(x, y)
+# Read input
+n, k = map(int, input().split())
+solve_problems(n, k)

@@ -1,34 +1,14 @@
 def solve():
-    s = input()
-    x = int(input())
-    n = len(s)
-    w = [''] * n
+    a, b = map(int, input().split())
     
-    for i in range(n):
-        w[i] = '1'
-
-    for i in range(n):
-        if s[i] == '0':
-            if i - x >= 0:
-                w[i - x] = '0'
-            if i + x < n:
-                w[i + x] = '0'
+    for price in range(1, 10**5 + 1):
+        tax_8 = int(price * 0.08)
+        tax_10 = int(price * 0.10)
+        
+        if tax_8 == a and tax_10 == b:
+            print(price)
+            return
     
-    
-    new_s = [''] * n
-    for i in range(n):
-        new_s[i] = '0'
-        if i - x >= 0 and w[i - x] == '1':
-            new_s[i] = '1'
-        if i + x < n and w[i + x] == '1':
-            new_s[i] = '1'
-            
-    if "".join(new_s) == s:
-        print("".join(w))
-    else:
-        print("-1")
+    print("-1")
 
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

@@ -1,34 +1,20 @@
-def min_tree_height(t, test_cases):
-    results = []
-    for case in test_cases:
-        n, a = case
-        height = 0
-        current_level = [1]  # Start with the root
-        index = 1  # Start from the second element, since first is the root
-
-        while index < n:
-            next_level = []
-            for node in current_level:
-                # While we can add children to the current node
-                while index < n and a[index] > node:
-                    next_level.append(a[index])
-                    index += 1
-            current_level = next_level
-            height += 1
-        
-        results.append(height)
+def can_complete_projects(n, r, projects):
+    # Sort projects based on the required rating
+    projects.sort(key=lambda x: x[0])  # Sort by a_i (required rating)
     
-    return results
+    for a, b in projects:
+        if r < a:  # If current rating is less than required rating for the project
+            return "NO"
+        r += b  # Update rating after completing the project
+        if r < 0:  # If rating falls below 0
+            return "NO"
+    
+    return "YES"
 
 # Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().strip().split()))
-    test_cases.append((n, a))
+n, r = map(int, input().split())
+projects = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Calculate and print results
-results = min_tree_height(t, test_cases)
-for res in results:
-    print(res)
+# Check if all projects can be completed
+result = can_complete_projects(n, r, projects)
+print(result)

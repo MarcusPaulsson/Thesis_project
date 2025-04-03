@@ -1,39 +1,38 @@
-def max_groups(test_cases):
-    results = []
-    for e in test_cases:
-        e.sort()
-        count = 0
-        group_size = 0
-        
-        for inexperience in e:
-            group_size += 1
-            if group_size >= inexperience:
-                count += 1
-                group_size = 0
-                
-        results.append(count)
-    
-    return results
+def is_valid_flag(n, m, flag):
+    # Check for horizontal stripes
+    def check_horizontal():
+        stripe_height = n // 3
+        if n % 3 != 0:
+            return False
+        colors = set()
+        for i in range(3):
+            color = flag[i * stripe_height][0]
+            colors.add(color)
+            for j in range(i * stripe_height, (i + 1) * stripe_height):
+                if flag[j] != color * m:
+                    return False
+        return len(colors) == 3
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    T = int(data[0])
-    index = 1
-    test_cases = []
-    
-    for _ in range(T):
-        N = int(data[index])
-        explorers = list(map(int, data[index + 1].split()))
-        test_cases.append(explorers)
-        index += 2
-        
-    results = max_groups(test_cases)
-    
-    for result in results:
-        print(result)
+    # Check for vertical stripes
+    def check_vertical():
+        stripe_width = m // 3
+        if m % 3 != 0:
+            return False
+        colors = set()
+        for i in range(3):
+            color = flag[0][i * stripe_width]
+            colors.add(color)
+            for j in range(m):
+                for k in range(i * stripe_width, (i + 1) * stripe_width):
+                    if flag[j][k] != color:
+                        return False
+        return len(colors) == 3
 
-if __name__ == "__main__":
-    main()
+    return "YES" if check_horizontal() or check_vertical() else "NO"
+
+# Input reading
+n, m = map(int, input().split())
+flag = [input().strip() for _ in range(n)]
+
+# Output result
+print(is_valid_flag(n, m, flag))

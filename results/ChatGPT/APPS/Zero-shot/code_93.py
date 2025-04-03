@@ -1,37 +1,35 @@
-import sys
-import math
+def construct_tree(n, d, k):
+    if d > 2 * (k - 1) + 1 or (d > n - 1) or (k == 1 and n > 1) or (d == 0 and n > 1):
+        print("NO")
+        return
 
-def angle_between(v1, v2):
-    dot_product = v1[0] * v2[0] + v1[1] * v2[1]
-    magnitude_v1 = math.sqrt(v1[0] ** 2 + v1[1] ** 2)
-    magnitude_v2 = math.sqrt(v2[0] ** 2 + v2[1] ** 2)
-    cos_angle = dot_product / (magnitude_v1 * magnitude_v2)
-    return math.acos(cos_angle)
+    edges = []
+    
+    # Build the main path to achieve the diameter d
+    for i in range(1, d + 1):
+        edges.append((i, i + 1))
 
-def main():
-    n = int(sys.stdin.readline().strip())
-    vectors = []
+    # Now we have d + 1 vertices in the main path
+    current_vertex = d + 2
 
-    for i in range(n):
-        x, y = map(int, sys.stdin.readline().strip().split())
-        angle = math.atan2(y, x)
-        vectors.append((angle, i + 1))
+    # Connect remaining vertices
+    for i in range(1, d + 2):
+        if current_vertex > n:
+            break
+        # For each vertex in the path, we can add more vertices until we reach degree k
+        for _ in range(k - 1):  # We already have one connection in the path
+            if current_vertex > n:
+                break
+            edges.append((i, current_vertex))
+            current_vertex += 1
 
-    vectors.sort()
+    if current_vertex <= n:
+        print("NO")
+    else:
+        print("YES")
+        for u, v in edges:
+            print(u, v)
 
-    min_angle = float('inf')
-    idx_pair = (0, 0)
-
-    for i in range(n):
-        v1 = vectors[i]
-        v2 = vectors[(i + 1) % n]
-        current_angle = angle_between((math.cos(v1[0]), math.sin(v1[0])), (math.cos(v2[0]), math.sin(v2[0])))
-
-        if current_angle < min_angle:
-            min_angle = current_angle
-            idx_pair = (v1[1], v2[1])
-
-    print(idx_pair[0], idx_pair[1])
-
-if __name__ == "__main__":
-    main()
+# Read input
+n, d, k = map(int, input().strip().split())
+construct_tree(n, d, k)

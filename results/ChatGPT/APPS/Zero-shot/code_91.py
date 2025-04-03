@@ -1,21 +1,38 @@
-n = int(input())
-a = list(map(int, input().split()))
+def max_removable_length(s, t):
+    n, m = len(s), len(t)
+    
+    # Precompute the positions of each character in t in s
+    left = [0] * m
+    right = [0] * m
+    
+    # Fill the left array
+    j = 0
+    for i in range(n):
+        if j < m and s[i] == t[j]:
+            left[j] = i
+            j += 1
+    
+    # Fill the right array
+    j = m - 1
+    for i in range(n - 1, -1, -1):
+        if j >= 0 and s[i] == t[j]:
+            right[j] = i
+            j -= 1
+    
+    # Calculate the maximum removable length
+    max_length = 0
+    for i in range(m - 1):
+        max_length = max(max_length, right[i + 1] - left[i] - 1)
+    
+    # Consider the part before the first character of t and after the last character of t
+    max_length = max(max_length, left[0])  # Before first occurrence
+    max_length = max(max_length, n - 1 - right[m - 1])  # After last occurrence
+    
+    return max_length
 
-# Initialize distance array with large values
-distance = [float('inf')] * n
+# Input
+s = input().strip()
+t = input().strip()
 
-# Forward pass to find distances to the nearest zero on the left
-for i in range(n):
-    if a[i] == 0:
-        distance[i] = 0
-    elif i > 0:
-        distance[i] = distance[i - 1] + 1
-
-# Backward pass to find distances to the nearest zero on the right
-for i in range(n - 1, -1, -1):
-    if a[i] == 0:
-        distance[i] = 0
-    elif i < n - 1:
-        distance[i] = min(distance[i], distance[i + 1] + 1)
-
-print(' '.join(map(str, distance)))
+# Output
+print(max_removable_length(s, t))

@@ -1,17 +1,12 @@
-def max_perfect_teams(q, queries):
-    results = []
-    for c, m, x in queries:
-        # The maximum number of teams cannot exceed the minimum of coders and mathematicians
-        # and also cannot exceed the total number of students divided by 3
-        max_teams = min(c, m, (c + m + x) // 3)
-        results.append(max_teams)
-    return results
+def min_moves_to_reach_n(N):
+    moves = float('inf')
+    
+    for i in range(1, int(N**0.5) + 1):
+        if N % i == 0:
+            j = N // i
+            moves = min(moves, i + j - 2)
+    
+    return moves
 
-# Read input
-q = int(input())
-queries = [tuple(map(int, input().split())) for _ in range(q)]
-
-# Get results and print
-results = max_perfect_teams(q, queries)
-for result in results:
-    print(result)
+N = int(input())
+print(min_moves_to_reach_n(N))

@@ -1,36 +1,21 @@
-def can_reduce_to_one(t, test_cases):
-    results = []
-    for n, a in test_cases:
-        # Find the maximum value's index
-        max_index = a.index(max(a))
-        
-        # Check if there's an increasing sequence to the left or right of the maximum
-        left_increasing = any(a[i] < a[i + 1] for i in range(max_index))
-        right_increasing = any(a[i] < a[i + 1] for i in range(max_index, n - 1))
-        
-        if left_increasing or right_increasing:
-            results.append("YES")
-        else:
-            results.append("NO")
+n = int(input())
+f = list(map(int, input().split()))
+
+# Track the friends who have not been assigned a gift
+gifted = set(f) - {0}
+unknown = [i for i in range(1, n + 1) if i not in gifted]
+to_assign = [i for i in range(n) if f[i] == 0]
+
+# Assign the gifts for those who have '0'
+for i in range(len(to_assign)):
+    friend_index = to_assign[i]
+    # Choose a gift recipient from unknown
+    recipient = unknown[i]
+    # Ensure that the assignment is valid (no self-gifting)
+    if recipient == friend_index + 1:  # +1 because friend_index is 0-based
+        # If it is, swap with the next one (wrap around if necessary)
+        recipient = unknown[(i + 1) % len(unknown)]
     
-    return results
+    f[friend_index] = recipient
 
-# Reading input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
-
-t = int(data[0])
-test_cases = []
-index = 1
-for _ in range(t):
-    n = int(data[index])
-    a = list(map(int, data[index + 1].split()))
-    test_cases.append((n, a))
-    index += 2
-
-# Get results
-results = can_reduce_to_one(t, test_cases)
-
-# Output results
-print("\n".join(results))
+print(" ".join(map(str, f)))

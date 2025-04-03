@@ -1,35 +1,28 @@
-def minimum_coins_to_win(t, test_cases):
-    results = []
-    
-    for n, voters in test_cases:
-        # Sort voters based on the required votes they need to convince them (m_i)
-        voters.sort(key=lambda x: (x[0], x[1]))  # Sort by m_i first, then by p_i
-        
-        # To keep track of the minimum cost
-        min_cost = [float('inf')] * (n + 1)  # min_cost[i] = minimum cost to convince i voters
-        min_cost[0] = 0  # Cost to convince 0 voters is 0
-        
-        for m_i, p_i in voters:
-            # We will consider this voter and update the cost for all possible numbers of convinced voters
-            for j in range(n, m_i - 1, -1):
-                min_cost[j] = min(min_cost[j], min_cost[j - m_i] + p_i)
-        
-        # The answer for this test case is the minimum cost to convince all n voters
-        results.append(min_cost[n])
-    
-    return results
+def max_permutation_less_than_b(a, b):
+    from itertools import permutations
+
+    # Convert a to string and create a list of its digits
+    a_str = str(a)
+    b_str = str(b)
+
+    # Generate all unique permutations of the digits of a
+    perms = set(permutations(a_str))
+
+    # Filter permutations to find the maximum valid one not exceeding b
+    max_valid = -1
+    for perm in perms:
+        # Join the tuple of characters back into a string
+        perm_number = int(''.join(perm))
+        # Check if it's valid
+        if perm_number <= b and str(perm_number)[0] != '0' and len(str(perm_number)) == len(a_str):
+            max_valid = max(max_valid, perm_number)
+
+    return max_valid
 
 # Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    voters = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, voters))
+a = int(input().strip())
+b = int(input().strip())
 
-# Get results
-results = minimum_coins_to_win(t, test_cases)
-
-# Print results
-for result in results:
-    print(result)
+# Get the result and print it
+result = max_permutation_less_than_b(a, b)
+print(result)

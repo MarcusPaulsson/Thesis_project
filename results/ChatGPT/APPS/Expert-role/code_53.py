@@ -1,58 +1,36 @@
-def min_max_lis_sequences(t, test_cases):
-    results = []
-    for n, s in test_cases:
-        # Minimum LIS sequence
-        min_seq = [0] * n
-        # Fill increasing parts
-        i = 0
-        while i < n:
-            start = i
-            while i + 1 < n and s[i] == '<':
-                i += 1
-            # Fill the increasing segment
-            for j in range(start, i + 1):
-                min_seq[j] = j - start + 1
-            i += 1
-        # Fill decreasing parts
-        for i in range(n):
-            if min_seq[i] == 0:
-                min_seq[i] = n - (i - 1)
-        
-        # Maximum LIS sequence
-        max_seq = [0] * n
-        # Fill decreasing parts
-        i = 0
-        while i < n:
-            start = i
-            while i + 1 < n and s[i] == '>':
-                i += 1
-            # Fill the decreasing segment
-            for j in range(start, i + 1):
-                max_seq[j] = start + (i - start + 1 - (j - start))
-            i += 1
-        # Fill increasing parts
-        for i in range(n):
-            if max_seq[i] == 0:
-                max_seq[i] = (n - (i - start))
-
-        results.append((min_seq, max_seq))
+def longest_increasing_sequence(n, a):
+    left, right = 0, n - 1
+    last_taken = -1
+    moves = []
     
-    return results
+    while left <= right:
+        if a[left] < a[right]:
+            if a[left] > last_taken:
+                moves.append('L')
+                last_taken = a[left]
+                left += 1
+            elif a[right] > last_taken:
+                moves.append('R')
+                last_taken = a[right]
+                right -= 1
+            else:
+                break
+        else:
+            if a[right] > last_taken:
+                moves.append('R')
+                last_taken = a[right]
+                right -= 1
+            elif a[left] > last_taken:
+                moves.append('L')
+                last_taken = a[left]
+                left += 1
+            else:
+                break
+    
+    print(len(moves))
+    print(''.join(moves))
 
-# Read input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
-
-t = int(data[0])
-test_cases = [(int(line.split()[0]), line.split()[1]) for line in data[1:t + 1]]
-
-results = min_max_lis_sequences(t, test_cases)
-
-# Print results
-output = []
-for min_seq, max_seq in results:
-    output.append(" ".join(map(str, min_seq)))
-    output.append(" ".join(map(str, max_seq)))
-
-print("\n".join(output))
+# Input reading
+n = int(input())
+a = list(map(int, input().split()))
+longest_increasing_sequence(n, a)

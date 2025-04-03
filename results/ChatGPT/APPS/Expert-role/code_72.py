@@ -1,39 +1,49 @@
-def is_beautiful_array_possible(n, k, a):
-    # Dictionary to keep track of the sums of each subarray of length k
-    sums = {}
+def max_intersection_length(n, segments):
+    # Create lists to store the left and right ends of the segments
+    left_ends = [segments[i][0] for i in range(n)]
+    right_ends = [segments[i][1] for i in range(n)]
     
-    for i in range(n - k + 1):
-        current_sum = sum(a[i:i + k])
-        # We add the sum into the dictionary with the first element of the subarray as key
-        if current_sum in sums:
-            sums[current_sum].append(a[i])
-        else:
-            sums[current_sum] = [a[i]]
-    
-    # Check if the sums of subarrays of length k are consistent
-    if len(sums) > 1:
-        return -1  # It's impossible to make the array beautiful
-    
-    # We can create a beautiful array based on the first unique k elements found
-    unique_elements = list(sums.keys())[0]
-    beautiful_array = []
-    
-    # We can repeat the first k unique elements to form a beautiful array
-    for i in range(10000 // k):
-        beautiful_array.extend(unique_elements)
-    
-    return (len(beautiful_array), beautiful_array[:10000])
+    # Compute prefix and suffix maximums and minimums
+    max_left_prefix = [0] * n
+    min_right_prefix = [0] * n
+    max_left_suffix = [0] * n
+    min_right_suffix = [0] * n
 
-t = int(input())
-for _ in range(t):
-    n, k = map(int, input().split())
-    a = list(map(int, input().split()))
+    max_left_prefix[0] = left_ends[0]
+    min_right_prefix[0] = right_ends[0]
     
-    result = is_beautiful_array_possible(n, k, a)
+    for i in range(1, n):
+        max_left_prefix[i] = max(max_left_prefix[i - 1], left_ends[i])
+        min_right_prefix[i] = min(min_right_prefix[i - 1], right_ends[i])
+
+    max_left_suffix[n - 1] = left_ends[n - 1]
+    min_right_suffix[n - 1] = right_ends[n - 1]
     
-    if result == -1:
-        print(-1)
-    else:
-        m, beautiful_array = result
-        print(m)
-        print(' '.join(map(str, beautiful_array)))
+    for i in range(n - 2, -1, -1):
+        max_left_suffix[i] = max(max_left_suffix[i + 1], left_ends[i])
+        min_right_suffix[i] = min(min_right_suffix[i + 1], right_ends[i])
+    
+    max_length = 0
+    
+    for i in range(n):
+        if i == 0:
+            max_left = max_left_suffix[1]
+            min_right = min_right_suffix[1]
+        elif i == n - 1:
+            max_left = max_left_prefix[n - 2]
+            min_right = min_right_prefix[n - 2]
+        else:
+            max_left = max(max_left_prefix[i - 1], max_left_suffix[i + 1])
+            min_right = min(min_right_prefix[i - 1], min_right_suffix[i + 1])
+
+        intersection_length = max(0, min_right - max_left)
+        max_length = max(max_length, intersection_length)
+    
+    return max_length
+
+# Read input
+n = int(input())
+segments = [tuple(map(int, input().split())) for _ in range(n)]
+
+# Calculate and print the result
+print(max_intersection_length(n, segments))

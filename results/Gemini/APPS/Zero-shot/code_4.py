@@ -1,32 +1,24 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
+  x = int(input())
+  hh, mm = map(int, input().split())
 
-    unique_vals = sorted(list(set(a)))
+  count = 0
+  curr_hh = hh
+  curr_mm = mm
 
-    if len(unique_vals) > 3:
-        print(-1)
-        return
-
-    if len(unique_vals) == 1:
-        print(0)
-        return
-
-    if len(unique_vals) == 2:
-        diff = abs(unique_vals[0] - unique_vals[1])
-        if diff % 2 == 0:
-            print(diff // 2)
-        else:
-            print(diff)
-        return
-
-    if len(unique_vals) == 3:
-        val1, val2, val3 = unique_vals
-        if val2 - val1 == val3 - val2:
-            print(val2 - val1)
-        else:
-            print(-1)
-        return
-
+  while True:
+    time_str = "{:02d}:{:02d}".format(curr_hh, curr_mm)
+    if '7' in time_str:
+      print(count)
+      return
+    
+    curr_mm -= x
+    if curr_mm < 0:
+      curr_hh -= 1
+      curr_mm += 60
+      if curr_hh < 0:
+        curr_hh += 24
+    
+    count += 1
 
 solve()

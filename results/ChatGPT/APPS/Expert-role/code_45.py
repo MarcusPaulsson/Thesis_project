@@ -1,18 +1,39 @@
-def count_nice_staircases(x):
-    count = 0
-    n = 1
-    total_cells = 0
+def find_sequence(n, k):
+    if k * (k + 1) // 2 > n:
+        return -1
     
-    while True:
-        total_cells += n * (n + 1) // 2  # Sum of first n natural numbers (1 + 2 + ... + n)
-        if total_cells > x:
-            break
-        count += 1
-        n += 1
+    # Calculate the maximum gcd that can be used
+    max_gcd = n // k
     
-    return count
+    # Start with the minimum increasing sequence {1, 2, ..., k}
+    seq = list(range(1, k + 1))
+    
+    # Calculate the sum of the initial sequence
+    current_sum = sum(seq)
+    
+    # Calculate the difference needed to reach n
+    difference = n - current_sum
+    
+    # Distribute the difference evenly to maximize gcd
+    if difference > 0:
+        # We can increase each element by the same amount
+        # We can add `difference // k` to each element
+        add = difference // k
+        for i in range(k):
+            seq[i] += add
+        
+        # If there's any remainder, we can distribute it starting from the last element
+        remainder = difference % k
+        for i in range(k - 1, k - 1 - remainder, -1):
+            seq[i] += 1
+    
+    return seq
 
-t = int(input())
-for _ in range(t):
-    x = int(input())
-    print(count_nice_staircases(x))
+# Input reading
+n, k = map(int, input().split())
+result = find_sequence(n, k)
+
+if result == -1:
+    print(-1)
+else:
+    print(' '.join(map(str, result)))

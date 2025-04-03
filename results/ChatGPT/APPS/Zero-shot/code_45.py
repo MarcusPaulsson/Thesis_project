@@ -1,55 +1,25 @@
-def generate_string(n, s, t):
-    # Count of each character
-    count_a = n
-    count_b = n
-    count_c = n
+def find_sequence(n, k):
+    if n < k * (k + 1) // 2:  # Minimum sum of first k positive integers
+        return -1
 
-    # Create a list to build the result
-    res = []
+    # Maximum GCD we can use
+    g = n // k
+    # Adjust the numbers based on the GCD
+    sequence = [i * g for i in range(1, k + 1)]
+    
+    # Calculate the remaining sum after using the minimum strictly increasing sequence
+    remaining = n - sum(sequence)
+    
+    # Distribute the remaining value to the last element in the sequence
+    sequence[-1] += remaining
+    
+    return sequence
 
-    # Helper function to check if the last two characters form a forbidden substring
-    def is_forbidden():
-        return ''.join(res[-2:]) == s or ''.join(res[-2:]) == t
+# Read input
+n, k = map(int, input().split())
+result = find_sequence(n, k)
 
-    # While there are characters left to add
-    while count_a > 0 or count_b > 0 or count_c > 0:
-        for char in 'abc':
-            if char == 'a' and count_a > 0:
-                res.append('a')
-                count_a -= 1
-            elif char == 'b' and count_b > 0:
-                res.append('b')
-                count_b -= 1
-            elif char == 'c' and count_c > 0:
-                res.append('c')
-                count_c -= 1
-
-            # Check if the last two characters form a forbidden substring
-            if is_forbidden():
-                # Remove the last character and continue to the next
-                res.pop()
-                if char == 'a': count_a += 1
-                elif char == 'b': count_b += 1
-                elif char == 'c': count_c += 1
-
-            # If we have filled the result with 3n characters, break
-            if len(res) == 3 * n:
-                break
-        else:
-            # If we didn't break out, we reached a point where we can't add anything more
-            break
-
-    # Check if we constructed a valid string
-    if len(res) == 3 * n:
-        print("YES")
-        print(''.join(res))
-    else:
-        print("NO")
-
-# Read inputs
-n = int(input().strip())
-s = input().strip()
-t = input().strip()
-
-# Generate the string
-generate_string(n, s, t)
+if result == -1:
+    print(-1)
+else:
+    print(' '.join(map(str, result)))

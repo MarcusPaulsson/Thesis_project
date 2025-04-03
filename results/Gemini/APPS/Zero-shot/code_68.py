@@ -1,38 +1,36 @@
 def solve():
-    n = int(input())
+    n, k = map(int, input().split())
     s = input()
     
-    def get_operations(s):
-        if not s:
-            return 0
-        
-        max_ops = 0
-        for i in range(len(s)):
-            temp_s = list(s)
-            del temp_s[i]
-            temp_s = "".join(temp_s)
-            
-            if not temp_s:
-                max_ops = max(max_ops, 1)
-                continue
-                
-            first_char = temp_s[0]
-            prefix_len = 0
-            for j in range(len(temp_s)):
-                if temp_s[j] == first_char:
-                    prefix_len += 1
-                else:
-                    break
-            
-            temp_s = temp_s[prefix_len:]
-            
-            max_ops = max(max_ops, 1 + get_operations(temp_s))
-        
-        return max_ops
-
-    print(get_operations(s))
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    dp[0][0] = 1
     
+    for i in range(1, n + 1):
+        for j in range(i + 1):
+            dp[i][j] = dp[i-1][j]
+            if j > 0:
+                dp[i][j] += dp[i-1][j-1]
+            dp[i][j] = min(dp[i][j], k)
+    
+    ans = 0
+    len_sub = n
+    while k > 0 and len_sub >= 0:
+        num_subs = dp[n][len_sub]
+        
+        if num_subs <= k:
+            k -= num_subs
+            ans += (n - len_sub) * num_subs
+        else:
+            ans += (n - len_sub) * k
+            k = 0
+            break
+        
+        len_sub -= 1
+        n -= 1
 
-t = int(input())
-for _ in range(t):
-    solve()
+    if k > 0:
+        print(-1)
+    else:
+        print(ans)
+
+solve()

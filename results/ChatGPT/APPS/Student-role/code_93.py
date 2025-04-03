@@ -1,39 +1,44 @@
-def minimum_time_to_send_presents(test_cases):
-    results = []
+def construct_tree(n, d, k):
+    # Check impossible conditions
+    if d > 2 * (k - 1) + 1:
+        return "NO"
     
-    for n, m, a, b in test_cases:
-        # Create a mapping of present number to its index in the stack
-        position = {present: i for i, present in enumerate(a)}
-        
-        # Time initialization
-        total_time = 0
-        current_index = -1  # Start above the stack
-
-        for present in b:
-            target_index = position[present]
-            # Calculate how many presents are above the target present
-            if target_index > current_index:
-                k = target_index - current_index - 1
-                total_time += 2 * k + 1
-                current_index = target_index
-
-        results.append(total_time)
+    # Check if k is too low to create any valid tree with the required diameter
+    if k == 1 and n > 1:
+        return "NO"
     
-    return results
+    # Build the tree
+    edges = []
+    
+    # Create a base path for the diameter
+    for i in range(d):
+        edges.append((i + 1, i + 2))
+    
+    # Now we need to connect the remaining vertices
+    current_vertex = d + 2
+    
+    # List of available vertices to connect to the main path
+    available_vertices = list(range(1, d + 2))
+    
+    for vertex in available_vertices:
+        # Connect up to k-1 new vertices to this vertex
+        for _ in range(k - 1):
+            if current_vertex <= n:
+                edges.append((vertex, current_vertex))
+                current_vertex += 1
+            else:
+                break
+
+    # Check if we used all vertices
+    if current_vertex - 1 < n:
+        return "NO"
+    
+    # If we have a valid configuration, return the edges
+    result = ["YES"]
+    result.extend(f"{u} {v}" for u, v in edges)
+    return "\n".join(result)
 
 # Read input
-t = int(input())
-test_cases = []
-
-for _ in range(t):
-    n, m = map(int, input().split())
-    a = list(map(int, input().split()))
-    b = list(map(int, input().split()))
-    test_cases.append((n, m, a, b))
-
-# Get results
-results = minimum_time_to_send_presents(test_cases)
-
-# Print results
-for result in results:
-    print(result)
+n, d, k = map(int, input().split())
+output = construct_tree(n, d, k)
+print(output)

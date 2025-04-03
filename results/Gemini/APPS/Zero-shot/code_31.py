@@ -1,31 +1,30 @@
 def solve():
-    s = input()
-    visited = set()
-    x, y = 0, 0
-    time = 0
-    for move in s:
-        nx, ny = x, y
-        if move == 'N':
-            ny += 1
-        elif move == 'S':
-            ny -= 1
-        elif move == 'E':
-            nx += 1
-        elif move == 'W':
-            nx -= 1
+    n, k = map(int, input().split())
+    mod = 10**6 + 3
+    
+    if k > 2**n:
+        print(1, 1)
+        return
+    
+    num = 1
+    den = 1
+    
+    for i in range(int(k)):
+        num = (num * (pow(2, n, mod) - i)) % mod
+        den = (den * pow(2, n, mod)) % mod
         
-        segment = tuple(sorted([(x, y), (nx, ny)]))
-        
-        if segment in visited:
-            time += 1
-        else:
-            time += 5
-            visited.add(segment)
-            
-        x, y = nx, ny
-        
-    print(time)
+    gcd_val = gcd(num, den)
+    num //= gcd_val
+    den //= gcd_val
+    
+    ans_num = (den - num + mod) % mod
+    ans_den = den
+    
+    print(ans_num, ans_den)
 
-t = int(input())
-for _ in range(t):
-    solve()
+def gcd(a, b):
+    if b == 0:
+        return a
+    return gcd(b, a % b)
+
+solve()

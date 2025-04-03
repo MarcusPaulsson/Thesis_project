@@ -1,15 +1,15 @@
-def find_min_k(n, S):
-    S_set = set(S)
-    
-    # Check all possible values of k from 1 to 1023 (as k should be positive)
-    for k in range(1, 1024):
-        transformed_set = {s ^ k for s in S}
-        if transformed_set == S_set:
-            return k
-    return -1
+n = int(input())
+a = list(map(int, input().split()))
 
-t = int(input())
-for _ in range(t):
-    n = int(input())
-    S = list(map(int, input().split()))
-    print(find_min_k(n, S))
+# Find the positions of the minimum and maximum elements
+min_index = a.index(1)
+max_index = a.index(n)
+
+# Calculate the current distance
+current_distance = abs(min_index - max_index)
+
+# The maximum possible distance will either be to swap min with the ends or max with the ends
+max_distance = max(min_index, max_index, n - 1 - min_index, n - 1 - max_index)
+
+# The result is the maximum of current distance and potential maximum distance
+print(max(max_distance, current_distance))

@@ -1,23 +1,50 @@
-def can_tracks_coincide(n, L, kefa_distances, sasha_distances):
-    # Calculate the distances between barriers for Kefa
-    kefa_intervals = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
-    # Calculate the distances between barriers for Sasha
-    sasha_intervals = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
-    
-    # Function to check if one list is a rotation of another
-    def is_rotation(lst1, lst2):
-        return len(lst1) == len(lst2) and any(lst1 == lst2[i:] + lst2[:i] for i in range(len(lst2)))
-    
-    # Check if Kefa's intervals are a rotation of Sasha's intervals
-    if is_rotation(kefa_intervals, sasha_intervals):
-        print("YES")
+def create_palindromic_matrix(n, values):
+    from collections import Counter
+
+    count = Counter(values)
+    odd_count = sum(1 for v in count.values() if v % 2 != 0)
+
+    if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
+        return "NO"
+
+    matrix = [[0] * n for _ in range(n)]
+    half = []
+
+    for value, cnt in count.items():
+        half.extend([value] * (cnt // 2))
+
+    if n % 2 == 1:
+        center = [value for value, cnt in count.items() if cnt % 2 == 1]
+        if center:
+            center_value = center[0]
+        else:
+            center_value = None
     else:
-        print("NO")
+        center_value = None
 
-# Read input
-n, L = map(int, input().split())
-kefa_distances = list(map(int, input().split()))
-sasha_distances = list(map(int, input().split()))
+    if center_value is not None:
+        middle_row = n // 2
+        matrix[middle_row][middle_row] = center_value
+    
+    half_size = len(half)
+    for i in range(half_size // 2):
+        r = i // (n // 2)
+        c = i % (n // 2)
+        value = half[i]
+        matrix[r][c] = value
+        matrix[r][n - c - 1] = value
+        matrix[n - r - 1][c] = value
+        matrix[n - r - 1][n - c - 1] = value
 
-# Check if the tracks coincide
-can_tracks_coincide(n, L, kefa_distances, sasha_distances)
+    return "YES", matrix
+
+n = int(input())
+values = list(map(int, input().split()))
+
+result = create_palindromic_matrix(n, values)
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    for row in result[1]:
+        print(" ".join(map(str, row)))

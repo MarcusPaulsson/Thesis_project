@@ -1,44 +1,41 @@
 def solve():
-    n, s = input().split()
-    n = int(n)
-    
-    def get_min_lis(n, s):
-        perm = [0] * n
-        nums = list(range(1, n + 1))
-        
-        idx = 0
-        i = 0
-        while i < n:
-            j = i
-            while j < n - 1 and s[j] == '>':
-                j += 1
-            
-            for k in range(j, i - 1, -1):
-                perm[k] = nums[idx]
-                idx += 1
-            i = j + 1
-        return perm
-    
-    def get_max_lis(n, s):
-        perm = [0] * n
-        nums = list(range(1, n + 1))
-        
-        idx = 0
-        i = 0
-        while i < n:
-            j = i
-            while j < n - 1 and s[j] == '<':
-                j += 1
-                
-            for k in range(j, i - 1, -1):
-                perm[k] = nums[idx]
-                idx += 1
-            i = j + 1
-        return perm
-        
-    print(*get_min_lis(n, s))
-    print(*get_max_lis(n, s))
+    n = int(input())
+    a = list(map(int, input().split()))
 
-t = int(input())
-for _ in range(t):
-    solve()
+    def find_longest_increasing_sequence(arr):
+        max_len = 0
+        best_moves = ""
+
+        def backtrack(current_sequence, remaining_arr, moves):
+            nonlocal max_len, best_moves
+
+            if len(current_sequence) > max_len:
+                max_len = len(current_sequence)
+                best_moves = moves
+
+            if not remaining_arr:
+                return
+
+            if not current_sequence:
+                # First move
+                backtrack(current_sequence + [remaining_arr[0]], remaining_arr[1:], moves + "L")
+                if len(remaining_arr) > 1 and remaining_arr[0] != remaining_arr[-1]:
+                    backtrack(current_sequence + [remaining_arr[-1]], remaining_arr[:-1], moves + "R")
+            else:
+                last_val = current_sequence[-1]
+                
+                if remaining_arr[0] > last_val:
+                    backtrack(current_sequence + [remaining_arr[0]], remaining_arr[1:], moves + "L")
+                
+                if len(remaining_arr) > 1 and remaining_arr[-1] > last_val and remaining_arr[0] != remaining_arr[-1]:
+                    backtrack(current_sequence + [remaining_arr[-1]], remaining_arr[:-1], moves + "R")
+        
+        backtrack([], arr, "")
+        return max_len, best_moves
+
+
+    length, moves = find_longest_increasing_sequence(a)
+    print(length)
+    print(moves)
+
+solve()

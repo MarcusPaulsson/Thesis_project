@@ -1,27 +1,12 @@
-def is_valid_flag(n, m, grid):
-    colors = set()
-    if n % 3 == 0:
-        stripe_height = n // 3
-        for i in range(3):
-            colors.add(grid[i * stripe_height][0])  # Check the color of the first column in each stripe
-            for j in range(stripe_height):
-                if grid[i * stripe_height + j] != grid[i * stripe_height]:
-                    return "NO"
-    elif m % 3 == 0:
-        stripe_width = m // 3
-        for i in range(3):
-            colors.add(grid[0][i * stripe_width])  # Check the color of the first row in each stripe
-            for j in range(stripe_width):
-                if any(grid[k][i * stripe_width + j] != grid[0][i * stripe_width] for k in range(n)):
-                    return "NO"
-    else:
-        return "NO"
+A, B = map(int, input().split())
 
-    return "YES" if len(colors) == 3 else "NO"
+def find_lowest_price(A, B):
+    for price in range(1, 10000):  # Arbitrary upper limit, can be increased if needed
+        tax_8 = int(price * 0.08)
+        tax_10 = int(price * 0.10)
+        if tax_8 == A and tax_10 == B:
+            return price
+    return -1
 
-# Read input
-n, m = map(int, input().split())
-grid = [input().strip() for _ in range(n)]
-
-# Output result
-print(is_valid_flag(n, m, grid))
+result = find_lowest_price(A, B)
+print(result)

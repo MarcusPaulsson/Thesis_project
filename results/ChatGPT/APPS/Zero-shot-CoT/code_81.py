@@ -1,32 +1,20 @@
-def can_make_equal(t, test_cases):
-    results = []
-    for i in range(t):
-        a = test_cases[i][0]
-        b = test_cases[i][1]
-        c = test_cases[i][2]
-        
-        possible = True
-        for j in range(len(a)):
-            if a[j] != b[j] and c[j] != a[j] and c[j] != b[j]:
-                possible = False
-                break
-        
-        results.append("YES" if possible else "NO")
+def can_reorder_strings(n, strings):
+    # Sort strings by length
+    strings.sort(key=len)
     
-    return results
+    # Check for the substring condition
+    for i in range(n):
+        for j in range(i):
+            if strings[j] not in strings[i]:
+                print("NO")
+                return
+    
+    print("YES")
+    for s in strings:
+        print(s)
 
-# Read input
-t = int(input().strip())
-test_cases = []
-for _ in range(t):
-    a = input().strip()
-    b = input().strip()
-    c = input().strip()
-    test_cases.append((a, b, c))
+# Input reading
+n = int(input())
+strings = [input().strip() for _ in range(n)]
 
-# Get results
-results = can_make_equal(t, test_cases)
-
-# Print output
-for result in results:
-    print(result)
+can_reorder_strings(n, strings)

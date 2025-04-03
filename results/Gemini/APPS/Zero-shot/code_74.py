@@ -1,48 +1,52 @@
 def solve():
     n, k = map(int, input().split())
-    minions = []
-    for _ in range(n):
-        minions.append(list(map(int, input().split())))
+    s = input()
 
-    best_actions = []
-    max_power = -1
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    dp[0][0] = 1
 
-    import itertools
-
-    for perm in itertools.permutations(range(n)):
-        for i in range(1 << n):
-            actions = []
-            army = []
-            current_power = 0
+    for i in range(1, n + 1):
+        for j in range(i + 1):
+            dp[i][j] = dp[i-1][j]
+            if j > 0:
+                dp[i][j] += dp[i-1][j-1]
             
-            for idx in perm:
-                actions.append(idx + 1)
-                
-                power_increase = 0
-                for minion_idx in army:
-                    power_increase += minions[idx][1]
-                
-                new_minion_power = minions[idx][0] + power_increase
-                
-                army.append(idx)
-                current_power += new_minion_power
-                
-                if len(army) > k:
-                    current_power -= new_minion_power
-                    army.remove(idx)
-                    current_power -= minions[idx][0]
-                    
-                    remove_idx = idx
-                    actions.append(-(idx+1))
-                    
-                
-            if current_power > max_power:
-                max_power = current_power
-                best_actions = actions
+    total_subsequences = sum(dp[n])
     
-    print(len(best_actions))
-    print(*best_actions)
+    if total_subsequences < k:
+        print("-1")
+        return
 
-t = int(input())
-for _ in range(t):
-    solve()
+    ans = 0
+    curr_len = n
+    
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    dp[0][0] = 1
+    
+    for i in range(1, n + 1):
+        last_occurrence = {}
+        for j in range(1, n + 1):
+            dp[i][j] = dp[i-1][j]
+            dp[i][j] += dp[i-1][j-1]
+            
+            if s[i-1] in last_occurrence:
+                dp[i][j] -= dp[last_occurrence[s[i-1]] - 1][j-1]
+        
+        last_occurrence[s[i-1]] = i
+    
+    curr_len = n
+    
+    for length in range(n, -1, -1):
+        num_subsequences = dp[n][length]
+        
+        if k > num_subsequences:
+            ans += (n - length) * num_subsequences
+            k -= num_subsequences
+        else:
+            ans += (n - length) * k
+            k = 0
+            break
+    
+    print(ans)
+
+solve()

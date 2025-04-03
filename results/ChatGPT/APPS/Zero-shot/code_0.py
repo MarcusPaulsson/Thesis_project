@@ -1,76 +1,54 @@
-from collections import defaultdict, deque
-import sys
+def max_length Accordion(s):
+    n = len(s)
+    left_bracket = -1
+    right_bracket = -1
 
-input = sys.stdin.read
-data = input().splitlines()
+    # Find the last opening bracket '['
+    for i in range(n):
+        if s[i] == '[':
+            left_bracket = i
 
-n = int(data[0])
-edges = [tuple(map(int, line.split())) for line in data[1:]]
+    # Find the first closing bracket ']'
+    for i in range(n - 1, -1, -1):
+        if s[i] == ']':
+            right_bracket = i
 
-# Build the tree
-tree = defaultdict(list)
-for u, v in edges:
-    tree[u].append(v)
-    tree[v].append(u)
+    # If there are no valid brackets, return -1
+    if left_bracket == -1 or right_bracket == -1 or left_bracket >= right_bracket:
+        return -1
 
-# Function to perform BFS and return the farthest node and its distance
-def bfs(start):
-    visited = [False] * (n + 1)
-    queue = deque([start])
-    visited[start] = True
-    farthest_node = start
-    max_distance = 0
+    # Find the first colon after the left bracket
+    first_colon = -1
+    for i in range(left_bracket + 1, right_bracket):
+        if s[i] == ':':
+            first_colon = i
+            break
 
-    while queue:
-        node = queue.popleft()
-        for neighbor in tree[node]:
-            if not visited[neighbor]:
-                visited[neighbor] = True
-                queue.append(neighbor)
-                if distance[node] + 1 > max_distance:
-                    max_distance = distance[node] + 1
-                    farthest_node = neighbor
+    # If no colon found, return -1
+    if first_colon == -1:
+        return -1
 
-    return farthest_node, max_distance
+    # Find the last colon before the right bracket
+    last_colon = -1
+    for i in range(right_bracket - 1, left_bracket, -1):
+        if s[i] == ':':
+            last_colon = i
+            break
 
-# Find one endpoint of the diameter
-first_end, _ = bfs(1)
+    # If no colon found, return -1
+    if last_colon == -1 or last_colon <= first_colon:
+        return -1
 
-# Find the other endpoint of the diameter
-second_end, diameter_length = bfs(first_end)
+    # Count the number of vertical lines between the two colons
+    vertical_lines = 0
+    for i in range(first_colon + 1, last_colon):
+        if s[i] == '|':
+            vertical_lines += 1
 
-# To find the nodes on the diameter path
-def find_path(start, end):
-    parent = [0] * (n + 1)
-    visited = [False] * (n + 1)
-    stack = [start]
-    visited[start] = True
-    while stack:
-        node = stack.pop()
-        for neighbor in tree[node]:
-            if not visited[neighbor]:
-                visited[neighbor] = True
-                parent[neighbor] = node
-                stack.append(neighbor)
-    
-    path = []
-    current = end
-    while current != start:
-        path.append(current)
-        current = parent[current]
-    path.append(start)
-    return path[::-1]
+    # Maximum length of the accordion
+    return 4 + vertical_lines
 
-# Get the diameter path
-diameter_path = find_path(first_end, second_end)
-
-# Choose vertices a, b, c from the diameter path
-a = diameter_path[0]
-b = diameter_path[len(diameter_path) // 2]  # Middle point
-c = diameter_path[-1]
-
-# The maximum number of edges covered by paths between the three vertices
-max_edges = len(set(find_path(a, b) + find_path(b, c) + find_path(a, c))) - 1
-
-print(max_edges)
-print(a, b, c)
+# Input
+s = input().strip()
+# Output
+print(max_length Accordion(s))

@@ -1,60 +1,36 @@
-def count_exterminable_subarrays(q, queries):
-    results = []
-    
-    for n, a in queries:
-        # To keep track of the last positions of elements
-        last_position = {}
-        # To keep the count of exterminable subarrays
-        exterminable_count = 0
-        # Using a stack to simulate the extermination process
-        stack = []
-        
-        for i in range(n):
-            # Check if the current element is the same as the top of the stack
-            if stack and stack[-1] == a[i]:
-                stack.pop()  # Pop the top element
-            else:
-                stack.append(a[i])  # Push current element
-            
-            # Check if the stack is empty which means subarray ending at i is exterminable
-            if not stack:
-                exterminable_count += (i + 1)  # All subarrays ending at i are exterminable
-            
-            # Check for the case of previous elements
-            # If the current element has appeared before, we need to adjust the exterminable count
-            if a[i] in last_position:
-                # The last position of this element
-                last_idx = last_position[a[i]]
-                # The number of exterminable subarrays is reduced by the count of subarrays
-                # ending at previous index of the same element
-                exterminable_count -= (last_idx + 1)
-            
-            # Update the last position of the current element
-            last_position[a[i]] = i
-        
-        results.append(exterminable_count)
-    
-    return results
+n = int(input().strip())
+s = input().strip()
 
-# Input reading
-import sys
-input = sys.stdin.read
-data = input().split()
+sorted_s = sorted(s)
+coloring = ['0'] * n
 
-q = int(data[0])
-index = 1
-queries = []
+# Build a mapping of character to their positions in the sorted string
+char_positions = {}
+for idx, char in enumerate(sorted_s):
+    if char not in char_positions:
+        char_positions[char] = []
+    char_positions[char].append(idx)
 
-for _ in range(q):
-    n = int(data[index])
-    index += 1
-    a = list(map(int, data[index:index + n]))
-    index += n
-    queries.append((n, a))
+# To keep track of how many of each character we have colored
+colored_count = {char: 0 for char in char_positions}
 
-# Get results
-results = count_exterminable_subarrays(q, queries)
+for i in range(n):
+    char = s[i]
+    # Get the actual position in the sorted array that this character would go to
+    pos = char_positions[char][colored_count[char]]
+    colored_count[char] += 1
 
-# Print outputs
-for result in results:
-    print(result)
+    # If the color for current character is not set, set it to '0' or '1' depending on its position
+    if coloring[pos] == '0':
+        coloring[pos] = '0'
+    else:
+        coloring[pos] = '1'
+
+# Check if the coloring can lead to a sorted arrangement
+for i in range(1, n):
+    if s[i] < s[i - 1] and coloring[i] == coloring[i - 1]:
+        print("NO")
+        break
+else:
+    print("YES")
+    print(''.join(coloring))

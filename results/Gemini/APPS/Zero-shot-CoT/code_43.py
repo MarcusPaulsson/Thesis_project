@@ -1,28 +1,31 @@
+import math
+
 def solve():
     n = int(input())
-    a = list(map(int, input().split()))
-    b = list(map(int, input().split()))
+    vectors = []
+    for i in range(n):
+        x, y = map(int, input().split())
+        vectors.append((x, y))
 
-    min_time = float('inf')
+    angles = []
+    for x, y in vectors:
+        angles.append(math.atan2(y, x))
 
-    for i in range(1 << n):
-        delivery_times = []
-        pickup_times = 0
-        
-        for j in range(n):
-            if (i >> j) & 1:
-                delivery_times.append(a[j])
-            else:
-                pickup_times += b[j]
-        
-        max_delivery_time = 0
-        if delivery_times:
-            max_delivery_time = max(delivery_times)
-        
-        min_time = min(min_time, max(max_delivery_time, pickup_times))
+    min_angle = float('inf')
+    best_pair = (0, 0)
 
-    print(min_time)
+    for i in range(n):
+        for j in range(i + 1, n):
+            angle1 = angles[i]
+            angle2 = angles[j]
+            
+            diff = abs(angle1 - angle2)
+            angle = min(diff, 2 * math.pi - diff)
 
-t = int(input())
-for _ in range(t):
-    solve()
+            if angle < min_angle:
+                min_angle = angle
+                best_pair = (i + 1, j + 1)
+
+    print(best_pair[0], best_pair[1])
+
+solve()

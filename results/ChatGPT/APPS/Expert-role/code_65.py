@@ -1,39 +1,25 @@
-def min_skip_points(t, test_cases):
-    results = []
-    for case in test_cases:
-        n, a = case
-        skip_points = 0
-        i = 0
+def game_23(n, m):
+    if m % n != 0:
+        return -1
+    
+    ratio = m // n
+    count_2 = 0
+    count_3 = 0
+    
+    while ratio % 2 == 0:
+        ratio //= 2
+        count_2 += 1
         
-        while i < n:
-            if a[i] == 1:  # If it's a hard boss
-                skip_points += 1  # Use a skip point
-                i += 1  # Move to the next boss
-            if i < n and a[i] == 0:  # If the next boss is easy
-                i += 1  # Kill the easy boss
-            if i < n and a[i] == 1:  # If the next boss is hard
-                skip_points += 1  # Use another skip point
-                i += 1  # Kill the hard boss
-            
-            # You can skip killing two bosses in one session if both are easy
-            if i < n and a[i] == 0:  # If the next boss is easy again
-                i += 1  # Kill the easy boss
-            
-        results.append(skip_points)
-        
-    return results
+    while ratio % 3 == 0:
+        ratio //= 3
+        count_3 += 1
+    
+    if ratio != 1:
+        return -1
+    
+    return count_2 + count_3
 
 # Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    test_cases.append((n, a))
-
-# Get results
-results = min_skip_points(t, test_cases)
-
-# Print results
-for result in results:
-    print(result)
+n, m = map(int, input().split())
+# Get the result and print it
+print(game_23(n, m))

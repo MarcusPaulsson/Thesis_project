@@ -1,75 +1,23 @@
-def max_score_in_contest(tc, test_cases):
-    results = []
-    
-    for _ in range(tc):
-        n = test_cases[_][0]
-        C, T = test_cases[_][1]
-        problems = test_cases[_][2]
+cnt1 = int(input().strip())
+cnt2 = int(input().strip())
+cnt3 = int(input().strip())
+cnt4 = int(input().strip())
 
-        # Prepare a list of (difficulty, score) pairs
-        problems = [(a_i, p_i) for (a_i, p_i) in problems]
+# A regular bracket sequence can be formed if:
+# 1. The number of closing brackets must not exceed the number of opening brackets at any point.
+# 2. At the end, the total number of opening brackets must equal the total number of closing brackets.
 
-        max_score = 0
+# The total opening brackets from ( and ) pairs
+total_opening = cnt1 + cnt2
+# The total closing brackets from ) and ( pairs
+total_closing = cnt3 + cnt4
 
-        # Try all possible training times
-        for train_time in range(int(T) + 1):
-            s = 1.0 + C * train_time
-            remaining_time = T - train_time
+# The count of unbalanced opening and closing brackets
+needed_opening = cnt3
+needed_closing = cnt1
 
-            score = 0
-            skill = s
-
-            # Try to solve problems in different orders
-            for a_i, p_i in sorted(problems, key=lambda x: (x[0] / skill, -x[1])):
-                if remaining_time <= 0:
-                    break
-
-                # Time to watch the episode
-                if remaining_time < 10:
-                    continue
-                remaining_time -= 10
-                skill *= 0.9  # Skill decreases after watching
-
-                # Time to solve the problem
-                time_to_solve = a_i / skill
-
-                if remaining_time >= time_to_solve:
-                    remaining_time -= time_to_solve
-                    score += p_i
-                else:
-                    break
-
-            max_score = max(max_score, score)
-
-        results.append(max_score)
-
-    return results
-
-
-# Read input
-import sys
-input = sys.stdin.read
-data = input().strip().split('\n')
-
-tc = int(data[0])
-test_cases = []
-index = 1
-
-for _ in range(tc):
-    n = int(data[index])
-    C, T = map(float, data[index + 1].split())
-    problems = []
-
-    for i in range(n):
-        a_i, p_i = map(int, data[index + 2 + i].split())
-        problems.append((a_i, p_i))
-
-    test_cases.append((n, (C, T), problems))
-    index += 2 + n
-
-# Get results
-results = max_score_in_contest(tc, test_cases)
-
-# Print results
-for result in results:
-    print(result)
+# Check if we can balance the brackets
+if needed_opening <= total_opening and needed_closing <= total_closing and (total_opening - needed_opening) >= needed_closing:
+    print(1)
+else:
+    print(0)

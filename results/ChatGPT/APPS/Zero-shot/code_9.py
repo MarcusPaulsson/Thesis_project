@@ -1,20 +1,41 @@
-def min_operations_to_mod(n, x, y, number):
-    # The required suffix we want to match
-    required_suffix = ['0'] * x
-    required_suffix[y] = '1'
-    
-    # Current suffix from the number
-    current_suffix = list(number[-x:])
-    
-    # Count the number of changes needed
-    operations = sum(1 for i in range(x) if current_suffix[i] != required_suffix[i])
-    
-    return operations
+d = int(input())
+n, m = map(int, input().split())
+sofas = []
 
-# Read input
-n, x, y = map(int, input().split())
-number = input().strip()
+for i in range(d):
+    x1, y1, x2, y2 = map(int, input().split())
+    sofas.append((x1, y1, x2, y2))
 
-# Calculate and print the result
-result = min_operations_to_mod(n, x, y, number)
-print(result)
+cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
+
+def count_surrounding(sofa):
+    x1, y1, x2, y2 = sofa
+    left = right = top = bottom = 0
+    
+    for other in sofas:
+        if other == sofa:
+            continue
+        ox1, oy1, ox2, oy2 = other
+        
+        # Check left
+        if (x1 < ox1 and x2 < ox1) or (x1 < ox2 and x2 < ox2):
+            left += 1
+        # Check right
+        if (x1 > ox1 and x2 > ox1) or (x1 > ox2 and x2 > ox2):
+            right += 1
+        # Check top
+        if (y1 < oy1 and y2 < oy1) or (y1 < oy2 and y2 < oy2):
+            top += 1
+        # Check bottom
+        if (y1 > oy1 and y2 > oy1) or (y1 > oy2 and y2 > oy2):
+            bottom += 1
+    
+    return left, right, top, bottom
+
+for i in range(d):
+    left, right, top, bottom = count_surrounding(sofas[i])
+    if left == cnt_l and right == cnt_r and top == cnt_t and bottom == cnt_b:
+        print(i + 1)
+        break
+else:
+    print(-1)

@@ -16,7 +16,7 @@ class BalancedBrackets:
             if char in self.left_brackets:
                 self.stack.append(char)
             elif char in self.right_brackets:
-                if not self.stack or char != {'(': ')', '{': '}', '[': ']'}[self.stack[-1]:
+                if not self.stack or char != {'(': ')', '{': '}', '[': ']'}[self.stack[-1]]:
                     return False
                 self.stack.pop()
         return len(self.stack) == 0

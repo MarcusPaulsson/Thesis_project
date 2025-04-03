@@ -1,44 +1,29 @@
-def count_common_terms(a1, b1, a2, b2, L, R):
-    from math import gcd
+def minimal_perimeter(a, b):
+    total = a + b
+    min_perimeter = float('inf')
 
-    # Normalize the progressions
-    a1, b1, a2, b2 = a1, b1, a2, b2
-    
-    # Calculate the difference and gcd
-    g = gcd(a1, a2)
-    
-    # Adjust b1 and b2 to find the intersection
-    b_diff = b2 - b1
-    
-    # Check if the difference is a multiple of gcd
-    if b_diff % g != 0:
-        return 0
-    
-    # Find the first valid x
-    a = (b_diff // g) * (a2 // g)
-    b = (b_diff // g) * (a1 // g)
-    
-    # Find the first x such that x = a1 * k' + b1
-    x_start = (a1 * max(0, (-b // a1) + 1) + b1) if a1 > 0 else b1
-    
-    # Calculate the step size
-    step = lcm(a1, a2)
-    
-    # Calculate bounds
-    if x_start < L:
-        # Adjust to the next valid x
-        x_start += ((L - x_start + step - 1) // step) * step
-    
-    if x_start > R:
-        return 0
-    
-    # Count the number of valid x values
-    count = (R - x_start) // step + 1
-    
-    return count
+    for width in range(1, int(total**0.5) + 1):
+        if total % width == 0:
+            height = total // width
+            
+            # Check all combinations of width and height for red and blue rectangles
+            for (x, y) in [(width, height), (height, width)]:
+                # Check for red rectangle
+                for red_width in range(1, int(x**0.5) + 1):
+                    if a % red_width == 0:
+                        red_height = a // red_width
+                        if red_height <= y:
+                            # Check for blue rectangle
+                            for blue_width in range(1, int(x**0.5) + 1):
+                                if b % blue_width == 0:
+                                    blue_height = b // blue_width
+                                    if blue_height <= y:
+                                        perimeter = 2 * (x + y)
+                                        min_perimeter = min(min_perimeter, perimeter)
 
-# Input
-a1, b1, a2, b2, L, R = map(int, input().split())
+    return min_perimeter
 
-# Output
-print(count_common_terms(a1, b1, a2, b2, L, R))
+# Read input
+a, b = map(int, input().split())
+# Print the result
+print(minimal_perimeter(a, b))

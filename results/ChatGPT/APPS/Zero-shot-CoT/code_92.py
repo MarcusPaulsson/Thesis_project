@@ -1,12 +1,12 @@
-def can_transform(s, t):
-    # Check if both strings have at least one common character
-    return len(set(s) & set(t)) > 0
+x = float(input().strip())
 
-q = int(input())
-for _ in range(q):
-    s = input().strip()
-    t = input().strip()
-    if can_transform(s, t):
-        print("YES")
+# Iterate through all pairs of integers (a, b) where 1 <= a, b <= 10
+for a in range(1, 11):
+    for b in range(1, 11):
+        # Check if the condition is satisfied
+        if abs(a * b - x) < 1e-6:
+            print(a, b)
+            break
     else:
-        print("NO")
+        continue
+    break

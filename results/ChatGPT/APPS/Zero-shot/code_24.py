@@ -1,44 +1,38 @@
-n, k = map(int, input().split())
-s = input().strip()
+def can_alice_win(board):
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # vertical, horizontal, diagonal down-right, diagonal down-left
 
-# Step 1: Find unique characters and their counts
-from collections import Counter
+    def check_win(x, y):
+        for dx, dy in directions:
+            count = 1
+            
+            # Check in the positive direction
+            nx, ny = x + dx, y + dy
+            while 0 <= nx < 10 and 0 <= ny < 10 and board[nx][ny] == 'X':
+                count += 1
+                nx += dx
+                ny += dy
+                
+            # Check in the negative direction
+            nx, ny = x - dx, y - dy
+            while 0 <= nx < 10 and 0 <= ny < 10 and board[nx][ny] == 'X':
+                count += 1
+                nx -= dx
+                ny -= dy
+            
+            if count >= 5:
+                return True
+        return False
 
-counter = Counter(s)
-unique_chars = list(counter.keys())
-unique_count = len(unique_chars)
+    for i in range(10):
+        for j in range(10):
+            if board[i][j] == '.':
+                board[i][j] = 'X'  # Place Alice's cross
+                if check_win(i, j):
+                    return "YES"
+                board[i][j] = '.'  # Reset the cell back to empty
 
-# Step 2: Calculate the maximum number of unique subsequences
-max_unique_subsequences = 0
-cost = 0
+    return "NO"
 
-# We will add all subsequences of unique characters
-for i in range(1, unique_count + 1):
-    max_unique_subsequences += i  # The number of subsequences of length i is `C(unique_count, i) * 2^i`
-
-# Step 3: Check if we can create at least k unique subsequences
-if max_unique_subsequences < k:
-    print(-1)
-else:
-    # Calculate the minimum total cost
-    total_cost = 0
-    subsequence_count = 0
-    
-    # We calculate cost for each unique character
-    for char in unique_chars:
-        count = counter[char]
-        for i in range(1, count + 1):
-            if subsequence_count < k:
-                total_cost += (n - (1 + i - 1))  # Add subsequence with length i
-                subsequence_count += 1
-            else:
-                break
-        if subsequence_count >= k:
-            break
-    
-    # If we still need more subsequences, we need to use duplicates
-    if subsequence_count < k:
-        needed = k - subsequence_count
-        total_cost += needed * n  # Adding duplicates of full length costs `n` each time
-    
-    print(total_cost)
+# Read the input
+board = [input().strip() for _ in range(10)]
+print(can_alice_win(board))

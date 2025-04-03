@@ -1,30 +1,29 @@
-def can_all_teams_have_equal_wins(t, test_cases):
-    results = []
-    for n, k, d1, d2 in test_cases:
-        remaining_matches = n - k
-        
-        # Calculate the minimum and maximum wins for team 1 and 2
-        min_wins_t1 = (k - (d1 + d2)) // 2
-        max_wins_t1 = (k + (d1 + d2)) // 2
-        
-        # Calculate the minimum and maximum wins for team 2 and 3
-        min_wins_t2 = (k - (d1 + d2)) // 2
-        max_wins_t2 = (k + (d1 + d2)) // 2
-        
-        # Check if there is a valid distribution of wins
-        if (k >= d1 + d2) and (remaining_matches % 3 == 0) and (remaining_matches >= 0):
-            results.append("yes")
-        else:
-            results.append("no")
+from collections import Counter
+import sys
+
+def find_x_y(divisors):
+    count = Counter(divisors)
     
-    return results
+    # The maximum divisor is either x or y
+    x = max(divisors)
+    # Start with x and find y
+    y = 1
+    
+    for d in count:
+        if d == x:
+            continue
+        # For each divisor d, we check if it can be part of y
+        if count[d] == 1:
+            y *= d
+    
+    return x, y
 
-# Read input
-t = int(input())
-test_cases = [tuple(map(int, input().split())) for _ in range(t)]
+# Input reading
+n = int(input().strip())
+divisors = list(map(int, input().strip().split()))
 
-# Get results
-results = can_all_teams_have_equal_wins(t, test_cases)
+# Finding x and y
+x, y = find_x_y(divisors)
 
-# Print output
-print("\n".join(results))
+# Output
+print(x, y)

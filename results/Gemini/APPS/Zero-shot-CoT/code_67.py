@@ -1,43 +1,16 @@
 def solve():
-    n = int(input())
-    s = list(input())
-    t = list(input())
-
-    ops = []
-    for i in range(n):
-        if s[i] == t[i]:
-            continue
-        
-        found = False
-        for j in range(i + 1, n):
-            if s[i] == s[j]:
-                ops.append((j + 1, i + 1))
-                s[j], t[i] = t[i], s[j]
-                found = True
-                break
-        
-        if found:
-            continue
-        
-        for j in range(i + 1, n):
-            if s[i] == t[j]:
-                ops.append((i + 1, j + 1))
-                s[i], t[j] = t[j], s[i]
-                
-                ops.append((j + 1, j + 1))
-                s[j], t[j] = t[j], s[j]
-                found = True
-                break
-        
-        if not found:
-            print("No")
-            return
+    n, k = map(int, input().split())
+    t = input()
     
-    print("Yes")
-    print(len(ops))
-    for op in ops:
-        print(op[0], op[1])
+    max_overlap = 0
+    for overlap in range(1, n):
+        if t[:n-overlap] == t[overlap:]:
+            max_overlap = n - overlap
+            break
+            
+    if max_overlap == 0:
+        print(t + t * (k - 1))
+    else:
+        print(t + t[max_overlap:] * (k - 1))
 
-k = int(input())
-for _ in range(k):
-    solve()
+solve()

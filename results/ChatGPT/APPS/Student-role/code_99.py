@@ -1,16 +1,15 @@
-def clean_binary_string(s):
-    # Count the number of 0s and 1s
-    count_0 = s.count('0')
-    count_1 = s.count('1')
-    
-    # The cleanest string will be all 0s followed by all 1s
-    return '0' * count_0 + '1' * count_1
+n = int(input())
+a1, a2, a3 = map(int, input().split())
+b1, b2, b3 = map(int, input().split())
 
-t = int(input())
-results = []
-for _ in range(t):
-    n = int(input().strip())
-    s = input().strip()
-    results.append(clean_binary_string(s))
+# Maximum wins calculation
+max_wins = min(a1, b3) + min(a2, b1) + min(a3, b2)
 
-print('\n'.join(results))
+# Minimum wins calculation
+# Calculate losses
+alice_losses = max(0, a1 - b3) + max(0, a2 - b1) + max(0, a3 - b2)
+bob_losses = max(0, b1 - a3) + max(0, b2 - a1) + max(0, b3 - a2)
+
+min_wins = max(0, n - alice_losses - bob_losses)
+
+print(min_wins, max_wins)

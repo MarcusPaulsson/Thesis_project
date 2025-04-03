@@ -1,35 +1,23 @@
-def max_happiness(t, test_cases):
-    results = []
+def minimum_instability(n, a):
+    a.sort()
     
-    for case in test_cases:
-        n, k, a, w = case
-        a.sort()
-        w.sort()
-        
-        # Calculate total happiness
-        total_happiness = 0
-        
-        # The maximum values will be assigned to friends with the largest w_i
-        for i in range(k):
-            total_happiness += a[n - 1 - i]  # max value for each friend
-            total_happiness += a[i]          # min value for each friend
-        
-        results.append(total_happiness)
+    # To minimize instability after removing one element, we can either:
+    # 1. Remove the maximum element (last element in sorted array)
+    # 2. Remove the minimum element (first element in sorted array)
+    
+    # If we remove the maximum element
+    instability_remove_max = a[-2] - a[0]
+    
+    # If we remove the minimum element
+    instability_remove_min = a[-1] - a[1]
+    
+    # The minimum instability after removing one element
+    return min(instability_remove_max, instability_remove_min)
 
-    return results
+# Input reading
+n = int(input())
+a = list(map(int, input().split()))
 
-# Reading input
-t = int(input())
-test_cases = []
-
-for _ in range(t):
-    n, k = map(int, input().split())
-    a = list(map(int, input().split()))
-    w = list(map(int, input().split()))
-    test_cases.append((n, k, a, w))
-
-results = max_happiness(t, test_cases)
-
-# Printing results
-for result in results:
-    print(result)
+# Get the result and print it
+result = minimum_instability(n, a)
+print(result)

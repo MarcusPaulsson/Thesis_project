@@ -1,61 +1,36 @@
+import math
+
 def solve():
-    x = int(input())
-    
-    staircases = []
-    n = 1
-    while True:
-        cells_needed = n * (n + 1) // 2
-        if cells_needed > x:
-            break
-        staircases.append(cells_needed)
-        n += 1
-    
-    nice_staircases = []
-    n = 1
-    while True:
-        cells_needed = n * (n + 1) // 2
-        if cells_needed > x:
-            break
-        if is_nice(n):
-            nice_staircases.append(cells_needed)
-        n += 1
-        
-    count = 0
-    remaining_cells = x
-    
-    
-    n = 1
-    cells_used = 0
-    while True:
-        cells_needed = n * (n + 1) // 2
-        if cells_needed > x:
-            break
-        if is_nice(n):
-            if remaining_cells >= cells_needed:
-                remaining_cells -= cells_needed
-                count += 1
-        n+=1
-    
-    print(count)
-    
+    n, k = map(int, input().split())
 
-def is_nice(n):
-    if n == 1:
-        return True
-    if n == 3:
-        return True
-    
-    k = 1
-    while True:
-        val = (2**k) - 1
-        if val > n:
-            break
-        if val == n:
-            return True
-        k += 1
-    
-    return False
+    if k * (k + 1) // 2 > n:
+        print("-1")
+        return
 
-t = int(input())
-for _ in range(t):
-    solve()
+    best_gcd = 0
+    for gcd in range(1, int(math.sqrt(n)) + 1):
+        if n % gcd == 0:
+            if n // gcd >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, gcd)
+            if gcd >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, n // gcd)
+    
+    if best_gcd == 0:
+        print("-1")
+        return
+
+    seq = []
+    sum_so_far = 0
+    for i in range(1, k):
+        seq.append(best_gcd * i)
+        sum_so_far += best_gcd * i
+    
+    seq.append(n - sum_so_far)
+    
+    if seq[-1] <= seq[-2]:
+        print("-1")
+        return
+
+    print(*seq)
+
+solve()

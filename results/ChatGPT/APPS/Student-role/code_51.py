@@ -1,26 +1,28 @@
-def can_have_no_winner(n, k, d1, d2):
-    # Remaining games
-    remaining_games = n - k
-    
-    # Wins of team 1, 2, and 3
-    w1 = (d1 + d2) // 2
-    w2 = (d1 - d2) // 2
-    w3 = (d2 - d1) // 2
+from collections import Counter
+from math import gcd
 
-    # Check if the calculated wins are valid
-    if (d1 + d2) % 2 != 0 or w1 < 0 or w2 < 0 or w3 < 0:
-        return "no"
-    
-    # Total wins after k games
-    total_wins = w1 + w2 + w3
-    
-    # Remaining games should be enough to balance the wins
-    if total_wins + remaining_games >= 0 and (total_wins + remaining_games) % 3 == 0:
-        return "yes"
-    
-    return "no"
+n = int(input())
+divisors = list(map(int, input().split()))
 
-t = int(input())
-for _ in range(t):
-    n, k, d1, d2 = map(int, input().split())
-    print(can_have_no_winner(n, k, d1, d2))
+# Count occurrences of each divisor
+count = Counter(divisors)
+
+# The two numbers x and y can be found as follows:
+# x should be the product of the maximum divisor with the divisor that appears once
+# y should be the maximum divisor itself
+d1, d2 = 1, 1
+for divisor, occurrences in count.items():
+    if occurrences == 1:
+        d1 = divisor
+    elif occurrences == 2:
+        d2 = divisor
+
+# The maximum divisor from the list
+max_divisor = max(divisors)
+
+# Calculate x and y
+x = max_divisor * d1
+y = max_divisor * d2
+
+# Output the result
+print(x, y)

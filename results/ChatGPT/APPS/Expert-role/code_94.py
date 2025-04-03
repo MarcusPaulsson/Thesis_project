@@ -1,52 +1,41 @@
-def solve():
-    import sys
-    from collections import defaultdict
+def construct_binary_string(a, b, x):
+    # Start with an empty string
+    s = []
     
-    input = sys.stdin.read
-    data = input().split()
+    # Determine the initial character based on the maximum count
+    if a > b:
+        current_char = '0'
+    else:
+        current_char = '1'
     
-    index = 0
-    t = int(data[index])
-    index += 1
-    results = []
+    # The number of transitions we need to create
+    transitions = min(x, a + b - 1)
     
-    for _ in range(t):
-        n, T = int(data[index]), int(data[index + 1])
-        index += 2
-        a = list(map(int, data[index:index + n]))
-        index += n
-        
-        color = [0] * n
-        count = defaultdict(int)
-        
-        for i in range(n):
-            count[a[i]] += 1
-        
-        for i in range(n):
-            complement = T - a[i]
-            if complement in count:
-                if count[complement] > 0:
-                    if a[i] == complement:
-                        # Handle the case where a[i] == complement
-                        if count[a[i]] > 1:
-                            color[i] = 1
-                            count[a[i]] -= 1
-                        else:
-                            color[i] = 0
-                    else:
-                        # Assign colors based on the availability of pairs
-                        if count[complement] > 0:
-                            color[i] = 0
-                            count[complement] -= 1
-                            count[a[i]] -= 1
-                        else:
-                            color[i] = 1
-            else:
-                color[i] = 0
-            
-        results.append(" ".join(map(str, color)))
+    # Create a sequence that ensures we have the desired number of transitions
+    for i in range(transitions + 1):
+        s.append(current_char)
+        # Toggle between '0' and '1'
+        current_char = '1' if current_char == '0' else '0'
     
-    print("\n".join(results))
+    # Count how many we've added
+    added_zeros = s.count('0')
+    added_ones = s.count('1')
+    
+    # Fill in the remaining zeros or ones
+    if current_char == '0':
+        remaining = a - added_zeros
+        s += ['0'] * remaining
+        remaining = b - added_ones
+        s += ['1'] * remaining
+    else:
+        remaining = b - added_ones
+        s += ['1'] * remaining
+        remaining = a - added_zeros
+        s += ['0'] * remaining
+    
+    # Join the list into a string and print it
+    print(''.join(s))
 
-if __name__ == "__main__":
-    solve()
+# Read input
+a, b, x = map(int, input().split())
+construct_binary_string(a, b, x)

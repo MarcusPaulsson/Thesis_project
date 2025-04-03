@@ -1,18 +1,10 @@
 def solve():
-    s = input()
-    n = len(s)
-    
-    r_count = s.count('R')
-    s_count = s.count('S')
-    p_count = s.count('P')
-    
-    if r_count >= s_count and r_count >= p_count:
-        print('P' * n)
-    elif s_count >= r_count and s_count >= p_count:
-        print('R' * n)
-    else:
-        print('S' * n)
+  n, m = map(int, input().split())
+  count = 0
+  for x in range(1, n + 1):
+    for y in range(1, m + 1):
+      if (x + y) % 5 == 0:
+        count += 1
+  print(count)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

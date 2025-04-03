@@ -1,26 +1,20 @@
-def max_difference(t, test_cases):
-    results = []
-    for n, k, a in test_cases:
-        # Calculate the total amount of water in all barrels
-        total_water = sum(a)
-        # The maximum possible amount in one barrel after pouring k times
-        max_possible = total_water
-        # The minimum possible amount in one barrel (can be 0 if we pour all water into one barrel)
-        min_possible = 0
-        # Calculate the maximum difference
-        max_diff = max_possible - min_possible
-        results.append(max_diff)
-    return results
+n, q = map(int, input().split())
+painters = [tuple(map(int, input().split())) for _ in range(q)]
 
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n, k = map(int, input().split())
-    a = list(map(int, input().split()))
-    test_cases.append((n, k, a))
+# We will calculate the painted sections for every combination of q-2 painters
+def painted_sections(painters):
+    painted = [0] * (n + 1)
+    for l, r in painters:
+        for i in range(l, r + 1):
+            painted[i] = 1
+    return sum(painted)
 
-# Get results and print them
-results = max_difference(t, test_cases)
-for result in results:
-    print(result)
+max_painted = 0
+
+# Try all combinations of q-2 painters
+from itertools import combinations
+
+for comb in combinations(painters, q - 2):
+    max_painted = max(max_painted, painted_sections(comb))
+
+print(max_painted)

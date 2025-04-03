@@ -1,33 +1,16 @@
-def min_moves_to_odd(t, test_cases):
-    results = []
-    
-    for case in test_cases:
-        n, a = case
-        seen = set()
-        moves = 0
-        
-        for number in a:
-            while number % 2 == 0:
-                if number not in seen:
-                    seen.add(number)
-                    moves += 1
-                number //= 2
-        
-        results.append(moves)
-    
-    return results
+n = int(input())
+s = input()
 
-# Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    test_cases.append((n, a))
+# Initialize the minimum operations with the case of typing all characters one by one
+min_operations = n
 
-# Getting the results
-results = min_moves_to_odd(t, test_cases)
+# Check for every possible prefix length to see if we can benefit from copying
+for i in range(1, n):
+    # If the prefix is equal to the substring starting from that point
+    if s[:i] == s[i:i + i]:  # Check if we can copy the prefix
+        # Calculate operations: type the prefix (i) + copy (1) + remaining characters (n - 2*i)
+        operations = i + 1 + (n - 2 * i)
+        min_operations = min(min_operations, operations)
 
-# Printing the results
-for result in results:
-    print(result)
+# Print the minimum operations found
+print(min_operations)

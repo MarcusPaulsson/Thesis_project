@@ -1,27 +1,32 @@
-def construct_tree(n, d, k):
-    if d >= n or (k == 1 and d > 0) or (d > 2 * (k - 1)):
-        print("NO")
-        return
+import sys
+import math
 
-    edges = []
-    
-    # Create a path of length d
-    for i in range(1, d + 1):
-        edges.append((i, i + 1))
-    
-    # The last vertex in the path is d + 1
-    # Start branching from the first vertex
-    current_vertex = 1
-    for i in range(d + 1, n + 1):
-        edges.append((current_vertex, i))
-        # If current_vertex has reached its degree limit, move to the next vertex in the path
-        if edges.count((current_vertex, i)) >= k:
-            current_vertex += 1
-    
-    print("YES")
-    for u, v in edges:
-        print(u, v)
+def angle_with_x_axis(x, y):
+    return math.atan2(y, x)
 
-# Read input
-n, d, k = map(int, input().split())
-construct_tree(n, d, k)
+def main():
+    n = int(sys.stdin.readline().strip())
+    vectors = [tuple(map(int, sys.stdin.readline().strip().split())) for _ in range(n)]
+    
+    angles = [(angle_with_x_axis(x, y), i + 1) for i, (x, y) in enumerate(vectors)]
+    angles.sort()
+    
+    min_angle = float('inf')
+    min_index_pair = (0, 0)
+    
+    for i in range(n):
+        a1, index1 = angles[i]
+        a2, index2 = angles[(i + 1) % n]
+        
+        angle_diff = abs(a2 - a1)
+        if angle_diff > math.pi:
+            angle_diff = 2 * math.pi - angle_diff
+        
+        if angle_diff < min_angle:
+            min_angle = angle_diff
+            min_index_pair = (index1, index2)
+    
+    print(min_index_pair[0], min_index_pair[1])
+
+if __name__ == "__main__":
+    main()

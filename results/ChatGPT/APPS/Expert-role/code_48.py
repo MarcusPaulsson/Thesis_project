@@ -1,20 +1,23 @@
-def min_trades(t, test_cases):
-    results = []
-    for x, y, k in test_cases:
-        # Calculate the total number of sticks needed
-        total_sticks_needed = k + k * y  # k sticks for k coals + k coals for k torches
-        # Calculate the number of trades to get the required sticks
-        trades_for_sticks = (total_sticks_needed + x - 1) // (x - 1)  # ceiling of total_sticks_needed / (x - 1)
-        # Total trades = trades for sticks + trades for coal (which is k)
-        total_trades = trades_for_sticks + k
-        results.append(total_trades)
-    return results
+def kth_largest_in_multiplication_table(n, m, k):
+    left, right = 1, n * m
+    
+    while left < right:
+        mid = (left + right) // 2
+        count = 0
+        
+        for i in range(1, n + 1):
+            count += min(mid // i, m)
+        
+        if count < k:
+            left = mid + 1
+        else:
+            right = mid
+    
+    return left
 
 # Read input
-t = int(input())
-test_cases = [tuple(map(int, input().split())) for _ in range(t)]
-
-# Calculate and print results
-results = min_trades(t, test_cases)
-for res in results:
-    print(res)
+n, m, k = map(int, input().split())
+# Get the k-th largest number
+result = kth_largest_in_multiplication_table(n, m, k)
+# Print the result
+print(result)
