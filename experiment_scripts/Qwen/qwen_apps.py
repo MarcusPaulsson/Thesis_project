@@ -31,7 +31,7 @@ def run_task_with_llama(llm, task_prompt, temp=0.7):
         task_prompt,
         temperature=temp,
         top_k=1,
-        max_tokens=5,  # -1 means no limit
+        max_tokens=2500,  # -1 means no limit
         stream=True,
         echo=False,  # do not echo the prompt.
     )
@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 1  # Adjust to the number of tasks you want to run.
+    end_index = 15  # Adjust to the number of tasks you want to run.
 
     results = {}  # Change results to a dictionary
 

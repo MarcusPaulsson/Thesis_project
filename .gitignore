@@ -10,4 +10,5 @@ read_test_process.csv
 cookies.json
 new_zip_file.zip
 processed.xml
-test_database.test_database
+test_database.db
+output_directory/
