@@ -1,41 +1,27 @@
-def reconstruct_string(t, test_cases):
-    results = []
+def is_valid_flag(n, m, grid):
+    colors = set()
+    if n % 3 == 0:
+        stripe_height = n // 3
+        for i in range(3):
+            colors.add(grid[i * stripe_height][0])  # Check the color of the first column in each stripe
+            for j in range(stripe_height):
+                if grid[i * stripe_height + j] != grid[i * stripe_height]:
+                    return "NO"
+    elif m % 3 == 0:
+        stripe_width = m // 3
+        for i in range(3):
+            colors.add(grid[0][i * stripe_width])  # Check the color of the first row in each stripe
+            for j in range(stripe_width):
+                if any(grid[k][i * stripe_width + j] != grid[0][i * stripe_width] for k in range(n)):
+                    return "NO"
+    else:
+        return "NO"
 
-    for s, x in test_cases:
-        n = len(s)
-        w = ['0'] * n
+    return "YES" if len(colors) == 3 else "NO"
 
-        for i in range(n):
-            if s[i] == '1':
-                if i - x >= 0:
-                    w[i - x] = '1'
-                if i + x < n:
-                    w[i + x] = '1'
+# Read input
+n, m = map(int, input().split())
+grid = [input().strip() for _ in range(n)]
 
-        valid = True
-        for i in range(n):
-            if s[i] == '1':
-                if (i - x >= 0 and w[i - x] == '0') and (i + x < n and w[i + x] == '0'):
-                    valid = False
-                    break
-
-        if valid:
-            results.append(''.join(w))
-        else:
-            results.append('-1')
-
-    return results
-
-
-# Reading input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    s = input().strip()
-    x = int(input().strip())
-    test_cases.append((s, x))
-
-# Processing and outputting results
-results = reconstruct_string(t, test_cases)
-for result in results:
-    print(result)
+# Output result
+print(is_valid_flag(n, m, grid))

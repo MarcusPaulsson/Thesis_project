@@ -1,37 +1,21 @@
-def min_replacements_to_k_complete(t, test_cases):
-    results = []
-    for n, k, s in test_cases:
-        m = n // k
-        changes = 0
-        
-        # For each group of k characters
-        for j in range(k):
-            # Count frequency of characters in the j-th position of each block
-            freq = {}
-            for i in range(m):
-                char = s[j + i * k]
-                if char in freq:
-                    freq[char] += 1
-                else:
-                    freq[char] = 1
-            
-            # Calculate the number of changes needed
-            max_freq = max(freq.values(), default=0)
-            changes += (m - max_freq)
-        
-        results.append(changes)
-    
-    return results
+def is_palindrome(time):
+    return time == time[::-1]
 
+def next_palindrome_time(hh, mm):
+    minutes_passed = 0
+    while True:
+        mm += 1
+        if mm == 60:
+            mm = 0
+            hh += 1
+            if hh == 24:
+                hh = 0
+        minutes_passed += 1
+        time_str = f"{hh:02}:{mm:02}"
+        if is_palindrome(time_str):
+            return minutes_passed
 
-# Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n, k = map(int, input().split())
-    s = input().strip()
-    test_cases.append((n, k, s))
-
-# Get results and print them
-output = min_replacements_to_k_complete(t, test_cases)
-print('\n'.join(map(str, output)))
+time_input = input().strip()
+hh, mm = map(int, time_input.split(':'))
+result = next_palindrome_time(hh, mm)
+print(result)

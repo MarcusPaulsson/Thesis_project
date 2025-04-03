@@ -1,49 +1,16 @@
-def min_cost_to_make_fence_great(q, queries):
-    results = []
-    
-    for n, boards in queries:
-        # We will keep track of the minimum cost to ensure no adjacent boards have the same height
-        cost = 0
-        
-        # We can try to adjust each board to a height that ensures uniqueness
-        # We only need to check adjacent pairs
-        for i in range(n):
-            # We need to check if the current board height is equal to the previous one
-            if i > 0 and boards[i][0] <= boards[i - 1][0]:
-                # Calculate how much we need to increase the current board
-                needed_increase = boards[i - 1][0] - boards[i][0] + 1
-                cost += needed_increase * boards[i][1]
-                # Increase the height of the current board to maintain uniqueness
-                boards[i] = (boards[i][0] + needed_increase, boards[i][1])
-        
-        results.append(cost)
-    
-    return results
+n = int(input())
+s = input().strip()
 
-# Read input data
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+# Initialize the minimum operations with the case of typing all characters one by one
+min_operations = n
 
-# Process input
-index = 0
-q = int(data[index])
-index += 1
-queries = []
+# Check for every possible prefix to see if we can copy and append
+for i in range(1, n):
+    # Check if the prefix s[:i] can be repeated to cover the next part of the string
+    if s[:i] == s[i:2*i] and 2*i <= n:
+        # We can type i characters, then perform a copy operation, then type the remaining characters
+        remaining = n - 2 * i
+        min_operations = min(min_operations, i + 1 + remaining)
 
-for _ in range(q):
-    n = int(data[index])
-    index += 1
-    boards = []
-    for __ in range(n):
-        a, b = map(int, data[index].split())
-        boards.append((a, b))
-        index += 1
-    queries.append((n, boards))
-
-# Get results
-results = min_cost_to_make_fence_great(q, queries)
-
-# Output results
-for result in results:
-    print(result)
+# Print the minimum number of operations
+print(min_operations)

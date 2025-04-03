@@ -1,36 +1,46 @@
-def process_test_cases(t, test_cases):
-    results = []
-    for n, a in test_cases:
-        count_0 = a.count(0)
-        count_1 = a.count(1)
+def get_hexagon_coordinates(n):
+    if n == 0:
+        return (0, 0)
 
-        if count_0 > count_1:
-            # Keep the majority of 0s or just enough 1s
-            required = count_0
-            if required % 2 != 0:
-                required -= 1
-            results.append(f"{required}")
-            results.append("0 " * required)
-        else:
-            # Keep the majority of 1s or just enough 0s
-            required = count_1
-            if required % 2 != 0:
-                required -= 1
-            results.append(f"{required}")
-            results.append("1 " * required)
+    # Determine the layer (ring) of the hexagonal spiral
+    layer = 0
+    while n > 3 * layer * (layer + 1):
+        layer += 1
 
-    return results
+    # Calculate the number of moves within the layer
+    moves_in_layer = n - 3 * layer * (layer - 1)
+    
+    # Determine the coordinates based on the position in the layer
+    x = layer
+    y = 0
 
-# Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    test_cases.append((n, a))
+    if moves_in_layer <= layer:
+        x -= moves_in_layer
+        return (x, y)
+    moves_in_layer -= layer
 
-# Process test cases
-results = process_test_cases(t, test_cases)
+    if moves_in_layer <= layer:
+        x = -layer
+        y += moves_in_layer
+        return (x, y)
+    moves_in_layer -= layer
 
-# Print results
-print("\n".join(results))
+    if moves_in_layer <= layer:
+        y = layer
+        x += moves_in_layer
+        return (x, y)
+    moves_in_layer -= layer
+
+    if moves_in_layer <= layer:
+        x += layer
+        y -= moves_in_layer
+        return (x, y)
+    moves_in_layer -= layer
+
+    x = layer - moves_in_layer
+    y = -layer
+    return (x, y)
+
+n = int(input().strip())
+x, y = get_hexagon_coordinates(n)
+print(x, y)

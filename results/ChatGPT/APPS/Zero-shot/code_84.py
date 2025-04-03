@@ -1,56 +1,22 @@
-def count_exterminable_subarrays(q, queries):
-    results = []
+def can_distribute(x, n, a, b):
+    plates_for_a = (a + x - 1) // x  # Ceil division for pieces of cake A
+    plates_for_b = (b + x - 1) // x  # Ceil division for pieces of cake B
+    return plates_for_a + plates_for_b <= n
+
+def max_min_pieces(n, a, b):
+    left, right = 1, max(a, b)
+    answer = 0
     
-    for n, a in queries:
-        count = 0
-        stack = []
-        last_pos = {}
-        
-        # To track the last position of each number
-        for i in range(n):
-            if a[i] in last_pos:
-                last_pos[a[i]].append(i)
-            else:
-                last_pos[a[i]] = [i]
-        
-        # To find exterminable subarrays
-        for i in range(n):
-            if not stack or stack[-1] != a[i]:
-                stack.append(a[i])
-            else:
-                stack.pop()
+    while left <= right:
+        mid = (left + right) // 2
+        if can_distribute(mid, n, a, b):
+            answer = mid  # mid is a valid minimum
+            left = mid + 1
+        else:
+            right = mid - 1
             
-            # Count exterminable subarrays ending at `i`
-            # If the stack is empty, it means we found an exterminable subarray
-            if not stack:
-                count += (i + 1)  # All starting positions from 0 to i are valid
-            
-            # Now we need to track the last seen position for current stack top
-            if stack:
-                last_value = stack[-1]
-                if last_value in last_pos:
-                    # We only consider the last position of the same value
-                    for pos in last_pos[last_value]:
-                        if pos < i:
-                            count += (pos + 1)
-                            break
-        
-        results.append(count)
-    
-    return results
+    return answer
 
-# Read input
-q = int(input().strip())
-queries = []
-
-for _ in range(q):
-    n = int(input().strip())
-    a = list(map(int, input().strip().split()))
-    queries.append((n, a))
-
-# Get results
-results = count_exterminable_subarrays(q, queries)
-
-# Output results
-for result in results:
-    print(result)
+# Input reading
+n, a, b = map(int, input().split())
+print(max_min_pieces(n, a, b))

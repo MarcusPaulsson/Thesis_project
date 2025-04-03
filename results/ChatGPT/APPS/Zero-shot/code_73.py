@@ -1,43 +1,16 @@
-def mex(arr):
-    present = [False] * (len(arr) + 1)
-    for num in arr:
-        if num <= len(arr):
-            present[num] = True
-    for i in range(len(arr) + 1):
-        if not present[i]:
-            return i
+from itertools import permutations
 
-def solve_case(n, a):
-    operations = []
-    
-    # Check if already non-decreasing
-    if all(a[i] <= a[i + 1] for i in range(n - 1)):
-        return 0, []
-    
-    for _ in range(2 * n):
-        current_mex = mex(a)
-        for i in range(n):
-            if a[i] > current_mex:
-                operations.append(i + 1)  # Store 1-based index
-                a[i] = current_mex
-                break
-        
-        if all(a[i] <= a[i + 1] for i in range(n - 1)):
-            break
-    
-    return len(operations), operations
+a = input().strip()
+b = input().strip()
 
-t = int(input())
-results = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    k, ops = solve_case(n, a)
-    results.append((k, ops))
+# Generate all unique permutations of digits of a
+permuted_numbers = sorted(set(int(''.join(p)) for p in permutations(a)), reverse=True)
 
-for k, ops in results:
-    print(k)
-    if ops:
-        print(" ".join(map(str, ops)))
-    else:
-        print()
+# Find the maximum permutation that is less than or equal to b
+max_number = None
+for num in permuted_numbers:
+    if num <= int(b):
+        max_number = num
+        break
+
+print(max_number)

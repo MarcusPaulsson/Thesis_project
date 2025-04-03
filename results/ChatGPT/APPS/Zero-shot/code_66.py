@@ -1,26 +1,14 @@
-def distribute_gifts(t, test_cases):
-    result = []
-    
-    for case in test_cases:
-        n, a, b = case
-        a.sort()
-        b.sort(reverse=True)
-        
-        result.append(' '.join(map(str, a)))
-        result.append(' '.join(map(str, b)))
-    
-    return '\n'.join(result)
+cnt1 = int(input())
+cnt2 = int(input())
+cnt3 = int(input())
+cnt4 = int(input())
 
-# Read input
-t = int(input())
-test_cases = []
+# Check balance conditions
+open_brackets = cnt1 + cnt2
+close_brackets = cnt3 + cnt4
 
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    b = list(map(int, input().split()))
-    test_cases.append((n, a, b))
-
-# Get the results and print them
-output = distribute_gifts(t, test_cases)
-print(output)
+# Regular bracket sequence condition
+if open_brackets >= close_brackets and cnt1 <= cnt3 + cnt2:
+    print(1)
+else:
+    print(0)

@@ -1,34 +1,37 @@
-def min_time_to_send_presents(t, test_cases):
-    results = []
-    for case in test_cases:
-        n, m, presents_stack, presents_to_send = case
-        position = {presents_stack[i]: i for i in range(n)}
-        
-        time_spent = 0
-        current_top = n
-        
-        for present in presents_to_send:
-            idx = position[present]
-            k = current_top - idx - 1  # Number of presents above the current present
-            time_spent += 2 * k + 1  # Time to take and return presents
-            current_top = idx  # Update the new top position
-        
-        results.append(time_spent)
-    
-    return results
+import sys
+import math
 
-# Read input
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n, m = map(int, input().split())
-    presents_stack = list(map(int, input().split()))
-    presents_to_send = list(map(int, input().split()))
-    test_cases.append((n, m, presents_stack, presents_to_send))
+def angle_between(v1, v2):
+    dot_product = v1[0] * v2[0] + v1[1] * v2[1]
+    magnitude_v1 = math.sqrt(v1[0] ** 2 + v1[1] ** 2)
+    magnitude_v2 = math.sqrt(v2[0] ** 2 + v2[1] ** 2)
+    cos_angle = dot_product / (magnitude_v1 * magnitude_v2)
+    return math.acos(cos_angle)
 
-# Get results
-results = min_time_to_send_presents(t, test_cases)
+def main():
+    n = int(sys.stdin.readline().strip())
+    vectors = []
 
-# Print results
-for result in results:
-    print(result)
+    for i in range(n):
+        x, y = map(int, sys.stdin.readline().strip().split())
+        angle = math.atan2(y, x)
+        vectors.append((angle, i + 1))
+
+    vectors.sort()
+
+    min_angle = float('inf')
+    idx_pair = (0, 0)
+
+    for i in range(n):
+        v1 = vectors[i]
+        v2 = vectors[(i + 1) % n]
+        current_angle = angle_between((math.cos(v1[0]), math.sin(v1[0])), (math.cos(v2[0]), math.sin(v2[0])))
+
+        if current_angle < min_angle:
+            min_angle = current_angle
+            idx_pair = (v1[1], v2[1])
+
+    print(idx_pair[0], idx_pair[1])
+
+if __name__ == "__main__":
+    main()

@@ -28,21 +28,24 @@ def load_ctransformers_model(model_repo, model_file, model_type="llama", gpu_lay
 
 
 def extract_apps_tasks(json_file_path):
-    """
-    Extracts 'question' fields from each line in a JSON file, handling potential errors.
-    """
     tasks = []
     try:
         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
-            for line in jsonfile:
-                line = line.strip()
-
-                try:
-                    data = json.loads(line)
-                    if "question" in data:
-                        tasks.append(data["question"])
-                except json.JSONDecodeError:
-                    print(f"Warning: Skipping invalid JSON line: {line[:50]}...")
+            try:
+                # Load the entire JSON array at once
+                data_array = json.load(jsonfile)
+                
+                # Process each item in the array
+                for item in data_array:
+                    if "question" in item:
+                        tasks.append(item["question"])
+                    else:
+                        print(f"Warning: Skipping item with missing 'question' field: {str(item)[:50]}...")
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+                return None
+                
+        print(f"Successfully extracted {len(tasks)} questions from {json_file_path}")
         return tasks
     except FileNotFoundError:
         print(f"Error: JSON file '{json_file_path}' not found.")

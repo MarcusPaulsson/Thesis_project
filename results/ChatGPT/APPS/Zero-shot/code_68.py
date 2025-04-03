@@ -1,26 +1,20 @@
-def max_operations(t, test_cases):
-    results = []
-    for n, s in test_cases:
-        count = 0
-        last_char = ''
-        for char in s:
-            if char != last_char:
-                count += 1
-                last_char = char
-        results.append(count)
-    return results
+def get_lexicographically_minimal_string(s):
+    t = []
+    u = []
+    
+    for char in s:
+        t.append(char)
+        while t:
+            if not u or t[-1] <= u[-1]:
+                u.append(t.pop())
+            else:
+                break
+    
+    return ''.join(u)
 
-# Input handling
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    s = input().strip()
-    test_cases.append((n, s))
-
-# Get results
-results = max_operations(t, test_cases)
-
-# Output results
-for result in results:
-    print(result)
+# Read input
+s = input().strip()
+# Get the resulting string u
+result = get_lexicographically_minimal_string(s)
+# Print the result
+print(result)

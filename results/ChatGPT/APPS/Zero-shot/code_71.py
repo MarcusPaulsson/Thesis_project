@@ -1,25 +1,15 @@
-def min_coins_to_zero(test_cases):
-    results = []
-    for n, a in test_cases:
-        coins = 0
-        balance = 0
-        
-        for i in range(n):
-            balance += a[i]
-            if balance < 0:
-                coins += -balance
-                balance = 0
-        
-        results.append(coins)
-    return results
+n = int(input())
+a = list(map(int, input().split()))
 
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n = int(input())
-    a = list(map(int, input().split()))
-    test_cases.append((n, a))
+# Find the positions of the minimum (1) and maximum (n) elements
+min_pos = a.index(1)
+max_pos = a.index(n)
 
-results = min_coins_to_zero(test_cases)
-for result in results:
-    print(result)
+# Calculate the current distance
+current_distance = abs(min_pos - max_pos)
+
+# Calculate the possible maximum distances after one swap
+max_distance = max(abs(min_pos - 0), abs(min_pos - (n - 1)), abs(max_pos - 0), abs(max_pos - (n - 1)))
+
+# The result is the maximum of the current distance and the possible maximum after one swap
+print(max(max_distance, current_distance))

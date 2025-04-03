@@ -1,52 +1,34 @@
-def min_cost_to_detonate(t, test_cases):
+def check_records(test_cases):
     results = []
-    
     for case in test_cases:
-        a, b, s = case
-        n = len(s)
-        
-        # Find all segments of mines
-        segments = s.split('0')
-        segments = [seg for seg in segments if seg]  # Keep only non-empty segments
-        
-        if not segments:
-            results.append(0)
-            continue
-        
-        total_cost = 0
-        
-        # Activate the first segment
-        total_cost += a
-        
-        # For each subsequent segment, we have two choices:
-        # 1. Activate it (cost a)
-        # 2. Place a mine in between (cost b) + activate it (cost a)
-        
-        for seg in segments[1:]:
-            # If we place a mine and then activate, total cost is b + a
-            # If we just activate, total cost is a
-            total_cost += min(a, b + a)
-        
-        results.append(total_cost)
+        n, stats = case
+        correct = True
+        for i in range(1, n):
+            p_prev, c_prev = stats[i - 1]
+            p_curr, c_curr = stats[i]
+
+            if p_curr < p_prev or c_curr < c_prev or c_curr > p_curr:
+                correct = False
+                break
+            
+            # Check if the increase in clears is valid
+            if c_curr - c_prev > p_curr - p_prev:
+                correct = False
+                break
+            
+        results.append("YES" if correct else "NO")
     
     return results
 
-# Input reading
-import sys
-input = sys.stdin.read
-data = input().splitlines()
-
-t = int(data[0])
+# Read input
+T = int(input())
 test_cases = []
+for _ in range(T):
+    n = int(input())
+    stats = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, stats))
 
-for i in range(1, 2 * t, 2):
-    a, b = map(int, data[i].split())
-    s = data[i + 1]
-    test_cases.append((a, b, s))
-
-# Get results
-results = min_cost_to_detonate(t, test_cases)
-
-# Print results
+# Check records for each test case and print results
+results = check_records(test_cases)
 for result in results:
     print(result)

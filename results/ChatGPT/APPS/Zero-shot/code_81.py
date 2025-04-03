@@ -1,28 +1,42 @@
-def can_make_equal(t, test_cases):
-    results = []
-    for i in range(t):
-        a, b, c = test_cases[i]
-        n = len(a)
-        possible = True
-        
-        for j in range(n):
-            if a[j] != b[j]:
-                # We need to be able to transform either a[j] or b[j] into the other
-                if not ((c[j] == a[j] or c[j] == b[j])):
-                    possible = False
-                    break
-        
-        results.append("YES" if possible else "NO")
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def birthday_paradox(n, k):
+    days = 2 ** n
     
-    return results
+    if k > days:
+        return 1, 1  # Guaranteed collision
+
+    # Calculate the probability of no collisions
+    prob_no_collision_numerator = days
+    prob_no_collision_denominator = days
+
+    for i in range(1, k):
+        prob_no_collision_numerator *= (days - i)
+        prob_no_collision_denominator *= days
+
+    # Probability of at least one collision
+    A = prob_no_collision_denominator - prob_no_collision_numerator
+    B = prob_no_collision_denominator
+
+    # Simplify A/B
+    common_divisor = gcd(A, B)
+    A //= common_divisor
+    B //= common_divisor
+
+    # Modulo
+    MOD = 10**6 + 3
+    A %= MOD
+    B %= MOD
+
+    # Ensure A and B are coprime before modulo
+    assert gcd(A, B) == 1
+
+    return A, B
 
 # Input reading
-t = int(input())
-test_cases = [tuple(input().strip() for _ in range(3)) for _ in range(t)]
-
-# Get results
-results = can_make_equal(t, test_cases)
-
-# Print output
-for result in results:
-    print(result)
+n, k = map(int, input().strip().split())
+A, B = birthday_paradox(n, k)
+print(A, B)

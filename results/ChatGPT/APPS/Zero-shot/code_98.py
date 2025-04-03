@@ -1,13 +1,23 @@
-def max_perfect_teams(c, m, x):
-    # The maximum number of teams we can form is limited by:
-    # 1. The minimum number of coders and mathematicians (at least one of each is needed)
-    # 2. The total number of students divided by 3 (since each team has 3 members)
-    return min(c, m, (c + m + x) // 3)
+def kth_largest_in_multiplication_table(n, m, k):
+    low, high = 1, n * m
 
-q = int(input())
-results = []
-for _ in range(q):
-    c, m, x = map(int, input().split())
-    results.append(max_perfect_teams(c, m, x))
+    while low < high:
+        mid = (low + high) // 2
+        count = 0
 
-print('\n'.join(map(str, results)))
+        for i in range(1, n + 1):
+            count += min(mid // i, m)
+
+        if count < k:
+            low = mid + 1
+        else:
+            high = mid
+
+    return low
+
+# Read input
+n, m, k = map(int, input().split())
+# Get the k-th largest number
+result = kth_largest_in_multiplication_table(n, m, k)
+# Print the result
+print(result)

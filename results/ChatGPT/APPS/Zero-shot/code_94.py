@@ -1,42 +1,30 @@
-def minimize_f(t, test_cases):
-    results = []
+def minimal_time_to_post_office(d, k, a, b, t):
+    # If the car can drive the entire distance without breaking down
+    if d <= k:
+        return d * a
     
-    for n, T, a in test_cases:
-        count = {}
-        colors = [0] * n
-        
-        for i in range(n):
-            count[a[i]] = count.get(a[i], 0) + 1
-        
-        for i in range(n):
-            complement = T - a[i]
-            if complement in count:
-                if complement == a[i]:
-                    # If the element is its own complement, we should alternate colors
-                    colors[i] = 1 if count[a[i]] % 2 == 0 else 0
-                else:
-                    # We can assign colors based on the counts
-                    if count[a[i]] >= count[complement]:
-                        colors[i] = 0  # Paint the more frequent color to white
-                    else:
-                        colors[i] = 1  # Paint the less frequent color to black
-            
-        results.append(' '.join(map(str, colors)))
+    # Time if only walking
+    time_if_walking = d * b
     
-    return results
+    # Time if using the car
+    full_segments = d // k
+    remaining_distance = d % k
+    
+    # Time spent driving the full segments
+    time_using_car = full_segments * (k * a + t)
+    
+    # Time spent driving the remaining distance (if any)
+    if remaining_distance > 0:
+        time_using_car += remaining_distance * a
+    
+    # Adjust for the last segment, no repair after the last one
+    if full_segments > 0:
+        time_using_car -= t
+    
+    # Compare both strategies
+    return min(time_if_walking, time_using_car)
 
-# Input reading
-t = int(input())
-test_cases = []
-
-for _ in range(t):
-    n, T = map(int, input().split())
-    a = list(map(int, input().split()))
-    test_cases.append((n, T, a))
-
-# Get results
-results = minimize_f(t, test_cases)
-
-# Output results
-for result in results:
-    print(result)
+# Read input
+d, k, a, b, t = map(int, input().split())
+# Calculate and print the minimal time
+print(minimal_time_to_post_office(d, k, a, b, t))

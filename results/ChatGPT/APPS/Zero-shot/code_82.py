@@ -1,22 +1,30 @@
-def find_different_permutation(t, cases):
-    results = []
-    for n, p in cases:
-        # A simple strategy is to rotate the permutation
-        p_prime = p[1:] + p[:1]
-        results.append(p_prime)
-    return results
+n = int(input())
+current_distance = 0  # Distance from the North Pole
 
-# Reading input
-t = int(input())
-cases = []
-for _ in range(t):
-    n = int(input())
-    p = list(map(int, input().split()))
-    cases.append((n, p))
+for _ in range(n):
+    t, direction = input().split()
+    t = int(t)
 
-# Finding different permutations
-results = find_different_permutation(t, cases)
+    if current_distance == 0 and direction != "South":
+        print("NO")
+        exit()
+    if current_distance == 20000 and direction != "North":
+        print("NO")
+        exit()
 
-# Outputting results
-for result in results:
-    print(' '.join(map(str, result)))
+    if direction == "North":
+        current_distance -= t
+    elif direction == "South":
+        current_distance += t
+    elif direction in ["West", "East"]:
+        # Moving west or east does not change the distance from the poles
+        continue
+
+    if current_distance < 0 or current_distance > 20000:
+        print("NO")
+        exit()
+
+if current_distance != 0:
+    print("NO")
+else:
+    print("YES")

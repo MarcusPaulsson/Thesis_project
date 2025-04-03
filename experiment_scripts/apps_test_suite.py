@@ -4,7 +4,6 @@ import subprocess
 import sys
 import tempfile
 import shutil
-import uuid
 
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(upper_dir)
@@ -23,14 +22,14 @@ chatGPT_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatG
 
 # Define a list of folder paths and their corresponding names
 folder_paths = {
-    "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
-    "Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
+   # "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
+    #"Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
     "Gemini Student-role": Gemini_student_role_apps_folder,
-    "Gemini Expert-role": Gemini_expert_role_apps_folder,
-    "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
-    "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
-    "ChatGPT Student-role": chatGPT_student_role_apps_folder,
-    "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
+   # "Gemini Expert-role": Gemini_expert_role_apps_folder,
+   # "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
+  #  "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
+   # "ChatGPT Student-role": chatGPT_student_role_apps_folder,
+    #"ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
 }
 
 test_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
@@ -43,29 +42,13 @@ def load_apps_tests(json_file_path):
         print(f"Error: {e}")
         return None
 
-def create_temp_directory():
-    """Create a unique temporary directory."""
-    unique_dir = f"temp_{uuid.uuid4().hex}"
-    temp_dir = os.path.abspath(unique_dir)
-    os.makedirs(temp_dir, exist_ok=True)
-    return temp_dir
-
-def cleanup_temp_directory(temp_dir):
-    """Clean up the temporary directory."""
-    if os.path.exists(temp_dir):
-        try:
-            shutil.rmtree(temp_dir)
-            print(f"Successfully removed temporary directory: {temp_dir}")
-        except Exception as e:
-            print(f"Error cleaning up temporary directory {temp_dir}: {e}")
-
 def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
     if not tasks:
         return {"passed": 0, "total": 0}
 
     passed_tests = 0
-    total_tests = 100
-    for i, task in enumerate(tasks):
+    total_tests = min(30, len(tasks))
+    for i, task in enumerate(tasks[:30]):
         file_path = os.path.join(folder_path, f"code_{i}.py")
         print(file_path)
         if not os.path.exists(file_path):
@@ -121,22 +104,12 @@ tasks = load_apps_tests(test_data_path)
 
 if tasks:
     results = {}
+    temp_dir = "tempfolder"
+    os.makedirs(temp_dir, exist_ok=True)
 
     for folder_name, folder_path in folder_paths.items():
-        print(f"\n{'='*50}")
-        print(f"--- Running {folder_name} Tests ---")
-        print(f"{'='*50}")
-        
-        # Create a new temporary directory for each folder
-        temp_dir = create_temp_directory()
-        print(f"Created temporary directory: {temp_dir}")
-        
-        # Run tests for this folder
+        print(f"\n--- Running {folder_name} Tests ---")
         results[folder_name] = run_tests_on_code_snippets(tasks, folder_path, temp_dir)
-        
-        # Clean up after each folder's tests
-        cleanup_temp_directory(temp_dir)
-        print(f"{'='*50}\n")
 
     print("\n--- Overall Test Summary ---")
     for folder, result in results.items():
@@ -145,3 +118,5 @@ if tasks:
     total_passed = sum(result['passed'] for result in results.values())
     total_all = sum(result['total'] for result in results.values())
     print(f"\nTotal Passed: {total_passed} of {total_all}")
+
+    shutil.rmtree(temp_dir)
