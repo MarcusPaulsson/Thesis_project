@@ -48,7 +48,7 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
 
     passed_tests = 0
     total_tests = min(30, len(tasks))
-    for i, task in enumerate(tasks[:30]):
+    for i, task in enumerate(tasks[:100]):
         file_path = os.path.join(folder_path, f"code_{i}.py")
         print(file_path)
         if not os.path.exists(file_path):
