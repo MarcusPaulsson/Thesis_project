@@ -20,6 +20,9 @@ chatGPT_zero_shot_CoT_apps_folder = os.path.abspath(os.path.join('results', 'Cha
 chatGPT_student_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Student-role'))
 chatGPT_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Expert-role'))
 
+# WizardCoder
+wizardCoder_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'WizardCoder', 'APPS', 'Zero-shot'))
+
 # Define a list of folder paths and their corresponding names
 folder_paths = {
     "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
@@ -30,6 +33,7 @@ folder_paths = {
     "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
     "ChatGPT Student-role": chatGPT_student_role_apps_folder,
     "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
+    "WizardCoder Zero-shot":wizardCoder_zero_shot_apps_folder
 }
 
 test_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
