@@ -3,3 +3,11 @@ config.py
 env/
 __pycache__/
 *.pyc
+write_test.csv
+test.csv
+test_process.csv
+read_test_process.csv
+cookies.json
+new_zip_file.zip
+processed.xml
+test_database.test_database
