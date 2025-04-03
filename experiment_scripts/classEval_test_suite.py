@@ -38,13 +38,13 @@ def load_classEval_tests(test_data_path):
 def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
     """Runs the tests on the generated code snippets in the specified folder."""
     if tasks is None:
-        return {"passed": 0, "total": 0}
+        return {"passed": 0, "total": 0, "passed_ids": []}
 
     passed_tests = 0
-    total_tests = 30
+    total_tests = len(tasks)
+    passed_ids = []
     for i, task in enumerate(tasks):
-        if i == 29:
-            break
+       
         file_path = os.path.join(folder_path, f"code_{i}.py")
 
         if os.path.exists(file_path):
@@ -63,6 +63,7 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
                 if process.returncode == 0:
                     print(f"Test {i + 1} passed")
                     passed_tests += 1
+                    passed_ids.append(i) # Use i as ID
                 else:
                     print(f"Test {i + 1} failed")
 
@@ -79,7 +80,7 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
     print(f"Total tests: {total_tests}")
     print(f"Passed tests: {passed_tests}")
     print(f"Failed tests: {total_tests - passed_tests}")
-    return {"passed": passed_tests, "total": total_tests}
+    return {"passed": passed_tests, "total": total_tests, "passed_ids": passed_ids}
 
 tasks = load_classEval_tests(test_data_path)
 
@@ -95,12 +96,24 @@ if tasks:
 
     # Print overall summary
     print("\n--- Overall Test Summary ---")
+    total_passed = 0
+    total_all = 0
+    all_passed_ids = {} # Change to dict for id count
     for folder, result in results.items():
         print(f"{folder}: Passed {result['passed']} of {result['total']}")
+        total_passed += result['passed']
+        total_all += result['total']
+        for id in result['passed_ids']:
+            if id in all_passed_ids:
+                all_passed_ids[id] += 1
+            else:
+                all_passed_ids[id] = 1
 
-    total_passed = sum(result['passed'] for result in results.values())
-    total_all = sum(result['total'] for result in results.values())
     print(f"\nTotal Passed: {total_passed} of {total_all}")
+
+    # Find IDs that passed in all folders
+    passed_in_all = [id for id, count in all_passed_ids.items() if count == len(folder_paths)]
+    print(f"\nPassed in all folders: {sorted(passed_in_all)}")
 
     # Cleanup temp folder
     shutil.rmtree(temp_dir)
