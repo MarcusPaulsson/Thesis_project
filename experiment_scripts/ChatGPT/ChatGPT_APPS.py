@@ -63,13 +63,14 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 30  # Adjust to the number of tasks you want to run.
+    end_index = 1  # Adjust to the number of tasks you want to run.
 
     results = []
     for i in range(start_index, end_index):
         task_prompt = tasks[i]
         print(f"Processing task {i}...")
         assistant_response = run_task_with_api(task_prompt)
+        
         results.append({"task_index": i, "assistant_response": assistant_response})
 
     # Save results to JSON and extract Python code

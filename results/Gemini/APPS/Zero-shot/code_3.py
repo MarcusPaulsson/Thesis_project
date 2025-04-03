@@ -1,21 +1,36 @@
 def solve():
-    n, k = map(int, input().split())
+    n = int(input())
     a = list(map(int, input().split()))
-    
-    total_sum = sum(a)
-    
-    if total_sum == 0:
-        print(0)
-        return
-    
-    a.sort()
-    
-    transfer_sum = 0
-    for i in range(n - 1, n - 1 - k, -1):
-        transfer_sum += a[i]
-        
-    print(transfer_sum)
 
-t = int(input())
-for _ in range(t):
-    solve()
+    def find_longest_increasing_subsequence(arr):
+        best_len = 0
+        best_moves = ""
+
+        def backtrack(current_seq, remaining_arr, moves):
+            nonlocal best_len, best_moves
+
+            if len(current_seq) > best_len:
+                best_len = len(current_seq)
+                best_moves = moves
+
+            if not remaining_arr:
+                return
+
+            last_val = current_seq[-1] if current_seq else 0
+
+            if remaining_arr[0] > last_val:
+                backtrack(current_seq + [remaining_arr[0]], remaining_arr[1:], moves + "L")
+
+            if len(remaining_arr) > 1 and remaining_arr[-1] > last_val and remaining_arr[0] != remaining_arr[-1]:
+                backtrack(current_seq + [remaining_arr[-1]], remaining_arr[:-1], moves + "R")
+            elif len(remaining_arr) == 1 and remaining_arr[-1] > last_val:
+                backtrack(current_seq + [remaining_arr[-1]], remaining_arr[:-1], moves + "R")
+
+        backtrack([], a, "")
+        return best_len, best_moves
+
+    length, moves = find_longest_increasing_subsequence(a)
+    print(length)
+    print(moves)
+
+solve()

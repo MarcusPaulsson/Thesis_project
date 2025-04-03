@@ -1,32 +1,26 @@
-def is_beautiful_permutation(t, test_cases):
-    results = []
-    for n, p in test_cases:
-        beautiful = ['0'] * n
-        max_value = 0
-        for i in range(n):
-            max_value = max(max_value, p[i])
-            if max_value == i + 1:
-                beautiful[i] = '1'
-        results.append(''.join(beautiful))
-    return results
+n = int(input())
+a = list(map(int, input().split()))
 
-# Read input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+# Get the minimum and maximum values in the array
+min_a = min(a)
+max_a = max(a)
 
-t = int(data[0])
-test_cases = []
-index = 1
-for _ in range(t):
-    n = int(data[index])
-    p = list(map(int, data[index + 1].split()))
-    test_cases.append((n, p))
-    index += 2
-
-# Get results
-results = is_beautiful_permutation(t, test_cases)
-
-# Print results
-for result in results:
-    print(result)
+# If all values are already equal, D can be 0
+if min_a == max_a:
+    print(0)
+else:
+    # Calculate the required D
+    D = (max_a - min_a) // 2
+    
+    # Check if D can make all elements equal
+    if (max_a - min_a) % 2 == 0:
+        # Check if we can choose D such that all values can be made equal
+        target1 = min_a + D
+        target2 = max_a - D
+        
+        if target1 == target2:
+            print(D)
+        else:
+            print(-1)
+    else:
+        print(-1)

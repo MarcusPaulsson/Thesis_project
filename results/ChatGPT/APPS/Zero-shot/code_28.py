@@ -1,54 +1,52 @@
-def can_form_abacaba(s, n):
-    target = "abacaba"
-    occurrences = []
+def count_regular_sequences(n, s):
+    MOD = 1000000007
     
-    # Check for potential placements of "abacaba"
-    for i in range(n - 6):
-        substring = s[i:i + 7]
-        if all(ss == tt or ss == '?' for ss, tt in zip(substring, target)):
-            occurrences.append(i)
-    
-    # If there are multiple occurrences, we can't have exactly one
-    if len(occurrences) > 1:
-        return "No"
-    
-    # If no occurrences, we can replace a '?' with "abacaba"
-    if len(occurrences) == 0:
-        # Try to place "abacaba" at every possible position
-        for i in range(n - 6):
-            new_s = list(s)
-            for j in range(7):
-                new_s[i + j] = target[j]
-            # Check if this creates exactly one occurrence
-            if new_s.count('a') >= 3 and new_s.count('b') >= 1 and new_s.count('c') >= 1:
-                new_s = ''.join(new_s)
-                # Fill remaining '?' with 'z' or any other letter
-                new_s = new_s.replace('?', 'z')
-                if new_s.count('abacaba') == 1:
-                    return f"Yes\n{new_s}"
-        return "No"
+    # Precompute the Catalan numbers up to 2n
+    catalan = [0] * (n + 1)
+    catalan[0] = 1
+    for i in range(1, n + 1):
+        catalan[i] = (catalan[i - 1] * (2 * (2 * i - 1)) % MOD * pow(i + 1, MOD - 2, MOD)) % MOD
 
-    # If exactly one occurrence is found, we need to ensure the rest are handled
-    index = occurrences[0]
-    new_s = list(s)
-    for j in range(7):
-        new_s[index + j] = target[j]
-    new_s = ''.join(new_s)
-    
-    # Replace remaining '?' with 'z' or any other letter
-    new_s = new_s.replace('?', 'z')
-    
-    # Verify that "abacaba" occurs exactly once
-    if new_s.count('abacaba') == 1:
-        return f"Yes\n{new_s}"
-    else:
-        return "No"
+    # Check if s is a valid bracket sequence and compute the balance
+    balance = 0
+    min_balance = 0
+    for char in s:
+        if char == '(':
+            balance += 1
+        else:
+            balance -= 1
+        min_balance = min(min_balance, balance)
 
-T = int(input())
-results = []
-for _ in range(T):
-    n = int(input().strip())
-    s = input().strip()
-    results.append(can_form_abacaba(s, n))
+    # If balance is not zero or min_balance is negative, return 0
+    if balance != 0 or min_balance < 0:
+        return 0
 
-print("\n".join(results))
+    total_length = 2 * n
+    m = len(s)
+
+    # The number of opening and closing brackets we can still use
+    open_brackets_needed = n - (s.count('('))
+    close_brackets_needed = n - (s.count(')'))
+
+    # If we can't fill the brackets needed
+    if open_brackets_needed < 0 or close_brackets_needed < 0:
+        return 0
+
+    # Count valid sequences before and after the substring s
+    valid_sequences = 0
+    for i in range(open_brackets_needed + 1):
+        if i > close_brackets_needed:
+            continue
+        valid_before = catalan[open_brackets_needed]
+        valid_after = catalan[close_brackets_needed]
+
+        valid_sequences = (valid_sequences + valid_before * valid_after) % MOD
+
+    return valid_sequences
+
+# Read input
+n = int(input())
+s = input().strip()
+
+# Output the result
+print(count_regular_sequences(n, s))

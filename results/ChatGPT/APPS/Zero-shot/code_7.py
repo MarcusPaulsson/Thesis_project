@@ -1,47 +1,19 @@
-def minimum_coins_to_win(t, test_cases):
-    results = []
-    for case in test_cases:
-        n = case[0]
-        voters = case[1]
-        
-        # Sort voters by the number of required votes to get their vote
-        voters.sort(key=lambda x: (x[0], x[1]))
-        
-        # Initialize a list to track how many voters can be convinced
-        dp = [float('inf')] * (n + 1)
-        dp[0] = 0  # No cost to convince 0 voters
-        
-        for m, p in voters:
-            # We go backwards to avoid overwriting results of the current iteration
-            for j in range(n, m, -1):
-                dp[j] = min(dp[j], dp[j - m] + p)
-        
-        # The result for this test case is the minimum cost to convince n voters
-        results.append(min(dp[n], sum(p for _, p in voters)))
-    
-    return results
+n = int(input().strip())
+f = list(map(int, input().strip().split()))
 
-# Reading input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+# Find the friends who want to give gifts (f_i != 0) and those who have not decided (f_i == 0)
+givers = set(range(1, n + 1)) - set(f)
+unknowns = [i + 1 for i in range(n) if f[i] == 0]
 
-t = int(data[0])
-index = 1
-test_cases = []
+# Create a mapping of who should give gifts to whom
+result = f[:]
 
-for _ in range(t):
-    n = int(data[index])
-    index += 1
-    voters = []
-    for _ in range(n):
-        m, p = map(int, data[index].split())
-        voters.append((m, p))
-        index += 1
-    test_cases.append((n, voters))
+# We need to ensure that we can fill in the zeros without giving a gift to oneself
+for u in unknowns:
+    for g in givers:
+        if g != u:
+            result[u - 1] = g
+            givers.remove(g)
+            break
 
-results = minimum_coins_to_win(t, test_cases)
-
-# Printing output
-for result in results:
-    print(result)
+print(' '.join(map(str, result)))

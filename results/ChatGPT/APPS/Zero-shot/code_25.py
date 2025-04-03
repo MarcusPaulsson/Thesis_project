@@ -1,66 +1,48 @@
-def solve():
-    import sys
-    from collections import defaultdict
+def max_days(a, b, c):
+    # Define the food schedule for the week
+    week_food = ['F', 'R', 'C', 'F', 'C', 'R', 'F']
+    
+    # Count the number of days for each food type in a week
+    week_count = {
+        'F': week_food.count('F'),
+        'R': week_food.count('R'),
+        'C': week_food.count('C')
+    }
+    
+    # Compute maximum full weeks that can be sustained
+    full_weeks = min(a // week_count['F'], b // week_count['R'], c // week_count['C'])
+    
+    # Calculate remaining rations after consuming full weeks
+    a -= full_weeks * week_count['F']
+    b -= full_weeks * week_count['R']
+    c -= full_weeks * week_count['C']
+    
+    # Start counting days from each day of the week
+    max_days = full_weeks * 7
+    for start_day in range(7):
+        current_a, current_b, current_c = a, b, c
+        days = 0
+        
+        for i in range(7):  # Check up to 7 days
+            current_day = (start_day + i) % 7
+            food_type = week_food[current_day]
+            
+            if food_type == 'F' and current_a > 0:
+                current_a -= 1
+            elif food_type == 'R' and current_b > 0:
+                current_b -= 1
+            elif food_type == 'C' and current_c > 0:
+                current_c -= 1
+            else:
+                break  # Stop if no food is available
+            
+            days += 1
+        
+        max_days = max(max_days, full_weeks * 7 + days)
+    
+    return max_days
 
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    index = 0
-    t = int(data[index])
-    index += 1
-    results = []
-    
-    for _ in range(t):
-        n = int(data[index])
-        index += 1
-        
-        triangles = []
-        adjacency = defaultdict(int)
-        
-        for i in range(n - 2):
-            a, b, c = map(int, data[index].split())
-            triangles.append((a, b, c))
-            adjacency[a] += 1
-            adjacency[b] += 1
-            adjacency[c] += 1
-            index += 1
-        
-        # Find the vertex that appears the most
-        max_vertex = max(adjacency, key=adjacency.get)
-        
-        # Now we find the order of vertices
-        p = []
-        used = set()
-        current = max_vertex
-        
-        # Start the order with the max vertex
-        p.append(current)
-        used.add(current)
-        
-        # Next we need to find neighbors in the triangles
-        for _ in range(n - 1):
-            for a, b, c in triangles:
-                if current in (a, b, c):
-                    for neighbor in (a, b, c):
-                        if neighbor != current and neighbor not in used:
-                            p.append(neighbor)
-                            used.add(neighbor)
-                            current = neighbor
-                            break
-                    else:
-                        continue
-                    break
-        
-        # The order of cutting
-        q = []
-        for i in range(n - 2):
-            q.append(i + 1)
-        
-        results.append(' '.join(map(str, p)))
-        results.append(' '.join(map(str, q)))
-    
-    print('\n'.join(results))
-
-# Call solve() when the script runs
-if __name__ == "__main__":
-    solve()
+# Read input
+a, b, c = map(int, input().split())
+# Output the result
+print(max_days(a, b, c))

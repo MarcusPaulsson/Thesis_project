@@ -1,37 +1,28 @@
-def max_difference(t, test_cases):
-    results = []
-    for case in test_cases:
-        n, k = case[0], case[1]
-        a = case[2]
-        
-        # If all barrels are empty, the difference is 0
-        if all(amount == 0 for amount in a):
-            results.append(0)
-            continue
-        
-        # Sort the array to find the maximum and minimum easily
-        a.sort()
-        
-        # The maximum possible amount after k pours will be the sum of the largest k+1 barrels
-        max_water = sum(a[-(k + 1):])
-        
-        # The minimum possible amount after k pours will be the sum of the smallest barrel
-        min_water = a[0]
-        
-        # Calculate the difference
-        results.append(max_water - min_water)
+def longest_increasing_sequence(n, a):
+    left, right = 0, n - 1
+    last_taken = -1
+    result = []
+    moves = []
     
-    return results
+    while left <= right:
+        if a[left] > last_taken and (a[right] <= last_taken or a[left] < a[right]):
+            result.append(a[left])
+            moves.append('L')
+            last_taken = a[left]
+            left += 1
+        elif a[right] > last_taken:
+            result.append(a[right])
+            moves.append('R')
+            last_taken = a[right]
+            right -= 1
+        else:
+            break
+    
+    print(len(result))
+    print(''.join(moves))
 
 # Input reading
-t = int(input())
-test_cases = []
-for _ in range(t):
-    n, k = map(int, input().split())
-    a = list(map(int, input().split()))
-    test_cases.append((n, k, a))
+n = int(input())
+a = list(map(int, input().split()))
 
-# Get results and print them
-results = max_difference(t, test_cases)
-for result in results:
-    print(result)
+longest_increasing_sequence(n, a)

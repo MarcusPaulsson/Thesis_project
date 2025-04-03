@@ -1,40 +1,76 @@
-def min_subscriptions(t, test_cases):
-    results = []
-    for n, k, d, shows in test_cases:
-        min_subs = float('inf')
-        show_count = {}
-        left = 0
-        
-        for right in range(n):
-            show_count[shows[right]] = show_count.get(shows[right], 0) + 1
-            
-            if right - left + 1 > d:
-                show_count[shows[left]] -= 1
-                if show_count[shows[left]] == 0:
-                    del show_count[shows[left]]
-                left += 1
-            
-            if right - left + 1 == d:
-                min_subs = min(min_subs, len(show_count))
-
-        results.append(min_subs)
-
-    return results
-
-# Input reading
+from collections import defaultdict, deque
 import sys
-input = sys.stdin.read
-data = input().splitlines()
 
-t = int(data[0])
-test_cases = []
-index = 1
-for _ in range(t):
-    n, k, d = map(int, data[index].split())
-    shows = list(map(int, data[index + 1].split()))
-    test_cases.append((n, k, d, shows))
-    index += 2
+input = sys.stdin.readline
 
-# Get results and print
-results = min_subscriptions(t, test_cases)
-print("\n".join(map(str, results)))
+def find_spanning_tree(n, m, D, edges):
+    graph = defaultdict(list)
+    
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
+    
+    if len(graph[1]) < D:  # First vertex cannot have degree D
+        return "NO"
+    
+    # Start building the spanning tree
+    spanning_tree = []
+    visited = [False] * (n + 1)
+    
+    def bfs(start):
+        queue = deque([start])
+        visited[start] = True
+        degree_count = 0
+        
+        while queue:
+            if degree_count == D:
+                break
+            current = queue.popleft()
+            connections = 0
+            
+            for neighbor in graph[current]:
+                if not visited[neighbor]:
+                    if current == 1 and connections < D:
+                        spanning_tree.append((current, neighbor))
+                        connections += 1
+                        visited[neighbor] = True
+                        queue.append(neighbor)
+                    elif current != 1:
+                        spanning_tree.append((current, neighbor))
+                        visited[neighbor] = True
+                        queue.append(neighbor)
+
+            if current == 1:
+                degree_count += connections
+        
+        return degree_count
+    
+    if bfs(1) < D:  # If we couldn't satisfy the degree requirement
+        return "NO"
+    
+    # Ensure we have n-1 edges
+    if len(spanning_tree) < n - 1:
+        remaining_edges = []
+        for u in range(1, n + 1):
+            for v in graph[u]:
+                if u < v and (u, v) not in spanning_tree and (v, u) not in spanning_tree:
+                    remaining_edges.append((u, v))
+        
+        for u, v in remaining_edges:
+            if len(spanning_tree) == n - 1:
+                break
+            spanning_tree.append((u, v))
+
+    if len(spanning_tree) != n - 1:
+        return "NO"
+    
+    result = ["YES"]
+    result.extend(f"{u} {v}" for u, v in spanning_tree)
+    return "\n".join(result)
+
+# Read input
+n, m, D = map(int, input().split())
+edges = [tuple(map(int, input().split())) for _ in range(m)]
+
+# Output result
+print(find_spanning_tree(n, m, D, edges))

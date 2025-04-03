@@ -1,28 +1,19 @@
-def min_days_to_repair(T, test_cases):
-    results = []
-    for n, g, b in test_cases:
-        required_good = (n + 1) // 2  # At least half should be high quality
-        full_cycles = required_good // g
-        remaining_good = required_good % g
-        
-        if remaining_good == 0:
-            total_days = full_cycles * (g + b) - b
-        else:
-            total_days = full_cycles * (g + b) + remaining_good
-            
-        total_days = max(total_days, n)  # Ensure total days is at least n
-        
-        results.append(total_days)
-    
-    return results
+def min_instability(n, a):
+    if n == 2:
+        return 0  # If only 2 elements, removing one will always lead to 0 instability
+
+    a.sort()  # Sort the array to easily find max and min after removal
+
+    # Remove the first element (minimum) or the last element (maximum)
+    instability_remove_min = a[-1] - a[1]  # Remove the smallest element
+    instability_remove_max = a[-2] - a[0]  # Remove the largest element
+
+    # Return the minimum of the two calculated instabilities
+    return min(instability_remove_min, instability_remove_max)
 
 # Read input
-T = int(input())
-test_cases = [tuple(map(int, input().split())) for _ in range(T)]
+n = int(input())
+a = list(map(int, input().split()))
 
-# Get results
-results = min_days_to_repair(T, test_cases)
-
-# Print results
-for result in results:
-    print(result)
+# Output the result
+print(min_instability(n, a))

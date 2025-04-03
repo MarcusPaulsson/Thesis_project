@@ -1,43 +1,32 @@
 def solve():
     n = int(input())
-    p = list(map(int, input().split()))
-    
-    result = ""
-    for m in range(1, n + 1):
-        is_beautiful = False
-        for l in range(n):
-            for r in range(l, n):
-                sub_array = p[l:r+1]
-                if len(sub_array) == m:
-                    nums = sorted(sub_array)
-                    expected = list(range(1, m + 1))
-                    if nums == expected:
-                        is_beautiful = True
-                        break
-                elif len(sub_array) > m:
-                    nums = sorted(sub_array)
-                    expected = list(range(1,m+1))
-                    
-                    
-                    
-                    temp = []
-                    for x in sub_array:
-                        if x <= m:
-                          temp.append(x)
+    a = list(map(int, input().split()))
 
-                    if len(temp) == m:
-                        
-                        if sorted(temp) == expected:
-                            is_beautiful = True
-                            break
-                            
-            if is_beautiful:
-                break
-        
-        result += "1" if is_beautiful else "0"
-    
-    print(result)
+    unique_vals = sorted(list(set(a)))
 
-t = int(input())
-for _ in range(t):
-    solve()
+    if len(unique_vals) > 3:
+        print(-1)
+        return
+
+    if len(unique_vals) == 1:
+        print(0)
+        return
+
+    if len(unique_vals) == 2:
+        diff = abs(unique_vals[0] - unique_vals[1])
+        if diff % 2 == 0:
+            print(diff // 2)
+        else:
+            print(diff)
+        return
+
+    if len(unique_vals) == 3:
+        val1, val2, val3 = unique_vals
+        if val2 - val1 == val3 - val2:
+            print(val2 - val1)
+        else:
+            print(-1)
+        return
+
+
+solve()

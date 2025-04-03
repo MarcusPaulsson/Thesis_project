@@ -1,52 +1,41 @@
-def can_transform(t, test_cases):
+def min_operations(t, test_cases):
     results = []
-    for _ in range(t):
-        n = test_cases[_][0]
-        a = test_cases[_][1]
-        b = test_cases[_][2]
+    for a, b, c in test_cases:
+        min_ops = float('inf')
+        best_triplet = (a, b, c)
 
-        can_increase = can_decrease = False
+        # Iterate over possible values of A
+        for A in range(1, a + 1):
+            # Calculate possible B values that are multiples of A
+            for k in range(1, (c // A) + 2):
+                B = A * k
+                if B < b:
+                    continue
 
-        for i in range(n):
-            if a[i] == 1:
-                can_increase = True
-            elif a[i] == -1:
-                can_decrease = True
+                # Calculate possible C values that are multiples of B
+                for m in range(1, (c // B) + 2):
+                    C = B * m
+                    if C < c:
+                        continue
 
-            if can_increase and can_decrease:
-                break
+                    # Calculate operations needed
+                    ops = abs(A - a) + abs(B - b) + abs(C - c)
+                    if ops < min_ops:
+                        min_ops = ops
+                        best_triplet = (A, B, C)
 
-        possible = True
-        for i in range(n):
-            if b[i] > a[i] and not can_increase:
-                possible = False
-                break
-            elif b[i] < a[i] and not can_decrease:
-                possible = False
-                break
+        results.append((min_ops, best_triplet))
 
-        results.append("YES" if possible else "NO")
-    
     return results
 
-# Reading input
-import sys
-input = sys.stdin.read
-data = input().splitlines()
+# Read input data
+t = int(input())
+test_cases = [tuple(map(int, input().split())) for _ in range(t)]
 
-t = int(data[0])
-test_cases = []
-index = 1
+# Get results
+results = min_operations(t, test_cases)
 
-for _ in range(t):
-    n = int(data[index])
-    a = list(map(int, data[index + 1].split()))
-    b = list(map(int, data[index + 2].split()))
-    test_cases.append((n, a, b))
-    index += 3
-
-# Getting results
-results = can_transform(t, test_cases)
-
-# Printing results
-print("\n".join(results))
+# Print output
+for res in results:
+    print(res[0])
+    print(res[1][0], res[1][1], res[1][2])

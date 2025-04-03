@@ -44,8 +44,8 @@ PROMPT_TECHNIQUE_SETTING = "Expert-role"
 SYSTEM_PROMPT="You are an expert software developer, skilled in producing clean and well-structured code."
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code."
-
 '''
+
 
 # Role prompting (Student)
 '''

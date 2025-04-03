@@ -1,60 +1,73 @@
-def solve():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    index = 0
-    t = int(data[index])
-    index += 1
-    results = []
-    
-    for _ in range(t):
-        n = int(data[index])
-        index += 1
-        words = [data[index + i] for i in range(n)]
-        index += n
-        
-        pairs = {}
-        reversed_pairs = {}
-        
-        for i, word in enumerate(words):
-            first, last = word[0], word[-1]
-            if (first, last) in pairs:
-                pairs[(first, last)].append(i + 1)
-            else:
-                pairs[(first, last)] = [i + 1]
-                
-            rev_first, rev_last = last, first
-            if (rev_first, rev_last) in reversed_pairs:
-                reversed_pairs[(rev_first, rev_last)].append(i + 1)
-            else:
-                reversed_pairs[(rev_first, rev_last)] = [i + 1]
-        
-        # Check for possible connections
-        used = set()
-        reversed_used = set()
-        reversals = []
-        
-        for (first, last), indices in pairs.items():
-            if (last, first) in reversed_pairs and (last, first) not in used:
-                # If we have both a normal and a reversed word pair
-                used.add((first, last))
-                used.add((last, first))
-                # We can connect them
-                continue
-            if (first, last) not in used:
-                # No reversed pair, mark this as needing reversal
-                reversals.append(indices[0])  # Take one of them to reverse
-                reversed_used.add((last, first))
-        
-        # Check if all pairs are used
-        if len(used) + len(reversed_used) != len(pairs):
-            results.append("-1")
-        else:
-            results.append(f"{len(reversals)}")
-            if reversals:
-                results.append(' '.join(map(str, reversals)))
-    
-    sys.stdout.write("\n".join(results) + "\n")
+from collections import defaultdict, deque
 
-solve()
+def bfs(start, tree, n):
+    visited = [-1] * (n + 1)
+    queue = deque([start])
+    visited[start] = 0
+    farthest_node = start
+    max_distance = 0
+    
+    while queue:
+        node = queue.popleft()
+        for neighbor in tree[node]:
+            if visited[neighbor] == -1:
+                visited[neighbor] = visited[node] + 1
+                queue.append(neighbor)
+                if visited[neighbor] > max_distance:
+                    max_distance = visited[neighbor]
+                    farthest_node = neighbor
+                    
+    return farthest_node, max_distance
+
+def find_max_edges(n, edges):
+    tree = defaultdict(list)
+    for a, b in edges:
+        tree[a].append(b)
+        tree[b].append(a)
+    
+    # Step 1: Find the farthest node from an arbitrary node (1)
+    farthest_node_from_1, _ = bfs(1, tree, n)
+    
+    # Step 2: Find the farthest node from the previous farthest node
+    farthest_node, _ = bfs(farthest_node_from_1, tree, n)
+    
+    # Step 3: Get the distance and path from farthest_node_from_1 to farthest_node
+    path = []
+    def get_path(node, parent):
+        if node == farthest_node:
+            path.append(node)
+            return True
+        for neighbor in tree[node]:
+            if neighbor != parent and get_path(neighbor, node):
+                path.append(node)
+                return True
+        return False
+
+    get_path(farthest_node_from_1, -1)
+    
+    # The path is now the longest path in the tree
+    path.reverse()
+    length = len(path)
+    
+    # Step 4: Choose three nodes to maximize the edges
+    if length >= 3:
+        a, b, c = path[0], path[length // 2], path[-1]
+    else:
+        a, b, c = path[0], path[1], path[2]
+    
+    # Step 5: Count the edges in the union of paths
+    edges_count = (length - 1) + (length - 1) + 1  # Paths a-b, b-c, a-c count
+
+    # Resulting output
+    return edges_count, (a, b, c)
+
+# Read input
+n = int(input())
+edges = [tuple(map(int, input().split())) for _ in range(n - 1)]
+
+# Get the result
+res, (a, b, c) = find_max_edges(n, edges)
+
+# Output result
+print(res)
+print(a, b, c)

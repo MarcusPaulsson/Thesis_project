@@ -1,42 +1,31 @@
-def solve():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    t = int(data[0])
-    index = 1
-    results = []
-    
-    for _ in range(t):
-        n = int(data[index])
-        a = list(map(int, data[index + 1].split()))
-        b = list(map(int, data[index + 2].split()))
-        c = list(map(int, data[index + 3].split()))
-        index += 4
-        
-        p = [0] * n
-        
-        for i in range(n):
-            # Choose the first option
-            chosen = a[i]
-            if i > 0 and chosen == p[i - 1]:
-                # If it's the same as the previous one, choose the second option
-                chosen = b[i] if b[i] != p[i - 1] else c[i]
-            p[i] = chosen
-        
-        # Handle the case for the last element to ensure it's not the same as the first
-        if p[n - 1] == p[0]:
-            # If it is the same, we need to change it
-            if n > 1:
-                # Change to either b[n-1] or c[n-1] that is not p[n-2] and p[0]
-                if b[n - 1] != p[n - 2] and b[n - 1] != p[0]:
-                    p[n - 1] = b[n - 1]
-                else:
-                    p[n - 1] = c[n - 1]
-        
-        results.append(' '.join(map(str, p)))
-    
-    print('\n'.join(results))
+def max_sum_divisible_by_k(n, m, k, matrix):
+    half_m = m // 2
+    dp = [[-1] * k for _ in range(n + 1)]
+    dp[0][0] = 0
 
-# Run the function
-solve()
+    for i in range(1, n + 1):
+        row = sorted(matrix[i - 1], reverse=True)
+        current_dp = dp[i - 1][:]
+        
+        for j in range(half_m + 1):
+            if j > len(row):
+                break
+            sum_comb = sum(row[:j])
+            for mod in range(k):
+                if current_dp[mod] != -1:
+                    new_mod = (mod + sum_comb) % k
+                    new_sum = current_dp[mod] + sum_comb
+                    if dp[i][new_mod] < new_sum:
+                        dp[i][new_mod] = new_sum
+        
+        dp[i] = current_dp
+
+    return dp[n][0]
+
+# Input reading part
+n, m, k = map(int, input().split())
+matrix = [list(map(int, input().split())) for _ in range(n)]
+
+# Calling the function and printing the result
+result = max_sum_divisible_by_k(n, m, k, matrix)
+print(result)

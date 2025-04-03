@@ -1,62 +1,68 @@
 def solve():
     n = int(input())
-    words = []
-    for _ in range(n):
-        words.append(input())
+    edges = []
+    for _ in range(n - 1):
+        u, v = map(int, input().split())
+        edges.append((u, v))
 
-    def reverse_word(word):
-        return word[::-1]
+    def get_path(start, end):
+        q = [(start, [start])]
+        visited = set()
+        while q:
+            node, path = q.pop(0)
+            if node == end:
+                return path
+            visited.add(node)
+            for u, v in edges:
+                neighbor = None
+                if u == node and v not in visited:
+                    neighbor = v
+                elif v == node and u not in visited:
+                    neighbor = u
+                if neighbor:
+                    q.append((neighbor, path + [neighbor]))
+        return None
 
-    def check(reversed_indices):
-        temp_words = []
-        for i in range(n):
-            if i in reversed_indices:
-                temp_words.append(reverse_word(words[i]))
-            else:
-                temp_words.append(words[i])
+    def count_edges(a, b, c):
+        path_ab = get_path(a, b)
+        path_bc = get_path(b, c)
+        path_ac = get_path(a, c)
         
-        if len(set(temp_words)) != n:
-            return False
-        
-        def can_be_arranged(arr):
-            if not arr:
-                return True
-            
-            import itertools
-            for perm in itertools.permutations(arr):
-                valid = True
-                for i in range(len(perm) - 1):
-                    if perm[i][-1] != perm[i+1][0]:
-                        valid = False
-                        break
-                if valid:
-                    return True
-            return False
+        edges_ab = set()
+        for i in range(len(path_ab) - 1):
+            u, v = sorted((path_ab[i], path_ab[i+1]))
+            edges_ab.add((u, v))
 
-        return can_be_arranged(temp_words)
-    
+        edges_bc = set()
+        for i in range(len(path_bc) - 1):
+            u, v = sorted((path_bc[i], path_bc[i+1]))
+            edges_bc.add((u, v))
 
-    min_reversed = float('inf')
-    best_reversed_indices = []
+        edges_ac = set()
+        for i in range(len(path_ac) - 1):
+            u, v = sorted((path_ac[i], path_ac[i+1]))
+            edges_ac.add((u, v))
 
-    for i in range(1 << n):
-        reversed_indices = []
-        for j in range(n):
-            if (i >> j) & 1:
-                reversed_indices.append(j)
+        all_edges = edges_ab.union(edges_bc).union(edges_ac)
+        return len(all_edges)
 
-        if check(reversed_indices):
-            if len(reversed_indices) < min_reversed:
-                min_reversed = len(reversed_indices)
-                best_reversed_indices = reversed_indices
+    best_count = -1
+    best_a, best_b, best_c = -1, -1, -1
 
-    if min_reversed == float('inf'):
-        print("-1")
-    else:
-        print(min_reversed)
-        if min_reversed > 0:
-            print(*(x + 1 for x in best_reversed_indices))
+    for a in range(1, n + 1):
+        for b in range(1, n + 1):
+            if a == b:
+                continue
+            for c in range(1, n + 1):
+                if a == c or b == c:
+                    continue
+                
+                count = count_edges(a, b, c)
+                if count > best_count:
+                    best_count = count
+                    best_a, best_b, best_c = a, b, c
 
-t = int(input())
-for _ in range(t):
-    solve()
+    print(best_count)
+    print(best_a, best_b, best_c)
+
+solve()

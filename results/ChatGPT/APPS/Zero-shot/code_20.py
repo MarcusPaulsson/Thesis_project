@@ -1,48 +1,16 @@
-def can_satisfy_customers(q, test_cases):
-    results = []
-    
-    for case in test_cases:
-        n, m, customers = case
-        current_time = 0
-        current_temp_range = (m, m)  # Initial temperature range
-        
-        for t_i, l_i, h_i in customers:
-            # Time difference between current time and the customer's time
-            time_diff = t_i - current_time
-            
-            # Update the temperature range based on time passed
-            current_temp_range = (
-                current_temp_range[0] - time_diff,  # Cooling
-                current_temp_range[1] + time_diff   # Heating
-            )
-            
-            # Update the current time
-            current_time = t_i
-            
-            # The new temperature range must intersect with the customer's preferred range
-            new_range_start = max(current_temp_range[0], l_i)
-            new_range_end = min(current_temp_range[1], h_i)
-            
-            if new_range_start > new_range_end:  # No intersection
-                results.append("NO")
-                break
-        else:
-            results.append("YES")
-    
-    return results
+h1, m1 = map(int, input().split(':'))
+h2, m2 = map(int, input().split(':'))
 
-# Input processing
-q = int(input())
-test_cases = []
+# Convert start and end times to total minutes
+start_minutes = h1 * 60 + m1
+end_minutes = h2 * 60 + m2
 
-for _ in range(q):
-    n, m = map(int, input().split())
-    customers = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, m, customers))
+# Calculate the midpoint in total minutes
+midpoint_minutes = (start_minutes + end_minutes) // 2
 
-# Get the results
-results = can_satisfy_customers(q, test_cases)
+# Convert back to hours and minutes
+h3 = midpoint_minutes // 60
+m3 = midpoint_minutes % 60
 
-# Output results
-for result in results:
-    print(result)
+# Print the result in the required format
+print(f"{h3:02}:{m3:02}")

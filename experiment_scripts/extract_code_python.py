@@ -8,7 +8,7 @@ def extract_and_save_python_code(json_file, output_dir):
     try:
         with open(json_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            print(data)
+            
     except FileNotFoundError:
         print(f"Error: JSON file '{json_file}' not found.")
         return
@@ -18,7 +18,6 @@ def extract_and_save_python_code(json_file, output_dir):
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    print(data.items())
 
     # NEED TO BE REWRITTEN TO ONLY EXTRACT ONE SNIPPET PER FILE!!! CURRENTLY OVERWRITING
     for key, value in data.items():

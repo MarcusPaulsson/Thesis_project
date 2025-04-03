@@ -1,23 +1,44 @@
-import math
+n, k = map(int, input().split())
+s = input().strip()
 
-def find_a_b(d):
-    if d < 2:
-        if d == 0:
-            return "Y 0.000000000 0.000000000"
-        elif d == 1:
-            return "N"
-    else:
-        # Using the quadratic formula solution for x^2 - dx + d = 0
-        discriminant = d ** 2 - 4 * d
-        if discriminant < 0:
-            return "N"
-        else:
-            sqrt_discriminant = math.sqrt(discriminant)
-            a = (d + sqrt_discriminant) / 2
-            b = (d - sqrt_discriminant) / 2
-            return f"Y {a:.9f} {b:.9f}"
+# Step 1: Find unique characters and their counts
+from collections import Counter
 
-t = int(input())
-for _ in range(t):
-    d = int(input())
-    print(find_a_b(d))
+counter = Counter(s)
+unique_chars = list(counter.keys())
+unique_count = len(unique_chars)
+
+# Step 2: Calculate the maximum number of unique subsequences
+max_unique_subsequences = 0
+cost = 0
+
+# We will add all subsequences of unique characters
+for i in range(1, unique_count + 1):
+    max_unique_subsequences += i  # The number of subsequences of length i is `C(unique_count, i) * 2^i`
+
+# Step 3: Check if we can create at least k unique subsequences
+if max_unique_subsequences < k:
+    print(-1)
+else:
+    # Calculate the minimum total cost
+    total_cost = 0
+    subsequence_count = 0
+    
+    # We calculate cost for each unique character
+    for char in unique_chars:
+        count = counter[char]
+        for i in range(1, count + 1):
+            if subsequence_count < k:
+                total_cost += (n - (1 + i - 1))  # Add subsequence with length i
+                subsequence_count += 1
+            else:
+                break
+        if subsequence_count >= k:
+            break
+    
+    # If we still need more subsequences, we need to use duplicates
+    if subsequence_count < k:
+        needed = k - subsequence_count
+        total_cost += needed * n  # Adding duplicates of full length costs `n` each time
+    
+    print(total_cost)

@@ -1,31 +1,36 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
-    b = list(map(int, input().split()))
-    c = list(map(int, input().split()))
+    n, m, k = map(int, input().split())
+    a = []
+    for _ in range(n):
+        a.append(list(map(int, input().split())))
     
-    p = [0] * n
+    dp = {}
     
-    p[0] = a[0]
-    
-    for i in range(1, n):
-        if a[i] != p[i-1]:
-            p[i] = a[i]
-        elif b[i] != p[i-1]:
-            p[i] = b[i]
-        else:
-            p[i] = c[i]
+    def get_max_sum(row_idx, rem):
+        if row_idx == n:
+            if rem == 0:
+                return 0
+            else:
+                return -float('inf')
             
-    if p[n-1] == p[0]:
-        if a[n-1] != p[n-2] and a[n-1] != p[0]:
-            p[n-1] = a[n-1]
-        elif b[n-1] != p[n-2] and b[n-1] != p[0]:
-           p[n-1] = b[n-1]
-        else:
-            p[n-1] = c[n-1]
+        if (row_idx, rem) in dp:
+            return dp[(row_idx, rem)]
+        
+        max_elements_per_row = m // 2
+        
+        max_sum = get_max_sum(row_idx + 1, rem)
+        
+        for num_elements in range(1, max_elements_per_row + 1):
+            for combination in combinations(a[row_idx], num_elements):
+                current_sum = sum(combination)
+                new_rem = (rem - current_sum) % k
+                max_sum = max(max_sum, current_sum + get_max_sum(row_idx + 1, new_rem))
+        
+        dp[(row_idx, rem)] = max_sum
+        return max_sum
+        
+    from itertools import combinations
+    
+    print(get_max_sum(0, 0))
 
-    print(*p)
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

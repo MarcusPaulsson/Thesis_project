@@ -1,18 +1,30 @@
-import math
+def minimum_cost(n, k, s):
+    unique_subsequences = set()
+    
+    # Generate all unique subsequences using bit manipulation
+    for i in range(1 << n):
+        subsequence = []
+        for j in range(n):
+            if i & (1 << j):
+                subsequence.append(s[j])
+        unique_subsequences.add(''.join(subsequence))
+    
+    # If we cannot form k unique subsequences
+    if len(unique_subsequences) < k:
+        return -1
+    
+    # Calculate the costs
+    costs = []
+    for subseq in unique_subsequences:
+        costs.append(n - len(subseq))
+    
+    # Sort the costs and take the sum of the smallest k costs
+    costs.sort()
+    return sum(costs[:k])
 
-def min_square_side_length(n):
-    # The formula derived for the minimum square side length to embed a 2n-gon
-    return math.sqrt(2) * (math.cos(math.pi / (2 * n)) / math.sin(math.pi / (2 * n)))
+# Input reading
+n, k = map(int, input().split())
+s = input().strip()
 
-def main():
-    T = int(input())
-    results = []
-    for _ in range(T):
-        n = int(input())
-        side_length = min_square_side_length(n)
-        results.append(f"{side_length:.9f}")
-
-    print("\n".join(results))
-
-if __name__ == "__main__":
-    main()
+# Output the result
+print(minimum_cost(n, k, s))
