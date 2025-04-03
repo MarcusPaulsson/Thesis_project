@@ -30,7 +30,8 @@ def run_task_with_llama(llm, task_prompt, temp=0.7):
     output = llm(
         task_prompt,
         temperature=temp,
-        max_tokens=-1,  # -1 means no limit
+        top_k=1,
+        max_tokens=5,  # -1 means no limit
         stream=True,
         echo=False,  # do not echo the prompt.
     )
@@ -43,24 +44,6 @@ def run_task_with_llama(llm, task_prompt, temp=0.7):
 
     return full_response
 
-def load_cli_games_tasks_from_json(json_file_path):
-    """
-    Load game instructions from a JSON file.
-    Assumes the JSON file contains a list of dictionaries, where each dictionary
-    has a 'prompt' key.
-    Returns a list of game instruction prompts.
-    """
-    instructions = []
-    try:
-        with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
-            data = json.load(jsonfile)
-            for item in data:
-                instructions.append(item["prompt"])
-        return instructions
-    except FileNotFoundError:
-        print(f"Error: JSON file '{json_file_path}' not found.")
-        return None
-    
 
 def extract_apps_tasks(json_file_path):
     """
@@ -71,7 +54,7 @@ def extract_apps_tasks(json_file_path):
         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
             for line in jsonfile:
                 line = line.strip()
-                
+
                 try:
                     data = json.loads(line)
                     if "question" in data:
@@ -92,15 +75,15 @@ def save_results_to_json(results, json_file_path):
 
 if __name__ == "__main__":
     # Load tasks from the APPS JSON file
-    apps_file_path = os.path.join(main_dir, "data", "cli_games.json")  # Adjust filename and path
-    tasks = load_cli_games_tasks_from_json(apps_file_path)
+    apps_file_path = os.path.join(main_dir, "data", "apps.json")  # Adjust filename and path
+    tasks = extract_apps_tasks(apps_file_path)
 
     if tasks is None:
         sys.exit(1)
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 2  # Adjust to the number of tasks you want to run.
+    end_index = 1  # Adjust to the number of tasks you want to run.
 
     results = {}  # Change results to a dictionary
 
@@ -127,8 +110,8 @@ if __name__ == "__main__":
         results[str(i)] = assistant_response  # Use task index as key
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "WizardCoder", "cli_games", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "Qwen", "APPS", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)  # Ensure the directory exists.
-    json_file_path = os.path.join(results_dir, "cli_games_raw.json")
+    json_file_path = os.path.join(results_dir, "apps_raw.json")
     save_results_to_json(results, json_file_path)
     extract_and_save_python_code(json_file_path, results_dir)
