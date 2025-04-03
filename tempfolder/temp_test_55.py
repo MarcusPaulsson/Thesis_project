@@ -1,7 +1,0 @@
-def max_equal_sticks(n):
-    return n // 2
-
-t = int(input())
-for _ in range(t):
-    n = int(input())
-    print(max_equal_sticks(n))
