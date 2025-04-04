@@ -136,6 +136,8 @@ folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Zero-shot-CoT"),
     "ChatGPT APPS Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Expert-role"),
     "ChatGPT APPS Student-role": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Student-role"),
+    "ChatGPT APPS Meta": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Meta"),
+    "ChatGPT APPS Naive": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Naive"),
 }
 
 folder_paths_gemini_APPS = {

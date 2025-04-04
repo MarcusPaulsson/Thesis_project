@@ -103,6 +103,8 @@ folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Zero-shot-CoT"),
     "ChatGPT APPS Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Expert-role"),
     "ChatGPT APPS Student-role": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Student-role"),
+    "ChatGPT APPS Meta": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Meta"),
+    "ChatGPT APPS Naive": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Naive"),
 }
 
 folder_paths_gemini_APPS = {
@@ -122,10 +124,10 @@ results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gem
 
 print("\nComment Density per Folder:")
 for folder, (avg_density, std_dev_density) in results_gemini.items():
-    print(f"  {folder}: Average Density = {avg_density:.4f}, Std Dev = {std_dev_density:.4f}")
+    print(f"  {folder}: Average Density = {avg_density:.4f}")
 
 for folder, (avg_density, std_dev_density) in results_chatgpt.items():
-    print(f"  {folder}: Average Density = {avg_density:.4f}, Std Dev = {std_dev_density:.4f}")
+    print(f"  {folder}: Average Density = {avg_density:.4f}")
 
 # Split density calculation by technique for Gemini
 gemini_densities = {
@@ -168,7 +170,7 @@ for technique, densities in gemini_densities.items():
     if densities:
         avg_density = statistics.mean(densities)
         std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
-        print(f"  {technique}: Average Density = {avg_density:.4f}, Std Dev = {std_dev_density:.4f}")
+        print(f"  {technique}: Average Density = {avg_density:.4f}")
     else:
         print(f"  {technique}: No data available.")
 
@@ -177,6 +179,6 @@ for technique, densities in chatgpt_densities.items():
     if densities:
         avg_density = statistics.mean(densities)
         std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
-        print(f"  {technique}: Average Density = {avg_density:.4f}, Std Dev = {std_dev_density:.4f}")
+        print(f"  {technique}: Average Density = {avg_density:.4f}")
     else:
         print(f"  {technique}: No data available.")

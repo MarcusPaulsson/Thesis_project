@@ -19,6 +19,8 @@ chatGPT_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT
 chatGPT_zero_shot_CoT_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Zero-shot-CoT'))
 chatGPT_student_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Student-role'))
 chatGPT_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Expert-role'))
+chatGPT_meta_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Meta'))
+chatGPT_meta_naive_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Naive'))
 
 # WizardCoder
 wizardCoder_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'WizardCoder', 'APPS', 'Zero-shot'))
@@ -29,16 +31,19 @@ qwen_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Qwen', 'AP
 # Define a list of folder paths and their corresponding names
 folder_paths = {
 
-     "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
-     "Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
-     "Gemini Student-role": Gemini_student_role_apps_folder,
-     "Gemini Expert-role": Gemini_expert_role_apps_folder,
-    "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
-    "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
-    "ChatGPT Student-role": chatGPT_student_role_apps_folder,
-    "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
+    #   "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
+    #   "Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
+    #   "Gemini Student-role": Gemini_student_role_apps_folder,
+    #   "Gemini Expert-role": Gemini_expert_role_apps_folder,
+     "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
+     "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
+     "ChatGPT Student-role": chatGPT_student_role_apps_folder,
+     "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
+     "ChatGPT Meta": chatGPT_meta_apps_folder,
+     "ChatGPT Naive": chatGPT_meta_naive_folder,
+    # "Qwen Zero-shot": qwen_zero_shot_apps_folder,
 
-    "Qwen Zero-shot": qwen_zero_shot_apps_folder,
+    #"WizardCoder Zero-shot": wizardCoder_zero_shot_apps_folder
 }
 
 test_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
@@ -85,7 +90,7 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
             print(f"\n--- Running Test {i + 1} of {total_tests} ---")
             json_data = json.loads(task)
             inputs, outputs = json_data["inputs"], json_data["outputs"]
-            max_numb_test, placeholder = 5, 5
+            max_numb_test, placeholder = 2, 2
             output_list = []
             for test_i, item in enumerate(inputs):
                 if max_numb_test:

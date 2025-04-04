@@ -19,13 +19,13 @@ user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PRO
 
 
 # Zero-shot prompting
-''''''
+'''
 PROMPT_TECHNIQUE_SETTING = "Zero-shot" # placeholder for storing content to correct result directory
 
 SYSTEM_PROMPT=""
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code."
-
+'''
 
 # Zero-shot Chain of thougths
 '''
@@ -55,3 +55,26 @@ SYSTEM_PROMPT="You are a university student studying computer science, with basi
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code."
 '''
+
+# Meta prompting
+'''
+PROMPT_TECHNIQUE_SETTING = "Meta" 
+
+SYSTEM_PROMPT="""- For the following coding task, solve it in the following steps:
+1. Define which variables needed.
+2. Find a suitable algorithm, structure and approach to solve the task.
+3. Refine the previous steps.
+4. Give a code solution that solves the task."""
+HEAD_PROMPT = ""
+TAIL_PROMPT="Give only the code."
+'''
+
+# Naive Prompting
+''''''
+PROMPT_TECHNIQUE_SETTING = "Naive" 
+
+SYSTEM_PROMPT="Generate code that is clean, easy to read with low complexity, and uphold high software quality standards."
+HEAD_PROMPT = ""
+TAIL_PROMPT="Give only the code."
+
+
