@@ -129,6 +129,8 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Zero-shot-CoT"),
     "ChatGPT classEval Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Expert-role"),
     "ChatGPT classEval Student-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Student-role"),
+    "ChatGPT classEval Meta": os.path.join(upper_dir,'results', 'ChatGPT', 'classEval', 'Meta'),
+    "ChatGPT classEval Naive": os.path.join(upper_dir,'results', 'ChatGPT', 'classEval', 'Naive'),
 }
 
 folder_paths_chatgpt_APPS = {

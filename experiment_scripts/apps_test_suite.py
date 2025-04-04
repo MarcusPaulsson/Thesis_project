@@ -20,7 +20,8 @@ chatGPT_zero_shot_CoT_apps_folder = os.path.abspath(os.path.join('results', 'Cha
 chatGPT_student_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Student-role'))
 chatGPT_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Expert-role'))
 chatGPT_meta_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Meta'))
-chatGPT_meta_naive_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Naive'))
+chatGPT_naive_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Naive'))
+chatGPT_iterative_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Iterative'))
 
 # WizardCoder
 wizardCoder_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'WizardCoder', 'APPS', 'Zero-shot'))
@@ -40,7 +41,8 @@ folder_paths = {
      "ChatGPT Student-role": chatGPT_student_role_apps_folder,
      "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
      "ChatGPT Meta": chatGPT_meta_apps_folder,
-     "ChatGPT Naive": chatGPT_meta_naive_folder,
+     "ChatGPT Naive": chatGPT_naive_apps_folder,
+     "ChatGPT Iterative": chatGPT_iterative_apps_folder,
     # "Qwen Zero-shot": qwen_zero_shot_apps_folder,
 
     #"WizardCoder Zero-shot": wizardCoder_zero_shot_apps_folder

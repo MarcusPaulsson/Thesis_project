@@ -96,6 +96,8 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Zero-shot-CoT"),
     "ChatGPT classEval Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Expert-role"),
     "ChatGPT classEval Student-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Student-role"),
+    "ChatGPT classEval Meta": os.path.join(upper_dir,'results', 'ChatGPT', 'classEval', 'Meta'),
+    "ChatGPT classEval Naive": os.path.join(upper_dir,'results', 'ChatGPT', 'classEval', 'Naive'),
 }
 
 folder_paths_chatgpt_APPS = {
@@ -117,6 +119,8 @@ folder_paths_gemini_APPS = {
 # Analyze folders and count comment density
 results_gemini = analyze_folders_and_count_comment_density(folder_paths_gemini_cli_games)
 results_chatgpt = analyze_folders_and_count_comment_density(folder_paths_chatgpt_cli_games)
+
+
 results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_classEval))
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_classEval))
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_APPS))
@@ -135,6 +139,8 @@ gemini_densities = {
     "Zero-shot-CoT": [],
     "Expert-role": [],
     "Student-role": [],
+    "Meta": [],
+    "Naive": [],
 }
 
 # Split density calculation by technique for ChatGPT
@@ -143,6 +149,8 @@ chatgpt_densities = {
     "Zero-shot-CoT": [],
     "Expert-role": [],
     "Student-role": [],
+    "Meta": [],
+    "Naive": [],
 }
 
 for folder, (avg_density, _) in results_gemini.items(): #ignore standard deviation from folder output
@@ -154,6 +162,10 @@ for folder, (avg_density, _) in results_gemini.items(): #ignore standard deviati
         gemini_densities["Expert-role"].append(avg_density)
     elif "Student-role" in folder:
         gemini_densities["Student-role"].append(avg_density)
+    elif "Meta" in folder:
+        gemini_densities["Meta"].append(avg_density)
+    elif "Naive" in folder:
+        gemini_densities["Naive"].append(avg_density)
 
 for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviation from folder output
     if "Zero-shot" in folder and "CoT" not in folder:
@@ -164,6 +176,10 @@ for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviat
         chatgpt_densities["Expert-role"].append(avg_density)
     elif "Student-role" in folder:
         chatgpt_densities["Student-role"].append(avg_density)
+    elif "Meta" in folder:
+        chatgpt_densities["Meta"].append(avg_density)
+    elif "Naive" in folder:
+        chatgpt_densities["Naive"].append(avg_density)
 
 print("\nGemini Comment Density Averages:")
 for technique, densities in gemini_densities.items():

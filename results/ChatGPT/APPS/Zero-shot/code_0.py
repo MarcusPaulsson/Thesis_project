@@ -1,54 +1,32 @@
-def max_length Accordion(s):
-    n = len(s)
-    left_bracket = -1
-    right_bracket = -1
-
-    # Find the last opening bracket '['
-    for i in range(n):
-        if s[i] == '[':
-            left_bracket = i
-
-    # Find the first closing bracket ']'
-    for i in range(n - 1, -1, -1):
-        if s[i] == ']':
-            right_bracket = i
-
-    # If there are no valid brackets, return -1
-    if left_bracket == -1 or right_bracket == -1 or left_bracket >= right_bracket:
-        return -1
-
-    # Find the first colon after the left bracket
+def max_accordion_length(s):
     first_colon = -1
-    for i in range(left_bracket + 1, right_bracket):
-        if s[i] == ':':
-            first_colon = i
-            break
-
-    # If no colon found, return -1
-    if first_colon == -1:
-        return -1
-
-    # Find the last colon before the right bracket
     last_colon = -1
-    for i in range(right_bracket - 1, left_bracket, -1):
-        if s[i] == ':':
-            last_colon = i
-            break
+    opening_bracket = -1
+    closing_bracket = -1
 
-    # If no colon found, return -1
-    if last_colon == -1 or last_colon <= first_colon:
+    for i in range(len(s)):
+        if s[i] == '[' and opening_bracket == -1:
+            opening_bracket = i
+        elif s[i] == ':' and first_colon == -1:
+            first_colon = i
+        elif s[i] == ':' and opening_bracket != -1:
+            last_colon = i
+        elif s[i] == ']' and opening_bracket != -1:
+            closing_bracket = i
+
+    if opening_bracket == -1 or first_colon == -1 or last_colon == -1 or closing_bracket == -1:
         return -1
 
-    # Count the number of vertical lines between the two colons
-    vertical_lines = 0
-    for i in range(first_colon + 1, last_colon):
-        if s[i] == '|':
-            vertical_lines += 1
+    if first_colon < opening_bracket or last_colon < first_colon or closing_bracket < last_colon:
+        return -1
 
-    # Maximum length of the accordion
+    # Count vertical lines between the first and last colon
+    vertical_lines = sum(1 for char in s[first_colon:last_colon] if char == '|')
+
+    # The length of the accordion will be 4 (for the brackets and colons) + vertical lines
     return 4 + vertical_lines
 
-# Input
+# Read input
 s = input().strip()
-# Output
-print(max_length Accordion(s))
+# Output the result
+print(max_accordion_length(s))
