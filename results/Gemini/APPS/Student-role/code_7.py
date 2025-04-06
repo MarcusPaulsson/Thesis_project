@@ -1,24 +1,69 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
+    n, m = map(int, input().split())
     
-    results = []
+    left = 1
+    right = 2 * 10**9
     
-    for l1 in range(1, n):
-        l2 = n - l1
-        p1 = a[:l1]
-        p2 = a[l1:]
+    ans = -1
+    
+    while left <= right:
+        mid = (left + right) // 2
         
-        m1 = max(p1)
-        m2 = max(p2)
+        total_grain_eaten = mid * (mid + 1) // 2
         
-        if all(1 <= x <= m1 for x in p1) and all(1 <= x <= m2 for x in p2) and len(set(p1)) == l1 and len(set(p2)) == l2 and m1 == l1 and m2 == l2:
-            results.append((l1, l2))
+        num_full_days = n // m
+        
+        if num_full_days > mid:
+                total_grain_available = n + mid * m
+        else:
+            total_grain_available = n + num_full_days * m
+                
+        
+        if total_grain_eaten >= n:
             
-    print(len(results))
-    for l1, l2 in results:
-        print(l1, l2)
+            
+            total_days_needed = 0
+            grain_left = n
+            
+            curr_day = 1
+            while grain_left > 0:
+                
+                grain_left += m
+                grain_left = min(n, grain_left)
+                
+                grain_left -= curr_day
+                curr_day += 1
+                
+                total_days_needed += 1
+                
+                if total_days_needed > mid:
+                   
+                    break
+            if grain_left <= 0:
+                ans = total_days_needed
 
-t = int(input())
-for _ in range(t):
-    solve()
+        if total_grain_eaten >= n:
+                
+            days_needed = 0
+            grain_left = n
+            day_num = 1
+            
+            while grain_left > 0:
+                grain_left = min(n, grain_left + m)
+                grain_left -= day_num
+                day_num += 1
+                days_needed +=1
+                
+                
+            if grain_left <= 0:
+                ans = days_needed
+                right = mid-1
+            else:
+                left = mid + 1
+                
+        else:
+            left = mid + 1
+            
+    print(ans)
+    
+solve()

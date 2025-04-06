@@ -1,7 +1,15 @@
 def solve():
-    a, b = map(int, input().split())
-    print(a ^ b)
+    n, x, y = map(int, input().split())
+    s = input()
+    
+    count = 0
+    for i in range(n - x, n):
+        if i == n - 1 - y:
+            if s[i] == '0':
+                count += 1
+        else:
+            if s[i] == '1':
+                count += 1
+    print(count)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

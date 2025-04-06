@@ -1,12 +1,16 @@
-def solve():
-    n = int(input())
-    result = []
-    start = 2 * 1
-    for i in range(n):
-        result.append(start)
-        start += 2
-    print(*result)
+d, k, a, b, t = map(int, input().split())
 
-t = int(input())
-for _ in range(t):
-    solve()
+if d <= k:
+    print(d * a)
+else:
+    ans = k * a
+    d -= k
+    if a * k + t >= b * k:
+        ans += d * b
+    else:
+        num_breaks = d // k
+        ans += num_breaks * (a * k + t)
+        d %= k
+        if d > 0:
+            ans += min(d * a + t, d * b)
+    print(ans)

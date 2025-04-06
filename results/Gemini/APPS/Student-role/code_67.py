@@ -1,43 +1,32 @@
 def solve():
-    n = int(input())
-    s = list(input())
-    t = list(input())
+    n, k = map(int, input().split())
+    t = input()
     
-    counts = {}
-    for char in s:
-        counts[char] = counts.get(char, 0) + 1
-    for char in t:
-        counts[char] = counts.get(char, 0) + 1
+    def count_occurrences(s, t):
+        count = 0
+        for i in range(len(s) - len(t) + 1):
+            if s[i:i+len(t)] == t:
+                count += 1
+        return count
     
-    for char in counts:
-        if counts[char] % 2 != 0:
-            print("No")
-            return
+    best_s = ""
+    min_len = float('inf')
     
-    swaps = []
-    for i in range(n):
-        if s[i] != t[i]:
-            found = False
-            for j in range(i + 1, n):
-                if s[j] == s[i]:
-                    swaps.append((j + 1, i + 1))
-                    s[j], t[i] = t[i], s[j]
-                    found = True
-                    break
-            if not found:
-                for j in range(i + 1, n):
-                    if t[j] == s[i]:
-                        swaps.append((i + 1, j + 1))
-                        s[i], t[j] = t[j], s[i]
-                        swaps.append((j + 1, i + 1))
-                        s[j], t[i] = t[i], s[j]
-                        break
-    
-    print("Yes")
-    print(len(swaps))
-    for i, j in swaps:
-        print(i, j)
+    for overlap in range(n):
+        s = t
+        for _ in range(k - 1):
+            if overlap > 0:
+                if t[overlap:] == t[:n-overlap]:
+                    s += t[n-overlap:]
+                else:
+                    s += t
+            else:
+                s += t
+        
+        if count_occurrences(s, t) == k:
+            if len(s) < min_len:
+                min_len = len(s)
+                best_s = s
+    print(best_s)
 
-k = int(input())
-for _ in range(k):
-    solve()
+solve()

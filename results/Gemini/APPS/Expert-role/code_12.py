@@ -1,33 +1,32 @@
 def solve():
     n = int(input())
-    a = list(map(int, input().split()))
-    b = list(map(int, input().split()))
-
+    s = input()
+    
+    golds = s.count('G')
+    
+    max_len = 0
+    
     for i in range(n):
-        if a[i] == b[i]:
-            continue
-        
-        if a[i] < b[i]:
-            found_one = False
-            for j in range(0, i):
-                if a[j] == 1:
-                    found_one = True
-                    break
-            if not found_one:
-                print("NO")
-                return
-        else:
-            found_minus_one = False
-            for j in range(0, i):
-                if a[j] == -1:
-                    found_minus_one = True
-                    break
-            if not found_minus_one:
-                print("NO")
-                return
+        for j in range(n):
+            temp_s = list(s)
+            
+            # Swap if i and j are different
+            if i != j:
+                temp_s[i], temp_s[j] = temp_s[j], temp_s[i]
+            
+            current_len = 0
+            max_current_len = 0
+            
+            for k in range(n):
+                if temp_s[k] == 'G':
+                    current_len += 1
+                    max_current_len = max(max_current_len, current_len)
+                else:
+                    current_len = 0
+            
+            
+            max_len = max(max_len, min(max_current_len, golds))
+    
+    print(max_len)
 
-    print("YES")
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

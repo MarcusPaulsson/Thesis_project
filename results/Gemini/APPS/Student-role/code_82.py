@@ -1,16 +1,27 @@
 def solve():
     n = int(input())
-    p = list(map(int, input().split()))
+    strings = []
+    for _ in range(n):
+        strings.append(input())
+
+    def is_substring(a, b):
+        return a in b
+
+    def check_order(order):
+        for i in range(1, len(order)):
+            for j in range(i):
+                if not is_substring(order[j], order[i]):
+                    return False
+        return True
+
+    import itertools
+    for permutation in itertools.permutations(strings):
+        if check_order(list(permutation)):
+            print("YES")
+            for s in permutation:
+                print(s)
+            return
     
-    if n == 2:
-        print(p[1], p[0])
-        return
+    print("NO")
 
-    if p == list(range(1, n + 1)):
-        print(*list(range(n, 0, -1)))
-    else:
-        print(*list(range(n, 0, -1)))
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

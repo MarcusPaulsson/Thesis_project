@@ -1,46 +1,34 @@
 def solve():
-  n = int(input())
-  s = input()
-
-  def calculate_operations(arr):
-    operations = 0
-    while arr:
-      max_ops = 0
-      best_i = -1
-
-      for i in range(len(arr)):
-        temp_arr = arr[:]
-        del temp_arr[i]
-
-        if not temp_arr:
-          ops = 1
+    n, k = map(int, input().split())
+    s = input()
+    
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    dp[0][0] = 1
+    
+    for i in range(1, n + 1):
+        for j in range(i + 1):
+            dp[i][j] = dp[i - 1][j]
+            if j > 0:
+                dp[i][j] += dp[i - 1][j - 1]
+    
+    subsequence_counts = [dp[n][i] for i in range(n + 1)]
+    
+    total_cost = 0
+    
+    for length in range(n, -1, -1):
+        count = subsequence_counts[length]
+        
+        if k > count:
+            total_cost += (n - length) * count
+            k -= count
         else:
-          first_char = temp_arr[0]
-          j = 0
-          while j < len(temp_arr) and temp_arr[j] == first_char:
-            j += 1
-          temp_arr = temp_arr[j:]
-          ops = 1
+            total_cost += (n - length) * k
+            k = 0
+            break
+            
+    if k > 0:
+        print("-1")
+    else:
+        print(total_cost)
 
-        if ops > max_ops:
-          max_ops = ops
-          best_i = i
-
-      del arr[best_i]
-      operations += 1
-
-      if arr:
-        first_char = arr[0]
-        j = 0
-        while j < len(arr) and arr[j] == first_char:
-          j += 1
-        arr = arr[j:]
-
-    return operations
-
-  print(calculate_operations(list(s)))
-
-
-t = int(input())
-for _ in range(t):
-  solve()
+solve()

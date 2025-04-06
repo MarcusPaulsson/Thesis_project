@@ -1,10 +1,24 @@
 def solve():
-    t = int(input())
-    for _ in range(t):
-        n = int(input())
-        if n % 4 == 0:
-            print("YES")
-        else:
-            print("NO")
+    n, m = map(int, input().split())
+    tiles = []
+    for _ in range(n):
+        tiles.append([list(map(int, input().split())) for _ in range(2)])
+    
+    if m % 2 != 0:
+        print("NO")
+        return
+    
+    found = False
+    for tile in tiles:
+        if tile[0][1] == tile[1][0]:
+            found = True
+            break
+    
+    if found:
+        print("YES")
+    else:
+        print("NO")
 
-solve()
+t = int(input())
+for _ in range(t):
+    solve()

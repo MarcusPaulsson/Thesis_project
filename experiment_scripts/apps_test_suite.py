@@ -13,6 +13,9 @@ Gemini_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Gemini',
 Gemini_zero_shot_CoT_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Zero-shot-CoT'))
 Gemini_student_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Student-role'))
 Gemini_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Expert-role'))
+Gemini_meta_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Meta'))
+Gemini_naive_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Naive'))
+Gemini_iterative_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Iterative'))
 
 # ChatGPT
 chatGPT_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Zero-shot'))
@@ -32,20 +35,24 @@ qwen_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Qwen', 'AP
 # Define a list of folder paths and their corresponding names
 folder_paths = {
 
-    #   "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
-    #   "Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
-    #   "Gemini Student-role": Gemini_student_role_apps_folder,
-    #   "Gemini Expert-role": Gemini_expert_role_apps_folder,
-     "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
-     "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
-     "ChatGPT Student-role": chatGPT_student_role_apps_folder,
-     "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
-     "ChatGPT Meta": chatGPT_meta_apps_folder,
-     "ChatGPT Naive": chatGPT_naive_apps_folder,
-     "ChatGPT Iterative": chatGPT_iterative_apps_folder,
-    # "Qwen Zero-shot": qwen_zero_shot_apps_folder,
+    "Gemini Zero-shot": Gemini_zero_shot_apps_folder,
+    "Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
+    "Gemini Student-role": Gemini_student_role_apps_folder,
+    "Gemini Expert-role": Gemini_expert_role_apps_folder,
+    "Gemini Meta": Gemini_meta_apps_folder,
+    "Gemini Naive": Gemini_naive_apps_folder,
+    "Gemini Iterative": Gemini_iterative_apps_folder,
 
-    #"WizardCoder Zero-shot": wizardCoder_zero_shot_apps_folder
+    "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
+    "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
+    "ChatGPT Student-role": chatGPT_student_role_apps_folder,
+    "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
+    "ChatGPT Meta": chatGPT_meta_apps_folder,
+    "ChatGPT Naive": chatGPT_naive_apps_folder,
+    "ChatGPT Iterative": chatGPT_iterative_apps_folder,
+
+    # "Qwen Zero-shot": qwen_zero_shot_apps_folder,
+    # "WizardCoder Zero-shot": wizardCoder_zero_shot_apps_folder
 }
 
 test_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
@@ -155,11 +162,8 @@ def extract_and_save_passed_code(passed_code_ids):
                 filename_to_copy = f"code_{passed_index}.py"
                 source_file_path = os.path.join(folder_paths[i], filename_to_copy)
                 destination_file_path = os.path.join(filtered_folder_path, filename_to_copy)
-                print(f"Original folder: {folder_paths[i]}")
-                print(f"Filtered folder: {filtered_folder_path}")
                 os.makedirs(filtered_folder_path, exist_ok=True)
                 shutil.copy2(source_file_path, destination_file_path) # copy with metadata
-                print(f"Successfully copied: {filename_to_copy} to {filtered_folder_path}")
 
 
 save_passed = True

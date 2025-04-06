@@ -1,47 +1,25 @@
 def solve():
-    n = int(input())
-    p = list(map(int, input().split()))
-    
-    result = ""
-    for m in range(1, n + 1):
-        is_beautiful = False
-        for l in range(n):
-            for r in range(l, n):
-                sub_array = p[l:r+1]
-                if len(sub_array) == m:
-                    nums = sorted(sub_array)
-                    if nums == list(range(1, m + 1)):
-                        is_beautiful = True
-                        break
-                elif len(sub_array) > m:
-                    nums = sorted(sub_array)
-                    if len(set(nums)) != len(nums):
-                      continue
-                    
-                    max_val = max(nums)
-                    if max_val > m:
-                      continue
-                    
-                    
-                    temp = [x for x in nums if x <= m]
-                    if len(temp) != len(set(temp)):
-                        continue
-                    
-                    
-                    if sorted(temp) == list(range(1,m+1)):
-                        is_beautiful = True
-                        break
+    x = int(input())
+    hh, mm = map(int, input().split())
 
-            if is_beautiful:
-                break
-        
-        if is_beautiful:
-            result += "1"
-        else:
-            result += "0"
-    
-    print(result)
+    def is_lucky(h, m):
+        return '7' in str(h) or '7' in str(m)
 
-t = int(input())
-for _ in range(t):
-    solve()
+    def to_minutes(h, m):
+        return h * 60 + m
+
+    def to_time(minutes):
+        h = (minutes // 60) % 24
+        m = minutes % 60
+        return h, m
+
+    target_minutes = to_minutes(hh, mm)
+    
+    for presses in range(1000):
+        alarm_minutes = (target_minutes - presses * x) % (24 * 60)
+        alarm_h, alarm_m = to_time(alarm_minutes)
+        if is_lucky(alarm_h, alarm_m):
+            print(presses)
+            return
+
+solve()

@@ -1,23 +1,19 @@
-def min_max_digit(n):
-    s = str(n)
-    min_digit = 9
-    max_digit = 0
-    for digit in s:
-        digit = int(digit)
-        min_digit = min(min_digit, digit)
-        max_digit = max(max_digit, digit)
-    return min_digit, max_digit
-
 def solve():
-    a1, k = map(int, input().split())
-    a = a1
-    for i in range(1, min(k, 100001)):
-        min_digit, max_digit = min_max_digit(a)
-        if min_digit == 0:
-            break
-        a = a + min_digit * max_digit
-    print(a)
+    s = input()
+    n = len(s)
+    
+    symmetric_chars = {'b': 'd', 'd': 'b', 'p': 'q', 'q': 'p', 'o': 'o', 'x': 'x', 'X': 'X', 'H': 'H', 'I': 'I', 'M': 'M', 'O': 'O', 'T': 'T', 'U': 'U', 'V': 'V', 'v': 'v', 'W': 'W', 'w': 'w', 'Y': 'Y', 'A': 'A'}
+    
+    for i in range(n // 2):
+        if s[i] not in symmetric_chars or s[n - 1 - i] not in symmetric_chars or symmetric_chars[s[i]] != s[n - 1 - i]:
+            print("NIE")
+            return
+            
+    if n % 2 == 1:
+        if s[n // 2] not in symmetric_chars or symmetric_chars[s[n // 2]] != s[n // 2]:
+            print("NIE")
+            return
+            
+    print("TAK")
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

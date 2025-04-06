@@ -1,16 +1,12 @@
 def solve():
-    n, k1, k2 = map(int, input().split())
-    a = list(map(int, input().split()))
-    b = list(map(int, input().split()))
+    a, b, c = map(int, input().split())
     
-    max_a = max(a)
-    max_b = max(b)
+    for i in range(c // a + 1):
+        remaining_damage = c - i * a
+        if remaining_damage >= 0 and remaining_damage % b == 0:
+            print("Yes")
+            return
     
-    if max_a > max_b:
-        print("YES")
-    else:
-        print("NO")
+    print("No")
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

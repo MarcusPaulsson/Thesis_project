@@ -1,23 +1,30 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
+    n, x = map(int, input().split())
+    blows = []
+    for _ in range(n):
+        blows.append(list(map(int, input().split())))
     
-    results = []
+    max_damage = 0
+    for d, h in blows:
+        max_damage = max(max_damage, d)
     
-    for l1 in range(1, n):
-        l2 = n - l1
-        p1 = a[:l1]
-        p2 = a[l1:]
-        
-        m1 = max(p1)
-        m2 = max(p2)
-        
-        if all(1 <= x <= m1 for x in p1) and all(1 <= x <= m2 for x in p2) and len(set(p1)) == l1 and len(set(p2)) == l2 and m1 == l1 and m2 == l2:
-            results.append((l1, l2))
-            
-    print(len(results))
-    for l1, l2 in results:
-        print(l1, l2)
+    max_diff = 0
+    for d, h in blows:
+        max_diff = max(max_diff, d - h)
+    
+    if max_damage >= x:
+        print(1)
+        return
+    
+    if max_diff <= 0:
+        print(-1)
+        return
+    
+    remaining = x - max_damage
+    
+    blows_needed = (remaining + max_diff - 1) // max_diff
+    
+    print(blows_needed + 1)
 
 t = int(input())
 for _ in range(t):

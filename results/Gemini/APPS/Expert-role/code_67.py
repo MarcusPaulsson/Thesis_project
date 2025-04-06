@@ -1,45 +1,36 @@
 def solve():
-    n = int(input())
-    s = list(input())
-    t = list(input())
+    n, k = map(int, input().split())
+    t = input()
 
-    ops = []
-    for _ in range(2 * n):
-        if s == t:
-            break
+    def count_occurrences(s, target):
+        count = 0
+        for i in range(len(s) - len(target) + 1):
+            if s[i:i + len(target)] == target:
+                count += 1
+        return count
 
-        found = False
-        for i in range(n):
-            if s[i] != t[i]:
-                for j in range(n):
-                    if s[i] == t[j]:
-                        ops.append((i + 1, j + 1))
-                        s[i], t[j] = t[j], s[i]
-                        found = True
+    for length in range(n, n * k + 1):
+        for start_index in range(0, 1):
+            s = ""
+            
+            if start_index == 0:
+              
+                overlap = 0
+                for i in range(1, n):
+                    if t[:n-i] == t[i:]:
+                        overlap = n - i
                         break
-                if found:
-                    break
+                        
                 
-                for j in range(n):
-                    if t[i] == s[j]:
-                        ops.append((j + 1, i + 1))
-                        s[j], t[i] = t[i], s[j]
-                        found = True
-                        break
-                if found:
-                    break
-        
-        if not found:
-            break
-    
-    if s == t:
-        print("Yes")
-        print(len(ops))
-        for i, j in ops:
-            print(i, j)
-    else:
-        print("No")
+                s = t
+                num_needed = k - 1
+                
+                for _ in range(num_needed):
+                  s += t[overlap:]
 
-k = int(input())
-for _ in range(k):
-    solve()
+            
+            if len(s) == length and count_occurrences(s, t) == k:
+                print(s)
+                return
+
+solve()

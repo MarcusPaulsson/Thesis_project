@@ -1,18 +1,11 @@
 def solve():
-  n, k = map(int, input().split())
-  a = list(map(int, input().split()))
-  
-  if all(x == 0 for x in a):
-    print(0)
-    return
-  
-  a.sort()
-  
-  total = sum(a[n-k-1:])
-  
-  print(total)
-  
+    n = int(input())
+    s = str(n)
+    l = len(s)
+    first_digit = int(s[0])
+    
+    next_lucky = (first_digit + 1) * (10**(l-1))
+    
+    print(next_lucky - n)
 
-t = int(input())
-for _ in range(t):
-  solve()
+solve()

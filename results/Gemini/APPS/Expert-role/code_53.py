@@ -1,40 +1,45 @@
 def solve():
-    n, s = input().split()
-    n = int(n)
+    n = int(input())
+    a = list(map(int, input().split()))
 
-    def generate_min_lis(n, s):
-        arr = [0] * n
-        curr = 1
-        for i in range(n):
-            if i == 0 or s[i-1] == '>':
-                j = i
-                while j < n - 1 and s[j] == '<':
-                    j += 1
-                for k in range(j, i - 1, -1):
-                    arr[k] = curr
-                    curr += 1
-        return arr
+    def find_longest_increasing_subsequence(arr):
+        max_len = 0
+        best_moves = ""
 
-    def generate_max_lis(n, s):
-        arr = [0] * n
-        curr = 1
-        for i in range(n):
-            if i == 0 or s[i-1] == '<':
-                j = i
-                while j < n - 1 and s[j] == '>':
-                    j += 1
-                for k in range(j, i - 1, -1):
-                    arr[k] = curr
-                    curr += 1
-        return arr
+        def backtrack(current_sequence, moves, left, right, last_val):
+            nonlocal max_len, best_moves
+            
+            if left > right:
+                if len(current_sequence) > max_len:
+                    max_len = len(current_sequence)
+                    best_moves = moves
+                return
 
-    min_arr = generate_min_lis(n, s)
-    max_arr = generate_max_lis(n, s)
+            if arr[left] > last_val and arr[right] > last_val:
+                if arr[left] < arr[right]:
+                    backtrack(current_sequence + [arr[left]], moves + "L", left + 1, right, arr[left])
+                    backtrack(current_sequence + [arr[right]], moves + "R", left, right - 1, arr[right])
+                elif arr[left] > arr[right]:
+                    backtrack(current_sequence + [arr[right]], moves + "R", left, right - 1, arr[right])
+                    backtrack(current_sequence + [arr[left]], moves + "L", left + 1, right, arr[left])
+                else:
+                     backtrack(current_sequence + [arr[left]], moves + "L", left + 1, right, arr[left])
+                     backtrack(current_sequence + [arr[right]], moves + "R", left, right - 1, arr[right])
+            elif arr[left] > last_val:
+                backtrack(current_sequence + [arr[left]], moves + "L", left + 1, right, arr[left])
+            elif arr[right] > last_val:
+                backtrack(current_sequence + [arr[right]], moves + "R", left, right - 1, arr[right])
+            else:
+                if len(current_sequence) > max_len:
+                    max_len = len(current_sequence)
+                    best_moves = moves
+                return
 
-    print(*min_arr)
-    print(*max_arr)
+        backtrack([], "", 0, n - 1, 0)
+        return max_len, best_moves
 
+    length, moves = find_longest_increasing_subsequence(a)
+    print(length)
+    print(moves)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

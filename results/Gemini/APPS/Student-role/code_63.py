@@ -1,32 +1,20 @@
 def solve():
-    n, k = map(int, input().split())
-    a = list(map(int, input().split()))
-    w = list(map(int, input().split()))
-
-    a.sort()
-    w.sort()
-
-    happiness = 0
-    
-    # Assign maximums
-    l, r = 0, n - 1
-    for i in range(k):
-        if w[i] == 1:
-            happiness += 2 * a[r]
-            r -= 1
-
-    # Assign remaining
-    l = 0
-    for i in range(k - 1, -1, -1):
-        if w[i] > 1:
-            happiness += a[r]
-            happiness += a[l]
-            r -= 1
-            l += w[i] - 1
-
-    print(happiness)
-
+  a, b, c = map(int, input().split())
+  
+  best_cost = float('inf')
+  best_triple = None
+  
+  for A in range(1, 2 * a + 1):
+    for B in range(A, 2 * b + 1, A):
+      for C in range(B, 2 * c + 1, B):
+        cost = abs(a - A) + abs(b - B) + abs(c - C)
+        if cost < best_cost:
+          best_cost = cost
+          best_triple = (A, B, C)
+  
+  print(best_cost)
+  print(*best_triple)
 
 t = int(input())
 for _ in range(t):
-    solve()
+  solve()

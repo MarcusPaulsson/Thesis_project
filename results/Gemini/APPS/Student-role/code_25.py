@@ -1,58 +1,31 @@
 def solve():
-    n = int(input())
-    triangles = []
-    for _ in range(n - 2):
-        triangles.append(list(map(int, input().split())))
-
-    def check_permutation(p):
-        adj = {i: [] for i in range(1, n + 1)}
-        for i in range(n):
-            adj[p[i]].append(p[(i - 1 + n) % n])
-            adj[p[i]].append(p[(i + 1) % n])
-        
-        cut_order = []
-        remaining_triangles = list(range(n - 2))
-        
-        while remaining_triangles:
-            found = False
-            for i in list(remaining_triangles):
-                triangle = triangles[i]
-                
-                valid = True
-                for v in triangle:
-                    count = 0
-                    for neighbor in adj[v]:
-                        if neighbor in triangle:
-                            count += 1
-                    if count < 2:
-                        valid = False
-                        break
-                
-                if valid:
-                    cut_order.append(i + 1)
-                    remaining_triangles.remove(i)
-                    
-                    for v in triangle:
-                        for neighbor in triangle:
-                            if neighbor != v and neighbor in adj[v]:
-                                adj[v].remove(neighbor)
-                    
-                    found = True
-                    break
+    n, k = map(int, input().split())
+    
+    if k > n * n:
+        print("-1")
+        return
+    
+    matrix = [[0] * n for _ in range(n)]
+    
+    for i in range(n):
+        if k == 0:
+            break
+        if matrix[i][i] == 0 and k >= 1:
+            matrix[i][i] = 1
+            k -= 1
             
-            if not found:
-                return False, []
-        
-        return True, cut_order
+        for j in range(i + 1, n):
+            if k >= 2:
+                matrix[i][j] = 1
+                matrix[j][i] = 1
+                k -= 2
+            else:
+                break
+    
+    if k != 0:
+        print("-1")
+    else:
+        for row in matrix:
+            print(*row)
 
-    import itertools
-    for p in itertools.permutations(range(1, n + 1)):
-        success, cut_order = check_permutation(list(p))
-        if success:
-            print(*p)
-            print(*cut_order)
-            return
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

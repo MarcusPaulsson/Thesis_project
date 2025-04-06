@@ -1,48 +1,41 @@
 def solve():
-    n, k, d1, d2 = map(int, input().split())
+    n, m, k = map(int, input().split())
+    a = []
+    for _ in range(n):
+        a.append(list(map(int, input().split())))
 
-    def check(x, y, z):
-        if x < 0 or y < 0 or z < 0:
-            return False
-        if x + y + z > k:
-            return False
+    dp = {}
+
+    def calculate_max_sum(row_index, current_sum):
+        if row_index == n:
+            if current_sum % k == 0:
+                return current_sum
+            else:
+                return -float('inf')
+
+        if (row_index, current_sum) in dp:
+            return dp[(row_index, current_sum)]
         
-        mx = max(x, y, z)
-        rem = n // 3 * 3 - k
-
-        if rem < 0:
-            return False
+        max_sum_for_row = -float('inf')
         
-        if (rem % 3 != 0):
-          return False
-
-        if mx * 3 > n:
-          return False
-          
-        
-        return True
-
-    possible = False
-    for s1 in [-1, 1]:
-        for s2 in [-1, 1]:
-            x = (d1 * s1 + d2 * s1 * s2)
-            if x % 3 != 0:
-                continue
-            x //= 3
-            y = d1 * s1 + x
-            z = d2 * s2 + y
+        # Iterate through all possible combinations of elements in the current row
+        for i in range(1 << m):
+            count = 0
+            row_sum = 0
+            elements = []
+            for j in range(m):
+                if (i >> j) & 1:
+                    count += 1
+                    row_sum += a[row_index][j]
+                    elements.append(a[row_index][j])
             
-            if check(x, y, z):
-                possible = True
-                break
-        if possible:
-            break
-    
-    if possible:
-        print("yes")
-    else:
-        print("no")
+            if count <= m // 2:
+                max_sum_for_row = max(max_sum_for_row, calculate_max_sum(row_index + 1, current_sum + row_sum))
 
-t = int(input())
-for _ in range(t):
-    solve()
+        dp[(row_index, current_sum)] = max_sum_for_row
+        return max_sum_for_row
+
+    result = calculate_max_sum(0, 0)
+    print(result)
+
+solve()

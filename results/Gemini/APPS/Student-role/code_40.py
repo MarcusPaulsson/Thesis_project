@@ -1,27 +1,15 @@
 def solve():
-    a, b, p = map(int, input().split())
-    s = input()
-    n = len(s)
+    n, L = map(int, input().split())
+    kefa = list(map(int, input().split()))
+    sasha = list(map(int, input().split()))
 
-    for i in range(n):
-        cost = 0
-        curr = i
-        while curr < n - 1:
-            next_stop = curr + 1
-            while next_stop < n - 1 and s[next_stop] == s[curr]:
-                next_stop += 1
-            
-            if s[curr] == 'A':
-                cost += a
-            else:
-                cost += b
-            
-            curr = next_stop
-        
-        if cost <= p:
-            print(i + 1)
+    for shift in range(L):
+        shifted_sasha = [(x + shift) % L for x in sasha]
+        shifted_sasha.sort()
+        if kefa == shifted_sasha:
+            print("YES")
             return
+    
+    print("NO")
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

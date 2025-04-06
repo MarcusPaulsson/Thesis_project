@@ -1,13 +1,13 @@
 def solve():
-  n = int(input())
+  n, a, b = map(int, input().split())
   
-  segments = [6, 2, 5, 5, 4, 5, 6, 3, 7, 6]
+  ans = 0
+  for i in range(1, n):
+    if i > a or (n - i) > b:
+      continue
+    
+    ans = max(ans, min(a // i, b // (n - i)))
   
-  if n % 2 == 0:
-    print("1" * (n // 2))
-  else:
-    print("7" + "1" * ((n - 3) // 2))
+  print(ans)
 
-t = int(input())
-for _ in range(t):
-  solve()
+solve()

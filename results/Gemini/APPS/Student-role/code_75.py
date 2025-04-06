@@ -1,93 +1,56 @@
 def solve():
-    n, k = map(int, input().split())
-    minions = []
-    for _ in range(n):
-        minions.append(list(map(int, input().split())))
-
-    best_actions = []
-    max_power = -1
-
-    import itertools
-    for r in range(k + 1):
-        for summoned in itertools.permutations(range(n), r):
+    a, b, c = map(int, input().split())
+    
+    days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    
+    food_schedule = {
+        "Monday": "fish",
+        "Tuesday": "rabbit",
+        "Wednesday": "chicken",
+        "Thursday": "fish",
+        "Friday": "chicken",
+        "Saturday": "rabbit",
+        "Sunday": "fish"
+    }
+    
+    max_days = 0
+    
+    for start_day_index in range(7):
+        current_a = a
+        current_b = b
+        current_c = c
+        
+        days = 0
+        
+        current_day_index = start_day_index
+        
+        while True:
+            day_name = days_of_week[current_day_index % 7]
+            food_type = food_schedule[day_name]
             
-            current_power = 0
-            current_minions = []
-            actions = []
-
+            if food_type == "fish":
+                if current_a > 0:
+                    current_a -= 1
+                    days += 1
+                else:
+                    break
+            elif food_type == "rabbit":
+                if current_b > 0:
+                    current_b -= 1
+                    days += 1
+                else:
+                    break
+            else:
+                if current_c > 0:
+                    current_c -= 1
+                    days += 1
+                else:
+                    break
             
-            powers = []
-            for i in range(len(summoned)):
-                powers.append(minions[summoned[i]][0])
-                for j in range(i):
-                  powers[i] += minions[summoned[j]][1]
-                  
+            current_day_index += 1
             
-            current_power = sum(powers)
-            
-            if current_power > max_power:
-                max_power = current_power
-                best_actions = []
-                for idx in summoned:
-                    best_actions.append(idx + 1)
-            
-            
-            for num_destroyed in range(r + 1):
-                for destroyed in itertools.combinations(range(r), num_destroyed):
-                  
-                    current_power = 0
-                    current_minions = []
-                    actions = []
-                    
-                    powers = []
-                    for i in range(len(summoned)):
-                        powers.append(minions[summoned[i]][0])
-                        for j in range(i):
-                          powers[i] += minions[summoned[j]][1]
-                    
-                    
-                    for i in range(len(summoned)):
-                        if i not in destroyed:
-                            current_power += powers[i]
-                            
-                    if current_power > max_power:
-                        max_power = current_power
-                        best_actions = []
-                        
-                        temp_summoned = [i+1 for i in summoned]
-                        temp_destroyed = [-(summoned[i]+1)for i in destroyed]
-                        
-                        
-                        
-                        
-                        
-                        temp_actions = []
-                        
-                        summon_idx = 0
-                        destroy_idx = 0
-                        
-                        
-                        
-                        
-                        for i in range (r + num_destroyed):
-                            if destroy_idx < len(temp_destroyed) and \
-                                temp_destroyed[destroy_idx] < 0 and \
-                                -temp_destroyed[destroy_idx] == temp_summoned[summon_idx]:
-                                temp_actions.append(temp_summoned[summon_idx])
-                                temp_actions.append(temp_destroyed[destroy_idx])
-                                summon_idx += 1
-                                destroy_idx += 1
-                            else:
-                                temp_actions.append(temp_summoned[summon_idx])
-                                summon_idx += 1
-                        
-                        best_actions = temp_actions
-                        
-    print(len(best_actions))
-    print(*best_actions)
-
-
-
-t = int(input())
-for _ in range(t):
-    solve()
+        max_days = max(max_days, days)
+    
+    print(max_days)
+    
+solve()

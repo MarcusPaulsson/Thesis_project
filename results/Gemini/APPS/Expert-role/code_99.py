@@ -1,36 +1,12 @@
 def solve():
-    n = int(input())
-    s = input()
-    
-    s_list = list(s)
-    
-    moves = []
-    
-    i = 0
-    while i < len(s_list) - 1:
-        if s_list[i] == '1' and s_list[i+1] == '0':
-            moves.append(i)
-        i += 1
-    
-    while moves:
-        idx = moves.pop(0)
-        
-        
-        temp_s_list1 = s_list[:idx] + s_list[idx+1:]
-        temp_s_list2 = s_list[:idx+1] + s_list[idx+2:]
-                
-        
-        s_list = min(temp_s_list1, temp_s_list2, key=lambda x: (len(x), x))
-        
-        moves = []
-        i = 0
-        while i < len(s_list) - 1:
-            if s_list[i] == '1' and s_list[i+1] == '0':
-                moves.append(i)
-            i += 1
-    
-    print("".join(s_list))
+  n = int(input())
+  a1, a2, a3 = map(int, input().split())
+  b1, b2, b3 = map(int, input().split())
 
-t = int(input())
-for _ in range(t):
-    solve()
+  min_wins = max(0, a1 - (b1 + b3 - a2 - a3), a2 - (b2 + b1 - a1 - a3), a3 - (b3 + b2 - a1 - a2))
+  
+  max_wins = min(a1, b2) + min(a2, b3) + min(a3, b1)
+
+  print(min_wins, max_wins)
+
+solve()

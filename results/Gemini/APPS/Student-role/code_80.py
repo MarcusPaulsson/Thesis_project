@@ -1,43 +1,57 @@
 def solve():
-  l, r = map(int, input().split())
-  
-  count = 0
-  
-  
-  total_count = (r - l + 1) * (r - l) // 2
-  
-  
-  num_zeros = max(0, l - 0)
-  num_in_range = r - 0 + 1
-  
-  
-  
-  total_zeros = num_in_range * (num_in_range - 1) // 2
-  
-  total_zeros_below_l = max(0, l - 1) * (max(0, l - 1) - 1) // 2
+    n = int(input())
+    s = input()
+    
+    def check(k):
+        colors = [0] * n
+        
+        def backtrack(index):
+            if index == n:
+                return True
+            
+            for color in range(1, k + 1):
+                colors[index] = color
+                
+                temp_s = list(s)
+                temp_colors = list(colors)
+                
+                swaps = True
+                
+                for i in range(n):
+                    for j in range(n - 1):
+                        if temp_s[j] > temp_s[j+1] and temp_colors[j] != temp_colors[j+1]:
+                            temp_s[j], temp_s[j+1] = temp_s[j+1], temp_s[j]
+                            temp_colors[j], temp_colors[j+1] = temp_colors[j+1], temp_colors[j]
+                            
+                if "".join(temp_s) == "".join(sorted(s)):
+                    return True
+                
+            return False
 
-  
-  
-  total_zeros_in_range = total_zeros - total_zeros_below_l
-  
-  
-  
-  
-  count=0
-  for a in range(l,r+1):
-      for b in range(l,r+1):
-          if a+b == a^b:
-              count+=1
-  
-  final_count = 0
-  for a in range(l, r + 1):
-    for b in range(l, r + 1):
-      if (a + b) == (a ^ b):
-        final_count += 1
-  
-  
-  print(final_count)
-  
-t = int(input())
-for _ in range(t):
-  solve()
+    
+    for k in range(1, n + 1):
+        colors = [0] * n
+        
+        def can_sort(coloring):
+            temp_s = list(s)
+            
+            for i in range(n):
+                for j in range(n - 1):
+                    if temp_s[j] > temp_s[j+1] and coloring[j] != coloring[j+1]:
+                        temp_s[j], temp_s[j+1] = temp_s[j+1], temp_s[j]
+            
+            return "".join(temp_s) == "".join(sorted(s))
+
+        
+        
+        
+        
+        import itertools
+        
+        for coloring in itertools.product(range(1, k + 1), repeat=n):
+            if can_sort(coloring):
+                print(k)
+                print(*coloring)
+                return
+
+solve()

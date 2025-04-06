@@ -1,36 +1,15 @@
 def solve():
-    n, k = map(int, input().split())
-    s = input()
-    
-    ans = 0
-    for i in range(k // 2):
-        counts = {}
-        for j in range(0, n, k):
-            counts[s[i+j]] = counts.get(s[i+j], 0) + 1
-            counts[s[k-1-i+j]] = counts.get(s[k-1-i+j], 0) + 1
-        
-        max_count = 0
-        total_count = 0
-        for count in counts.values():
-            max_count = max(max_count, count)
-            total_count += count
-            
-        ans += (total_count - max_count)
-        
-    if k % 2 == 1:
-        counts = {}
-        for j in range(0, n, k):
-            counts[s[k//2+j]] = counts.get(s[k//2+j], 0) + 1
-            
-        max_count = 0
-        total_count = 0
-        for count in counts.values():
-            max_count = max(max_count, count)
-            total_count += count
-        ans += (total_count - max_count)
-    
-    print(ans)
+  h1, m1 = map(int, input().replace(':', ' ').split())
+  h2, m2 = map(int, input().replace(':', ' ').split())
 
-t = int(input())
-for _ in range(t):
-    solve()
+  start_minutes = h1 * 60 + m1
+  end_minutes = h2 * 60 + m2
+
+  mid_minutes = (start_minutes + end_minutes) // 2
+
+  h3 = mid_minutes // 60
+  m3 = mid_minutes % 60
+
+  print("{:02d}:{:02d}".format(h3, m3))
+
+solve()

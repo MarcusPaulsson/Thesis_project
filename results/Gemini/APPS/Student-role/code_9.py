@@ -1,68 +1,157 @@
 def solve():
-  s = input()
-  
-  def calculate_score(moves):
-    alice_score = 0
-    for i in range(len(moves)):
-      if i % 2 == 0:
-        alice_score += moves[i]
-    return alice_score
-  
-  def get_moves(current_s):
-    moves = []
-    i = 0
-    while i < len(current_s):
-      j = i
-      while j < len(current_s) and current_s[i] == current_s[j]:
-        j += 1
-      moves.append((i, j))
-      i = j
-    return moves
-  
-  def play_game(current_s, alice_turn):
-    if not current_s:
-      return 0
-    
-    moves = get_moves(current_s)
-    best_score = -1
-    
-    for start, end in moves:
-      deleted_ones = 0
-      for k in range(start, end):
-        if current_s[k] == '1':
-          deleted_ones += 1
-          
-      new_s = current_s[:start] + current_s[end:]
-      
-      score_after_move = play_game(new_s, not alice_turn)
-      
-      if alice_turn:
-          best_score = max(best_score, deleted_ones + score_after_move if best_score != -1 else deleted_ones + score_after_move)
-      else:
-          best_score = max(best_score, score_after_move if best_score != -1 else score_after_move)
-          
-    return best_score
-  
-  def solve_greedy(s):
-      groups = []
-      i = 0
-      while i < len(s):
-          j = i
-          while j < len(s) and s[i] == s[j]:
-              j += 1
-          groups.append(s[i:j])
-          i = j
-      
-      groups.sort(key=len, reverse=True)
-      
-      alice_score = 0
-      for i in range(0, len(groups), 2):
-          alice_score += groups[i].count('1')
-      
-      return alice_score
-  
-  print(solve_greedy(s))
+    d = int(input())
+    n, m = map(int, input().split())
+    sofas = []
+    for _ in range(d):
+        x1, y1, x2, y2 = map(int, input().split())
+        sofas.append((x1, y1, x2, y2))
+    cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
 
-t = int(input())
-for _ in range(t):
-  solve()
+    def count_left(sofa_index):
+        count = 0
+        x1_a, y1_a, x2_a, y2_a = sofas[sofa_index]
+        min_y_a = min(y1_a, y2_a)
+        for i in range(d):
+            if i != sofa_index:
+                x1_b, y1_b, x2_b, y2_b = sofas[i]
+                min_y_b = min(y1_b, y2_b)
+                if min(x1_a, x2_a) > max(x1_b, x2_b):
+                    count += 0
+                elif max(x1_a,x2_a) < min(x1_b,x2_b):
+                    count += 0
+                elif min_y_a > min_y_b:
+                    count += 0
+                elif max(y1_a, y2_a) < min(y1_b, y2_b):
+                    count += 0
+                else:
+                    
+                    overlap = False
+                    
+                    if (x1_a == x2_a and x1_b == x2_b):
+                        if x1_a == x1_b:
+                            if max(y1_a, y2_a) >= min(y1_b, y2_b) and min(y1_a, y2_a) <= max(y1_b, y2_b):
+                                overlap = True
+                    
+                    if (y1_a == y2_a and y1_b == y2_b):
+                        if y1_a == y1_b:
+                            if max(x1_a, x2_a) >= min(x1_b, x2_b) and min(x1_a, x2_a) <= max(x1_b, x2_b):
+                                overlap = True
+                                
+                    if (x1_a < x1_b) and not overlap:
+                        count += 1
+                        
+        return count
+
+    def count_right(sofa_index):
+        count = 0
+        x1_a, y1_a, x2_a, y2_a = sofas[sofa_index]
+        min_y_a = min(y1_a, y2_a)
+        for i in range(d):
+            if i != sofa_index:
+                x1_b, y1_b, x2_b, y2_b = sofas[i]
+                min_y_b = min(y1_b, y2_b)
+                if min(x1_a, x2_a) > max(x1_b, x2_b):
+                    count += 0
+                elif max(x1_a,x2_a) < min(x1_b,x2_b):
+                    count += 0
+                elif min_y_a > min_y_b:
+                    count += 0
+                elif max(y1_a, y2_a) < min(y1_b, y2_b):
+                    count += 0
+                else:
+                    
+                    overlap = False
+                    
+                    if (x1_a == x2_a and x1_b == x2_b):
+                        if x1_a == x1_b:
+                            if max(y1_a, y2_a) >= min(y1_b, y2_b) and min(y1_a, y2_a) <= max(y1_b, y2_b):
+                                overlap = True
+                    
+                    if (y1_a == y2_a and y1_b == y2_b):
+                        if y1_a == y1_b:
+                            if max(x1_a, x2_a) >= min(x1_b, x2_b) and min(x1_a, x2_a) <= max(x1_b, x2_b):
+                                overlap = True
+                                
+                    if (x1_a > x1_b) and not overlap:
+                        count += 1
+        return count
+
+    def count_top(sofa_index):
+        count = 0
+        x1_a, y1_a, x2_a, y2_a = sofas[sofa_index]
+        min_x_a = min(x1_a,x2_a)
+        for i in range(d):
+            if i != sofa_index:
+                x1_b, y1_b, x2_b, y2_b = sofas[i]
+                min_x_b = min(x1_b,x2_b)
+                if min(y1_a, y2_a) > max(y1_b, y2_b):
+                    count += 0
+                elif max(y1_a,y2_a) < min(y1_b,y2_b):
+                    count += 0
+                elif min_x_a > min_x_b:
+                    count += 0
+                elif max(x1_a, x2_a) < min(x1_b, x2_b):
+                    count += 0
+                else:
+                    overlap = False
+                    
+                    if (x1_a == x2_a and x1_b == x2_b):
+                        if x1_a == x1_b:
+                            if max(y1_a, y2_a) >= min(y1_b, y2_b) and min(y1_a, y2_a) <= max(y1_b, y2_b):
+                                overlap = True
+                    
+                    if (y1_a == y2_a and y1_b == y2_b):
+                        if y1_a == y1_b:
+                            if max(x1_a, x2_a) >= min(x1_b, x2_b) and min(x1_a, x2_a) <= max(x1_b, x2_b):
+                                overlap = True
+                                
+                    if (y1_a < y1_b) and not overlap:
+                        count += 1
+        return count
+
+    def count_bottom(sofa_index):
+        count = 0
+        x1_a, y1_a, x2_a, y2_a = sofas[sofa_index]
+        min_x_a = min(x1_a,x2_a)
+        for i in range(d):
+            if i != sofa_index:
+                x1_b, y1_b, x2_b, y2_b = sofas[i]
+                min_x_b = min(x1_b,x2_b)
+                if min(y1_a, y2_a) > max(y1_b, y2_b):
+                    count += 0
+                elif max(y1_a,y2_a) < min(y1_b,y2_b):
+                    count += 0
+                elif min_x_a > min_x_b:
+                    count += 0
+                elif max(x1_a, x2_a) < min(x1_b, x2_b):
+                    count += 0
+                else:
+                    overlap = False
+                    
+                    if (x1_a == x2_a and x1_b == x2_b):
+                        if x1_a == x1_b:
+                            if max(y1_a, y2_a) >= min(y1_b, y2_b) and min(y1_a, y2_a) <= max(y1_b, y2_b):
+                                overlap = True
+                    
+                    if (y1_a == y2_a and y1_b == y2_b):
+                        if y1_a == y1_b:
+                            if max(x1_a, x2_a) >= min(x1_b, x2_b) and min(x1_a, x2_a) <= max(x1_b, x2_b):
+                                overlap = True
+                                
+                    if (y1_a > y1_b) and not overlap:
+                        count += 1
+        return count
+
+    for i in range(d):
+        l = count_left(i)
+        r = count_right(i)
+        t = count_top(i)
+        b = count_bottom(i)
+
+        if l == cnt_l and r == cnt_r and t == cnt_t and b == cnt_b:
+            print(i + 1)
+            return
+
+    print(-1)
+
+solve()

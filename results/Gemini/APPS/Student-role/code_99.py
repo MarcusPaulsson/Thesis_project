@@ -1,19 +1,12 @@
 def solve():
-    n = int(input())
-    s = input()
-    
-    s = list(s)
-    
-    i = 0
-    while i < len(s) - 1:
-        if s[i] == '1' and s[i+1] == '0':
-            s.pop(i+1)
-            i = 0
-        else:
-            i += 1
-            
-    print("".join(s))
+  n = int(input())
+  a1, a2, a3 = map(int, input().split())
+  b1, b2, b3 = map(int, input().split())
 
-t = int(input())
-for _ in range(t):
-    solve()
+  min_wins = max(0, a1 - (b1 + b3 - a2), a2 - (b2 + b1 - a3), a3 - (b3 + b2 - a1))
+
+  max_wins = min(a1, b2) + min(a2, b3) + min(a3, b1)
+
+  print(min_wins, max_wins)
+
+solve()

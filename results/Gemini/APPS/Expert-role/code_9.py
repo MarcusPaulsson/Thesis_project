@@ -1,67 +1,58 @@
 def solve():
-    s = input()
-    groups = []
-    count = 1
-    for i in range(1, len(s)):
-        if s[i] == s[i-1]:
-            count += 1
-        else:
-            groups.append((s[i-1], count))
-            count = 1
-    groups.append((s[-1], count))
+  d = int(input())
+  n, m = map(int, input().split())
+  sofas = []
+  for i in range(d):
+    x1, y1, x2, y2 = map(int, input().split())
+    sofas.append((x1, y1, x2, y2))
+  cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
+  
+  def is_left(sofa1, sofa2):
+    x11, y11, x12, y12 = sofa1
+    x21, y21, x22, y22 = sofa2
     
-    
-    while len(groups) > 0:
-        
-        best_move = -1
-        best_move_len = -1
-        
-        for i in range(len(groups)):
-            if groups[i][1] > best_move_len:
-                best_move = i
-                best_move_len = groups[i][1]
-        
-        alice_score = 0
-        if groups[best_move][0] == '1':
-            alice_score = groups[best_move][1]
-            
-        
-        
-        
-        
-        if best_move > 0 and best_move < len(groups) - 1 and groups[best_move - 1][0] == groups[best_move + 1][0]:
-            new_count = groups[best_move - 1][1] + groups[best_move + 1][1]
-            groups[best_move - 1] = (groups[best_move - 1][0], new_count)
-            groups.pop(best_move + 1)
-            groups.pop(best_move)
-           
-        else:
-            groups.pop(best_move)
-        
-        
-        
-        bob_best_move = -1
-        bob_best_move_len = -1
-        
-        if len(groups) > 0:
-            for i in range(len(groups)):
-                if groups[i][1] > bob_best_move_len:
-                    bob_best_move = i
-                    bob_best_move_len = groups[i][1]
-                    
-            if bob_best_move > 0 and bob_best_move < len(groups) - 1 and groups[bob_best_move - 1][0] == groups[bob_best_move + 1][0]:
-                new_count = groups[bob_best_move - 1][1] + groups[bob_best_move + 1][1]
-                groups[bob_best_move - 1] = (groups[bob_best_move - 1][0], new_count)
-                groups.pop(bob_best_move + 1)
-                groups.pop(bob_best_move)
-            else:
-                groups.pop(bob_best_move)
-                
-        yield alice_score
-    
-    
+    return min(y11, y12) < max(y21, y22)
 
-t = int(input())
-for _ in range(t):
-    ans = sum(solve())
-    print(ans)
+  def is_right(sofa1, sofa2):
+    x11, y11, x12, y12 = sofa1
+    x21, y21, x22, y22 = sofa2
+    
+    return max(y11, y12) > min(y21, y22)
+
+  def is_top(sofa1, sofa2):
+    x11, y11, x12, y12 = sofa1
+    x21, y21, x22, y22 = sofa2
+    
+    return min(x11, x12) < max(x21, x22)
+
+  def is_bottom(sofa1, sofa2):
+    x11, y11, x12, y12 = sofa1
+    x21, y21, x22, y22 = sofa2
+    
+    return max(x11, x12) > min(x21, x22)
+  
+  
+  for i in range(d):
+    l_count = 0
+    r_count = 0
+    t_count = 0
+    b_count = 0
+    
+    for j in range(d):
+      if i != j:
+        if is_left(sofas[i], sofas[j]):
+          l_count += 1
+        if is_right(sofas[i], sofas[j]):
+          r_count += 1
+        if is_top(sofas[i], sofas[j]):
+          t_count += 1
+        if is_bottom(sofas[i], sofas[j]):
+          b_count += 1
+    
+    if l_count == cnt_l and r_count == cnt_r and t_count == cnt_t and b_count == cnt_b:
+      print(i + 1)
+      return
+  
+  print(-1)
+
+solve()

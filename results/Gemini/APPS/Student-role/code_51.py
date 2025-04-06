@@ -1,52 +1,37 @@
 def solve():
-    n, k, d1, d2 = map(int, input().split())
+    n = int(input())
+    d = list(map(int, input().split()))
+    d.sort()
+    x = d[-1]
+    
+    divisors_x = []
+    for i in range(1, int(x**0.5) + 1):
+        if x % i == 0:
+            divisors_x.append(i)
+            if i * i != x:
+                divisors_x.append(x // i)
+    divisors_x.sort()
+    
+    counts = {}
+    for val in d:
+        counts[val] = counts.get(val, 0) + 1
+    
+    for val in divisors_x:
+        counts[val] = counts.get(val, 0) - 1
+    
+    remaining_divisors = []
+    for val in counts:
+        for _ in range(counts[val]):
+            remaining_divisors.append(val)
+            
+    remaining_divisors.sort()
+    
+    if not remaining_divisors:
+        print(x, x)
+        return
 
-    def check(x, y, z):
-        if x < 0 or y < 0 or z < 0:
-            return False
-        if x + y + z > k:
-            return False
-        
-        wins = n // 3
-        
-        rem_x = wins - x
-        rem_y = wins - y
-        rem_z = wins - z
-        
-        if rem_x < 0 or rem_y < 0 or rem_z < 0:
-            return False
-        
-        if (rem_x + rem_y + rem_z) <= (n - k):
-          if (n-k-rem_x-rem_y-rem_z) % 3 == 0:
-            return True
-          else:
-            return False
-        else:
-          return False
+    y = remaining_divisors[-1]
+    
+    print(x, y)
 
-    
-    if n % 3 != 0:
-      print("no")
-      return
-    
-    if check(d1, d1 + d2, d2):
-        print("yes")
-        return
-    
-    if check(d1, d1 - d2, -d2):
-        print("yes")
-        return
-    
-    if check(-d1, -d1 + d2, d2 - d1):
-        print("yes")
-        return
-    
-    if check(-d1, -d1 - d2, -d2 - d1):
-        print("yes")
-        return
-    
-    print("no")
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

@@ -1,30 +1,20 @@
 def solve():
-  n, k = map(int, input().split())
-  a = list(map(int, input().split()))
-  w = list(map(int, input().split()))
-
-  a.sort()
-  w.sort()
-
-  happiness = 0
-  
-  # Assign largest elements to friends with w_i = 1
-  l = n - 1
-  for i in range(k):
-    if w[i] == 1:
-      happiness += 2 * a[l]
-      l -= 1
-
-  # Assign remaining elements
-  r = 0
-  for i in range(k - 1, -1, -1):
-    if w[i] > 1:
-      happiness += a[l] + a[r]
-      l -= 1
-      r += w[i] - 1
-
-  print(happiness)
+    a, b, c = map(int, input().split())
+    
+    best_cost = float('inf')
+    best_abc = None
+    
+    for A in range(1, 2 * a + 1):
+        for B in range(A, 2 * b + 1, A):
+            for C in range(B, 2 * c + 1, B):
+                cost = abs(A - a) + abs(B - b) + abs(C - c)
+                if cost < best_cost:
+                    best_cost = cost
+                    best_abc = (A, B, C)
+    
+    print(best_cost)
+    print(*best_abc)
 
 t = int(input())
 for _ in range(t):
-  solve()
+    solve()

@@ -1,47 +1,51 @@
 def solve():
-    n, m, k = map(int, input().split())
-    
-    dp = {}
-    
-    def calculate_cost(rows, cols, target_squares):
-        if (rows, cols, target_squares) in dp:
-            return dp[(rows, cols, target_squares)]
-        
-        if target_squares == 0:
-            return 0
-        
-        if rows * cols == target_squares:
-            return 0
-            
-        if rows * cols < target_squares:
-            return float('inf')
-        
-        if rows == 0 or cols == 0:
-            return float('inf')
-            
-        if target_squares < 0:
-            return float('inf')
+    n = int(input())
+    f = list(map(int, input().split()))
 
-        min_cost = float('inf')
-        
-        # Horizontal cuts
-        for i in range(1, rows):
-            for j in range(target_squares + 1):
-                cost = cols * cols + calculate_cost(i, cols, j) + calculate_cost(rows - i, cols, target_squares - j)
-                min_cost = min(min_cost, cost)
-        
-        # Vertical cuts
-        for i in range(1, cols):
-            for j in range(target_squares + 1):
-                cost = rows * rows + calculate_cost(rows, i, j) + calculate_cost(rows, cols - i, target_squares - j)
-                min_cost = min(min_cost, cost)
-        
-        dp[(rows, cols, target_squares)] = min_cost
-        return min_cost
-    
-    result = calculate_cost(n, m, k)
-    print(result)
+    assigned = [False] * (n + 1)
+    for i in range(n):
+        if f[i] != 0:
+            assigned[f[i]] = True
 
-t = int(input())
-for _ in range(t):
-    solve()
+    unassigned_givers = []
+    unassigned_receivers = []
+
+    for i in range(n):
+        if f[i] == 0:
+            unassigned_givers.append(i)
+
+    for i in range(1, n + 1):
+        if not assigned[i]:
+            unassigned_receivers.append(i)
+
+    
+    for i in range(len(unassigned_givers)):
+        giver_index = unassigned_givers[i]
+        
+        receiver = unassigned_receivers[i]
+        
+        if giver_index + 1 == receiver:
+            
+            if i + 1 < len(unassigned_givers):
+                
+                f[giver_index] = unassigned_receivers[i+1]
+                f[unassigned_givers[i+1]] = receiver
+                unassigned_receivers[i], unassigned_receivers[i+1] = unassigned_receivers[i+1], unassigned_receivers[i]
+            else:
+                
+                
+                
+                temp = unassigned_receivers[0]
+                f[giver_index] = temp
+                f[unassigned_givers[0]] = receiver
+                unassigned_receivers[0] = receiver
+                
+                
+                
+                
+        else:
+             f[giver_index] = receiver
+           
+    print(*f)
+
+solve()

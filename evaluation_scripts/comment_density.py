@@ -103,6 +103,7 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
     "ChatGPT classEval Meta": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Meta'),
     "ChatGPT classEval Naive": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Naive'),
+    "ChatGPT classEval Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Iterative'),
 }
 
 folder_paths_chatgpt_APPS = {
@@ -112,6 +113,7 @@ folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Student-role"),
     "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
     "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
+    "ChatGPT APPS Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'APPS', 'Iterative'),
 }
 
 folder_paths_gemini_APPS = {
@@ -119,12 +121,14 @@ folder_paths_gemini_APPS = {
     "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
     "Gemini APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Expert-role"),
     "Gemini APPS Student-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Student-role"),
+    "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
+    "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
+    "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
 }
 
 # Analyze folders and count comment density
 results_gemini = analyze_folders_and_count_comment_density(folder_paths_gemini_cli_games)
 results_chatgpt = analyze_folders_and_count_comment_density(folder_paths_chatgpt_cli_games)
-
 results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_classEval))
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_classEval))
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_APPS))

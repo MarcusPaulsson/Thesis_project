@@ -1,11 +1,16 @@
 def solve():
-  n = int(input())
-  
-  if n % 2 == 0:
-    print("1" * (n // 2))
-  else:
-    print("7" + "1" * ((n - 3) // 2))
+    n, a, b = map(int, input().split())
+    
+    ans = 0
+    for i in range(1, n):
+        if i > a or n - i > b:
+            continue
+        
+        x1 = a // i
+        x2 = b // (n - i)
+        
+        ans = max(ans, min(x1, x2))
+    
+    print(ans)
 
-t = int(input())
-for _ in range(t):
-  solve()
+solve()

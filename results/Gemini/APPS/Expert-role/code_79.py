@@ -1,74 +1,61 @@
-def gcd(a, b):
-    if b == 0:
-        return a
-    return gcd(b, a % b)
-
 def solve():
-    n = int(input())
-    divisors = []
-    for i in range(2, int(n**0.5) + 1):
-        if n % i == 0:
-            divisors.append(i)
-            if i != n // i:
-                divisors.append(n // i)
-    divisors.append(n)
-    divisors.sort()
-
-    import itertools
+    n = input()
+    n_len = len(n)
     
-    best_order = None
-    min_moves = float('inf')
-
-    for order in itertools.permutations(divisors):
+    ans = float('inf')
+    
+    for suffix in ["00", "25", "50", "75"]:
+        
+        temp_n = list(n)
+        
         moves = 0
-        is_valid = True
-        for i in range(len(order)):
-            if gcd(order[i], order[(i+1) % len(order)]) == 1:
-                is_valid = False
+        
+        # Find the last digit of the suffix
+        
+        last_digit_idx = -1
+        for i in range(n_len - 1, -1, -1):
+            if temp_n[i] == suffix[1]:
+                last_digit_idx = i
                 break
         
-        if is_valid:
-            if moves < min_moves:
-                min_moves = moves
-                best_order = list(order)
+        if last_digit_idx == -1:
+            continue
+        
+        moves += (n_len - 1) - last_digit_idx
+        temp_n.pop(last_digit_idx)
+        
+        # Find the second last digit of the suffix
+        
+        second_last_digit_idx = -1
+        for i in range(len(temp_n) - 1, -1, -1):
+            if temp_n[i] == suffix[0]:
+                second_last_digit_idx = i
+                break
+        
+        if second_last_digit_idx == -1:
+            continue
+        
+        moves += (len(temp_n) - 1) - second_last_digit_idx
+        temp_n.pop(second_last_digit_idx)
+        
+        # Remove leading zeroes
+        
+        first_non_zero_idx = -1
+        for i in range(len(temp_n)):
+            if temp_n[i] != '0':
+                first_non_zero_idx = i
+                break
+        
+        if first_non_zero_idx == -1:
+            moves += len(temp_n)
         else:
-            
-            current_order = list(order)
-            current_moves = 0
-            
-            temp_order = current_order[:]
-            
-            while True:
-                is_coprime_found = False
-                new_order = []
-                for i in range(len(temp_order)):
-                    new_order.append(temp_order[i])
-                    if gcd(temp_order[i], temp_order[(i+1) % len(temp_order)]) == 1:
-                        lcm = (temp_order[i] * temp_order[(i+1) % len(temp_order)]) // gcd(temp_order[i], temp_order[(i+1) % len(temp_order)])
-                        new_order.append(lcm)
-                        current_moves += 1
-                        is_coprime_found = True
-                temp_order = new_order[:]
-                if not is_coprime_found:
-                    break
-            
-            
-            is_valid_after_moves = True
-            for i in range(len(temp_order)):
-                if gcd(temp_order[i], temp_order[(i+1) % len(temp_order)]) == 1:
-                    is_valid_after_moves = False
-                    break
-                    
-            if is_valid_after_moves:
-                if current_moves < min_moves:
-                    min_moves = current_moves
-                    best_order = list(order)
-            
+            moves += first_non_zero_idx
+        
+        ans = min(ans, moves)
+        
+    if ans == float('inf'):
+        print("-1")
+    else:
+        print(ans)
 
-    print(*best_order)
-    print(min_moves)
-
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

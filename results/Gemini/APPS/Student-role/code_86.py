@@ -1,22 +1,43 @@
 def solve():
-  n = int(input())
-  a = list(map(int, input().split()))
+  n, k = map(int, input().split())
 
-  ones = a.count(1)
-  zeros = a.count(0)
+  if k * (k + 1) // 2 > n:
+    print("NO")
+    return
 
-  if ones <= n // 2:
-    print(zeros)
-    print(*([0] * zeros))
-  else:
-    if ones % 2 == 0:
-        print(ones)
-        print(*([1] * ones))
-    else:
-        print(ones - 1)
-        print(*([1] * (ones -1)))
+  a = [i + 1 for i in range(k)]
+  remaining = n - sum(a)
+
+  add = remaining // k
+  rem = remaining % k
+
+  for i in range(k):
+    a[i] += add
+
+  for i in range(k - 1, k - 1 - rem, -1):
+    a[i] += 1
+
+  for i in range(k - 1):
+    if a[i + 1] > 2 * a[i]:
+      diff = a[i + 1] - 2 * a[i]
+      a[i + 1] -= diff
+      a[0] += diff
+      if a[0] >= a[1]:
+          print("NO")
+          return
+      
+  for i in range(k - 1):
+    if a[i + 1] <= a[i]:
+      
+      print("NO")
+      return
+    
+    if a[i+1] > 2 * a[i]:
+        print("NO")
+        return
 
 
-t = int(input())
-for _ in range(t):
-  solve()
+  print("YES")
+  print(*a)
+
+solve()

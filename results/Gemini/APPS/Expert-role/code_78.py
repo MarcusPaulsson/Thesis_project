@@ -1,31 +1,38 @@
 def solve():
-    n, m = map(int, input().split())
-    grid = [input() for _ in range(n)]
+    n = int(input())
+    s = input()
+    mod = 10**9 + 7
+    len_s = len(s)
     
-    ans = float('inf')
-    
-    for r in range(n):
-        for c in range(m):
-            cost = 0
-            
-            # Cost to make row r black
-            for j in range(m):
-                if grid[r][j] == '.':
-                    cost += 1
-            
-            # Cost to make col c black
-            for i in range(n):
-                if grid[i][c] == '.':
-                    cost += 1
-            
-            # Subtract 1 if we double-counted the cell (r, c)
-            if grid[r][c] == '*':
-                cost -= 1
-            
-            ans = min(ans, cost)
-            
-    print(ans)
+    def is_regular(seq):
+        balance = 0
+        for char in seq:
+            if char == '(':
+                balance += 1
+            else:
+                balance -= 1
+            if balance < 0:
+                return False
+        return balance == 0
 
-q = int(input())
-for _ in range(q):
-    solve()
+    def count_regular_sequences(n, s):
+        count = 0
+        
+        def generate_sequences(current_seq, open_count, close_count):
+            nonlocal count
+            if len(current_seq) == 2 * n:
+                if is_regular(current_seq) and s in current_seq:
+                    count = (count + 1) % mod
+                return
+
+            if open_count < n:
+                generate_sequences(current_seq + '(', open_count + 1, close_count)
+            if close_count < open_count:
+                generate_sequences(current_seq + ')', open_count, close_count + 1)
+
+        generate_sequences("", 0, 0)
+        return count
+
+    print(count_regular_sequences(n, s))
+
+solve()

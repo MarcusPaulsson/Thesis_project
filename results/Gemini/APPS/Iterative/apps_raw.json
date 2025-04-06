@@ -1,0 +1,4 @@
+{
+    "98": "```python\ndef solve():\n    n = int(input())\n    \n    best_moves = float('inf')\n    \n    for i in range(1, int(n**0.5) + 2):\n        if n % i == 0:\n            j = n // i\n            moves = (i - 1) + (j - 1)\n            best_moves = min(best_moves, moves)\n            \n    print(best_moves)\n\nsolve()\n```",
+    "99": "```python\ndef solve():\n    n = int(input())\n    a1, a2, a3 = map(int, input().split())\n    b1, b2, b3 = map(int, input().split())\n\n    max_wins = 0\n    max_wins += min(a1, b2)\n    max_wins += min(a2, b3)\n    max_wins += min(a3, b1)\n\n    min_wins = max(0, a1 - (b1 + b3), a2 - (b2 + b1), a3 - (b3 + b2))\n    \n    print(min_wins, max_wins)\n\nsolve()\n```"
+}

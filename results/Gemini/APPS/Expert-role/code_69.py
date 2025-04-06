@@ -1,53 +1,34 @@
 def solve():
-    a, b = map(int, input().split())
+    n, k = map(int, input().split())
     s = input()
-    n = len(s)
     
-    gaps = []
-    start = -1
-    end = -1
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    dp[0][0] = 1
     
-    first_one = -1
-    last_one = -1
+    for i in range(1, n + 1):
+        for j in range(i + 1):
+            dp[i][j] = dp[i-1][j]
+            if j > 0:
+                dp[i][j] += dp[i-1][j-1]
+            dp[i][j] = min(dp[i][j], k + 1)
     
-    for i in range(n):
-        if s[i] == '1':
-            if first_one == -1:
-                first_one = i
-            last_one = i
     
-    if first_one == -1:
-        print(0)
-        return
+    counts = [0] * (n + 1)
+    for i in range(n + 1):
+        counts[i] = dp[n][i]
+        
+    
+    cost = 0
+    
+    
+    for length in range(n, -1, -1):
+        take = min(k, counts[length])
+        cost += take * (n - length)
+        k -= take
+        
+    if k > 0:
+        print(-1)
+    else:
+        print(cost)
 
-    
-    start = first_one
-    end = last_one
-    
-    
-    count = 0
-    
-    i = start
-    while i <= end:
-        if s[i] == '0':
-            j = i
-            while j <= end and s[j] == '0':
-                j += 1
-            gaps.append(j - i)
-            i = j
-        else:
-            i += 1
-    
-    cost = a
-    
-    for gap in gaps:
-        if gap * b < a:
-            cost += gap * b
-        else:
-            cost += a
-            
-    print(cost)
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

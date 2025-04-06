@@ -1,16 +1,24 @@
 def solve():
+    n = int(input())
     s = input()
-    n = len(s)
+    
     count = 0
-    for i in range(n):
-        for j in range(i, n):
-            sub = s[i:j+1]
-            length = j - i + 1
-            decimal_value = int(sub, 2)
-            if length == decimal_value:
-                count += 1
+    distinct_cyclical_strings = set()
+    
+    for i in range(2**n):
+        binary_string = bin(i)[2:].zfill(n)
+        
+        is_substring = False
+        for j in range(n):
+            rotated_string = binary_string[j:] + binary_string[:j]
+            if s in rotated_string:
+                is_substring = True
+                break
+        
+        if is_substring and binary_string not in distinct_cyclical_strings:
+            count += 1
+            distinct_cyclical_strings.add(binary_string)
+            
     print(count)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

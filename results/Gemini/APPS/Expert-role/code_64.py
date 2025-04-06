@@ -1,47 +1,43 @@
 def solve():
-    n, l = map(int, input().split())
-    a = list(map(int, input().split()))
+    n, m = map(int, input().split())
+    exams = []
+    for i in range(m):
+        s, d, c = map(int, input().split())
+        exams.append((s, d, c, i + 1))
 
-    flags1 = [0] + a
-    flags2 = a + [l]
+    schedule = [0] * n
+    exam_days = {}
+    for i in range(m):
+        exam_days[exams[i][1] - 1] = exams[i][3]
 
-    pos1 = 0
-    pos2 = l
-    speed1 = 1
-    speed2 = 1
-    time = 0
+    for day, exam_num in exam_days.items():
+        schedule[day] = m + 1
 
-    idx1 = 0
-    idx2 = n
+    prep_days_needed = [exam[2] for exam in exams]
+    
+    for day in range(n):
+        if schedule[day] == 0:
+            best_exam = -1
+            for i in range(m):
+                s, d, c, exam_num = exams[i]
+                if s <= day + 1 and day + 1 < d and prep_days_needed[i] > 0:
+                    best_exam = i
+                    break
+            
+            if best_exam != -1:
+                schedule[day] = exams[best_exam][3]
+                prep_days_needed[best_exam] -= 1
 
-    while True:
-        time_to_next_flag1 = float('inf')
-        if idx1 <= n:
-            time_to_next_flag1 = (flags1[idx1] - pos1) / speed1
-        
-        time_to_next_flag2 = float('inf')
-        if idx2 >= 0:
-            time_to_next_flag2 = (pos2 - flags2[idx2]) / speed2
+    
+    possible = True
+    for i in range(m):
+        if prep_days_needed[i] != 0:
+            possible = False
+            break
 
-        time_to_meet = (pos2 - pos1) / (speed1 + speed2)
+    if possible:
+        print(*schedule)
+    else:
+        print("-1")
 
-        if time_to_meet <= time_to_next_flag1 and time_to_meet <= time_to_next_flag2:
-            time += time_to_meet
-            print(time)
-            return
-        elif time_to_next_flag1 <= time_to_next_flag2:
-            time += time_to_next_flag1
-            pos1 += time_to_next_flag1 * speed1
-            pos2 -= time_to_next_flag1 * speed2
-            speed1 += 1
-            idx1 += 1
-        else:
-            time += time_to_next_flag2
-            pos1 += time_to_next_flag2 * speed1
-            pos2 -= time_to_next_flag2 * speed2
-            speed2 += 1
-            idx2 -= 1
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

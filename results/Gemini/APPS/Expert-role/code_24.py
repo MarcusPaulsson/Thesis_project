@@ -1,23 +1,35 @@
-def min_max_digit(n):
-    s = str(n)
-    min_digit = 9
-    max_digit = 0
-    for digit in s:
-        digit = int(digit)
-        min_digit = min(min_digit, digit)
-        max_digit = max(max_digit, digit)
-    return min_digit, max_digit
-
 def solve():
-    a1, k = map(int, input().split())
-    a = a1
-    for i in range(1, min(k, 100001)):
-        min_digit, max_digit = min_max_digit(a)
-        if min_digit == 0:
-            break
-        a = a + min_digit * max_digit
-    print(a)
+    board = []
+    for _ in range(10):
+        board.append(list(input()))
 
-t = int(input())
-for _ in range(t):
-    solve()
+    def check_win(new_board):
+        for i in range(10):
+            for j in range(10):
+                if new_board[i][j] == 'X':
+                    # Check horizontal
+                    if j <= 5 and all(new_board[i][j + k] == 'X' for k in range(5)):
+                        return True
+                    # Check vertical
+                    if i <= 5 and all(new_board[i + k][j] == 'X' for k in range(5)):
+                        return True
+                    # Check diagonal (top-left to bottom-right)
+                    if i <= 5 and j <= 5 and all(new_board[i + k][j + k] == 'X' for k in range(5)):
+                        return True
+                    # Check diagonal (top-right to bottom-left)
+                    if i <= 5 and j >= 4 and all(new_board[i + k][j - k] == 'X' for k in range(5)):
+                        return True
+        return False
+
+    for i in range(10):
+        for j in range(10):
+            if board[i][j] == '.':
+                temp_board = [row[:] for row in board]
+                temp_board[i][j] = 'X'
+                if check_win(temp_board):
+                    print("YES")
+                    return
+
+    print("NO")
+
+solve()

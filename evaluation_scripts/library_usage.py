@@ -105,13 +105,14 @@ def analyze_folders_and_count_calls(folder_paths):
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #adjust if running locally.
 
 result_setting = "filtered_results" # "results"
+
+
 folder_paths_gemini_cli_games = {
     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
     "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot-CoT"),
     "Gemini cli_games Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Expert-role"),
     "Gemini cli_games Student-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Student-role"),
 }
-
 folder_paths_chatgpt_cli_games = {
     "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot"),
     "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot-CoT"),
@@ -119,13 +120,13 @@ folder_paths_chatgpt_cli_games = {
     "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
 }
 
+# ClassEval
 folder_paths_gemini_classEval = {
     "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
     "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
     "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
     "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
 }
-
 folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot"),
     "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
@@ -135,6 +136,8 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Naive": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Naive'),
 }
 
+
+# APPS
 folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot"),
     "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot-CoT"),
@@ -142,13 +145,16 @@ folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Student-role"),
     "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
     "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
+    "ChatGPT APPS Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Iterative"),
 }
-
 folder_paths_gemini_APPS = {
     "Gemini APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot"),
     "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
     "Gemini APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Expert-role"),
     "Gemini APPS Student-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Student-role"),
+    "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
+    "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
+    "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
 }
 
 # Analyze folders and count library calls

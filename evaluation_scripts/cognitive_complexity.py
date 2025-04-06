@@ -17,52 +17,62 @@ sys.path.append(upper_dir)
 
 # EVALUATING ALL RESULTS
 
+result_setting = "filtered_results" # "results"
+#result_setting = "results" # "filtered_results"
+
 folder_paths_gemini_cli_games = {
-    "Gemini cli_games Zero-shot": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot"),
-    "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Zero-shot-CoT"),
-    "Gemini cli_games Expert-role": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Expert-role"),
-    "Gemini cli_games Student-role": os.path.join(upper_dir, "results", "Gemini", "cli_games", "Student-role"),
+    "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
+    "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot-CoT"),
+    "Gemini cli_games Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Expert-role"),
+    "Gemini cli_games Student-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Student-role"),
 }
 
 folder_paths_chatgpt_cli_games = {
-    "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Zero-shot"),
-    "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Zero-shot-CoT"),
-    "ChatGPT cli_games Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Expert-role"),
-    "ChatGPT cli_games Student-role": os.path.join(upper_dir, "results", "ChatGPT", "cli_games", "Student-role"),
+    "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot"),
+    "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot-CoT"),
+    "ChatGPT cli_games Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Expert-role"),
+    "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
 }
 
+# ClassEval
 folder_paths_gemini_classEval = {
-    "Gemini classEval Zero-shot": os.path.join(upper_dir, "results", "Gemini", "classEval", "Zero-shot"),
-    "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, "results", "Gemini", "classEval", "Zero-shot-CoT"),
-    "Gemini classEval Expert-role": os.path.join(upper_dir, "results", "Gemini", "classEval", "Expert-role"),
-    "Gemini classEval Student-role": os.path.join(upper_dir, "results", "Gemini", "classEval", "Student-role"),
+    "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
+    "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
+    "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
+    "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
 }
-
 folder_paths_chatgpt_classEval = {
-    "ChatGPT classEval Zero-shot": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Zero-shot"),
-    "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Zero-shot-CoT"),
-    "ChatGPT classEval Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Expert-role"),
-    "ChatGPT classEval Student-role": os.path.join(upper_dir, "results", "ChatGPT", "classEval", "Student-role"),
-    "ChatGPT classEval Meta": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Meta')),
-    "ChatGPT classEval Naive": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Naive')),
+    "ChatGPT classEval Zero-shot": os.path.join(upper_dir,result_setting, "ChatGPT", "classEval", "Zero-shot"),
+    "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
+    "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
+    "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
+    "ChatGPT classEval Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Meta"),
+    "ChatGPT classEval Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Naive"),
 }
 
+
+# APPS
 folder_paths_chatgpt_APPS = {
-    "ChatGPT APPS Zero-shot": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Zero-shot"),
-    "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Zero-shot-CoT"),
-    "ChatGPT APPS Expert-role": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Expert-role"),
-    "ChatGPT APPS Student-role": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Student-role"),
-    "ChatGPT APPS Meta": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Meta"),
-    "ChatGPT APPS Naive": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Naive"),
-    "ChatGPT APPS Iterative": os.path.join(upper_dir, "results", "ChatGPT", "APPS", "Iterative"),
+    "ChatGPT APPS Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot"),
+    "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot-CoT"),
+    "ChatGPT APPS Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Expert-role"),
+    "ChatGPT APPS Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Student-role"),
+    "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
+    "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
+    "ChatGPT APPS Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Iterative"),
+}
+folder_paths_gemini_APPS = {
+    "Gemini APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot"),
+    "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
+    "Gemini APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Expert-role"),
+    "Gemini APPS Student-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Student-role"),
+    "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
+    "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
+    "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
 }
 
-folder_paths_gemini_APPS = {
-    "Gemini APPS Zero-shot": os.path.join(upper_dir, "results", "Gemini", "APPS", "Zero-shot"),
-    "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, "results", "Gemini", "APPS", "Zero-shot-CoT"),
-    "Gemini APPS Expert-role": os.path.join(upper_dir, "results", "Gemini", "APPS", "Expert-role"),
-    "Gemini APPS Student-role": os.path.join(upper_dir, "results", "Gemini", "APPS", "Student-role"),
-}
+
+
 
 results_chatgpt = {}  # Store average and std dev for each folder
 results_gemini = {}

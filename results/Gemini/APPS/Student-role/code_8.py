@@ -1,121 +1,69 @@
 def solve():
-    n, k = map(int, input().split())
-    s = input()
-
-    def calculate_score(arr):
-        score = 0
-        for i in range(len(arr)):
-            if arr[i] == 'W':
-                if i == 0:
-                    score += 1
-                elif arr[i-1] == 'W':
-                    score += 2
-                else:
-                    score += 1
-        return score
-
-    def find_optimal_score(arr, k_left):
-        if k_left == 0:
-            return calculate_score(arr)
-
-        max_score = calculate_score(arr)
+    n, m = map(int, input().split())
+    
+    left = 1
+    right = 2 * 10**9
+    
+    ans = -1
+    
+    while left <= right:
+        mid = (left + right) // 2
         
-        indices_to_change = []
-        for i in range (len(arr)):
-            if arr[i] == 'L':
-                indices_to_change.append(i)
+        total_grain_eaten = mid * (mid + 1) // 2
+        
+        num_full_days = n // m
+        
+        if num_full_days > mid:
+                total_grain_available = n + mid * m
+        else:
+            total_grain_available = n + num_full_days * m
                 
-        if len(indices_to_change) == 0:
-            return calculate_score(arr)
+        
+        if total_grain_eaten >= n:
             
-        for i in indices_to_change:
-            temp_arr = list(arr)
-            temp_arr[i] = 'W'
             
-            max_score = max(max_score, find_optimal_score("".join(temp_arr), k_left-1))
+            total_days_needed = 0
+            grain_left = n
+            
+            curr_day = 1
+            while grain_left > 0:
                 
-        return max_score
-    
-    
-    
-    
-    def solve_dp():
-        max_score = 0
-        
-        for i in range(1 << n):
-            num_changes = 0
-            temp_s = list(s)
-            
-            for j in range(n):
-                if (i >> j) & 1:
-                    if temp_s[j] == 'W':
-                        temp_s[j] = 'L'
-                    else:
-                        temp_s[j] = 'W'
-                    num_changes += 1
-                    
-            if num_changes <= k:
-                max_score = max(max_score, calculate_score(temp_s))
-        return max_score
+                grain_left += m
+                grain_left = min(n, grain_left)
+                
+                grain_left -= curr_day
+                curr_day += 1
+                
+                total_days_needed += 1
+                
+                if total_days_needed > mid:
+                   
+                    break
+            if grain_left <= 0:
+                ans = total_days_needed
 
-    
-    
-    
-    wins = s.count('W')
-    if wins == 0:
-        if k == 0:
-            print(0)
-        else:
-            print(2 * k - 1) if k <= n else print(2 * n -1)
-        return
-
-    
-    gaps = []
-    first_win = -1
-    last_win = -1
-    
-    for i in range(n):
-        if s[i] == 'W':
-            if first_win == -1:
-                first_win = i
-            last_win = i
+        if total_grain_eaten >= n:
+                
+            days_needed = 0
+            grain_left = n
+            day_num = 1
             
-    
-    current_gap = 0
-    for i in range(first_win + 1, last_win + 1):
-        if s[i] == 'L':
-            current_gap += 1
-        elif current_gap > 0:
-            gaps.append(current_gap)
-            current_gap = 0
+            while grain_left > 0:
+                grain_left = min(n, grain_left + m)
+                grain_left -= day_num
+                day_num += 1
+                days_needed +=1
+                
+                
+            if grain_left <= 0:
+                ans = days_needed
+                right = mid-1
+            else:
+                left = mid + 1
+                
+        else:
+            left = mid + 1
             
-    gaps.sort()
+    print(ans)
     
-    score = calculate_score(s)
-    
-    for gap in gaps:
-        if k >= gap:
-            score += 2 * gap + 1
-            k -= gap
-        else:
-            score += 2 * k
-            k = 0
-            break
-    
-    if k > 0:
-        score += 2 * k
-        
-        if first_win == 0 and last_win == n -1:
-            pass
-        elif first_win == 0 or last_win == n-1:
-            score -= k
-        else:
-            score -= k
-    
-    
-    print(min(score, 2 * n - 1))
-    
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

@@ -1,18 +1,43 @@
 def solve():
-    x, y, a, b = map(int, input().split())
-    
-    if a + b == 0:
-        if x == y:
-            print(0)
-        else:
-            print(-1)
-        return
-    
-    if (y - x) % (a + b) == 0:
-        print((y - x) // (a + b))
-    else:
-        print(-1)
+    n = int(input())
+    s = input()
 
-t = int(input())
-for _ in range(t):
-    solve()
+    for i in range(1 << n):
+        coloring = ""
+        for j in range(n):
+            if (i >> j) & 1:
+                coloring += "1"
+            else:
+                coloring += "0"
+        
+        s0 = ""
+        s1 = ""
+        for j in range(n):
+            if coloring[j] == '0':
+                s0 += s[j]
+            else:
+                s1 += s[j]
+        
+        s0 = "".join(sorted(s0))
+        s1 = "".join(sorted(s1))
+        
+        merged = ""
+        idx0 = 0
+        idx1 = 0
+        
+        for j in range(n):
+            if coloring[j] == '0':
+                merged += s0[idx0]
+                idx0 += 1
+            else:
+                merged += s1[idx1]
+                idx1 += 1
+        
+        if "".join(sorted(s)) == merged:
+            print("YES")
+            print(coloring)
+            return
+    
+    print("NO")
+
+solve()

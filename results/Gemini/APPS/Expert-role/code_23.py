@@ -1,23 +1,40 @@
-def min_max_digit(n):
-    s = str(n)
-    min_digit = 9
-    max_digit = 0
-    for digit in s:
-        digit = int(digit)
-        min_digit = min(min_digit, digit)
-        max_digit = max(max_digit, digit)
-    return min_digit, max_digit
+from collections import Counter
 
 def solve():
-    a1, k = map(int, input().split())
-    a = a1
-    for i in range(1, min(k, 100001)):
-        min_digit, max_digit = min_max_digit(a)
-        if min_digit == 0:
-            break
-        a = a + min_digit * max_digit
-    print(a)
+  a = input()
+  b = input()
+  
+  if len(a) < len(b):
+    print("".join(sorted(a, reverse=True)))
+    return
+  
+  a_counts = Counter(a)
+  
+  def find_max(index, current_num, remaining_counts, less):
+    if index == len(a):
+      return current_num
+    
+    best_num = ""
+    
+    possible_digits = sorted(remaining_counts.keys(), reverse=True)
+    
+    for digit in possible_digits:
+      if less or digit <= b[index]:
+        new_remaining_counts = remaining_counts.copy()
+        new_remaining_counts[digit] -= 1
+        if new_remaining_counts[digit] == 0:
+          del new_remaining_counts[digit]
+          
+        new_less = less or (digit < b[index])
+        
+        res = find_max(index + 1, current_num + digit, new_remaining_counts, new_less)
+        
+        if res and (not best_num or res > best_num):
+          best_num = res
+    
+    return best_num
+  
+  print(find_max(0, "", a_counts, False))
+  
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

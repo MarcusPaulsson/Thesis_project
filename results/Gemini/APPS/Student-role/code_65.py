@@ -1,51 +1,27 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
+    n, m = map(int, input().split())
 
-    dp = {}
+    if n == m:
+        print(0)
+        return
 
-    def calculate_min_skips(index, turn):
-        if index == n:
-            return 0
-        
-        if (index, turn) in dp:
-            return dp[(index, turn)]
+    if m % n != 0:
+        print(-1)
+        return
 
-        if turn == 0:  # Friend's turn
-            ans = float('inf')
-            
-            # Kill one boss
-            if a[index] == 1:
-                ans = min(ans, 1 + calculate_min_skips(index + 1, 1))
-            else:
-                ans = min(ans, calculate_min_skips(index + 1, 1))
-            
-            # Kill two bosses
-            if index + 1 < n:
-                skips = 0
-                if a[index] == 1:
-                    skips += 1
-                if a[index + 1] == 1:
-                    skips += 1
-                ans = min(ans, skips + calculate_min_skips(index + 2, 1))
-            
-            dp[(index, turn)] = ans
-            return ans
-        else:  # Your turn
-            ans = float('inf')
-            
-            # Kill one boss
-            ans = min(ans, calculate_min_skips(index + 1, 0))
-            
-            # Kill two bosses
-            if index + 1 < n:
-                ans = min(ans, calculate_min_skips(index + 2, 0))
-            
-            dp[(index, turn)] = ans
-            return ans
+    q = m // n
+    
+    count = 0
+    while q % 2 == 0:
+        q //= 2
+        count += 1
+    while q % 3 == 0:
+        q //= 3
+        count += 1
+    
+    if q != 1:
+        print(-1)
+    else:
+        print(count)
 
-    print(calculate_min_skips(0, 0))
-
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

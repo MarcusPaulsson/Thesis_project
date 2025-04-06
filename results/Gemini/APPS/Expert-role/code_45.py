@@ -1,21 +1,34 @@
 def solve():
-    x = int(input())
-    
-    count = 0
-    total_cells = 0
-    stair_size = 1
-    
-    while True:
-        cells_needed = stair_size * (stair_size + 1) // 2
-        if total_cells + cells_needed <= x:
-            count += 1
-            total_cells += cells_needed
-            stair_size = stair_size * 2 + 1
-        else:
-            break
-            
-    print(count)
+    n, k = map(int, input().split())
 
-t = int(input())
-for _ in range(t):
-    solve()
+    if k * (k + 1) // 2 > n:
+        print(-1)
+        return
+
+    best_gcd = 0
+    best_seq = []
+
+    for gcd in range(int(n**0.5), 0, -1):
+        if n % gcd == 0:
+            q = n // gcd
+            if q >= k * (k + 1) // 2:
+                
+                seq = [gcd * i for i in range(1, k)]
+                last = n - sum(seq)
+                if last > seq[-1]:
+                  seq.append(last)
+                  print(*seq)
+                  return
+            
+            
+            if gcd >= k * (k + 1) // 2:
+                
+                seq = [q * i for i in range(1, k)]
+                last = n - sum(seq)
+                if last > seq[-1]:
+                  seq.append(last)
+                  print(*seq)
+                  return
+                
+
+solve()

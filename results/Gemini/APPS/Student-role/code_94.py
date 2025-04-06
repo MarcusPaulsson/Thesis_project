@@ -1,22 +1,33 @@
 def solve():
-    n, T = map(int, input().split())
-    a = list(map(int, input().split()))
+    a, b, x = map(int, input().split())
     
-    colors = [0] * n
+    if a > b:
+        start = 0
+        a -= 1
+    else:
+        start = 1
+        b -= 1
+        
+    s = ""
+    s += str(start)
     
-    for i in range(n):
-        if a[i] * 2 < T:
-            colors[i] = 0
-        elif a[i] * 2 > T:
-            colors[i] = 1
+    for i in range(x - 1):
+        if start == 0:
+            s += "1"
+            start = 1
+            b -= 1
         else:
-            if i % 2 == 0:
-                colors[i] = 0
-            else:
-                colors[i] = 1
+            s += "0"
+            start = 0
+            a -= 1
     
-    print(*colors)
+    if start == 0:
+        s += "0" * a
+        s += "1" * b
+    else:
+        s += "1" * b
+        s += "0" * a
+    
+    print(s)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

@@ -1,33 +1,34 @@
 def solve():
-    n, k = map(int, input().split())
-    
-    grid = [['0'] * n for _ in range(n)]
-    
-    row = 0
-    col = 0
-    
-    for _ in range(k):
-        grid[row][col] = '1'
-        row = (row + 1) % n
-        col = (col + 1) % n
-        if row == 0:
-            col = (col + 1) % n
+    x1, y1, x2, y2 = map(int, input().split())
+    x3, y3, x4, y4 = map(int, input().split())
+    x5, y5, x6, y6 = map(int, input().split())
 
-    rows_sums = [0] * n
-    cols_sums = [0] * n
-    
-    for i in range(n):
-        for j in range(n):
-            if grid[i][j] == '1':
-                rows_sums[i] += 1
-                cols_sums[j] += 1
-    
-    f_a = (max(rows_sums) - min(rows_sums))**2 + (max(cols_sums) - min(cols_sums))**2
-    
-    print(f_a)
-    for row in grid:
-        print("".join(row))
+    white_area = (x2 - x1) * (y2 - y1)
 
-t = int(input())
-for _ in range(t):
-    solve()
+    
+    def intersection_area(x1a, y1a, x2a, y2a, x1b, y1b, x2b, y2b):
+        x_overlap = max(0, min(x2a, x2b) - max(x1a, x1b))
+        y_overlap = max(0, min(y2a, y2b) - max(y1a, y1b))
+        return x_overlap * y_overlap
+
+    
+    intersection1 = intersection_area(x1, y1, x2, y2, x3, y3, x4, y4)
+    intersection2 = intersection_area(x1, y1, x2, y2, x5, y5, x6, y6)
+
+    
+    x_overlap_black = max(0, min(x4, x6) - max(x3, x5))
+    y_overlap_black = max(0, min(y4, y6) - max(y3, y5))
+    overlap_black_area = x_overlap_black * y_overlap_black
+
+    intersection12 = intersection_area(x1, y1, x2, y2, max(x3,x5), max(y3,y5), min(x4,x6), min(y4,y6))
+    overlap12 = intersection_area(x3, y3, x4, y4, x5, y5, x6, y6)
+
+    intersection_all_three = intersection_area(x1,y1,x2,y2, max(x3,x5),max(y3,y5), min(x4,x6), min(y4,y6))
+    covered_area = intersection1 + intersection2 - intersection12
+
+    if white_area > covered_area:
+        print("YES")
+    else:
+        print("NO")
+
+solve()

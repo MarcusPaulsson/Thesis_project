@@ -1,30 +1,52 @@
 def solve():
-  n = int(input())
-  a = list(map(int, input().split()))
+    n = int(input())
+    f = list(map(int, input().split()))
 
-  def can_reduce(arr):
-    if len(arr) == 1:
-      return True
+    assigned = [False] * (n + 1)
+    for i in range(n):
+        if f[i] != 0:
+            assigned[f[i]] = True
     
-    for i in range(len(arr) - 1):
-      if arr[i] < arr[i+1]:
-        # Try removing arr[i]
-        new_arr1 = arr[:i] + arr[i+1:]
-        if can_reduce(new_arr1):
-          return True
+    unassigned_givers = []
+    unassigned_receivers = []
+    for i in range(n):
+        if f[i] == 0:
+            unassigned_givers.append(i)
+    
+    for i in range(1, n + 1):
+        if not assigned[i]:
+            unassigned_receivers.append(i)
+
+    for i in range(len(unassigned_givers)):
+        giver_index = unassigned_givers[i]
         
-        # Try removing arr[i+1]
-        new_arr2 = arr[:i+1] + arr[i+2:]
-        if can_reduce(new_arr2):
-          return True
-    
-    return False
+        receiver = unassigned_receivers[i]
+        
+        if giver_index + 1 == receiver:
+            
+            if i + 1 < len(unassigned_givers):
+                
+                next_giver_index = unassigned_givers[i+1]
+                
+                f[giver_index] = unassigned_receivers[i+1]
+                f[next_giver_index] = receiver
+                
+                unassigned_givers[i+1], unassigned_givers[i] = unassigned_givers[i], unassigned_givers[i+1]
+                
+            else:
+                
+                
+                for j in range(len(unassigned_receivers)):
+                    if unassigned_receivers[j] != giver_index+1:
+                        temp_receiver = unassigned_receivers[j]
+                        f[giver_index] = temp_receiver
+                        
+                        unassigned_receivers[j] = receiver
+                        break
+                
+        else:
+            f[giver_index] = receiver
 
-  if can_reduce(a):
-    print("YES")
-  else:
-    print("NO")
+    print(*f)
 
-t = int(input())
-for _ in range(t):
-  solve()
+solve()
