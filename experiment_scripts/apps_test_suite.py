@@ -92,7 +92,7 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
             print(f"\n--- Running Test {i + 1} of {total_tests} ---")
             json_data = json.loads(task)
             inputs, outputs = json_data["inputs"], json_data["outputs"]
-            max_numb_test, placeholder = 2, 2
+            max_numb_test, placeholder = 1, 1
             output_list = []
             for test_i, item in enumerate(inputs):
                 if max_numb_test:
@@ -136,6 +136,33 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
 
 tasks = load_apps_tests(test_data_path)
 
+
+def extract_and_save_passed_code(passed_code_ids):
+    
+    dir = os.path.abspath(os.path.join(upper_dir,'filtered_results')) # Flush previous folder for storing and make a new fresh.
+    try:
+        shutil.rmtree(dir)
+    except:
+        pass
+    os.makedirs(dir, exist_ok=True)
+
+    for passed_index in passed_code_ids:
+        for i in folder_paths:
+            parts = folder_paths[i].split(os.sep)  # Split the path into its components
+            if parts[-4] == 'results':
+                parts[-4] = 'filtered_results'
+                filtered_folder_path = os.path.join(*parts[-4:])
+                filename_to_copy = f"code_{passed_index}.py"
+                source_file_path = os.path.join(folder_paths[i], filename_to_copy)
+                destination_file_path = os.path.join(filtered_folder_path, filename_to_copy)
+                print(f"Original folder: {folder_paths[i]}")
+                print(f"Filtered folder: {filtered_folder_path}")
+                os.makedirs(filtered_folder_path, exist_ok=True)
+                shutil.copy2(source_file_path, destination_file_path) # copy with metadata
+                print(f"Successfully copied: {filename_to_copy} to {filtered_folder_path}")
+
+
+save_passed = True
 if tasks:
     results = {}
     temp_dir = "tempfolder"
@@ -163,6 +190,14 @@ if tasks:
 
     # Find IDs that passed in all folders
     passed_in_all = [id for id, count in all_passed_ids.items() if count == len(folder_paths)]
-    print(f"\nPassed in all folders: {sorted(passed_in_all)}")
-
+    common_passed_code = sorted(passed_in_all)
+    print(f"\nPassed in all folders: {common_passed_code}")
     shutil.rmtree(temp_dir)
+    if save_passed:
+        extract_and_save_passed_code(common_passed_code)
+
+
+
+        
+
+    
