@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 30
+    end_index = 100
 
     results = []
     for i in range(start_index, end_index):
@@ -84,6 +84,8 @@ if __name__ == "__main__":
     # Save results to JSON and extract Python code
     results_dir = os.path.join(main_dir, "results", "Gemini", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
+    
+    
     save_results_to_json(results, json_file_path)
     extract_and_save_python_code(json_file_path, results_dir)
 

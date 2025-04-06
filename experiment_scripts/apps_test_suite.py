@@ -147,10 +147,6 @@ tasks = load_apps_tests(test_data_path)
 def extract_and_save_passed_code(passed_code_ids):
     
     dir = os.path.abspath(os.path.join(upper_dir,'filtered_results')) # Flush previous folder for storing and make a new fresh.
-    try:
-        shutil.rmtree(dir)
-    except:
-        pass
     os.makedirs(dir, exist_ok=True)
 
     for passed_index in passed_code_ids:

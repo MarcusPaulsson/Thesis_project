@@ -15,7 +15,7 @@ def extract_and_save_python_code(json_file, output_dir):
     except json.JSONDecodeError:
         print(f"Error: Invalid JSON format in '{json_file}'.")
         return
-
+    print(output_dir)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -37,6 +37,7 @@ def extract_and_save_python_code(json_file, output_dir):
 
                 # Create a file name based on the key
                 file_name = f"code_{key}.py"
+                os.makedirs(output_dir, exist_ok=True)
                 file_path = os.path.join(output_dir, file_name)
 
                 try:
@@ -52,6 +53,7 @@ def extract_and_save_python_code(json_file, output_dir):
 
 
 def save_results_to_json(results, output_file):
+ 
     output_data = {}
     for entry in results:
         output_data[entry["task_index"]] = entry["assistant_response"]

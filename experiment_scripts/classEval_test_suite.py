@@ -10,11 +10,10 @@ sys.path.append(upper_dir)
 
 # Define folder paths in a dictionary
 folder_paths = {
-    "Gemini Zero-shot": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot')),
-    "Gemini Zero-shot-CoT": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot-CoT')),
-    "Gemini Student-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Student-role')),
-    "Gemini Expert-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Expert-role')),
-
+    # "Gemini Zero-shot": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot')),
+    # "Gemini Zero-shot-CoT": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot-CoT')),
+    # "Gemini Student-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Student-role')),
+    # "Gemini Expert-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Expert-role')),
 
     "ChatGPT Zero-shot": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Zero-shot')),
     "ChatGPT Zero-shot-CoT": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Zero-shot-CoT')),
@@ -40,6 +39,24 @@ def load_classEval_tests(test_data_path):
         print(f"Error: JSON file '{test_data_path}' not found.")
         return None
 
+def extract_and_save_passed_code(passed_code_ids):
+    
+    dir = os.path.abspath(os.path.join(upper_dir,'filtered_results')) # Flush previous folder for storing and make a new fresh.
+    os.makedirs(dir, exist_ok=True)
+
+    for passed_index in passed_code_ids:
+        for i in folder_paths:
+            parts = folder_paths[i].split(os.sep)  # Split the path into its components
+            if parts[-4] == 'results':
+                parts[-4] = 'filtered_results'
+                filtered_folder_path = os.path.join(*parts[-4:])
+                filename_to_copy = f"code_{passed_index}.py"
+                source_file_path = os.path.join(folder_paths[i], filename_to_copy)
+                destination_file_path = os.path.join(filtered_folder_path, filename_to_copy)
+                os.makedirs(filtered_folder_path, exist_ok=True)
+                shutil.copy2(source_file_path, destination_file_path) # copy with metadata
+
+
 def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
     """Runs the tests on the generated code snippets in the specified folder."""
     if tasks is None:
@@ -63,7 +80,7 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
                     temp_file.write(combined_code + "\nif __name__ == '__main__':\n    import unittest\n    unittest.main()")
 
                 print(f"\n--- Running Test {i + 1} of {total_tests} ---")
-                process = subprocess.run(["python", temp_file_path], capture_output=True, text=True, timeout=10)
+                process = subprocess.run(["python", temp_file_path], capture_output=True, text=True, timeout=5)
 
                 if process.returncode == 0:
                     print(f"Test {i + 1} passed")
@@ -88,6 +105,9 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
     return {"passed": passed_tests, "total": total_tests, "passed_ids": passed_ids}
 
 tasks = load_classEval_tests(test_data_path)
+
+
+save_passed = True
 
 # Run tests for each folder and store results
 if tasks:
@@ -118,7 +138,10 @@ if tasks:
 
     # Find IDs that passed in all folders
     passed_in_all = [id for id, count in all_passed_ids.items() if count == len(folder_paths)]
-    print(f"\nPassed in all folders: {sorted(passed_in_all)}")
+    common_passed_code = sorted(passed_in_all)
+    print(f"\nPassed in all folders: {common_passed_code}")
 
     # Cleanup temp folder
     shutil.rmtree(temp_dir)
+    if save_passed:
+        extract_and_save_passed_code(common_passed_code)
