@@ -1,9 +1,8 @@
 import sqlite3
-from contextlib import closing
 
 class UserLoginDB:
     """
-    This is a database management class for user login verification, providing functions for inserting user information, 
+    This is a database management class for user login verification, providing functions for inserting user information,
     searching user information, deleting user information, and validating user login.
     """
 
@@ -12,30 +11,23 @@ class UserLoginDB:
         Initializes the UserLoginDB object with the specified database name.
         :param db_name: str, the name of the SQLite database.
         """
-        self.db_name = db_name
+        self.connection = sqlite3.connect(db_name)
+        self.cursor = self.connection.cursor()
         self.create_table()
 
     def create_table(self):
         """
         Creates the "users" table if it does not exist.
+        :return: None
         """
-        with closing(self.connect()) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL
-                )
-            ''')
-            conn.commit()
-
-    def connect(self):
+        create_table_query = """
+            CREATE TABLE IF NOT EXISTS users (
+                username TEXT PRIMARY KEY,
+                password TEXT
+            )
         """
-        Establish a new database connection.
-        :return: sqlite3.Connection
-        """
-        return sqlite3.connect(self.db_name)
+        self.cursor.execute(create_table_query)
+        self.connection.commit()
 
     def insert_user(self, username, password):
         """
@@ -44,29 +36,22 @@ class UserLoginDB:
         :param password: str, the password of the user.
         :return: None
         """
-        with closing(self.connect()) as conn:
-            cursor = conn.cursor()
-            try:
-                cursor.execute('''
-                    INSERT INTO users (username, password)
-                    VALUES (?, ?)
-                ''', (username, password))
-                conn.commit()
-            except sqlite3.IntegrityError:
-                print(f"User '{username}' already exists.")
+        try:
+            insert_query = "INSERT INTO users (username, password) VALUES (?, ?)"
+            self.cursor.execute(insert_query, (username, password))
+            self.connection.commit()
+        except sqlite3.IntegrityError:
+            print(f"User '{username}' already exists.")
 
     def search_user_by_username(self, username):
         """
         Searches for users in the "users" table by username.
         :param username: str, the username of the user to search for.
-        :return: list of tuples, the rows from the "users" table that match the search criteria.
+        :return: tuple or None, the row from the "users" table that matches the search criteria.
         """
-        with closing(self.connect()) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT * FROM users WHERE username = ?
-            ''', (username,))
-            return cursor.fetchall()
+        select_query = "SELECT username, password FROM users WHERE username = ?"
+        self.cursor.execute(select_query, (username,))
+        return self.cursor.fetchone()
 
     def delete_user_by_username(self, username):
         """
@@ -74,12 +59,9 @@ class UserLoginDB:
         :param username: str, the username of the user to delete.
         :return: None
         """
-        with closing(self.connect()) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                DELETE FROM users WHERE username = ?
-            ''', (username,))
-            conn.commit()
+        delete_query = "DELETE FROM users WHERE username = ?"
+        self.cursor.execute(delete_query, (username,))
+        self.connection.commit()
 
     def validate_user_login(self, username, password):
         """
@@ -88,15 +70,12 @@ class UserLoginDB:
         :param password: str, the password of the user to validate.
         :return: bool, representing whether the user can log in correctly.
         """
-        with closing(self.connect()) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT * FROM users WHERE username = ? AND password = ?
-            ''', (username, password))
-            return cursor.fetchone() is not None
+        user = self.search_user_by_username(username)
+        return user is not None and user[1] == password
 
     def close(self):
         """
-        Closes the database connection. (Not needed with context management)
+        Closes the database connection.
+        :return: None
         """
-        pass
+        self.connection.close()

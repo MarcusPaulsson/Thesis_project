@@ -42,7 +42,7 @@ class CalendarUtil:
         :return: True if the calendar is available for the given time slot, False otherwise,bool.
         """
         for event in self.events:
-            if not (end_time <= event['start_time'] or start_time >= event['end_time']):
+            if (event['start_time'] < end_time and start_time < event['end_time']):
                 return False
         return True
 
@@ -53,17 +53,23 @@ class CalendarUtil:
         :return: A list of available time slots on the given date,list.
         """
         slots = []
-        start_of_day = datetime(date.year, date.month, date.day, 0, 0)
-        end_of_day = datetime(date.year, date.month, date.day, 23, 59, 59)
+        start_of_day = datetime.combine(date, datetime.min.time())
+        end_of_day = datetime.combine(date, datetime.max.time())
+        busy_times = [(event['start_time'], event['end_time']) for event in self.events if event['date'] == date]
 
-        current_start = start_of_day
-        for event in sorted(self.events, key=lambda x: x['start_time']):
-            if current_start < event['start_time']:
-                slots.append((current_start, event['start_time']))
-            current_start = max(current_start, event['end_time'])
+        if not busy_times:
+            return [(start_of_day, end_of_day)]
 
-        if current_start < end_of_day:
-            slots.append((current_start, end_of_day))
+        busy_times.sort()
+        last_end_time = start_of_day
+
+        for start, end in busy_times:
+            if last_end_time < start:
+                slots.append((last_end_time, start))
+            last_end_time = max(last_end_time, end)
+
+        if last_end_time < end_of_day:
+            slots.append((last_end_time, end_of_day))
 
         return slots
 
@@ -75,4 +81,5 @@ class CalendarUtil:
         """
         now = datetime.now()
         upcoming_events = [event for event in self.events if event['start_time'] > now]
+        upcoming_events.sort(key=lambda x: x['start_time'])
         return upcoming_events[:num_events]

@@ -17,49 +17,41 @@ class BoyerMooreSearch:
         Finds the rightmost occurrence of a character in the pattern.
         :param char: The character to be searched for, str.
         :return: The index of the rightmost occurrence of the character in the pattern, int.
-        >>> boyerMooreSearch = BoyerMooreSearch("ABAABA", "AB")
-        >>> boyerMooreSearch.match_in_pattern("A")
-        0
         """
-        for i in range(self.patLen - 1, -1, -1):
+        index = -1
+        for i in range(self.patLen):
             if self.pattern[i] == char:
-                return i
-        return -1
+                index = i
+        return index
 
     def mismatch_in_text(self, currentPos):
         """
-        Determines the position of the first dismatch between the pattern and the text.
+        Determines the position of the first mismatch between the pattern and the text.
         :param currentPos: The current position in the text, int.
-        :return: The position of the first dismatch between the pattern and the text, int, otherwise -1.
-        >>> boyerMooreSearch = BoyerMooreSearch("ABAABA", "ABC")
-        >>> boyerMooreSearch.mismatch_in_text(0)
-        2
+        :return: The position of the first mismatch between the pattern and the text, int, otherwise -1.
         """
-        for i in range(self.patLen - 1, -1, -1):
+        for i in range(self.patLen):
             if currentPos + i >= self.textLen or self.text[currentPos + i] != self.pattern[i]:
-                return i
+                return currentPos + i
         return -1
 
     def bad_character_heuristic(self):
         """
         Finds all occurrences of the pattern in the text.
         :return: A list of all positions of the pattern in the text, list.
-        >>> boyerMooreSearch = BoyerMooreSearch("ABAABA", "AB")
-        >>> boyerMooreSearch.bad_character_heuristic()
-        [0, 3]
         """
         positions = []
-        currentPos = 0
-
-        while currentPos <= self.textLen - self.patLen:
-            mismatchIndex = self.mismatch_in_text(currentPos)
+        textIndex = 0
+        
+        while textIndex <= self.textLen - self.patLen:
+            mismatchIndex = self.mismatch_in_text(textIndex)
             if mismatchIndex == -1:
-                positions.append(currentPos)
-                currentPos += self.patLen  # Shift full pattern length
+                positions.append(textIndex)
+                textIndex += 1
             else:
-                char = self.text[currentPos + mismatchIndex]
+                char = self.text[mismatchIndex]
                 badCharIndex = self.match_in_pattern(char)
-                shift = max(1, mismatchIndex - badCharIndex)
-                currentPos += shift
+                shift = max(1, mismatchIndex - textIndex - badCharIndex) if badCharIndex != -1 else self.patLen
+                textIndex += shift
 
         return positions

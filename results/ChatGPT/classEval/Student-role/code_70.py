@@ -1,6 +1,6 @@
 class PersonRequest:
     """
-    This class validates input personal information data and sets invalid fields to None based to specific rules.
+    This class validates input personal information data and sets invalid fields to None based on specific rules.
     """
 
     def __init__(self, name: str, sex: str, phoneNumber: str):
@@ -20,9 +20,9 @@ class PersonRequest:
         :param name: str, the name to validate
         :return: str, the validated name or None if invalid
         """
-        if name and len(name) <= 33:
-            return name
-        return None
+        if not name or len(name) > 33:
+            return None
+        return name
 
     def _validate_sex(self, sex: str) -> str:
         """
@@ -31,9 +31,9 @@ class PersonRequest:
         :return: str, the validated sex or None if invalid
         """
         valid_sexes = {"Man", "Woman", "UGM"}
-        if sex in valid_sexes:
-            return sex
-        return None
+        if sex not in valid_sexes:
+            return None
+        return sex
 
     def _validate_phoneNumber(self, phoneNumber: str) -> str:
         """
@@ -41,6 +41,6 @@ class PersonRequest:
         :param phoneNumber: str, the phone number to validate
         :return: str, the validated phone number or None if invalid
         """
-        if phoneNumber and phoneNumber.isdigit() and len(phoneNumber) == 11:
-            return phoneNumber
-        return None
+        if not phoneNumber or len(phoneNumber) != 11 or not phoneNumber.isdigit():
+            return None
+        return phoneNumber

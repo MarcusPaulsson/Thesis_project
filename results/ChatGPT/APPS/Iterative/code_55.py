@@ -1,27 +1,20 @@
-def is_visible(white_sheet, black_sheets):
-    # Unpack the coordinates for better readability
-    x1, y1, x2, y2 = white_sheet
-    (x3, y3, x4, y4), (x5, y5, x6, y6) = black_sheets
+def is_visible(x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6):
+    # Check if the black sheets completely cover the white sheet
+    is_covered = (x3 >= x2 or x4 <= x1 or y3 >= y2 or y4 <= y1) and (x5 >= x2 or x6 <= x1 or y5 >= y2 or y6 <= y1)
     
-    # Check if the white sheet is completely covered by any of the black sheets
-    covered_by_first = (x3 <= x1 <= x2 <= x4 and y3 <= y1 <= y2 <= y4)
-    covered_by_second = (x5 <= x1 <= x2 <= x6 and y5 <= y1 <= y2 <= y6)
+    if is_covered:
+        return "NO"
     
-    if covered_by_first and covered_by_second:
-        print("NO")
-        return
-
-    # Check if there is any visible part
-    visible = (
-        (x1 < x3 or x2 > x4 or y1 < y3 or y2 > y4) or
-        (x1 < x5 or x2 > x6 or y1 < y5 or y2 > y6)
-    )
+    # Check if there is any part of the white sheet visible
+    visible = (x3 < x1 and x4 > x1) or (x5 < x1 and x6 > x1) or (x3 < x2 and x4 > x2) or (x5 < x2 and x6 > x2) or \
+              (y3 < y1 and y4 > y1) or (y5 < y1 and y6 > y1) or (y3 < y2 and y4 > y2) or (y5 < y2 and y6 > y2)
     
-    print("YES" if visible else "NO")
+    return "YES" if visible else "NO"
 
 # Read input
-white_sheet = list(map(int, input().split()))
-black_sheets = [tuple(map(int, input().split())) for _ in range(2)]
+x1, y1, x2, y2 = map(int, input().split())
+x3, y3, x4, y4 = map(int, input().split())
+x5, y5, x6, y6 = map(int, input().split())
 
-# Call the function
-is_visible(white_sheet, black_sheets)
+# Output the result
+print(is_visible(x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6))

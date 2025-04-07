@@ -7,28 +7,20 @@ class SplitSentence:
 
     def split_sentences(self, sentences_string):
         """
-        Split a string into a list of sentences. Sentences end with . or ? and have a space after that. 
-        Note that Mr. also ends with . but is not considered a sentence.
+        Split a string into a list of sentences. Sentences end with . or ? and with a space after that. Please note that Mr. also end with . but are not sentences.
         :param sentences_string: string, string to split
-        :return: list, split sentence list
-        >>> ss = SplitSentence()
-        >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
-        ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
+        :return:list, split sentence list
         """
-        # Using regex to split on '. ' or '? '
-        return re.split(r'(?<!\bMr)\. |(?<!\bMr)\? ', sentences_string)
+        # Regex to split sentences while ignoring abbreviations like "Mr."
+        return re.split(r'(?<!\bMr\.)(?<!\b[A-Z]\.)(?<!\b[A-Z]\b)(?<=\.|\?)\s+', sentences_string)
 
     def count_words(self, sentence):
         """
-        Count the number of words in a sentence. 
-        Words are separated by spaces, punctuation marks and numbers are not counted as words.
-        :param sentence: string, sentence to be counted, where words are separated by spaces
-        :return: int, number of words in the sentence
-        >>> ss = SplitSentence()
-        >>> ss.count_words("abc def")
-        2
+        Count the number of words in a sentence. Note that words are separated by spaces and that punctuation marks and numbers are not counted as words.
+        :param sentence:string, sentence to be counted, where words are separated by spaces
+        :return:int, number of words in the sentence
         """
-        # Using regex to find words (excluding numbers and punctuation)
+        # Split the sentence into words, filter out non-word characters
         words = re.findall(r'\b[a-zA-Z]+\b', sentence)
         return len(words)
 
@@ -36,11 +28,11 @@ class SplitSentence:
         """
         Given a text, return the number of words in the longest sentence
         :param sentences_string: string, undivided long sentence
-        :return: int, the number of words in the longest sentence
-        >>> ss = SplitSentence()
-        >>> ss.process_text_file("aaa aaaa. bb bbbb bbb? cccc ccccccc cc ccc. dd ddd?")
-        4
+        :return:int, the number of words in the longest sentence
         """
         sentences = self.split_sentences(sentences_string)
-        max_word_count = max(self.count_words(sentence) for sentence in sentences)
-        return max_word_count
+        max_words = 0
+        for sentence in sentences:
+            word_count = self.count_words(sentence)
+            max_words = max(max_words, word_count)
+        return max_words

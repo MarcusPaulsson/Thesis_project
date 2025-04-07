@@ -7,5 +7,8 @@ max_a = max(a)
 if min_a == max_a:
     print(0)
 else:
-    difference = max_a - min_a
-    print(difference // 2 if difference % 2 == 0 else -1)
+    diff = max_a - min_a
+    if diff % 2 == 0:
+        print(diff // 2)
+    else:
+        print(-1)

@@ -37,14 +37,15 @@ class PushBoxGame:
         >>> game.player_col
         1
         """
-        for row in range(len(self.map)):
-            for col in range(len(self.map[row])):
-                if self.map[row][col] == 'O':
-                    self.player_row, self.player_col = row, col
-                elif self.map[row][col] == 'G':
-                    self.targets.append((row, col))
-                elif self.map[row][col] == 'X':
-                    self.boxes.append((row, col))
+        for r, row in enumerate(self.map):
+            for c, char in enumerate(row):
+                if char == 'O':
+                    self.player_row, self.player_col = r, c
+                elif char == 'G':
+                    self.targets.append((r, c))
+                elif char == 'X':
+                    self.boxes.append((r, c))
+        
         self.target_count = len(self.targets)
 
     def check_win(self):
@@ -54,7 +55,6 @@ class PushBoxGame:
         :return self.is_game_over: True if all the boxes are placed on target positions, or False otherwise.
         >>> game = PushBoxGame(["#####", "#O  #", "# X #", "#  G#", "#####"]) 
         >>> game.check_win()
-        False
         """
         self.is_game_over = all(box in self.targets for box in self.boxes)
         return self.is_game_over
@@ -85,30 +85,33 @@ class PushBoxGame:
         True
         """
         direction_map = {
-            'w': (-1, 0),
-            's': (1, 0),
-            'a': (0, -1),
-            'd': (0, 1)
+            'w': (-1, 0),  # up
+            's': (1, 0),   # down
+            'a': (0, -1),  # left
+            'd': (0, 1)    # right
         }
-
+        
         if direction not in direction_map:
             return False
-
-        new_row = self.player_row + direction_map[direction][0]
-        new_col = self.player_col + direction_map[direction][1]
-
-        if self.map[new_row][new_col] == '#':
-            return False
         
-        if (new_row, new_col) in self.boxes:
-            box_new_row = new_row + direction_map[direction][0]
-            box_new_col = new_col + direction_map[direction][1]
-            if self.map[box_new_row][box_new_col] == '#' or (box_new_row, box_new_col) in self.boxes:
-                return False
-            # Move the box
-            self.boxes.remove((new_row, new_col))
-            self.boxes.append((box_new_row, box_new_col))
+        dr, dc = direction_map[direction]
+        new_player_row = self.player_row + dr
+        new_player_col = self.player_col + dc
+        
+        if self.map[new_player_row][new_player_col] == '#':
+            return False
 
+        if (new_player_row, new_player_col) in self.boxes:
+            new_box_row = new_player_row + dr
+            new_box_col = new_player_col + dc
+            
+            if self.map[new_box_row][new_box_col] == '#' or (new_box_row, new_box_col) in self.boxes:
+                return False
+            
+            # Move the box
+            self.boxes.remove((new_player_row, new_player_col))
+            self.boxes.append((new_box_row, new_box_col))
+        
         # Move the player
-        self.player_row, self.player_col = new_row, new_col
+        self.player_row, self.player_col = new_player_row, new_player_col
         return self.check_win()

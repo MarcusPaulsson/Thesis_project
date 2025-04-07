@@ -5,8 +5,8 @@ import re
 
 class IpUtil:
     """
-    This is a class as a tool for IP that can be used to obtain the local IP address,
-    validate its validity, and also provides the functionality to retrieve the corresponding hostname.
+    This is a class as a tool for IP that can be used to obtain the local IP address, validate its validity,
+    and also provides the functionality to retrieve the corresponding hostname.
     """
 
     @staticmethod
@@ -20,8 +20,11 @@ class IpUtil:
         >>> IpUtil.is_valid_ipv4('256.0.0.0')
         False
         """
-        pattern = r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
-        return bool(re.match(pattern, ip_address))
+        pattern = r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+                  r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+                  r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+                  r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+        return re.match(pattern, ip_address) is not None
 
     @staticmethod
     def is_valid_ipv6(ip_address):
@@ -34,11 +37,18 @@ class IpUtil:
         >>> IpUtil.is_valid_ipv6('2001:0db8:85a3:::8a2e:0370:7334')
         False
         """
-        try:
-            socket.inet_pton(socket.AF_INET6, ip_address)
-            return True
-        except socket.error:
-            return False
+        pattern = r'^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|' \
+                  r'^(?:[0-9a-fA-F]{1,4}:){1,7}:$|' \
+                  r'^(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}$|' \
+                  r'^(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}$|' \
+                  r'^(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}$|' \
+                  r'^(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}$|' \
+                  r'^(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}$|' \
+                  r'^[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,6}$|' \
+                  r'^:((:[0-9a-fA-F]{1,4}){1,7}|:)$|' \
+                  r'^(?:[0-9a-fA-F]{1,4}:){1,6}:(?:[0-9a-fA-F]{1,4}:){1,2}$|' \
+                  r'^(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,3}$'
+        return re.match(pattern, ip_address) is not None
 
     @staticmethod
     def get_hostname(ip_address):
@@ -51,6 +61,7 @@ class IpUtil:
         >>> IpUtil.get_hostname('10.0.0.1')
         """
         try:
-            return socket.gethostbyaddr(ip_address)[0]
+            hostname, _, _ = socket.gethostbyaddr(ip_address)
+            return hostname
         except socket.herror:
             return None

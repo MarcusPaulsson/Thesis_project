@@ -1,59 +1,53 @@
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageChops
 
 class ImageProcessor:
     """
-    This class processes images, including loading, saving, resizing, rotating, and adjusting brightness.
+    This is a class to process images, including loading, saving, resizing, rotating, and adjusting the brightness of images.
     """
 
     def __init__(self):
-        """Initialize the image attribute."""
+        """
+        Initialize self.image
+        """
         self.image = None
 
     def load_image(self, image_path):
         """
-        Load an image using PIL.
-        :param image_path: str, path of the image to be loaded.
+        Use Image util in PIL to open an image
+        :param image_path: str, path of image that is to be loaded
         """
         self.image = Image.open(image_path)
 
     def save_image(self, save_path):
         """
-        Save the image to a specified path if an image has been loaded.
-        :param save_path: str, the path where the image will be saved.
+        Save image to a path if image has been opened
+        :param save_path: str, the path that the image will be saved
         """
-        if self.image is not None:
+        if self.image:
             self.image.save(save_path)
-        else:
-            raise ValueError("No image has been loaded to save.")
 
     def resize_image(self, width, height):
         """
-        Resize the image if it has been loaded.
-        :param width: int, target width of the image.
-        :param height: int, target height of the image.
+        Resize the image if it has been opened.
+        :param width: int, the target width of image
+        :param height: int, the target height of image
         """
-        if self.image is not None:
+        if self.image:
             self.image = self.image.resize((width, height))
-        else:
-            raise ValueError("No image has been loaded to resize.")
 
     def rotate_image(self, degrees):
         """
-        Rotate the image if it has been loaded.
-        :param degrees: float, degrees to rotate the image.
+        Rotate image if it has been opened
+        :param degrees: float, the degrees that the image will be rotated
         """
-        if self.image is not None:
+        if self.image:
             self.image = self.image.rotate(degrees)
-        else:
-            raise ValueError("No image has been loaded to rotate.")
 
     def adjust_brightness(self, factor):
         """
-        Adjust the brightness of the image if it has been loaded.
-        :param factor: float, brightness factor (0.0 for black, 1.0 for original).
+        Adjust the brightness of image if it has been opened.
+        :param factor: float, brightness of an image. A factor of 0.0 gives a black image. A factor of 1.0 gives the original image.
         """
-        if self.image is not None:
+        if self.image:
             enhancer = ImageEnhance.Brightness(self.image)
             self.image = enhancer.enhance(factor)
-        else:
-            raise ValueError("No image has been loaded to adjust brightness.")

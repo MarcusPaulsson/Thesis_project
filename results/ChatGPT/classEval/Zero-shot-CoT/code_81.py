@@ -2,63 +2,61 @@ import math
 from collections import Counter
 
 class Statistics3:
-    """
-    This is a class that implements methods for calculating indicators such as median, mode, correlation matrix, and Z-score in statistics.
-    """
-
     @staticmethod
     def median(data):
+        if not data:
+            return None
         data.sort()
         n = len(data)
+        mid = n // 2
         if n % 2 == 0:
-            return (data[n // 2 - 1] + data[n // 2]) / 2.0
+            return (data[mid - 1] + data[mid]) / 2
         else:
-            return data[n // 2]
+            return data[mid]
 
     @staticmethod
     def mode(data):
-        frequency = Counter(data)
-        max_freq = max(frequency.values())
-        return [key for key, value in frequency.items() if value == max_freq]
+        if not data:
+            return []
+        count = Counter(data)
+        max_count = max(count.values())
+        return [num for num, cnt in count.items() if cnt == max_count]
 
     @staticmethod
     def correlation(x, y):
-        n = len(x)
-        if n != len(y):
-            raise ValueError("Lists x and y must have the same length.")
-        
+        if len(x) != len(y) or len(x) < 2:
+            return None
         mean_x = Statistics3.mean(x)
         mean_y = Statistics3.mean(y)
-        
-        numerator = sum((x[i] - mean_x) * (y[i] - mean_y) for i in range(n))
-        denominator = math.sqrt(sum((x[i] - mean_x) ** 2 for i in range(n)) * 
-                                sum((y[i] - mean_y) ** 2 for i in range(n)))
-        
-        if denominator == 0:
-            return 0  # Avoid division by zero
-        return numerator / denominator
+        numerator = sum((xi - mean_x) * (yi - mean_y) for xi, yi in zip(x, y))
+        denominator = math.sqrt(sum((xi - mean_x) ** 2 for xi in x) * sum((yi - mean_y) ** 2 for yi in y))
+        return numerator / denominator if denominator != 0 else None
 
     @staticmethod
     def mean(data):
+        if not data:
+            return None
         return sum(data) / len(data)
 
     @staticmethod
     def correlation_matrix(data):
-        n = len(data)
-        corr_matrix = [[0] * n for _ in range(n)]
-        for i in range(n):
-            for j in range(n):
-                corr_matrix[i][j] = Statistics3.correlation(data[i], data[j])
-        return corr_matrix
+        if not data or not data[0]:
+            return [[None] * len(data[0])] * len(data) if data else []
+        n = len(data[0])
+        return [[Statistics3.correlation([row[i] for row in data], [row[j] for row in data]) for j in range(n)] for i in range(n)]
 
     @staticmethod
     def standard_deviation(data):
-        mean_val = Statistics3.mean(data)
-        variance = sum((x - mean_val) ** 2 for x in data) / len(data)
+        if not data:
+            return None
+        mean_value = Statistics3.mean(data)
+        variance = sum((x - mean_value) ** 2 for x in data) / len(data)
         return math.sqrt(variance)
 
     @staticmethod
     def z_score(data):
-        mean_val = Statistics3.mean(data)
+        if not data or len(set(data)) == 1:
+            return None
+        mean_value = Statistics3.mean(data)
         std_dev = Statistics3.standard_deviation(data)
-        return [(x - mean_val) / std_dev for x in data]
+        return [(x - mean_value) / std_dev for x in data]

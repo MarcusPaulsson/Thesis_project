@@ -1,4 +1,4 @@
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageChops
 
 class ImageProcessor:
     """
@@ -13,7 +13,7 @@ class ImageProcessor:
 
     def load_image(self, image_path):
         """
-        Use Image util in PIL to open a image
+        Use Image util in PIL to open an image
         :param image_path: str, path of image that is to be loaded
         """
         self.image = Image.open(image_path)
@@ -23,7 +23,7 @@ class ImageProcessor:
         Save image to a path if image has opened
         :param save_path: str, the path that the image will be saved
         """
-        if self.image is not None:
+        if self.image:
             self.image.save(save_path)
 
     def resize_image(self, width, height):
@@ -32,7 +32,7 @@ class ImageProcessor:
         :param width: int, the target width of image
         :param height: int, the target height of image
         """
-        if self.image is not None:
+        if self.image:
             self.image = self.image.resize((width, height))
 
     def rotate_image(self, degrees):
@@ -40,7 +40,7 @@ class ImageProcessor:
         Rotate image if image has opened
         :param degrees: float, the degrees that the image will be rotated
         """
-        if self.image is not None:
+        if self.image:
             self.image = self.image.rotate(degrees)
 
     def adjust_brightness(self, factor):
@@ -48,6 +48,6 @@ class ImageProcessor:
         Adjust the brightness of image if image has opened.
         :param factor: float, brightness of an image. A factor of 0.0 gives a black image. A factor of 1.0 gives the original image.
         """
-        if self.image is not None:
+        if self.image:
             enhancer = ImageEnhance.Brightness(self.image)
             self.image = enhancer.enhance(factor)

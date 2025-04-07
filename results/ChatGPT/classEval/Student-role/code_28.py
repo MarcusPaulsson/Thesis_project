@@ -11,8 +11,6 @@ class DatabaseProcessor:
         Initialize database name of database processor
         """
         self.database_name = database_name
-        self.connection = sqlite3.connect(self.database_name)
-        self.cursor = self.connection.cursor()
 
     def create_table(self, table_name, key1, key2):
         """
@@ -23,14 +21,16 @@ class DatabaseProcessor:
         :param key2: str, the name of the second column in the table.
         >>> db.create_table('user', 'name', 'age')
         """
-        self.cursor.execute(f'''
-            CREATE TABLE IF NOT EXISTS {table_name} (
-                id INTEGER PRIMARY KEY,
-                {key1} TEXT,
-                {key2} INTEGER
-            )
-        ''')
-        self.connection.commit()
+        with sqlite3.connect(self.database_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"""
+                CREATE TABLE IF NOT EXISTS {table_name} (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    {key1} TEXT,
+                    {key2} INTEGER
+                )
+            """)
+            conn.commit()
 
     def insert_into_database(self, table_name, data):
         """
@@ -42,11 +42,11 @@ class DatabaseProcessor:
                 {'name': 'Alice', 'age': 30}
             ])
         """
-        for entry in data:
-            columns = ', '.join(entry.keys())
-            placeholders = ', '.join('?' * len(entry))
-            self.cursor.execute(f'INSERT INTO {table_name} ({columns}) VALUES ({placeholders})', tuple(entry.values()))
-        self.connection.commit()
+        with sqlite3.connect(self.database_name) as conn:
+            cursor = conn.cursor()
+            for entry in data:
+                cursor.execute(f"INSERT INTO {table_name} ({', '.join(entry.keys())}) VALUES ({', '.join(['?' for _ in entry.values()])})", tuple(entry.values()))
+            conn.commit()
 
     def search_database(self, table_name, name):
         """
@@ -58,9 +58,11 @@ class DatabaseProcessor:
         >>> db.search_database('user', 'John')
         [(1, 'John', 25)]
         """
-        self.cursor.execute(f'SELECT * FROM {table_name} WHERE name = ?', (name,))
-        results = self.cursor.fetchall()
-        return results if results else None
+        with sqlite3.connect(self.database_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT * FROM {table_name} WHERE name=?", (name,))
+            result = cursor.fetchall()
+            return result if result else None
 
     def delete_from_database(self, table_name, name):
         """
@@ -69,9 +71,7 @@ class DatabaseProcessor:
         :param name: str, the name to match for deletion.
         >>> db.delete_from_database('user', 'John')
         """
-        self.cursor.execute(f'DELETE FROM {table_name} WHERE name = ?', (name,))
-        self.connection.commit()
-
-    def close(self):
-        """Close the database connection."""
-        self.connection.close()
+        with sqlite3.connect(self.database_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"DELETE FROM {table_name} WHERE name=?", (name,))
+            conn.commit()

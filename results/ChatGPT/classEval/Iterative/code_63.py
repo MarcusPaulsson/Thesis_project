@@ -1,21 +1,20 @@
 import re
 from collections import Counter
 
-class NLPDataProcessor:
+class NLPDataProcessor2:
     """
-    The class processes NLP data by extracting words from a list of strings, calculating the frequency of each word,
-    and returning the top 5 most frequent words.
+    The class processes NLP data by extracting words from a list of strings, calculating the frequency of each word, and returning the top 5 most frequent words.
     """
 
     def process_data(self, string_list):
         """
-        Cleans the input strings by removing non-alphabetic characters and converting to lower case.
-        
-        :param string_list: List of strings to process
-        :return: List of lists, where each inner list contains the words from the corresponding string
+        Keep only English letters and spaces in the string, then convert the string to lower case, and then split the string into a list of words.
+        :param string_list: a list of strings
+        :return: words_list: a list of words lists
         """
         words_list = []
         for string in string_list:
+            # Keep only letters and spaces
             cleaned_string = re.sub(r'[^a-zA-Z\s]', '', string).lower()
             words = cleaned_string.split()
             words_list.append(words)
@@ -23,22 +22,21 @@ class NLPDataProcessor:
 
     def calculate_word_frequency(self, words_list):
         """
-        Calculates the frequency of words in the provided list of lists of words.
-        
-        :param words_list: List of lists containing words
-        :return: Dictionary of the top 5 most common words and their frequencies
+        Calculate the word frequency of each word in the list of words list, and sort the word frequency dictionary by value in descending order.
+        :param words_list: a list of words lists
+        :return: top 5 word frequency dictionary, a dictionary of word frequency, key is word, value is frequency
         """
-        word_counter = Counter()
+        word_count = Counter()
         for words in words_list:
-            word_counter.update(words)
-        return dict(word_counter.most_common(5))
+            word_count.update(words)
+        return dict(word_count.most_common(5))
 
     def process(self, string_list):
         """
-        Processes the input strings to return the top 5 most frequent words.
-        
-        :param string_list: List of strings to process
-        :return: Dictionary of the top 5 most common words and their frequencies
+        Keep only English letters and spaces in the string, then convert the string to lower case, and then split the string into a list of words. 
+        Calculate the word frequency of each word in the list of words list, and sort the word frequency dictionary by value in descending order.
+        :param string_list: a list of strings
+        :return: top 5 word frequency dictionary, a dictionary of word frequency, key is word, value is frequency
         """
         words_list = self.process_data(string_list)
         return self.calculate_word_frequency(words_list)

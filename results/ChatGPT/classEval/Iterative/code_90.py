@@ -7,7 +7,7 @@ class URLHandler:
 
     def __init__(self, url):
         """
-        Initialize URLHandler with the given URL.
+        Initialize URLHandler with a URL.
         :param url: str, the URL to be parsed
         """
         self.url = url
@@ -16,64 +16,37 @@ class URLHandler:
     def get_scheme(self):
         """
         Get the scheme of the URL.
-        :return: str, the scheme of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_scheme()
-        'https'
+        :return: str or None, the scheme of the URL or None if not present.
         """
-        return self.parsed_url.scheme
+        return self.parsed_url.scheme or None
 
     def get_host(self):
         """
         Get the host domain name of the URL.
-        :return: str, the host domain name of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_host()
-        'www.baidu.com'
+        :return: str or None, the host domain name or None if not present.
         """
-        return self.parsed_url.hostname
+        return self.parsed_url.hostname or None
 
     def get_path(self):
         """
-        Get the path of the URL, including query and fragment if present.
-        :return: str, the path of the resource in the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_path()
-        '/s'
+        Get the resource path of the URL, including query and fragment.
+        :return: str or None, the resource path or None if not present.
         """
-        return self.parsed_url.path
-
-    def get_full_path(self):
-        """
-        Get the full path of the URL, including query and fragment.
-        :return: str, the full path of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_full_path()
-        '/s?wd=aaa&rsv_spt=1#page'
-        """
-        full_path = self.parsed_url.path
-        if self.parsed_url.query:
-            full_path += '?' + self.parsed_url.query
-        if self.parsed_url.fragment:
-            full_path += '#' + self.parsed_url.fragment
-        return full_path
+        path = self.parsed_url.path
+        query = f'?{self.parsed_url.query}' if self.parsed_url.query else ''
+        fragment = f'#{self.parsed_url.fragment}' if self.parsed_url.fragment else ''
+        return path + query + fragment if path or query or fragment else None
 
     def get_query_params(self):
         """
-        Get the query parameters of the URL.
-        :return: dict, the request parameters of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_query_params()
-        {'wd': ['aaa'], 'rsv_spt': ['1']}
+        Get the query parameters of the URL as a dictionary.
+        :return: dict or None, the query parameters or None if not present.
         """
-        return parse_qs(self.parsed_url.query)
+        return {k: v[0] for k, v in parse_qs(self.parsed_url.query).items()} if self.parsed_url.query else None
 
     def get_fragment(self):
         """
         Get the fragment of the URL.
-        :return: str, the fragment after '#' of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_fragment()
-        'page'
+        :return: str or None, the fragment or None if not present.
         """
-        return self.parsed_url.fragment
+        return self.parsed_url.fragment or None

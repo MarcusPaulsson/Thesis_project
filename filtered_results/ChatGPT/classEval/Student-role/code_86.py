@@ -5,7 +5,7 @@ class TicTacToe:
 
     def __init__(self, N=3):
         """
-        Initialize a 3x3 game board with all empty spaces and current symbol player, default is 'X'.
+        Initialize a 3x3 game board with all empty spaces and current symble player, default is 'X'.
         """
         self.board = [[' ' for _ in range(N)] for _ in range(N)]
         self.current_player = 'X'
@@ -16,13 +16,6 @@ class TicTacToe:
         :param row: int, the row index of the position
         :param col: int, the column index of the position
         :return: bool, indicating whether the move was successful or not
-        >>> ttt = TicTacToe()
-        >>> ttt.current_player
-        'X'
-        >>> ttt.make_move(1, 1)
-        True
-        >>> ttt.current_player
-        'O'
         """
         if self.board[row][col] == ' ':
             self.board[row][col] = self.current_player
@@ -34,22 +27,13 @@ class TicTacToe:
         """
         Check if there is a winner on the board in rows, columns and diagonals three directions
         :return: str or None, the mark of the winner ('X' or 'O'), or None if there is no winner yet
-        >>> ttt = TicTacToe()
-        >>> moves = [(1, 0), (2, 0), (1, 1), (2, 1), (1, 2)]
-        >>> for move in moves:
-        ...     ttt.make_move(move[0], move[1])
-        >>> ttt.check_winner()
-        'X'
         """
-        # Check rows
-        for row in self.board:
-            if row[0] == row[1] == row[2] != ' ':
-                return row[0]
-
-        # Check columns
-        for col in range(len(self.board)):
-            if self.board[0][col] == self.board[1][col] == self.board[2][col] != ' ':
-                return self.board[0][col]
+        # Check rows and columns
+        for i in range(3):
+            if self.board[i][0] == self.board[i][1] == self.board[i][2] != ' ':
+                return self.board[i][0]
+            if self.board[0][i] == self.board[1][i] == self.board[2][i] != ' ':
+                return self.board[0][i]
 
         # Check diagonals
         if self.board[0][0] == self.board[1][1] == self.board[2][2] != ' ':
@@ -63,9 +47,6 @@ class TicTacToe:
         """
         Check if the game board is completely filled.
         :return: bool, indicating whether the game board is full or not
-        >>> ttt = TicTacToe()
-        >>> ttt.is_board_full()
-        False
         """
         for row in self.board:
             if ' ' in row:

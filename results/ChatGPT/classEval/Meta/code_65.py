@@ -8,63 +8,97 @@ class NumberWordFormatter:
         Initialize NumberWordFormatter object.
         """
         self.NUMBER = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"]
-        self.NUMBER_TEEN = ["TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN"]
-        self.NUMBER_TEN = ["", "", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"]
+        self.NUMBER_TEEN = ["TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN",
+                            "EIGHTEEN", "NINETEEN"]
+        self.NUMBER_TEN = ["TEN", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"]
         self.NUMBER_MORE = ["", "THOUSAND", "MILLION", "BILLION"]
 
     def format(self, x):
+        """
+        Converts a number into words format
+        :param x: int or float, the number to be converted into words format
+        :return: str, the number in words format
+        """
+        if x is None:
+            return ""
         if isinstance(x, float):
             integer_part = int(x)
-            decimal_part = int((x - integer_part) * 100)
+            decimal_part = int(round((x - integer_part) * 100))
         else:
-            integer_part = x
+            integer_part = int(x)
             decimal_part = 0
-            
-        integer_words = self.convert_integer(integer_part)
-        decimal_words = self.convert_integer(decimal_part) if decimal_part > 0 else ""
         
-        return (f"{integer_words} ONLY" + (f" AND {decimal_words}" if decimal_part > 0 else "")).strip()
+        words = self.convert_integer_to_words(integer_part)
+        if decimal_part > 0:
+            words += " AND CENTS " + self.trans_two(str(decimal_part))
+        words += " ONLY"
+        return words
 
     def format_string(self, x):
+        """
+        Converts a string representation of a number into words format
+        :param x: str, the string representation of a number
+        :return: str, the number in words format
+        """
         return self.format(float(x))
 
     def trans_two(self, s):
+        """
+        Converts a two-digit number into words format
+        :param s: str, the two-digit number
+        :return: str, the number in words format
+        """
         num = int(s)
         if num < 10:
             return self.NUMBER[num]
-        elif num < 20:
+        elif 10 <= num < 20:
             return self.NUMBER_TEEN[num - 10]
         else:
-            ten = self.NUMBER_TEN[num // 10]
-            one = self.NUMBER[num % 10]
-            return f"{ten} {one}".strip()
+            ten = num // 10
+            one = num % 10
+            return self.NUMBER_TEN[ten - 1] + (" " + self.NUMBER[one] if one > 0 else "")
 
     def trans_three(self, s):
+        """
+        Converts a three-digit number into words format
+        :param s: str, the three-digit number
+        :return: str, the number in words format
+        """
         num = int(s)
         if num < 100:
             return self.trans_two(s)
-        else:
-            hundred = self.NUMBER[num // 100] + " HUNDRED"
-            rest = self.trans_two(s[1:])
-            return f"{hundred} AND {rest}".strip()
+        
+        hundred = num // 100
+        remainder = num % 100
+        result = self.NUMBER[hundred] + " HUNDRED"
+        if remainder > 0:
+            result += " AND " + self.trans_two(str(remainder))
+        return result
 
-    def parse_more(self, i):
-        return self.NUMBER_MORE[i]
-
-    def convert_integer(self, num):
+    def convert_integer_to_words(self, num):
+        """
+        Converts an integer into words format
+        :param num: int, the integer to be converted
+        :return: str, the number in words format
+        """
         if num == 0:
             return "ZERO"
         
-        words = []
+        words = ""
         index = 0
         
         while num > 0:
             if num % 1000 != 0:
-                words_part = self.trans_three(str(num % 1000))
-                if index > 0:
-                    words_part += f" {self.parse_more(index)}"
-                words.append(words_part)
+                words = self.trans_three(str(num % 1000)) + (" " + self.NUMBER_MORE[index] if index > 0 else "") + (" " + words if words else "")
             num //= 1000
             index += 1
         
-        return ' '.join(reversed(words)).strip()
+        return words.strip()
+
+    def parse_more(self, i):
+        """
+        Parses the thousand/million/billion suffix based on the index
+        :param i: int, the index representing the magnitude (thousand, million, billion)
+        :return: str, the corresponding suffix for the magnitude
+        """
+        return self.NUMBER_MORE[i]

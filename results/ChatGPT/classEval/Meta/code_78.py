@@ -11,9 +11,8 @@ class SplitSentence:
         :param sentences_string: string, string to split
         :return:list, split sentence list
         """
-        # Use regex to split on . or ? followed by a space, but avoid splitting on "Mr."
-        sentences = re.split(r'(?<!Mr)\. (?|\?)(?= )', sentences_string.strip())
-        return [sentence.strip() for sentence in sentences if sentence]
+        pattern = r'(?<!Mr)(?<![A-Z]\.[A-Z]\.[A-Z])(?<=[.?\!])\s+'
+        return re.split(pattern, sentences_string.strip())
 
     def count_words(self, sentence):
         """
@@ -21,7 +20,6 @@ class SplitSentence:
         :param sentence:string, sentence to be counted, where words are separated by spaces
         :return:int, number of words in the sentence
         """
-        # Count words by splitting on spaces and filtering out empty strings or non-word characters
         words = re.findall(r'\b[a-zA-Z]+\b', sentence)
         return len(words)
 
@@ -32,5 +30,9 @@ class SplitSentence:
         :return:int, the number of words in the longest sentence
         """
         sentences = self.split_sentences(sentences_string)
-        max_word_count = max(self.count_words(sentence) for sentence in sentences)
-        return max_word_count
+        max_words = 0
+        for sentence in sentences:
+            word_count = self.count_words(sentence)
+            if word_count > max_words:
+                max_words = word_count
+        return max_words

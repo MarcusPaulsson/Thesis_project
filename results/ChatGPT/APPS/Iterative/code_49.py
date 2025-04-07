@@ -1,28 +1,21 @@
 def find_kth_digit(k):
-    if k <= 0:
-        raise ValueError("k must be a positive integer.")
-
-    length = 1
+    digit_length = 1
     count = 9
     start = 1
 
-    # Determine the range where the k-th digit falls
-    while k > length * count:
-        k -= length * count
-        length += 1
+    # Determine the range in which the k-th digit falls
+    while k > digit_length * count:
+        k -= digit_length * count
+        digit_length += 1
         count *= 10
         start *= 10
 
     # Find the actual number that contains the k-th digit
-    start += (k - 1) // length
-    number = str(start)
-    
-    # Find the specific digit
-    digit_index = (k - 1) % length
-    return number[digit_index]
+    number = start + (k - 1) // digit_length
+    digit_index = (k - 1) % digit_length
 
-try:
-    k = int(input("Enter a positive integer k: "))
-    print(find_kth_digit(k))
-except ValueError as e:
-    print(e)
+    # Extract the specific digit from the number
+    return str(number)[digit_index]
+
+k = int(input())
+print(find_kth_digit(k))

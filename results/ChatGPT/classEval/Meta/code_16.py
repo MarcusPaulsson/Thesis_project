@@ -11,7 +11,7 @@ class Calculator:
             '+': lambda x, y: x + y,
             '-': lambda x, y: x - y,
             '*': lambda x, y: x * y,
-            '/': lambda x, y: x / y,
+            '/': lambda x, y: x / y if y != 0 else float('inf'),  # Handle division by zero
             '^': lambda x, y: x ** y
         }
 
@@ -21,63 +21,76 @@ class Calculator:
         :param expression: string, given expression
         :return: If successful, returns the value of the expression; otherwise, returns None
         """
-        operand_stack = []
-        operator_stack = []
-        i = 0
-        n = len(expression)
+        if not expression:
+            return None
 
-        while i < n:
-            if expression[i].isdigit() or (expression[i] == '-' and (i == 0 or expression[i-1] in "+-*/^")):
-                num = 0
-                while i < n and (expression[i].isdigit() or expression[i] == '.'):
-                    if expression[i] == '.':
-                        fraction = 0
-                        decimal_place = 1
-                        i += 1
-                        while i < n and expression[i].isdigit():
-                            fraction = fraction * 10 + int(expression[i])
-                            decimal_place *= 10
-                            i += 1
-                        num += fraction / decimal_place
-                    else:
-                        num = num * 10 + int(expression[i])
-                        i += 1
-                operand_stack.append(num)
-            else:
-                while (operator_stack and self.precedence(operator_stack[-1]) >= self.precedence(expression[i])):
-                    self.apply_operator(operand_stack, operator_stack)
-                operator_stack.append(expression[i])
-                i += 1
+        def shunting_yard(expression):
+            output = []
+            operators = []
+            num = ''
+            for char in expression:
+                if char.isdigit() or char == '.':
+                    num += char
+                else:
+                    if num:
+                        output.append(float(num))
+                        num = ''
+                    if char in self.operators:
+                        while (operators and self.precedence(operators[-1]) >= self.precedence(char)):
+                            output.append(operators.pop())
+                        operators.append(char)
+                    elif char == '(':
+                        operators.append(char)
+                    elif char == ')':
+                        while operators and operators[-1] != '(':
+                            output.append(operators.pop())
+                        operators.pop()  # Pop the '('
+            if num:
+                output.append(float(num))
+            while operators:
+                output.append(operators.pop())
+            return output
 
-        while operator_stack:
-            self.apply_operator(operand_stack, operator_stack)
+        def evaluate_rpn(rpn):
+            stack = []
+            for token in rpn:
+                if isinstance(token, float):
+                    stack.append(token)
+                else:
+                    b = stack.pop()
+                    a = stack.pop()
+                    stack.append(self.operators[token](a, b))
+            return stack[0]
 
-        return operand_stack[-1] if operand_stack else None
+        rpn = shunting_yard(expression)
+        return evaluate_rpn(rpn)
 
     def precedence(self, operator):
         """
-        Returns the priority of the specified operator, where the higher the priority, the greater the assignment. The priority of '^' is greater than '/' and '*', and the priority of '/' and '*' is greater than '+' and '-'
+        Returns the priority of the specified operator, where the higher the priority, the greater the assignment. 
+        The priority of '^' is greater than '/' and '*', and the priority of '/' and '*' is greater than '+' and '-'
         :param operator: string, given operator
         :return: int, the priority of the given operator, otherwise return 0
         """
-        if operator == '^':
-            return 3
-        elif operator in ('*', '/'):
-            return 2
-        elif operator in ('+', '-'):
+        if operator == '+' or operator == '-':
             return 1
+        elif operator == '*' or operator == '/':
+            return 2
+        elif operator == '^':
+            return 3
         return 0
 
     def apply_operator(self, operand_stack, operator_stack):
         """
-        Use the operator at the top of the operator stack to perform the operation on the two numbers at the top of the operand stack and store the results at the top of the operand stack
+        Use the operator at the top of the operator stack to perform the operation on the two numbers at the top of the operand stack, 
+        and store the results at the top of the operand stack
         :param operand_stack: list
         :param operator_stack: list
         :return: the updated operand_stack and operator_stack
         """
         operator = operator_stack.pop()
-        right = operand_stack.pop()
-        left = operand_stack.pop()
-        result = self.operators[operator](left, right)
+        b = operand_stack.pop()
+        a = operand_stack.pop()
+        result = self.operators[operator](a, b)
         operand_stack.append(result)
         return operand_stack, operator_stack

@@ -6,7 +6,7 @@ class BitStatusUtil:
     @staticmethod
     def add(states, stat):
         """
-        Add a status to the current status,and check the parameters whether they are legal.
+        Add a status to the current status,and check the parameters wheather they are legal.
         :param states: Current status,int.
         :param stat: Status to be added,int.
         :return: The status after adding the status,int.
@@ -20,7 +20,7 @@ class BitStatusUtil:
     @staticmethod
     def has(states, stat):
         """
-        Check if the current status contains the specified status,and check the parameters whether they are legal.
+        Check if the current status contains the specified status,and check the parameters wheather they are legal.
         :param states: Current status,int.
         :param stat: Specified status,int.
         :return: True if the current status contains the specified status,otherwise False,bool.
@@ -34,7 +34,7 @@ class BitStatusUtil:
     @staticmethod
     def remove(states, stat):
         """
-        Remove the specified status from the current status,and check the parameters whether they are legal.
+        Remove the specified status from the current status,and check the parameters wheather they are legal.
         :param states: Current status,int.
         :param stat: Specified status,int.
         :return: The status after removing the specified status,int.
@@ -59,6 +59,6 @@ class BitStatusUtil:
         """
         for arg in args:
             if arg < 0:
-                raise ValueError(f"{arg} must be >= 0")
+                raise ValueError(f"{arg} is negative")
             if arg % 2 != 0:
                 raise ValueError(f"{arg} not even")

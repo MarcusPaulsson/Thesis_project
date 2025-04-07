@@ -17,9 +17,14 @@ class SQLGenerator:
         :param condition: str, optional. Default is None. The condition expression for the query.
         :return: str. The generated SQL statement.
         """
-        fields_clause = ', '.join(fields) if fields else '*'
-        condition_clause = f" WHERE {condition}" if condition else ''
-        return f"SELECT {fields_clause} FROM {self.table_name}{condition_clause};"
+        if fields is None:
+            fields_part = '*'
+        else:
+            fields_part = ', '.join(fields)
+        
+        if condition:
+            return f"SELECT {fields_part} FROM {self.table_name} WHERE {condition};"
+        return f"SELECT {fields_part} FROM {self.table_name};"
 
     def insert(self, data):
         """
@@ -38,7 +43,7 @@ class SQLGenerator:
         :param condition: str. The condition expression for the update.
         :return: str. The generated SQL statement.
         """
-        set_clause = ', '.join(f"{key} = '{value}'" for key, value in data.items())
+        set_clause = ', '.join(f"{field} = '{value}'" for field, value in data.items())
         return f"UPDATE {self.table_name} SET {set_clause} WHERE {condition};"
 
     def delete(self, condition):

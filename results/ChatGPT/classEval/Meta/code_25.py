@@ -1,4 +1,5 @@
 import json
+import os
 
 class CookiesUtil:
     """
@@ -11,7 +12,7 @@ class CookiesUtil:
         :param cookies_file: The cookies file to use, str.
         """
         self.cookies_file = cookies_file
-        self.cookies = None
+        self.cookies = {}
 
     def get_cookies(self, response):
         """
@@ -26,22 +27,28 @@ class CookiesUtil:
         Loads the cookies from the cookies_file to the cookies data.
         :return: The cookies data, dict.
         """
-        try:
-            with open(self.cookies_file, 'r') as file:
-                self.cookies = json.load(file)
-            return self.cookies
-        except (FileNotFoundError, json.JSONDecodeError):
+        if os.path.exists(self.cookies_file):
+            with open(self.cookies_file, 'r') as f:
+                self.cookies = json.load(f)
+        else:
             self.cookies = {}
-            return self.cookies
+        return self.cookies.get('cookies', {})
 
     def _save_cookies(self):
         """
-        Saves the cookies to the cookies_file, and returns True if successful, False otherwise.
+        Saves the cookies to the cookies_file and returns True if successful, False otherwise.
         :return: True if successful, False otherwise.
         """
         try:
-            with open(self.cookies_file, 'w') as file:
-                json.dump(self.cookies, file)
+            with open(self.cookies_file, 'w') as f:
+                json.dump({'cookies': self.cookies}, f)
             return True
-        except IOError:
+        except Exception:
             return False
+
+    def set_cookies(self, request):
+        """
+        Sets the cookies for the provided request.
+        :param request: The request to set cookies on, dict.
+        """
+        request['cookies'] = f"cookies={self.cookies}"

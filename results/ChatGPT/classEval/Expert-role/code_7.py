@@ -6,7 +6,7 @@ class BalancedBrackets:
     def __init__(self, expr):
         """
         Initializes the class with an expression.
-        :param expr: The expression to check for balanced brackets,str.
+        :param expr: The expression to check for balanced brackets, str.
         """
         self.stack = []
         self.left_brackets = ["(", "{", "["]
@@ -21,7 +21,7 @@ class BalancedBrackets:
         >>> b.expr
         '()'
         """
-        self.expr = ''.join([char for char in self.expr if char in self.left_brackets + self.right_brackets])
+        self.expr = ''.join(char for char in self.expr if char in self.left_brackets + self.right_brackets)
 
     def check_balanced_brackets(self):
         """
@@ -31,11 +31,15 @@ class BalancedBrackets:
         >>> b.check_balanced_brackets()
         True
         """
-        self.clear_expr()
+        stack = []
+        bracket_map = {")": "(", "}": "{", "]": "["}
+
         for char in self.expr:
             if char in self.left_brackets:
-                self.stack.append(char)
+                stack.append(char)
             elif char in self.right_brackets:
-                if not self.stack or self.left_brackets[self.right_brackets.index(char)] != self.stack.pop():
+                if not stack or stack[-1] != bracket_map[char]:
                     return False
-        return len(self.stack) == 0
+                stack.pop()
+
+        return len(stack) == 0

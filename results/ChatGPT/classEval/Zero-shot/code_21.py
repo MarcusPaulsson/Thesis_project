@@ -18,7 +18,7 @@ class Classroom:
         Add course to self.courses list if the course wasn't in it.
         :param course: dict, information of the course, including 'start_time', 'end_time' and 'name'
         """
-        if course not in self.courses and self.check_course_conflict(course):
+        if course not in self.courses:
             self.courses.append(course)
 
     def remove_course(self, course):
@@ -35,10 +35,10 @@ class Classroom:
         :param check_time: str, the time need to be checked
         :return: True if the check_time does not conflict with every course time, or False otherwise.
         """
-        check_time = datetime.strptime(check_time, '%H:%M')
+        check_time = datetime.strptime(check_time, '%H:%M').time()
         for course in self.courses:
-            start_time = datetime.strptime(course['start_time'], '%H:%M')
-            end_time = datetime.strptime(course['end_time'], '%H:%M')
+            start_time = datetime.strptime(course['start_time'], '%H:%M').time()
+            end_time = datetime.strptime(course['end_time'], '%H:%M').time()
             if start_time <= check_time < end_time:
                 return False
         return True
@@ -49,11 +49,11 @@ class Classroom:
         :param new_course: dict, information of the course, including 'start_time', 'end_time' and 'name'
         :return: False if the new course time conflicts(including two courses have the same boundary time) with other courses, or True otherwise.
         """
-        new_start_time = datetime.strptime(new_course['start_time'], '%H:%M')
-        new_end_time = datetime.strptime(new_course['end_time'], '%H:%M')
+        new_start = datetime.strptime(new_course['start_time'], '%H:%M').time()
+        new_end = datetime.strptime(new_course['end_time'], '%H:%M').time()
         for course in self.courses:
-            start_time = datetime.strptime(course['start_time'], '%H:%M')
-            end_time = datetime.strptime(course['end_time'], '%H:%M')
-            if not (new_end_time <= start_time or new_start_time >= end_time):
+            existing_start = datetime.strptime(course['start_time'], '%H:%M').time()
+            existing_end = datetime.strptime(course['end_time'], '%H:%M').time()
+            if not (new_end <= existing_start or new_start >= existing_end):
                 return False
         return True

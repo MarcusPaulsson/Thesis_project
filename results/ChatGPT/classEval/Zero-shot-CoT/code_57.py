@@ -10,53 +10,51 @@ class MetricsCalculator2:
 
     @staticmethod
     def mrr(data):
-        """
-        compute the MRR of the input data. MRR is a widely used evaluation index. It is the mean of reciprocal rank.
-        :param data: the data must be a tuple, list 0,1,eg.([1,0,...],5).  In each tuple (actual result,ground truth num),ground truth num is the total ground num.
-         ([1,0,...],5),
-        or list of tuple eg. [([1,0,1,...],5),([1,0,...],6),([0,0,...],5)].
-        1 stands for a correct answer, 0 stands for a wrong answer.
-        :return: if input data is list, return the MRR of this list. if the input data is list of list, return the
-        average MRR on all list. The second return value is a list of precision for each input.
-        """
+        if not isinstance(data, (list, tuple)):
+            raise ValueError("Input data must be a list or tuple.")
+        
         if isinstance(data, tuple):
             data = [data]
+        
+        reciprocal_ranks = []
+        precisions = []
+        
+        for actual, ground in data:
+            if ground == 0:
+                reciprocal_ranks.append(0.0)
+                precisions.append(0.0)
+                continue
+            
+            rank = next((i + 1 for i, x in enumerate(actual) if x == 1), None)
+            if rank is None:
+                reciprocal_ranks.append(0.0)
+                precisions.append(0.0)
+            else:
+                reciprocal_ranks.append(1.0 / rank)
+                precisions.append(sum(actual[:rank]) / rank)
 
-        mrr_list = []
-        for actual, ground_truth in data:
-            rank = next((i + 1 for i, val in enumerate(actual) if val == 1), None)
-            reciprocal_rank = 1 / rank if rank is not None else 0
-            mrr_list.append(reciprocal_rank)
-
-        mean_mrr = np.mean(mrr_list)
-        return mean_mrr, mrr_list
+        mrr_value = np.mean(reciprocal_ranks)
+        return mrr_value, precisions
 
     @staticmethod
     def map(data):
-        """
-        compute the MAP of the input data. MAP is a widely used evaluation index. It is the mean of AP (average precision).
-        :param data: the data must be a tuple, list 0,1,eg.([1,0,...],5).  In each tuple (actual result,ground truth num),ground truth num is the total ground num.
-         ([1,0,...],5),
-        or list of tuple eg. [([1,0,1,...],5),([1,0,...],6),([0,0,...],5)].
-        1 stands for a correct answer, 0 stands for a wrong answer.
-        :return: if input data is list, return the MAP of this list. if the input data is list of list, return the
-        average MAP on all list. The second return value is a list of precision for each input.
-        """
+        if not isinstance(data, (list, tuple)):
+            raise ValueError("Input data must be a list or tuple.")
+        
         if isinstance(data, tuple):
             data = [data]
+        
+        average_precisions = []
 
-        map_list = []
-        for actual, ground_truth in data:
-            relevant_count = 0
-            precision_sum = 0
+        for actual, ground in data:
+            if ground == 0:
+                average_precisions.append(0.0)
+                continue
             
-            for i, val in enumerate(actual):
-                if val == 1:
-                    relevant_count += 1
-                    precision_sum += relevant_count / (i + 1)
+            correct = np.cumsum(actual)
+            precisions = correct / (np.arange(len(actual)) + 1)
+            ap = np.sum(precisions * actual) / ground
+            average_precisions.append(ap)
 
-            avg_precision = precision_sum / min(relevant_count, ground_truth) if relevant_count > 0 else 0
-            map_list.append(avg_precision)
-
-        mean_map = np.mean(map_list)
-        return mean_map, map_list
+        map_value = np.mean(average_precisions)
+        return map_value, average_precisions

@@ -18,7 +18,10 @@ class VendingMachine:
         :param quantity: The quantity of the product to be added, int.
         :return: None
         """
-        self.inventory[item_name] = {'price': price, 'quantity': quantity}
+        if item_name in self.inventory:
+            self.inventory[item_name]['quantity'] += quantity
+        else:
+            self.inventory[item_name] = {'price': price, 'quantity': quantity}
 
     def insert_coin(self, amount):
         """
@@ -41,11 +44,7 @@ class VendingMachine:
                 item['quantity'] -= 1
                 self.balance -= item['price']
                 return self.balance
-            elif item['quantity'] == 0:
-                print("Purchase unsuccessful: Product out of stock.")
-                return False
             else:
-                print("Purchase unsuccessful: Insufficient balance.")
                 return False
         return False
 
@@ -69,6 +68,6 @@ class VendingMachine:
         if not self.inventory:
             return False
         items_display = []
-        for item_name, details in self.inventory.items():
-            items_display.append(f"{item_name} - ${details['price']} [{details['quantity']}]")
-        return '\n'.join(items_display)
+        for item_name, item_info in self.inventory.items():
+            items_display.append(f"{item_name} - ${item_info['price']:.2f} [{item_info['quantity']}]")
+        return "\n".join(items_display)

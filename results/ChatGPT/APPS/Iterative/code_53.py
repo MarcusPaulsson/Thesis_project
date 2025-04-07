@@ -1,26 +1,28 @@
 def longest_increasing_sequence(n, a):
     left, right = 0, n - 1
     last_taken = float('-inf')
-    result = []
-    directions = []
+    sequence = []
+    moves = []
     
     while left <= right:
-        if a[left] < last_taken and a[right] < last_taken:
-            break
+        can_take_left = a[left] > last_taken
+        can_take_right = a[right] > last_taken
         
-        if a[left] >= last_taken and (a[right] < last_taken or a[left] <= a[right]):
+        if can_take_left and (not can_take_right or a[left] < a[right]):
             last_taken = a[left]
-            result.append(last_taken)
-            directions.append('L')
+            sequence.append(a[left])
+            moves.append('L')
             left += 1
-        elif a[right] >= last_taken:
+        elif can_take_right:
             last_taken = a[right]
-            result.append(last_taken)
-            directions.append('R')
+            sequence.append(a[right])
+            moves.append('R')
             right -= 1
+        else:
+            break
     
-    print(len(result))
-    print(''.join(directions))
+    print(len(sequence))
+    print(''.join(moves))
 
 # Input reading
 n = int(input())

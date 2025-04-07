@@ -14,50 +14,66 @@ class MetricsCalculator:
 
     def update(self, predicted_labels, true_labels):
         """
-        Update the number of all four samples (true_positives, false_positives, false_negatives, true_negatives)
+        Update the number of all four samples(true_positives, false_positives, false_negatives, true_negatives)
         :param predicted_labels: list, predicted results
         :param true_labels: list, true labels
-        :return: None
+        :return: None, change the number of corresponding samples
         """
-        for pred, true in zip(predicted_labels, true_labels):
-            if pred == 1 and true == 1:
+        for p, t in zip(predicted_labels, true_labels):
+            if p == 1 and t == 1:
                 self.true_positives += 1
-            elif pred == 1 and true == 0:
+            elif p == 1 and t == 0:
                 self.false_positives += 1
-            elif pred == 0 and true == 1:
+            elif p == 0 and t == 1:
                 self.false_negatives += 1
-            elif pred == 0 and true == 0:
+            elif p == 0 and t == 0:
                 self.true_negatives += 1
 
-    def precision(self):
+    def precision(self, predicted_labels, true_labels):
         """
         Calculate precision
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
         :return: float
         """
-        total_predicted_positives = self.true_positives + self.false_positives
-        return self.true_positives / total_predicted_positives if total_predicted_positives > 0 else 0.0
+        self.update(predicted_labels, true_labels)
+        if self.true_positives + self.false_positives == 0:
+            return 0.0
+        return self.true_positives / (self.true_positives + self.false_positives)
 
-    def recall(self):
+    def recall(self, predicted_labels, true_labels):
         """
         Calculate recall
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
         :return: float
         """
-        total_actual_positives = self.true_positives + self.false_negatives
-        return self.true_positives / total_actual_positives if total_actual_positives > 0 else 0.0
+        self.update(predicted_labels, true_labels)
+        if self.true_positives + self.false_negatives == 0:
+            return 0.0
+        return self.true_positives / (self.true_positives + self.false_negatives)
 
-    def f1_score(self):
+    def f1_score(self, predicted_labels, true_labels):
         """
         Calculate f1 score, which is the harmonic mean of precision and recall
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
         :return: float
         """
-        precision_val = self.precision()
-        recall_val = self.recall()
-        return 2 * (precision_val * recall_val) / (precision_val + recall_val) if (precision_val + recall_val) > 0 else 0.0
+        precision_value = self.precision(predicted_labels, true_labels)
+        recall_value = self.recall(predicted_labels, true_labels)
+        if precision_value + recall_value == 0:
+            return 0.0
+        return 2 * (precision_value * recall_value) / (precision_value + recall_value)
 
-    def accuracy(self):
+    def accuracy(self, predicted_labels, true_labels):
         """
         Calculate accuracy
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
         :return: float
         """
-        total_samples = self.true_positives + self.false_positives + self.false_negatives + self.true_negatives
-        return (self.true_positives + self.true_negatives) / total_samples if total_samples > 0 else 0.0
+        if len(predicted_labels) == 0:
+            return 0.0
+        correct_predictions = sum(p == t for p, t in zip(predicted_labels, true_labels))
+        return correct_predictions / len(predicted_labels)

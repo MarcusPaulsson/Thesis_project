@@ -72,28 +72,32 @@ def analyze_folders_and_count_comment_density(folder_paths):
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # Adjust if running locally.
 
 
-#result_setting = "filtered_results" # "results"
+
 result_setting = "results" # "filtered_results"
+result_setting = "filtered_results" # "results"
 
-folder_paths_gemini_cli_games = {
-    "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
-    "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot-CoT"),
-    "Gemini cli_games Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Expert-role"),
-    "Gemini cli_games Student-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Student-role"),
-}
+# folder_paths_gemini_cli_games = {
+#     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
+#     "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot-CoT"),
+#     "Gemini cli_games Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Expert-role"),
+#     "Gemini cli_games Student-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Student-role"),
+# }
 
-folder_paths_chatgpt_cli_games = {
-    "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot"),
-    "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot-CoT"),
-    "ChatGPT cli_games Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Expert-role"),
-    "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
-}
+# folder_paths_chatgpt_cli_games = {
+#     "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot"),
+#     "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot-CoT"),
+#     "ChatGPT cli_games Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Expert-role"),
+#     "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
+# }
 
 folder_paths_gemini_classEval = {
     "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
     "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
     "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
     "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
+    "Gemini classEval Meta": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Meta"),
+    "Gemini classEval Naive": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Naive"),
+    "Gemini classEval Iterative": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Iterative"),
 }
 
 folder_paths_chatgpt_classEval = {
@@ -127,8 +131,10 @@ folder_paths_gemini_APPS = {
 }
 
 # Analyze folders and count comment density
-results_gemini = analyze_folders_and_count_comment_density(folder_paths_gemini_cli_games)
-results_chatgpt = analyze_folders_and_count_comment_density(folder_paths_chatgpt_cli_games)
+results_gemini={}  
+results_chatgpt ={} 
+# results_gemini = analyze_folders_and_count_comment_density(folder_paths_gemini_cli_games)
+# results_chatgpt = analyze_folders_and_count_comment_density(folder_paths_chatgpt_cli_games)
 results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_classEval))
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_classEval))
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_APPS))
@@ -149,6 +155,7 @@ gemini_densities = {
     "Student-role": [],
     "Meta": [],
     "Naive": [],
+    "Iterative" :[],
 }
 
 # Split density calculation by technique for ChatGPT
@@ -159,6 +166,7 @@ chatgpt_densities = {
     "Student-role": [],
     "Meta": [],
     "Naive": [],
+    "Iterative":[], 
 }
 
 for folder, (avg_density, _) in results_gemini.items(): #ignore standard deviation from folder output
@@ -174,6 +182,9 @@ for folder, (avg_density, _) in results_gemini.items(): #ignore standard deviati
         gemini_densities["Meta"].append(avg_density)
     elif "Naive" in folder:
         gemini_densities["Naive"].append(avg_density)
+    elif "Iterative" in folder:
+        gemini_densities["Iterative"].append(avg_density)
+
 
 for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviation from folder output
     if "Zero-shot" in folder and "CoT" not in folder:
@@ -188,6 +199,8 @@ for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviat
         chatgpt_densities["Meta"].append(avg_density)
     elif "Naive" in folder:
         chatgpt_densities["Naive"].append(avg_density)
+    elif "Iterative" in folder:
+        chatgpt_densities["Iterative"].append(avg_density)
 
 print("\nGemini Comment Density Averages:")
 for technique, densities in gemini_densities.items():

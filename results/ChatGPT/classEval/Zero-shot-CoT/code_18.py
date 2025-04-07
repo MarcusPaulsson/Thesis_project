@@ -15,7 +15,8 @@ class CamelCaseMap:
         :param key:str
         :return:str,the value corresponding to the key
         """
-        return self._data[self._convert_key(key)]
+        key = self._convert_key(key)
+        return self._data[key]
 
     def __setitem__(self, key, value):
         """
@@ -24,7 +25,8 @@ class CamelCaseMap:
         :param value:str, the specified value
         :return:None
         """
-        self._data[self._convert_key(key)] = value
+        key = self._convert_key(key)
+        self._data[key] = value
 
     def __delitem__(self, key):
         """
@@ -32,11 +34,12 @@ class CamelCaseMap:
         :param key:str
         :return:None
         """
-        del self._data[self._convert_key(key)]
+        key = self._convert_key(key)
+        del self._data[key]
 
     def __iter__(self):
         """
-        Returning Iterateable Objects with Own Data
+        Returning Iterable Objects with Own Data
         :return:Iterator
         """
         return iter(self._data)
@@ -54,7 +57,9 @@ class CamelCaseMap:
         :param key:str
         :return:str, converted key string
         """
-        return self._to_camel_case(key)
+        if isinstance(key, str):
+            return self._to_camel_case(key)
+        return key
 
     @staticmethod
     def _to_camel_case(key):
@@ -63,5 +68,5 @@ class CamelCaseMap:
         :param key:str
         :return:str, converted key string
         """
-        components = key.split('_')
-        return components[0] + ''.join(x.title() for x in components[1:])
+        parts = key.split('_')
+        return parts[0] + ''.join(part.capitalize() for part in parts[1:])

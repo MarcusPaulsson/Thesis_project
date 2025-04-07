@@ -21,7 +21,10 @@ def load_classEval_tasks(json_file_path):
         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
             data = json.load(jsonfile)
             for item in data:
-                tasks.append(item["skeleton"]) # Assumes each item in the JSON list has a 'skeleton' key
+                text = item["skeleton"]
+                test_cases = " Here is the test cases the code shall pass: " + item['test']
+                tasks.append(text +test_cases) # Assumes each item in the JSON list has a 'skeleton' key
+
         return tasks
     except FileNotFoundError:
         print(f"Error: JSON file '{json_file_path}' not found.")
@@ -72,6 +75,7 @@ def process_tasks_parallel(tasks, start_index, end_index, max_workers=5, iterati
             if iterative:
                 future = executor.submit(process_task_with_iterations, task_prompt)
             else:
+                
                 future = executor.submit(run_task_with_api_iter, task_prompt, prompt.SYSTEM_PROMPT[0]) # Run only first prompt if not iterative
             futures[future] = i
 
@@ -99,7 +103,7 @@ if __name__ == "__main__":
     # Define the index interval for tasks
     start_index = 0
     end_index = 100
-    max_workers = 10 # Adjust the number of parallel threads
+    max_workers = 20 # Adjust the number of parallel threads
     run_iterative = True if prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)

@@ -14,27 +14,27 @@ class AreaCalculator:
 
     def calculate_circle_area(self):
         """
-        Calculate the area of circle based on self.radius
+        calculate the area of circle based on self.radius
         :return: area of circle, float
         >>> areaCalculator = AreaCalculator(2)
         >>> areaCalculator.calculate_circle_area()
         12.566370614359172
         """
-        return math.pi * (self.radius ** 2)
+        return math.pi * self.radius ** 2
 
     def calculate_sphere_area(self):
         """
-        Calculate the area of sphere based on self.radius
+        calculate the area of sphere based on self.radius
         :return: area of sphere, float
         >>> areaCalculator = AreaCalculator(2)
         >>> areaCalculator.calculate_sphere_area()
         50.26548245743669
         """
-        return 4 * math.pi * (self.radius ** 2)
+        return 4 * math.pi * self.radius ** 2
 
     def calculate_cylinder_area(self, height):
         """
-        Calculate the area of cylinder based on self.radius and height
+        calculate the area of cylinder based on self.radius and height
         :param height: height of cylinder, float
         :return: area of cylinder, float
         >>> areaCalculator = AreaCalculator(2)
@@ -45,7 +45,7 @@ class AreaCalculator:
 
     def calculate_sector_area(self, angle):
         """
-        Calculate the area of sector based on self.radius and angle
+        calculate the area of sector based on self.radius and angle
         :param angle: angle of sector, float
         :return: area of sector, float
         >>> areaCalculator = AreaCalculator(2)
@@ -56,11 +56,10 @@ class AreaCalculator:
 
     def calculate_annulus_area(self, inner_radius, outer_radius):
         """
-        Calculate the area of annulus based on inner_radius and outer_radius
+        calculate the area of annulus based on inner_radius and out_radius
         :param inner_radius: inner radius of sector, float
         :param outer_radius: outer radius of sector, float
         :return: area of annulus, float
-        >>> areaCalculator = AreaCalculator(2)
         >>> areaCalculator.calculate_annulus_area(2, 3)
         15.707963267948966
         """

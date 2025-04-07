@@ -17,14 +17,12 @@ class EightPuzzle:
         Find the blank position of current state, which is the 0 element.
         :param state: a 3*3 size list of Integer, stores the current state.
         :return i, j: two Integers, represent the coordinate of the blank block.
-        >>> eightPuzzle = EightPuzzle([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
-        >>> eightPuzzle.find_blank([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
-        (2, 1)
         """
         for i in range(3):
             for j in range(3):
                 if state[i][j] == 0:
                     return i, j
+        return None
 
     def move(self, state, direction):
         """
@@ -32,11 +30,9 @@ class EightPuzzle:
         :param state: a 3*3 size list of Integer, stores the state before moving.
         :param direction: str, only has 4 direction 'up', 'down', 'left', 'right'
         :return new_state: a 3*3 size list of Integer, stores the state after moving.
-        >>> eightPuzzle.move([[2, 3, 4], [5, 8, 1], [6, 0, 7]], 'left')
-        [[2, 3, 4], [5, 8, 1], [0, 6, 7]]
         """
+        new_state = [row[:] for row in state]  # Make a copy of the state
         i, j = self.find_blank(state)
-        new_state = [row[:] for row in state]  # Create a copy of the state
 
         if direction == 'up' and i > 0:
             new_state[i][j], new_state[i - 1][j] = new_state[i - 1][j], new_state[i][j]
@@ -46,6 +42,8 @@ class EightPuzzle:
             new_state[i][j], new_state[i][j - 1] = new_state[i][j - 1], new_state[i][j]
         elif direction == 'right' and j < 2:
             new_state[i][j], new_state[i][j + 1] = new_state[i][j + 1], new_state[i][j]
+        else:
+            return state  # Invalid move, return the original state
 
         return new_state
 
@@ -54,15 +52,19 @@ class EightPuzzle:
         According the current state, find all the possible moving directions. Only has 4 direction 'up', 'down', 'left', 'right'.
         :param state: a 3*3 size list of Integer, stores the current state.
         :return moves: a list of str, store all the possible moving directions according to the current state.
-        >>> eightPuzzle.get_possible_moves([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
-        ['up', 'left', 'right']
         """
-        i, j = self.find_blank(state)
         moves = []
-        if i > 0: moves.append('up')
-        if i < 2: moves.append('down')
-        if j > 0: moves.append('left')
-        if j < 2: moves.append('right')
+        i, j = self.find_blank(state)
+
+        if i > 0:  # Can move up
+            moves.append('up')
+        if i < 2:  # Can move down
+            moves.append('down')
+        if j > 0:  # Can move left
+            moves.append('left')
+        if j < 2:  # Can move right
+            moves.append('right')
+
         return moves
 
     def solve(self):
@@ -73,25 +75,25 @@ class EightPuzzle:
         Traversal the possible_moves list and invoke move method to get several new states.Then append them.
         redo the above steps until the open_list is empty or the state has changed to the goal state.
         :return path: list of str, the solution to the goal state.
-        >>> eightPuzzle = EightPuzzle([[1, 2, 3], [4, 5, 6], [7, 0, 8]])
-        >>> eightPuzzle.solve()
-        ['right']
         """
         from collections import deque
-        
+
         open_list = deque([(self.initial_state, [])])
         visited = set()
-        
+        visited.add(tuple(map(tuple, self.initial_state)))
+
         while open_list:
             current_state, path = open_list.popleft()
+
             if current_state == self.goal_state:
                 return path
-            
-            visited.add(tuple(map(tuple, current_state)))
 
             for move_direction in self.get_possible_moves(current_state):
                 new_state = self.move(current_state, move_direction)
-                if tuple(map(tuple, new_state)) not in visited:
-                    open_list.append((new_state, path + [move_direction]))
+                new_path = path + [move_direction]
 
-        return []
+                if tuple(map(tuple, new_state)) not in visited:
+                    visited.add(tuple(map(tuple, new_state)))
+                    open_list.append((new_state, new_path))
+
+        return None

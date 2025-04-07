@@ -32,22 +32,24 @@ class Words2Numbers:
         Convert the word string to the corresponding integer string
         :param textnum: string, the word string to be converted
         :return: string, the final converted integer string
-        >>> w2n = Words2Numbers()
-        >>> w2n.text2int("thirty-two")
-        "32"
         """
-        textnum = textnum.replace("-", " ")
+        if not self.is_valid_input(textnum):
+            raise ValueError("Invalid input")
+        
+        textnum = textnum.replace("-", " ")  # Handle hyphenated numbers
         parts = textnum.split()
-        current = total = 0
+        current = 0
+        total = 0
 
         for part in parts:
-            if part not in self.numwords:
+            if part in self.numwords:
+                scale, increment = self.numwords[part]
+                current += increment
+                if scale > 1:
+                    total += current * scale
+                    current = 0
+            else:
                 raise ValueError(f"Invalid word: {part}")
-            scale, increment = self.numwords[part]
-            current += increment
-            if scale > 1:
-                total += current * scale
-                current = 0
 
         return str(total + current)
 
@@ -56,10 +58,10 @@ class Words2Numbers:
         Check if the input text contains only valid words that can be converted into numbers.
         :param textnum: The input text containing words representing numbers.
         :return: True if input is valid, False otherwise.
-        >>> w2n = Words2Numbers()
-        >>> w2n.is_valid_input("thirty-two")
-        True
         """
-        textnum = textnum.replace("-", " ")
-        parts = textnum.split()
-        return all(part in self.numwords or part in self.ordinal_words for part in parts)
+        textnum = textnum.replace("-", " ")  # Handle hyphenated numbers
+        words = textnum.split()
+        for word in words:
+            if word not in self.numwords:
+                return False
+        return True

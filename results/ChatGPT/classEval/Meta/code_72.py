@@ -2,12 +2,11 @@ import re
 
 class RegexUtils:
     """
-    The class provides to match, find all occurrences, split, and substitute text using regular expressions. 
-    It also includes predefined patterns, validating phone numbers and extracting email addresses.
+    The class provides to match, find all occurrences, split, and substitute text using regular expressions. It also includes predefined patterns, validating phone numbers and extracting email addresses.
     """
 
     def match(self, pattern, text):
-        return re.match(pattern, text) is not None
+        return re.fullmatch(pattern, text) is not None
 
     def findall(self, pattern, text):
         return re.findall(pattern, text)
@@ -28,8 +27,8 @@ class RegexUtils:
         return r'[.!?][\s]{1,2}(?=[A-Z])'
 
     def split_sentences(self, text):
-        sentences = re.split(r'[.!?][\s]+', text)
-        return [s.strip() for s in sentences if s]
+        sentences = re.split(self.generate_split_sentences_pattern(), text)
+        return [s.strip() for s in sentences if s.strip()]
 
     def validate_phone_number(self, phone_number):
         pattern = self.generate_phone_number_pattern()

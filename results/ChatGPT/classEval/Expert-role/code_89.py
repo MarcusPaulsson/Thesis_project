@@ -49,6 +49,7 @@ class TwentyFourPointGame:
         True
         """
         try:
-            return eval(expression) == 24
-        except Exception:
+            result = eval(expression)
+            return result == 24
+        except (SyntaxError, NameError):
             return False

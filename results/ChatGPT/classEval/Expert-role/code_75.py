@@ -1,6 +1,6 @@
 class ShoppingCart:
     """
-    The class manages items, their prices, quantities, and allows to add, remove, view items, and calculate the total price.
+    The class manages items, their prices, quantities, and allows to for add, remove, view items, and calculate the total price.
     """
 
     def __init__(self):
@@ -30,9 +30,8 @@ class ShoppingCart:
         :return: None
         """
         if item in self.items:
-            if self.items[item]['quantity'] > quantity:
-                self.items[item]['quantity'] -= quantity
-            else:
+            self.items[item]['quantity'] -= quantity
+            if self.items[item]['quantity'] <= 0:
                 del self.items[item]
 
     def view_items(self) -> dict:
@@ -47,5 +46,7 @@ class ShoppingCart:
         Calculate the total price of all items in the shopping list, which is the quantity of each item multiplied by the price
         :return: float, the total price of all items in the shopping list
         """
-        total = sum(item['price'] * item['quantity'] for item in self.items.values())
+        total = 0.0
+        for item in self.items.values():
+            total += item['price'] * item['quantity']
         return total

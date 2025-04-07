@@ -1,45 +1,58 @@
-def is_possible(n, counts):
-    # Check if the counts can form a palindromic matrix
-    odd_count = sum(1 for count in counts if count % 2 != 0)
-    return not ((n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1))
-
-def fill_matrix(n, counts):
-    # Create an empty n x n matrix
-    matrix = [[0] * n for _ in range(n)]
-    # Create a list of elements to place in the matrix
-    elements = []
-    
-    for number, count in counts.items():
-        elements.extend([number] * count)
-
-    # Fill the matrix in a palindromic manner
-    idx = 0
-    for i in range((n + 1) // 2):
-        for j in range((n + 1) // 2):
-            if idx < len(elements):  # Prevent index out of range
-                matrix[i][j] = elements[idx]
-                matrix[i][n - j - 1] = elements[idx]
-                matrix[n - i - 1][j] = elements[idx]
-                matrix[n - i - 1][n - j - 1] = elements[idx]
-                idx += 1
-
-    return matrix
-
-def main():
-    n = int(input())
-    a = list(map(int, input().split()))
-    
+def create_palindromic_matrix(n, numbers):
     from collections import Counter
-    counts = Counter(a)
     
-    if not is_possible(n, counts.values()):
-        print("NO")
-        return
+    # Count the occurrences of each number
+    count = Counter(numbers)
     
-    matrix = fill_matrix(n, counts)
-    print("YES")
-    for row in matrix:
-        print(' '.join(map(str, row)))
+    # Check the number of odd-count numbers
+    odd_count = sum(1 for v in count.values() if v % 2 != 0)
+    
+    # For an n x n matrix:
+    # - If n is odd, we can have at most 1 number with an odd count in the center
+    # - If n is even, we cannot have any number with an odd count
+    if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
+        return "NO"
 
-if __name__ == "__main__":
-    main()
+    # Create the empty matrix
+    matrix = [[0] * n for _ in range(n)]
+    
+    # Prepare for filling the matrix
+    half = n // 2
+    center = n // 2
+
+    # Fill the matrix with pairs
+    num_list = []
+    for num, cnt in count.items():
+        num_list.extend([num] * cnt)
+    
+    # Fill the 4 quadrants
+    idx = 0
+    for i in range(half):
+        for j in range(half):
+            num = num_list[idx]
+            matrix[i][j] = num
+            matrix[i][n - j - 1] = num
+            matrix[n - i - 1][j] = num
+            matrix[n - i - 1][n - j - 1] = num
+            idx += 1
+    
+    # If n is odd, fill the center
+    if n % 2 == 1:
+        for num, cnt in count.items():
+            if cnt % 2 != 0:
+                matrix[center][center] = num
+                break
+            
+    return "YES", matrix
+
+n = int(input())
+numbers = list(map(int, input().split()))
+
+result = create_palindromic_matrix(n, numbers)
+
+if result == "NO":
+    print("NO")
+else:
+    print("YES")
+    for row in result[1]:
+        print(' '.join(map(str, row)))

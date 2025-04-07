@@ -7,8 +7,7 @@ class AccessGatewayFilter:
     """
 
     def __init__(self):
-        self.allowed_paths = ["/api", "/login"]
-        logging.basicConfig(level=logging.INFO)
+        pass
 
     def filter(self, request):
         """
@@ -17,20 +16,27 @@ class AccessGatewayFilter:
         :return: bool, True if the request is allowed, False otherwise
         """
         if self.is_start_with(request['path']):
-            user = self.get_jwt_user(request)
-            if user:
-                self.set_current_user_info_and_log(user)
-                return True
-            return False
-        return True  # Allow access for paths not requiring authentication
+            return True
+        
+        if 'headers' in request and 'Authorization' in request['headers']:
+            user_info = self.get_jwt_user(request)
+            if user_info:
+                user_level = user_info.get('user', {}).get('level', 0)
+                if user_level >= 3:
+                    self.set_current_user_info_and_log(user_info)
+                    return True
+                elif user_level == 1:
+                    return None  # Special case
+        return False
 
     def is_start_with(self, request_uri):
         """
         Check if the request URI starts with certain prefixes.
+        Currently, the prefixes being checked are "/api" and "/login".
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
         """
-        return any(request_uri.startswith(prefix) for prefix in self.allowed_paths)
+        return request_uri.startswith('/api') or request_uri.startswith('/login')
 
     def get_jwt_user(self, request):
         """
@@ -38,20 +44,17 @@ class AccessGatewayFilter:
         :param request: dict, the incoming request details
         :return: dict or None, the user information if the token is valid, None otherwise
         """
-        auth_header = request.get('headers', {}).get('Authorization')
-        if auth_header and 'jwt' in auth_header and self.validate_jwt(auth_header['jwt']):
-            return auth_header['user']
+        if 'headers' in request and 'Authorization' in request['headers']:
+            auth = request['headers']['Authorization']
+            jwt = auth.get('jwt', '')
+            user = auth.get('user', {})
+            if jwt and jwt == f"{user.get('name', '')}{datetime.date.today()}":
+                return user
         return None
-
-    def validate_jwt(self, jwt):
-        # Placeholder for JWT validation logic
-        # For example, check if the JWT is well-formed and not expired
-        return True
 
     def set_current_user_info_and_log(self, user):
         """
         Set the current user information and log the access.
         :param user: dict, the user information
-        :return: None
         """
-        logging.info(f"User Access: {user['name']} from {user.get('address', 'unknown')} at {datetime.datetime.now()}")
+        logging.info(f"User accessed: {user['name']} from {user.get('address', 'unknown')}")

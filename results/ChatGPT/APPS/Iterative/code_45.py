@@ -1,29 +1,28 @@
-def create_sequence(n, k):
-    min_required_sum = k * (k + 1) // 2
-    if min_required_sum > n:
+def find_sequence(n, k):
+    # Check if it's possible to create such a sequence
+    min_sum = k * (k + 1) // 2
+    if min_sum > n:
         return -1
     
-    # Start with the maximum GCD and create the initial sequence
-    max_gcd = n // k
-    sequence = [max_gcd * i for i in range(1, k + 1)]
+    # The remaining value after using the first k natural numbers
+    remaining = n - min_sum
     
-    # Calculate the current sum of the sequence
-    current_sum = sum(sequence)
+    # The GCD can be maximized by adding the same value to each element
+    gcd = remaining // k
     
-    # Calculate the difference needed to reach the target sum
-    difference = n - current_sum
+    # The base sequence is the first k natural numbers
+    sequence = [i + gcd for i in range(1, k + 1)]
     
-    # If the difference is non-negative, adjust the last element
-    if difference >= 0:
-        sequence[-1] += difference
-        return sequence
-    else:
-        return -1
+    # Adjust the last element to ensure the sum is exactly n
+    sequence[-1] += (remaining % k)
+    
+    return sequence
 
-# Reading input
+# Input
 n, k = map(int, input().split())
-result = create_sequence(n, k)
+result = find_sequence(n, k)
 
+# Output
 if result == -1:
     print(-1)
 else:

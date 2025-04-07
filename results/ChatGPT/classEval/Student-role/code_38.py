@@ -15,9 +15,11 @@ class ExcelProcessor:
         :param file_name: str, Excel file name to read
         :return: list of data, Data in Excel
         """
+        if not file_name:
+            return None
+        data = []
         workbook = openpyxl.load_workbook(file_name)
         sheet = workbook.active
-        data = []
         for row in sheet.iter_rows(values_only=True):
             data.append(row)
         return data
@@ -29,16 +31,14 @@ class ExcelProcessor:
         :param file_name: str, Excel file name to write to
         :return: 0 or 1, 1 represents successful writing, 0 represents failed writing
         """
-        try:
-            workbook = openpyxl.Workbook()
-            sheet = workbook.active
-            for row in data:
-                sheet.append(row)
-            workbook.save(file_name)
-            return 1
-        except Exception as e:
-            print(f"An error occurred: {e}")
+        if not file_name:
             return 0
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+        for row in data:
+            sheet.append(row)
+        workbook.save(file_name)
+        return 1
 
     def process_excel_data(self, N, save_file_name):
         """
@@ -48,14 +48,17 @@ class ExcelProcessor:
         :return: (int, str), The former is the return value of write_excel, while the latter is the saved file name of the processed data
         """
         data = self.read_excel(save_file_name)
-        if not data:
-            return 0, save_file_name
+        if not data or N < 0 or N >= len(data[0]):
+            return 0, ""
         
-        for i in range(1, len(data)):  # Skip header row
-            if len(data[i]) > N:
-                data[i] = list(data[i])  # Convert tuple to list
-                data[i][N] = str(data[i][N]).upper()  # Change to uppercase
+        new_data = []
+        header = list(data[0]) + [data[0][N].upper()]
+        new_data.append(tuple(header))
         
-        output_file_name = f"processed_{save_file_name}"
-        success = self.write_excel(data, output_file_name)
+        for row in data[1:]:
+            new_row = list(row) + [row[N]]
+            new_data.append(tuple(new_row))
+
+        output_file_name = f'processed_{save_file_name}'
+        success = self.write_excel(new_data, output_file_name)
         return success, output_file_name

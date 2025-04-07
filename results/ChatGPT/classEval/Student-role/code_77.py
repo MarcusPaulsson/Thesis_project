@@ -27,9 +27,9 @@ class Snake:
         :param direction: tuple, representing the direction of movement (x, y).
         :return: None
         """
-        new_head = (self.positions[0][0] + direction[0] * self.BLOCK_SIZE, 
+        new_head = (self.positions[0][0] + direction[0] * self.BLOCK_SIZE,
                      self.positions[0][1] + direction[1] * self.BLOCK_SIZE)
-        
+
         if new_head == self.food_position:
             self.eat_food()
         elif new_head in self.positions:
@@ -46,8 +46,8 @@ class Snake:
         :return: None, Change the food position
         """
         while True:
-            new_food_position = (random.randint(0, (self.SCREEN_WIDTH - self.BLOCK_SIZE) // self.BLOCK_SIZE) * self.BLOCK_SIZE,
-                                 random.randint(0, (self.SCREEN_HEIGHT - self.BLOCK_SIZE) // self.BLOCK_SIZE) * self.BLOCK_SIZE)
+            new_food_position = (random.randint(0, (self.SCREEN_WIDTH // self.BLOCK_SIZE) - 1) * self.BLOCK_SIZE,
+                                 random.randint(0, (self.SCREEN_HEIGHT // self.BLOCK_SIZE) - 1) * self.BLOCK_SIZE)
             if new_food_position not in self.positions:
                 self.food_position = new_food_position
                 break
@@ -58,14 +58,13 @@ class Snake:
         :return: None
         """
         self.length = 1
-        self.positions = [(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2)]
+        self.positions = [(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 2)]
         self.score = 0
         self.random_food_position()
 
     def eat_food(self):
         """
-        Increase the length of the snake by 1 and increase the score by 100. Randomly generate a new food position, but
-        don't place it on the snake.
+        Increase the length of the snake by 1 and increase the score by 100. Randomly generate a new food position, but don't place it on the snake.
         :return: None
         """
         self.length += 1

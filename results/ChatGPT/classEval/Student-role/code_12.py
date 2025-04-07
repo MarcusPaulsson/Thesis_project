@@ -21,15 +21,9 @@ class BlackjackGame:
         """
         Create a deck of 52 cards, which stores 52 random order poker with the Jokers removed.
         :return: a list of 52 random order poker with the Jokers removed, format is ['AS', '2S', ...].
-        >>> black_jack_game = BlackjackGame()
-        >>> black_jack_game.create_deck()
-        ['QD', '9D', 'JC', 'QH', '2S', 'JH', '7D', '6H', '9S', '5C', '7H', 'QS', '5H',
-        '6C', '7C', '3D', '10C', 'AD', '4C', '5D', 'AH', '2D', 'QC', 'KH', '9C', '9H',
-        '4H', 'JS', '6S', '8H', '8C', '4S', '3H', '10H', '7S', '6D', '3C', 'KC', '3S',
-        '2H', '10D', 'KS', '4D', 'AC', '10S', '2C', 'KD', '5S', 'JD', '8S', 'AS', '8D']
         """
-        suits = ['H', 'D', 'C', 'S']
-        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        suits = ['S', 'C', 'D', 'H']
+        ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
         deck = [rank + suit for suit in suits for rank in ranks]
         random.shuffle(deck)
         return deck
@@ -37,47 +31,35 @@ class BlackjackGame:
     def calculate_hand_value(self, hand):
         """
         Calculate the value of the poker cards stored in hand list according to the rules of the Blackjack Game.
-        If the card is a digit, its value is added to the total hand value.
-        Value of J, Q, or K is 10, while Aces are worth 11.
-        If the total hand value exceeds 21 and there are Aces present, one Ace is treated as having a value of 1 instead of 11,
-        until the hand value is less than or equal to 21, or all Aces have been counted as value of 1.
         :param hand: list
         :return: the value of the poker cards stored in hand list, a number.
-        >>> black_jack_game = BlackjackGame()
-        >>> black_jack_game.calculate_hand_value(['QD', '9D', 'JC', 'QH', 'AS'])
-        40
         """
         value = 0
-        aces = 0
-
+        aces_count = 0
+        
         for card in hand:
-            rank = card[:-1]  # Get the rank of the card
+            rank = card[:-1]  # Get the rank (ignore the suit)
             if rank in ['J', 'Q', 'K']:
                 value += 10
             elif rank == 'A':
-                aces += 1
+                aces_count += 1
                 value += 11
             else:
                 value += int(rank)
-
-        while value > 21 and aces:
+        
+        # Adjust for Aces if necessary
+        while value > 21 and aces_count:
             value -= 10
-            aces -= 1
-
+            aces_count -= 1
+        
         return value
 
     def check_winner(self, player_hand, dealer_hand):
         """
         Determines the winner of a game by comparing the hand values of the player and dealer.
-        rule:
-        If both players have hand values that are equal to or less than 21, the winner is the one whose hand value is closer to 21.
-        Otherwise, the winner is the one with the lower hand value.
         :param player_hand: list
         :param dealer_hand: list
         :return: the result of the game, only two certain str: 'Dealer wins' or 'Player wins'
-        >>> black_jack_game = BlackjackGame()
-        >>> black_jack_game.check_winner(['QD', '9D', 'JC', 'QH', 'AS'], ['QD', '9D', 'JC', 'QH', '2S'])
-        'Player wins'
         """
         player_value = self.calculate_hand_value(player_hand)
         dealer_value = self.calculate_hand_value(dealer_hand)
@@ -86,7 +68,6 @@ class BlackjackGame:
             return 'Dealer wins'
         if dealer_value > 21:
             return 'Player wins'
-
         if player_value > dealer_value:
             return 'Player wins'
         else:

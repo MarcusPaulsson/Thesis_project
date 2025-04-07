@@ -2,17 +2,11 @@ n = int(input())
 a = list(map(int, input().split()))
 
 max_height = max(a)
-total_bricks_needed = sum(max_height - h for h in a)
+total_bricks_needed = sum(max_height - height for height in a)
 
-# Check if the total height can be achieved without any gaps
-current_height = 0
-is_possible = True
-
-for height in a:
-    if height > current_height:
-        current_height = height
-    elif height < current_height:
-        is_possible = False
-        break
-
-print("YES" if is_possible else "NO")
+# Check if the total number of bricks needed is even
+# An even number of bricks can be used to equalize the wall
+if total_bricks_needed % 2 == 0:
+    print("YES")
+else:
+    print("NO")

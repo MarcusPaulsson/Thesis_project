@@ -19,24 +19,25 @@ class TextFileProcessor:
         if the file content doesn't obey json format, the code will raise error.
         :return data: dict if the file is stored as json format, or str/int/float.. according to the file content otherwise.
         """
-        with open(self.file_path, 'r') as file:
-            return json.load(file)
+        with open(self.file_path, 'r') as f:
+            content = f.read()
+            return json.loads(content)
 
     def read_file(self):
         """
         Read the return the content of self.file_path file.
         :return: the same return as the read() method
         """
-        with open(self.file_path, 'r') as file:
-            return file.read()
+        with open(self.file_path, 'r') as f:
+            return f.read()
 
     def write_file(self, content):
         """
         Write content into the self.file_path file, and overwrite if the file has already existed.
         :param content: any content
         """
-        with open(self.file_path, 'w') as file:
-            file.write(content)
+        with open(self.file_path, 'w') as f:
+            f.write(content)
 
     def process_file(self):
         """
@@ -44,6 +45,6 @@ class TextFileProcessor:
         Overwrite the after-processed data into the same self.file_path file.
         """
         content = self.read_file()
-        processed_content = ''.join(re.findall(r'[a-zA-Z]', content))
+        processed_content = ''.join(re.findall(r'[A-Za-z]', content))
         self.write_file(processed_content)
         return processed_content

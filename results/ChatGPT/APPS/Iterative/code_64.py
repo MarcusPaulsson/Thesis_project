@@ -1,38 +1,29 @@
-def schedule_exams(n, m, exams):
-    # Prepare the schedule with zeros
-    schedule = [0] * n
-    
-    # Prepare to track available days for preparation
-    available_days = [0] * n
-    
-    # Fill the available days for preparation
-    for s_i, d_i, c_i in exams:
-        for day in range(s_i - 1, d_i - 1):  # from s_i to d_i-1
-            available_days[day] += 1
-    
-    # Try to allocate preparation days
-    for exam_index, (s_i, d_i, c_i) in enumerate(exams):
-        days_needed = c_i
-        
-        for day in range(s_i - 1, d_i - 1):
-            if schedule[day] == 0 and days_needed > 0:
-                schedule[day] = exam_index + 1  # Prepare for exam exam_index
-                days_needed -= 1
-        
-        if days_needed > 0:
-            return -1  # Not enough preparation days
-    
-    return schedule
-
-# Input reading
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-# Get the schedule
-result = schedule_exams(n, m, exams)
+# Initialize the schedule
+schedule = [0] * n  # 0 means rest, will use 1 to m for exam prep and m+1 for exams
 
-# Output result
-if result == -1:
-    print(-1)
-else:
-    print(' '.join(map(str, result)))
+# Mark exam days
+for i in range(m):
+    s_i, d_i, c_i = exams[i]
+    schedule[d_i - 1] = m + 1  # Exam day
+
+# Prepare for exams
+for i in range(m):
+    s_i, d_i, c_i = exams[i]
+    days_needed = c_i
+    # Prepare for this exam in the available days
+    for j in range(s_i - 1, d_i - 1):
+        if schedule[j] == 0:  # Can only prepare on rest days
+            schedule[j] = i + 1  # Mark as preparing for exam i
+            days_needed -= 1
+            if days_needed == 0:
+                break
+    
+    if days_needed > 0:  # If we couldn't find enough days to prepare
+        print(-1)
+        exit()
+
+# Print the final schedule
+print(' '.join(map(str, schedule)))

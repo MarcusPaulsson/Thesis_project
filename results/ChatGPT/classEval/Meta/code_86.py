@@ -1,6 +1,7 @@
 class TicTacToe:
     """
-    The class represents a game of Tic-Tac-Toe and its functions include making a move on the board, checking for a winner, and determining if the board is full.
+    The class represents a game of Tic-Tac-Toe and its functions include making a move on the board,
+    checking for a winner, and determining if the board is full.
     """
 
     def __init__(self, N=3):
@@ -28,20 +29,21 @@ class TicTacToe:
         Check if there is a winner on the board in rows, columns and diagonals.
         :return: str or None, the mark of the winner ('X' or 'O'), or None if there is no winner yet
         """
-        N = len(self.board)
-        
-        # Check rows and columns
-        for i in range(N):
-            if all(self.board[i][j] == self.board[i][0] != ' ' for j in range(N)):
-                return self.board[i][0]
-            if all(self.board[j][i] == self.board[0][i] != ' ' for j in range(N)):
-                return self.board[0][i]
+        # Check rows
+        for row in self.board:
+            if row[0] == row[1] == row[2] != ' ':
+                return row[0]
+
+        # Check columns
+        for col in range(len(self.board)):
+            if self.board[0][col] == self.board[1][col] == self.board[2][col] != ' ':
+                return self.board[0][col]
 
         # Check diagonals
-        if all(self.board[i][i] == self.board[0][0] != ' ' for i in range(N)):
+        if self.board[0][0] == self.board[1][1] == self.board[2][2] != ' ':
             return self.board[0][0]
-        if all(self.board[i][N - 1 - i] == self.board[0][N - 1] != ' ' for i in range(N)):
-            return self.board[0][N - 1]
+        if self.board[0][2] == self.board[1][1] == self.board[2][0] != ' ':
+            return self.board[0][2]
 
         return None
 

@@ -1,4 +1,5 @@
 import json
+import os
 
 class CookiesUtil:
     """
@@ -11,16 +12,12 @@ class CookiesUtil:
         :param cookies_file: The cookies file to use, str.
         """
         self.cookies_file = cookies_file
-        self.cookies = None
+        self.cookies = {}
 
     def get_cookies(self, response):
         """
-        Gets the cookies from the specified response, and saves it to cookies_file.
+        Gets the cookies from the specified response and saves it to cookies_file.
         :param response: The response to get cookies from, dict.
-        >>> cookies_util = CookiesUtil('cookies.json')
-        >>> cookies_util.get_cookies({'cookies': {'key1': 'value1', 'key2': 'value2'}})
-        >>> cookies_util.cookies
-        {'key1': 'value1', 'key2': 'value2'}
         """
         self.cookies = response.get('cookies', {})
         self._save_cookies()
@@ -29,33 +26,27 @@ class CookiesUtil:
         """
         Loads the cookies from the cookies_file to the cookies data.
         :return: The cookies data, dict.
-        >>> cookies_util = CookiesUtil('cookies.json')
-        >>> cookies_util.load_cookies()
-        {'key1': 'value1', 'key2': 'value2'}
         """
-        try:
-            with open(self.cookies_file, 'r') as f:
-                self.cookies = json.load(f)
-            return self.cookies
-        except FileNotFoundError:
-            self.cookies = {}
-            return self.cookies
-        except json.JSONDecodeError:
-            self.cookies = {}
-            return self.cookies
+        if os.path.exists(self.cookies_file):
+            with open(self.cookies_file, 'r') as file:
+                self.cookies = json.load(file)
+        return self.cookies
 
     def _save_cookies(self):
         """
         Saves the cookies to the cookies_file, and returns True if successful, False otherwise.
         :return: True if successful, False otherwise.
-        >>> cookies_util = CookiesUtil('cookies.json')
-        >>> cookies_util.cookies = {'key1': 'value1', 'key2': 'value2'}
-        >>> cookies_util._save_cookies()
-        True
         """
         try:
-            with open(self.cookies_file, 'w') as f:
-                json.dump(self.cookies, f)
+            with open(self.cookies_file, 'w') as file:
+                json.dump(self.cookies, file)
             return True
-        except Exception:
+        except Exception as e:
             return False
+
+    def set_cookies(self, request):
+        """
+        Sets the cookies in the request.
+        :param request: The request to set cookies into, dict.
+        """
+        request['cookies'] = f"cookies={self.cookies}"

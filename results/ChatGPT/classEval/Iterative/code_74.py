@@ -5,9 +5,9 @@ class Server:
 
     def __init__(self):
         """
-        Initialize the whitelist as an empty set for faster lookups, and initialize the sending and receiving information as empty dictionaries.
+        Initialize the whitelist as an empty list, and initialize the sending and receiving information as empty dictionaries.
         """
-        self.white_list = set()
+        self.white_list = []
         self.send_struct = {}
         self.receive_struct = {}
 
@@ -15,56 +15,55 @@ class Server:
         """
         Add an address to the whitelist and do nothing if it already exists.
         :param addr: int, address to be added
-        :return: new whitelist or False if the address already exists
+        :return: new whitelist if added, False if the address already exists
         """
         if addr not in self.white_list:
-            self.white_list.add(addr)
-            return list(self.white_list)
+            self.white_list.append(addr)
+            return self.white_list
         return False
 
     def del_white_list(self, addr):
         """
         Remove an address from the whitelist and do nothing if it does not exist.
         :param addr: int, address to be deleted
-        :return: new whitelist or False if the address does not exist
+        :return: new whitelist if deleted, False if the address does not exist
         """
         if addr in self.white_list:
             self.white_list.remove(addr)
-            return list(self.white_list)
+            return self.white_list
         return False
 
     def recv(self, info):
         """
         Receive information containing address and content. If the address is on the whitelist, receive the content; otherwise, do not receive it.
         :param info: dict, information dictionary containing address and content
-        :return: content if successfully received, otherwise False
+        :return: content of the information if successfully received, otherwise False
         """
-        addr = info.get("addr")
-        if addr in self.white_list:
-            self.receive_struct[addr] = info['content']
-            return info['content']
+        if isinstance(info, dict) and 'addr' in info and 'content' in info:
+            if info['addr'] in self.white_list:
+                self.receive_struct = info
+                return info['content']
         return False
 
     def send(self, info):
         """
         Send information containing address and content.
         :param info: dict, information dictionary containing address and content
-        :return: None if successfully sent, otherwise an error message
+        :return: None if successfully sent, or a string indicating an error message if the structure is incorrect
         """
-        addr = info.get("addr")
-        if addr in self.white_list:
+        if isinstance(info, dict) and 'addr' in info and 'content' in info:
             self.send_struct = info
         else:
-            return 'Error: Address not in whitelist'
+            return "info structure is not correct"
 
-    def show(self, struct_type):
+    def show(self, type):
         """
         Returns struct of the specified type.
-        :param struct_type: string, the type of struct to be returned, which can be 'send' or 'receive'
-        :return: corresponding struct if valid, otherwise False
+        :param type: string, the type of struct to be returned, which can be 'send' or 'receive'
+        :return: corresponding struct if type is valid, otherwise False
         """
-        if struct_type == 'send':
+        if type == 'send':
             return self.send_struct
-        elif struct_type == 'receive':
+        elif type == 'receive':
             return self.receive_struct
         return False

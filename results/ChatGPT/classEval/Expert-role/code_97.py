@@ -32,15 +32,12 @@ class Words2Numbers:
         Convert the word string to the corresponding integer string
         :param textnum: string, the word string to be converted
         :return: string, the final converted integer string
-        >>> w2n = Words2Numbers()
-        >>> w2n.text2int("thirty-two")
-        "32"
         """
-        textnum = textnum.replace("-", " ").replace(" and ", " ")
+        textnum = textnum.replace("-", " ")
         current = result = 0
         for word in textnum.split():
             if word not in self.numwords:
-                raise ValueError(f"Invalid input: {word}")
+                raise ValueError(f"Invalid word: {word}")
             scale, increment = self.numwords[word]
             current += increment
             if scale > 1:
@@ -54,13 +51,9 @@ class Words2Numbers:
         Check if the input text contains only valid words that can be converted into numbers.
         :param textnum: The input text containing words representing numbers.
         :return: True if input is valid, False otherwise.
-        >>> w2n = Words2Numbers()
-        >>> w2n.is_valid_input("thirty-two")
-        True
         """
-        valid_words = set(self.numwords.keys())
-        textnum = textnum.replace("-", " ").replace(" and ", " ")
+        textnum = textnum.replace("-", " ")
         for word in textnum.split():
-            if word not in valid_words:
+            if word not in self.numwords:
                 return False
         return True

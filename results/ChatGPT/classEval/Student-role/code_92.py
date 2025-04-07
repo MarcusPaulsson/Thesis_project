@@ -2,7 +2,8 @@ import sqlite3
 
 class UserLoginDB:
     """
-    This is a database management class for user login verification, providing functions for inserting user information, searching user information, deleting user information, and validating user login.
+    This is a database management class for user login verification, providing functions for inserting user information, 
+    searching user information, deleting user information, and validating user login.
     """
 
     def __init__(self, db_name):
@@ -16,16 +17,15 @@ class UserLoginDB:
 
     def create_table(self):
         """
-        Creates the "users" table if it does not exist.
-        :return: None
+        Creates the users table if it doesn't already exist.
         """
-        self.cursor.execute('''
+        create_table_query = """
             CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL
+                username TEXT PRIMARY KEY,
+                password TEXT
             )
-        ''')
+        """
+        self.cursor.execute(create_table_query)
         self.connection.commit()
 
     def insert_user(self, username, password):
@@ -35,8 +35,11 @@ class UserLoginDB:
         :param password: str, the password of the user.
         :return: None
         """
-        self.cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-        self.connection.commit()
+        try:
+            self.cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+            self.connection.commit()
+        except sqlite3.IntegrityError:
+            pass  # Handle duplicate username error if necessary
 
     def search_user_by_username(self, username):
         """
@@ -44,8 +47,8 @@ class UserLoginDB:
         :param username: str, the username of the user to search for.
         :return: list of tuples, the rows from the "users" table that match the search criteria.
         """
-        self.cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
-        return self.cursor.fetchall()
+        self.cursor.execute("SELECT username, password FROM users WHERE username = ?", (username,))
+        return self.cursor.fetchone()
 
     def delete_user_by_username(self, username):
         """
@@ -53,22 +56,23 @@ class UserLoginDB:
         :param username: str, the username of the user to delete.
         :return: None
         """
-        self.cursor.execute('DELETE FROM users WHERE username = ?', (username,))
+        self.cursor.execute("DELETE FROM users WHERE username = ?", (username,))
         self.connection.commit()
 
     def validate_user_login(self, username, password):
         """
-        Determine whether the user can log in, that is, the user is in the database and the password is correct
+        Determine whether the user can log in, that is, the user is in the database and the password is correct.
         :param username: str, the username of the user to validate.
         :param password: str, the password of the user to validate.
-        :return: bool, representing whether the user can log in correctly
+        :return: bool, representing whether the user can log in correctly.
         """
-        self.cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
-        return len(self.cursor.fetchall()) > 0
+        user = self.search_user_by_username(username)
+        if user and user[1] == password:
+            return True
+        return False
 
     def close(self):
         """
         Closes the database connection.
-        :return: None
         """
         self.connection.close()

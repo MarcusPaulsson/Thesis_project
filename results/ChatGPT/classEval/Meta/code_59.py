@@ -22,10 +22,10 @@ class MovieBookingSystem:
         for movie in self.movies:
             if movie['name'].lower() == name.lower():
                 for row, col in seats_to_book:
-                    if movie['seats'][row, col] == 0:
-                        movie['seats'][row, col] = 1  # Mark seat as booked
-                    else:
+                    if movie['seats'][row][col] == 1:  # Seat is already booked
                         return 'Booking failed.'
+                for row, col in seats_to_book:
+                    movie['seats'][row][col] = 1  # Book the seats
                 return 'Booking success.'
         return 'Movie not found.'
 

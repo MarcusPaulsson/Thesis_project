@@ -1,6 +1,7 @@
 import zipfile
 import os
 
+
 class ZipFileProcessor:
     """
     This is a compressed file processing class that provides the ability to read and decompress compressed files
@@ -18,9 +19,11 @@ class ZipFileProcessor:
         Get open file object
         :return: If successful, returns the open file object; otherwise, returns None
         """
+        if not os.path.isfile(self.file_name):
+            return None
         try:
             return zipfile.ZipFile(self.file_name, 'r')
-        except (FileNotFoundError, zipfile.BadZipFile):
+        except (zipfile.BadZipFile, FileNotFoundError):
             return None
 
     def extract_all(self, output_path):
@@ -29,17 +32,14 @@ class ZipFileProcessor:
         :param output_path: string, The location of the extracted file
         :return: True or False, representing whether the extraction operation was successful
         """
-        zip_file = self.read_zip_file()
-        if zip_file is not None:
-            try:
-                zip_file.extractall(output_path)
-                return True
-            except Exception as e:
-                print(f"Error during extraction: {e}")
-                return False
-            finally:
-                zip_file.close()
-        return False
+        if not os.path.isdir(output_path):
+            os.makedirs(output_path)
+        try:
+            with zipfile.ZipFile(self.file_name, 'r') as zip_ref:
+                zip_ref.extractall(output_path)
+            return True
+        except Exception:
+            return False
 
     def extract_file(self, file_name, output_path):
         """
@@ -48,20 +48,14 @@ class ZipFileProcessor:
         :param output_path: string, The location of the extracted file
         :return: True or False, representing whether the extraction operation was successful
         """
-        zip_file = self.read_zip_file()
-        if zip_file is not None:
-            try:
-                zip_file.extract(file_name, output_path)
-                return True
-            except KeyError:
-                print(f"File {file_name} not found in the zip archive.")
-                return False
-            except Exception as e:
-                print(f"Error during extraction: {e}")
-                return False
-            finally:
-                zip_file.close()
-        return False
+        if not os.path.isdir(output_path):
+            os.makedirs(output_path)
+        try:
+            with zipfile.ZipFile(self.file_name, 'r') as zip_ref:
+                zip_ref.extract(file_name, output_path)
+            return True
+        except Exception:
+            return False
 
     def create_zip_file(self, files, output_file_name):
         """
@@ -73,11 +67,7 @@ class ZipFileProcessor:
         try:
             with zipfile.ZipFile(output_file_name, 'w') as zip_file:
                 for file in files:
-                    if os.path.exists(file):
-                        zip_file.write(file, os.path.basename(file))
-                    else:
-                        print(f"File {file} does not exist.")
+                    zip_file.write(file, os.path.basename(file))
             return True
-        except Exception as e:
-            print(f"Error during compression: {e}")
+        except Exception:
             return False

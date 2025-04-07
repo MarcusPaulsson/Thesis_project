@@ -2,6 +2,7 @@ import socket
 import netifaces
 import re
 
+
 class IpUtil:
     """
     This is a class as tool for ip that can be used to obtain the local IP address, validate its validity, and also provides the functionality to retrieve the corresponding hostname.
@@ -18,8 +19,11 @@ class IpUtil:
         >>> IpUtil.is_valid_ipv4('256.0.0.0')
         False
         """
-        pattern = r'^((25[0-5]|(2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9]))\.){3}(25[0-5]|(2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9]))$'
-        return re.match(pattern, ip_address) is not None
+        pattern = r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(' \
+                  r'25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(' \
+                  r'25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(' \
+                  r'25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+        return bool(re.match(pattern, ip_address))
 
     @staticmethod
     def is_valid_ipv6(ip_address):

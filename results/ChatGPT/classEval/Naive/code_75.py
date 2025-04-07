@@ -9,28 +9,29 @@ class ShoppingCart:
         """
         self.items = {}
 
-    def add_item(self, item: str, price: float, quantity: int = 1) -> None:
+    def add_item(self, item, price, quantity=1):
         """
         Add item information to the shopping list items, including price and quantity. The default quantity is 1
         :param item: string, Item to be added
         :param price: float, The price of the item
-        :param quantity: int, The number of items, defaults to 1
+        :param quantity:int, The number of items, defaults to 1
+        :return: None
         """
         if item in self.items:
-            self.items[item]['quantity'] += quantity
+            self.items[item]["quantity"] += quantity
         else:
-            self.items[item] = {'price': price, 'quantity': quantity}
+            self.items[item] = {"price": price, "quantity": quantity}
 
-    def remove_item(self, item: str, quantity: int = 1) -> None:
+    def remove_item(self, item, quantity=1):
         """
         Subtract the specified quantity of item from the shopping list items
         :param item: string, Item to be subtracted in quantity
         :param quantity: int, Quantity to be subtracted
+        :return: None
         """
         if item in self.items:
-            if self.items[item]['quantity'] > quantity:
-                self.items[item]['quantity'] -= quantity
-            elif self.items[item]['quantity'] == quantity:
+            self.items[item]["quantity"] -= quantity
+            if self.items[item]["quantity"] <= 0:
                 del self.items[item]
 
     def view_items(self) -> dict:
@@ -45,4 +46,7 @@ class ShoppingCart:
         Calculate the total price of all items in the shopping list, which is the quantity of each item multiplied by the price
         :return: float, the total price of all items in the shopping list
         """
-        return sum(item['price'] * item['quantity'] for item in self.items.values())
+        total = 0.0
+        for item, details in self.items.items():
+            total += details["price"] * details["quantity"]
+        return total

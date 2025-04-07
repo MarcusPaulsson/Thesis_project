@@ -20,15 +20,18 @@ class DecryptionUtils:
         >>> d.caesar_decipher('ifmmp', 1)
         'hello'
         """
-        plaintext = ""
+        shift = shift % 26
+        plaintext = []
+        
         for char in ciphertext:
             if char.isalpha():
-                shift_amount = shift % 26
-                new_char = chr((ord(char) - shift_amount - 97) % 26 + 97) if char.islower() else chr((ord(char) - shift_amount - 65) % 26 + 65)
-                plaintext += new_char
+                ascii_offset = 65 if char.isupper() else 97
+                deciphered_char = chr((ord(char) - ascii_offset - shift) % 26 + ascii_offset)
+                plaintext.append(deciphered_char)
             else:
-                plaintext += char
-        return plaintext
+                plaintext.append(char)
+
+        return ''.join(plaintext)
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -39,15 +42,19 @@ class DecryptionUtils:
         >>> d.vigenere_decipher('ifmmp')
         'ybocl'
         """
-        plaintext = []
         key_length = len(self.key)
+        plaintext = []
+        
         for i, char in enumerate(ciphertext):
             if char.isalpha():
-                shift = ord(self.key[i % key_length].lower()) - 97
-                new_char = chr((ord(char) - shift - 97) % 26 + 97)
-                plaintext.append(new_char)
+                key_char = self.key[i % key_length]
+                shift = ord(key_char.lower()) - ord('a')
+                ascii_offset = 65 if char.isupper() else 97
+                deciphered_char = chr((ord(char) - ascii_offset - shift) % 26 + ascii_offset)
+                plaintext.append(deciphered_char)
             else:
                 plaintext.append(char)
+
         return ''.join(plaintext)
 
     def rail_fence_decipher(self, encrypted_text, rails):
@@ -60,46 +67,50 @@ class DecryptionUtils:
         >>> d.rail_fence_decipher('Hoo!el,Wrdl l', 3)
         'Hello, World!'
         """
+        # Create an empty rail fence
         rail = [['\n' for _ in range(len(encrypted_text))] for _ in range(rails)]
+        
+        # Fill the rail matrix
         dir_down = None
         row, col = 0, 0
-
-        for i in range(len(encrypted_text)):
+        
+        for char in encrypted_text:
             if row == 0:
                 dir_down = True
             if row == rails - 1:
                 dir_down = False
-
+            
             rail[row][col] = '*'
             col += 1
-
+            
             if dir_down:
                 row += 1
             else:
                 row -= 1
-
+        
         index = 0
         for i in range(rails):
             for j in range(len(encrypted_text)):
-                if ((rail[i][j] == '*') and (index < len(encrypted_text))):
+                if (rail[i][j] == '*' and index < len(encrypted_text)):
                     rail[i][j] = encrypted_text[index]
                     index += 1
-
+        
         result = []
         row, col = 0, 0
+        
         for i in range(len(encrypted_text)):
             if row == 0:
                 dir_down = True
             if row == rails - 1:
                 dir_down = False
-
+            
             if rail[row][col] != '\n':
                 result.append(rail[row][col])
                 col += 1
-
+            
             if dir_down:
                 row += 1
             else:
                 row -= 1
-
+        
         return ''.join(result)

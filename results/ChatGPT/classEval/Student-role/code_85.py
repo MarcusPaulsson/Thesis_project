@@ -41,9 +41,12 @@ class Thermostat:
         """
         Set the current work mode
         :param mode: str, working mode. only ['heat', 'cool']
+        :return: bool, True if mode is set successfully, otherwise False
         """
         if mode in ['heat', 'cool']:
             self.mode = mode
+            return True
+        return False
 
     def auto_set_mode(self):
         """
@@ -57,7 +60,7 @@ class Thermostat:
     def auto_check_conflict(self):
         """
         Check if there is a conflict between the operating mode and the relationship between the current temperature and the target temperature.
-        :return: bool
+        :return: bool, True if no conflict, otherwise False
         """
         if (self.current_temperature < self.target_temperature and self.mode == 'cool') or \
            (self.current_temperature > self.target_temperature and self.mode == 'heat'):
@@ -67,15 +70,20 @@ class Thermostat:
 
     def simulate_operation(self):
         """
-        Simulate the operation of Thermostat.
+        Simulate the operation of Thermostat. It will automatically start the auto_set_mode method to set the operating mode,
+        and then automatically adjust the current temperature according to the operating mode until the target temperature is reached.
         :return: int, the time it took to complete the simulation.
         """
-        start_time = time.time()
         self.auto_set_mode()
+        time_taken = 0
+
         while self.current_temperature != self.target_temperature:
             if self.mode == 'heat':
                 self.current_temperature += 1
-            else:
+            elif self.mode == 'cool':
                 self.current_temperature -= 1
-            time.sleep(1)  # simulate time taken to adjust temperature
-        return int(time.time() - start_time)
+            
+            time_taken += 1
+            time.sleep(0.1)  # Simulate time delay for operation
+
+        return time_taken

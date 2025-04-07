@@ -44,6 +44,8 @@ class Thermostat:
         """
         if mode in ['heat', 'cool']:
             self.mode = mode
+        else:
+            return False
 
     def auto_set_mode(self):
         """
@@ -57,28 +59,36 @@ class Thermostat:
     def auto_check_conflict(self):
         """
         Check if there is a conflict between the operating mode and the relationship between the current temperature and the target temperature.
+        If there is a conflict, the operating mode will be adjusted automatically.
         :return: bool
         """
-        if (self.current_temperature < self.target_temperature and self.mode == 'cool') or \
-           (self.current_temperature > self.target_temperature and self.mode == 'heat'):
+        if (self.current_temperature < self.target_temperature and self.mode != 'heat') or \
+           (self.current_temperature > self.target_temperature and self.mode != 'cool'):
             self.auto_set_mode()
             return False
         return True
 
     def simulate_operation(self):
         """
-        simulate the operation of Thermostat.
+        simulate the operation of Thermostat. It will automatically start the auto_set_mode method to set the operating mode,
+        and then automatically adjust the current temperature according to the operating mode until the target temperature is reached.
         :return: int, the time it took to complete the simulation.
         """
         self.auto_set_mode()
         time_taken = 0
-
+        
         while self.current_temperature != self.target_temperature:
             if self.mode == 'heat':
                 self.current_temperature += 1
-            else:
+            elif self.mode == 'cool':
                 self.current_temperature -= 1
+            
+            time.sleep(1)  # Simulate time passage
             time_taken += 1
-            time.sleep(1)  # Simulate time delay for temperature change
+            
+            # To avoid infinite loop in case target temperature is reached
+            if (self.mode == 'heat' and self.current_temperature >= self.target_temperature) or \
+               (self.mode == 'cool' and self.current_temperature <= self.target_temperature):
+                break
 
         return time_taken

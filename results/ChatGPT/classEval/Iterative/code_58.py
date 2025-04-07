@@ -10,30 +10,37 @@ class MinesweeperGame:
         Initializes the MinesweeperGame class with the size of the board and the number of mines.
         :param n: The size of the board, int.
         :param k: The number of mines, int.
-        :raises ValueError: If the number of mines exceeds the number of available cells.
         """
-        if k > n * n:
-            raise ValueError("Number of mines cannot exceed the number of cells in the board.")
+        if n <= 0 or k < 0 or k > n * n:
+            raise ValueError("Invalid board size or number of mines.")
+        
         self.n = n
         self.k = k
         self.minesweeper_map = self.generate_mine_sweeper_map()
         self.player_map = self.generate_player_map()
-        
+        self.score = 0
+
     def generate_mine_sweeper_map(self):
         """
         Generates a minesweeper map with the given size of the board and the number of mines.
         :return: The minesweeper map, list.
         """
         board = [[0 for _ in range(self.n)] for _ in range(self.n)]
-        mines = random.sample(range(self.n * self.n), self.k)
+        mines = set()
 
-        for mine in mines:
-            x, y = divmod(mine, self.n)
-            board[x][y] = 'X'
-            for i in range(max(0, x - 1), min(self.n, x + 2)):
-                for j in range(max(0, y - 1), min(self.n, y + 2)):
-                    if board[i][j] != 'X':
-                        board[i][j] += 1
+        while len(mines) < self.k:
+            x = random.randint(0, self.n - 1)
+            y = random.randint(0, self.n - 1)
+            if (x, y) not in mines:
+                mines.add((x, y))
+                board[x][y] = 'X'
+        
+        for x, y in mines:
+            for dx in range(-1, 2):
+                for dy in range(-1, 2):
+                    if 0 <= x + dx < self.n and 0 <= y + dy < self.n and board[x + dx][y + dy] != 'X':
+                        board[x + dx][y + dy] += 1
+
         return board
 
     def generate_player_map(self):
@@ -59,16 +66,13 @@ class MinesweeperGame:
         Sweeps the given position.
         :param x: The x coordinate of the position, int.
         :param y: The y coordinate of the position, int.
-        :return: "Game Over" if the player hits a mine, True if the player has won the game, otherwise the player map.
-        :raises IndexError: If the coordinates are out of bounds.
+        :return: True if the player has won the game, False if hit a mine, else returns the updated player map.
         """
-        if not (0 <= x < self.n) or not (0 <= y < self.n):
-            raise IndexError("Coordinates out of bounds.")
-        
         if self.minesweeper_map[x][y] == 'X':
-            return "Game Over"
+            return False
         
         self.player_map[x][y] = self.minesweeper_map[x][y]
+        self.score += 1
         
         if self.check_won():
             return True

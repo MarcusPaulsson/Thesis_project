@@ -16,10 +16,9 @@ class ClassRegistrationSystem:
         """
         register a student to the system, add the student to the students list, if the student is already registered, return 0, else return 1
         """
-        if any(s['name'] == student['name'] for s in self.students):
+        if student in self.students:
             return 0
         self.students.append(student)
-        self.students_registration_classes[student['name']] = []
         return 1
 
     def register_class(self, student_name, class_name):
@@ -28,13 +27,10 @@ class ClassRegistrationSystem:
         :param student_name: str
         :param class_name: str
         :return a list of class names that the student has registered
-        >>> registration_system = ClassRegistrationSystem()
-        >>> registration_system.register_class(student_name="John", class_name="CS101")
-        >>> registration_system.register_class(student_name="John", class_name="CS102")
-        ["CS101", "CS102"]
         """
-        if student_name in self.students_registration_classes:
-            self.students_registration_classes[student_name].append(class_name)
+        if student_name not in self.students_registration_classes:
+            self.students_registration_classes[student_name] = []
+        self.students_registration_classes[student_name].append(class_name)
         return self.students_registration_classes[student_name]
 
     def get_students_by_major(self, major):
@@ -42,44 +38,27 @@ class ClassRegistrationSystem:
         get all students in the major
         :param major: str
         :return a list of student name
-        >>> registration_system = ClassRegistrationSystem()
-        >>> student1 = {"name": "John", "major": "Computer Science"}
-        >>> registration_system.register_student(student1)
-        >>> registration_system.get_students_by_major("Computer Science")
-        ["John"]
         """
-        return [s['name'] for s in self.students if s['major'] == major]
+        return [student["name"] for student in self.students if student["major"] == major]
 
     def get_all_major(self):
         """
         get all majors in the system
         :return a list of majors
-        >>> registration_system = ClassRegistrationSystem()
-        >>> registration_system.students = [{"name": "John", "major": "Computer Science"}]
-        >>> registration_system.get_all_major()
-        ["Computer Science"]
         """
-        return list(set(s['major'] for s in self.students))
+        return list(set(student["major"] for student in self.students))
 
     def get_most_popular_class_in_major(self, major):
         """
         get the class with the highest enrollment in the major.
         :return  a string of the most popular class in this major
-        >>> registration_system = ClassRegistrationSystem()
-        >>> registration_system.students = [{"name": "John", "major": "Computer Science"},
-                                             {"name": "Bob", "major": "Computer Science"},
-                                             {"name": "Alice", "major": "Computer Science"}]
-        >>> registration_system.students_registration_classes = {"John": ["Algorithms", "Data Structures"],
-                                            "Bob": ["Operating Systems", "Data Structures", "Algorithms"]}
-        >>> registration_system.get_most_popular_class_in_major("Computer Science")
-        "Data Structures"
         """
-        class_enrollment = {}
+        class_count = {}
         for student in self.students:
-            if student['major'] == major:
-                for cls in self.students_registration_classes.get(student['name'], []):
-                    if cls in class_enrollment:
-                        class_enrollment[cls] += 1
+            if student["major"] == major:
+                for class_name in self.students_registration_classes.get(student["name"], []):
+                    if class_name in class_count:
+                        class_count[class_name] += 1
                     else:
-                        class_enrollment[cls] = 1
-        return max(class_enrollment, key=class_enrollment.get) if class_enrollment else None
+                        class_count[class_name] = 1
+        return max(class_count, key=class_count.get) if class_count else None

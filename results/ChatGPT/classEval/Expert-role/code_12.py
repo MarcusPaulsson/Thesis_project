@@ -2,14 +2,14 @@ import random
 
 class BlackjackGame:
     """
-    This is a class representing a game of blackjack, which includes creating a deck, calculating the value of a hand, and determining the winner based on the hand values of the player and dealer.
+    This is a class representing a game of blackjack, which includes creating a deck, calculating the value of a hand, and determine the winner based on the hand values of the player and dealer.
     """
 
     def __init__(self):
         """
-        Initialize the Blackjack Game with the attribute deck, player_hand, and dealer_hand.
+        Initialize the Blackjack Game with the attribute deck, player_hand and dealer_hand.
         While initializing deck attribute, call the create_deck method to generate.
-        The deck stores 52 random order poker cards with the Jokers removed, format is ['AS', '2S', ...].
+        The deck stores 52 random order poker with the Jokers removed, format is ['AS', '2S', ...].
         player_hand is a list which stores player's hand cards.
         dealer_hand is a list which stores dealer's hand cards.
         """
@@ -19,11 +19,11 @@ class BlackjackGame:
 
     def create_deck(self):
         """
-        Create a deck of 52 cards, which stores 52 random order poker cards with the Jokers removed.
-        :return: a list of 52 random order poker cards with the Jokers removed, format is ['AS', '2S', ...].
+        Create a deck of 52 cards, which stores 52 random order poker with the Jokers removed.
+        :return: a list of 52 random order poker with the Jokers removed, format is ['AS', '2S', ...].
         """
-        suits = ['S', 'H', 'D', 'C']
-        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        suits = ['S', 'C', 'D', 'H']
+        ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
         deck = [rank + suit for suit in suits for rank in ranks]
         random.shuffle(deck)
         return deck
@@ -42,7 +42,7 @@ class BlackjackGame:
         aces_count = 0
         
         for card in hand:
-            rank = card[:-1]
+            rank = card[:-1]  # Get the rank part of the card
             if rank in ['J', 'Q', 'K']:
                 value += 10
             elif rank == 'A':
@@ -50,9 +50,9 @@ class BlackjackGame:
                 aces_count += 1
             else:
                 value += int(rank)
-
-        while value > 21 and aces_count:
-            value -= 10
+        
+        while value > 21 and aces_count > 0:
+            value -= 10  # Treat one Ace as 1 instead of 11
             aces_count -= 1
 
         return value

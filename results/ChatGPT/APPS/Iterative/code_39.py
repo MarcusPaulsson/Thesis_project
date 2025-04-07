@@ -1,19 +1,15 @@
 def is_palindrome(s):
     return s == s[::-1]
 
-def longest_non_palindrome_substring(s):
-    n = len(s)
-    if n <= 1 or not is_palindrome(s):
-        return n
-    
-    for length in range(n - 1, 0, -1):
-        for start in range(n - length + 1):
-            substring = s[start:start + length]
-            if not is_palindrome(substring):
-                return length
-    
-    return 0
+s = input().strip()
 
-if __name__ == "__main__":
-    s = input().strip()
-    print(longest_non_palindrome_substring(s))
+if not is_palindrome(s):
+    print(len(s))
+else:
+    # Check for the longest non-palindromic substring
+    # If all characters are the same, then all substrings are palindromes
+    if len(set(s)) == 1:
+        print(0)
+    else:
+        # The longest non-palindromic substring will be the entire string minus one character
+        print(len(s) - 1)

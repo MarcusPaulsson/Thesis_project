@@ -1,6 +1,6 @@
 class HRManagementSystem:
     """
-    This is a class as personnel management system that implements functions such as adding, deleting, querying, and updating employees.
+    This is a class as personnel management system that implements functions such as adding, deleting, querying, and updating employees
     """
 
     def __init__(self):
@@ -21,12 +21,7 @@ class HRManagementSystem:
         """
         if employee_id in self.employees:
             return False
-        self.employees[employee_id] = {
-            'name': name,
-            'position': position,
-            'department': department,
-            'salary': salary
-        }
+        self.employees[employee_id] = {'name': name, 'position': position, 'department': department, 'salary': salary}
         return True
 
     def remove_employee(self, employee_id):
@@ -35,7 +30,10 @@ class HRManagementSystem:
         :param employee_id: The employee's id, int.
         :return: If the employee is already in the HRManagementSystem, returns True, otherwise, returns False.
         """
-        return self.employees.pop(employee_id, None) is not None
+        if employee_id in self.employees:
+            del self.employees[employee_id]
+            return True
+        return False
 
     def update_employee(self, employee_id: int, employee_info: dict):
         """
@@ -62,4 +60,4 @@ class HRManagementSystem:
         List all employees' information in the HRManagementSystem.
         :return: A dictionary of all employees' information.
         """
-        return {employee_id: {**{'employee_ID': employee_id}, **info} for employee_id, info in self.employees.items()}
+        return {employee_id: {'employee_ID': employee_id, **info} for employee_id, info in self.employees.items()}

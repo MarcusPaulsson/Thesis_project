@@ -11,11 +11,9 @@ class BitStatusUtil:
         :param stat: Status to be added, int.
         :return: The status after adding the status, int.
         >>> bit_status_util = BitStatusUtil()
-        >>> bit_status_util.add(2, 4)
+        >>> bit_status_util.add(2,4)
         6
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise ValueError("Both states and stat must be integers.")
         return states | stat
 
     @staticmethod
@@ -26,11 +24,9 @@ class BitStatusUtil:
         :param stat: Specified status, int.
         :return: True if the current status contains the specified status, otherwise False, bool.
         >>> bit_status_util = BitStatusUtil()
-        >>> bit_status_util.has(6, 2)
+        >>> bit_status_util.has(6,2)
         True
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise ValueError("Both states and stat must be integers.")
         return (states & stat) == stat
 
     @staticmethod
@@ -41,11 +37,9 @@ class BitStatusUtil:
         :param stat: Specified status, int.
         :return: The status after removing the specified status, int.
         >>> bit_status_util = BitStatusUtil()
-        >>> bit_status_util.remove(6, 2)
+        >>> bit_status_util.remove(6,2)
         4
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise ValueError("Both states and stat must be integers.")
         return states & ~stat
 
     @staticmethod
@@ -55,11 +49,13 @@ class BitStatusUtil:
         :param args: Parameters to be checked, list.
         :return: None.
         >>> bit_status_util = BitStatusUtil()
-        >>> bit_status_util.check([2, 3, 4])
+        >>> bit_status_util.check([2,3,4])
         Traceback (most recent call last):
         ...
         ValueError: 3 not even
         """
         for arg in args:
-            if arg < 0 or arg % 2 != 0:
+            if arg < 0:
+                raise ValueError(f"{arg} is negative")
+            if arg % 2 != 0:
                 raise ValueError(f"{arg} not even")

@@ -20,15 +20,18 @@ class DecryptionUtils:
         >>> d.caesar_decipher('ifmmp', 1)
         'hello'
         """
-        plaintext = ''
+        shift = shift % 26
+        deciphered_text = []
+
         for char in ciphertext:
             if char.isalpha():
-                shift_amount = shift % 26
-                new_char = chr((ord(char) - shift_amount - 65) % 26 + 65) if char.isupper() else chr((ord(char) - shift_amount - 97) % 26 + 97)
-                plaintext += new_char
+                start = ord('A') if char.isupper() else ord('a')
+                deciphered_char = chr(start + (ord(char) - start - shift) % 26)
+                deciphered_text.append(deciphered_char)
             else:
-                plaintext += char
-        return plaintext
+                deciphered_text.append(char)
+
+        return ''.join(deciphered_text)
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -39,16 +42,19 @@ class DecryptionUtils:
         >>> d.vigenere_decipher('ifmmp')
         'ybocl'
         """
-        plaintext = ''
+        plaintext = []
         key_length = len(self.key)
-        key_as_int = [ord(i) - 97 for i in self.key.lower()]
-        ciphertext_int = [ord(i) - 97 for i in ciphertext.lower()]
-        
+        key_as_int = [ord(i) - ord('a') for i in self.key.lower()]
+        ciphertext_int = [ord(i) - ord('a') for i in ciphertext.lower()]
+
         for i in range(len(ciphertext_int)):
-            value = (ciphertext_int[i] - key_as_int[i % key_length]) % 26
-            plaintext += chr(value + 97)
-        
-        return plaintext
+            if ciphertext[i].isalpha():
+                value = (ciphertext_int[i] - key_as_int[i % key_length]) % 26
+                plaintext.append(chr(value + ord('a')))
+            else:
+                plaintext.append(ciphertext[i])
+
+        return ''.join(plaintext)
 
     def rail_fence_decipher(self, encrypted_text, rails):
         """
@@ -62,15 +68,12 @@ class DecryptionUtils:
         """
         rail = [['\n' for i in range(len(encrypted_text))]
                 for j in range(rails)]
-        
         dir_down = None
         row, col = 0, 0
 
         for i in range(len(encrypted_text)):
-            if row == 0:
-                dir_down = True
-            if row == rails - 1:
-                dir_down = False
+            if row == 0 or row == rails - 1:
+                dir_down = not dir_down
 
             rail[row][col] = '*'
             col += 1

@@ -43,13 +43,10 @@ class Chat:
         """
         if sender not in self.users or receiver not in self.users:
             return False
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.users[receiver].append({
-            'sender': sender,
-            'receiver': receiver,
-            'message': message,
-            'timestamp': timestamp
-        })
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        msg = {'sender': sender, 'receiver': receiver, 'message': message, 'timestamp': timestamp}
+        self.users[sender].append(msg)
+        self.users[receiver].append(msg)
         return True
 
     def get_messages(self, username):
@@ -58,6 +55,4 @@ class Chat:
         :param username: The user's name, str.
         :return: A list of messages, each message is a dictionary with keys 'sender', 'receiver', 'message', 'timestamp'.
         """
-        if username not in self.users:
-            return []
-        return self.users[username]
+        return self.users.get(username, [])

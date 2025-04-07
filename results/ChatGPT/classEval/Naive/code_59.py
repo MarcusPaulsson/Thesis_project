@@ -3,69 +3,70 @@ import numpy as np
 
 class MovieBookingSystem:
     """
-    A class representing a movie booking system that allows adding movies, booking tickets, and checking available movies within a given time range.
+    this is a class as movie booking system, which allows to add movies, book tickets and check the available movies within a given time range. 
     """
 
     def __init__(self):
         """
-        Initialize the movie booking system with an empty list of movies.
+        Initialize movies contains the information about movies
         """
         self.movies = []
 
     def add_movie(self, name, price, start_time, end_time, n):
         """
-        Add a new movie to the system.
+        Add a new movie into self.movies
         :param name: str, movie name
         :param price: float, price for one ticket
-        :param start_time: str, movie start time in HH:MM format
-        :param end_time: str, movie end time in HH:MM format
-        :param n: int, the size of seats (n x n)
+        :param start_time: str
+        :param end_time: str
+        :param n: int, the size of seats(n*n)
         """
         start_time_dt = datetime.strptime(start_time, '%H:%M')
         end_time_dt = datetime.strptime(end_time, '%H:%M')
         seats = np.zeros((n, n))
-
-        movie_info = {
+        self.movies.append({
             'name': name,
             'price': price,
             'start_time': start_time_dt,
             'end_time': end_time_dt,
             'seats': seats
-        }
-        self.movies.append(movie_info)
+        })
 
     def book_ticket(self, name, seats_to_book):
         """
-        Book tickets for a movie by updating the seat availability.
+        Book tickets for a movie. Change the seats value in self.movies if book successfully.
         :param name: str, movie name
         :param seats_to_book: list of tuples, representing seats to book [(row1, col1), (row2, col2), ...]
-        :return: str, booking status message
+        :return: str, booking status message. "Movie not found." for no such movie.
+                "Booking success." for successfully booking, or "Booking failed." otherwise
         """
         movie = next((m for m in self.movies if m['name'].lower() == name.lower()), None)
         if not movie:
-            return "Movie not found."
-
+            return 'Movie not found.'
+        
         for row, col in seats_to_book:
-            if movie['seats'][row, col] == 1:
-                return "Booking failed."
-
+            if movie['seats'][row][col] == 1:
+                return 'Booking failed.'
+        
         for row, col in seats_to_book:
-            movie['seats'][row, col] = 1
-
-        return "Booking success."
+            movie['seats'][row][col] = 1
+            
+        return 'Booking success.'
 
     def available_movies(self, start_time, end_time):
         """
-        Get a list of available movies within the specified time range.
+        Get a list of available movies within the specified time range
         :param start_time: str, start time in HH:MM format
         :param end_time: str, end time in HH:MM format
         :return: list of str, names of available movies
         """
         start_time_dt = datetime.strptime(start_time, '%H:%M')
         end_time_dt = datetime.strptime(end_time, '%H:%M')
-
-        available = [
-            movie['name'] for movie in self.movies
-            if movie['start_time'] >= start_time_dt and movie['end_time'] <= end_time_dt
-        ]
+        available = []
+        
+        for movie in self.movies:
+            if (movie['start_time'] >= start_time_dt and movie['start_time'] < end_time_dt) or \
+               (movie['end_time'] > start_time_dt and movie['end_time'] <= end_time_dt):
+                available.append(movie['name'])
+        
         return available

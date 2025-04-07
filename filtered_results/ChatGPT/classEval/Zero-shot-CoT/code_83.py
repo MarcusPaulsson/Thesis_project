@@ -11,8 +11,6 @@ class StudentDatabaseProcessor:
         :param database_name: str, the name of the SQLite database.
         """
         self.database_name = database_name
-        self.connection = sqlite3.connect(self.database_name)
-        self.cursor = self.connection.cursor()
         self.create_student_table()
 
     def create_student_table(self):
@@ -20,28 +18,28 @@ class StudentDatabaseProcessor:
         Creates a "students" table in the database if it does not exist already.
         :return: None
         """
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS students (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                age INTEGER NOT NULL,
-                gender TEXT NOT NULL,
-                grade INTEGER NOT NULL
-            )
-        """)
-        self.connection.commit()
-
+        with sqlite3.connect(self.database_name) as conn:
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS students (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    age INTEGER NOT NULL,
+                    gender TEXT NOT NULL,
+                    grade INTEGER NOT NULL
+                )
+            ''')
+    
     def insert_student(self, student_data):
         """
         Inserts a new student into the "students" table.
         :param student_data: dict, a dictionary containing the student's information (name, age, gender, grade).
         :return: None
         """
-        self.cursor.execute("""
-            INSERT INTO students (name, age, gender, grade)
-            VALUES (?, ?, ?, ?)
-        """, (student_data['name'], student_data['age'], student_data['gender'], student_data['grade']))
-        self.connection.commit()
+        with sqlite3.connect(self.database_name) as conn:
+            conn.execute('''
+                INSERT INTO students (name, age, gender, grade)
+                VALUES (?, ?, ?, ?)
+            ''', (student_data['name'], student_data['age'], student_data['gender'], student_data['grade']))
 
     def search_student_by_name(self, name):
         """
@@ -49,10 +47,10 @@ class StudentDatabaseProcessor:
         :param name: str, the name of the student to search for.
         :return: list of tuples, the rows from the "students" table that match the search criteria.
         """
-        self.cursor.execute("""
-            SELECT * FROM students WHERE name = ?
-        """, (name,))
-        return self.cursor.fetchall()
+        with sqlite3.connect(self.database_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM students WHERE name=?", (name,))
+            return cursor.fetchall()
 
     def delete_student_by_name(self, name):
         """
@@ -60,14 +58,5 @@ class StudentDatabaseProcessor:
         :param name: str, the name of the student to delete.
         :return: None
         """
-        self.cursor.execute("""
-            DELETE FROM students WHERE name = ?
-        """, (name,))
-        self.connection.commit()
-
-    def close(self):
-        """
-        Closes the database connection.
-        :return: None
-        """
-        self.connection.close()
+        with sqlite3.connect(self.database_name) as conn:
+            conn.execute("DELETE FROM students WHERE name=?", (name,))

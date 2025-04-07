@@ -1,6 +1,6 @@
 class NumberConverter:
     """
-    The class allows to convert decimal to binary, octal, and hexadecimal respectively and contrarily
+    The class allows to convert decimal to binary, octal and hexadecimal respectively and contrarily
     """
 
     @staticmethod

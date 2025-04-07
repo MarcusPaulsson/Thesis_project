@@ -17,76 +17,60 @@ class CombinationCalculator:
     def count(n: int, m: int) -> int:
         """
         Calculate the number of combinations for a specific count.
-        :param n: The total number of elements.
-        :param m: The number of elements in each combination.
-        :return: The number of combinations.
-        >>> CombinationCalculator.count(4, 2)
-        6
+        :param n: The total number of elements, int.
+        :param m: The number of elements in each combination, int.
+        :return: The number of combinations, int.
         """
         if m > n or m < 0:
             return 0
-        return math.factorial(n) // (math.factorial(m) * math.factorial(n - m))
+        return math.comb(n, m)
 
     @staticmethod
     def count_all(n: int) -> int:
         """
         Calculate the number of all possible combinations.
-        :param n: The total number of elements.
-        :return: The number of all possible combinations.
-        >>> CombinationCalculator.count_all(4)
-        15
+        :param n: The total number of elements, int.
+        :return: The number of all possible combinations, int, if the number of combinations is greater than 2^63-1, return float("inf").
         """
-        total_combinations = 0
-        for m in range(1, n + 1):
-            total_combinations += CombinationCalculator.count(n, m)
-        
-        return total_combinations if total_combinations <= (2**63 - 1) else float("inf")
+        if n < 0:
+            return False
+        if n > 63:
+            return False
+        return (1 << n) - 1  # 2^n - 1
 
     def select(self, m: int) -> List[List[str]]:
         """
         Generate combinations with a specified number of elements.
-        :param m: The number of elements in each combination.
-        :return: A list of combinations.
-        >>> calc = CombinationCalculator(["A", "B", "C", "D"])
-        >>> calc.select(2)
-        [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D']]
+        :param m: The number of elements in each combination, int.
+        :return: A list of combinations, List[List[str]].
         """
         result = []
-        self._select(0, [], m, result)
+        self._select(0, [None] * m, 0, result)
         return result
 
     def select_all(self) -> List[List[str]]:
         """
-        Generate all possible combinations of selecting elements from the given data list.
-        :return: A list of combinations.
-        >>> calc = CombinationCalculator(["A", "B", "C", "D"])
-        >>> calc.select_all()
-        [['A'], ['B'], ['C'], ['D'], ['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D'], ['A', 'B', 'C'], ['A', 'B', 'D'], ['A', 'C', 'D'], ['B', 'C', 'D'], ['A', 'B', 'C', 'D']]
+        Generate all possible combinations of selecting elements from the given data list, and it uses the select method.
+        :return: A list of combinations, List[List[str]].
         """
-        result = []
-        for m in range(1, len(self.datas) + 1):
-            result.extend(self.select(m))
-        return result
+        all_combinations = []
+        for i in range(len(self.datas) + 1):
+            all_combinations.extend(self.select(i))
+        return all_combinations
 
-    def _select(self, dataIndex: int, resultList: List[str], m: int, result: List[List[str]]):
+    def _select(self, dataIndex: int, resultList: List[str], resultIndex: int, result: List[List[str]]):
         """
         Generate combinations with a specified number of elements by recursion.
-        :param dataIndex: The index of the data to be selected.
-        :param resultList: The list of elements in the combination.
-        :param m: The number of elements in each combination.
-        :param result: The list of combinations.
+        :param dataIndex: The index of the data to be selected, int.
+        :param resultList: The list of elements in the combination, List[str].
+        :param resultIndex: The index of the element in the combination, int.
+        :param result: The list of combinations, List[List[str]].
         :return: None.
-        >>> calc = CombinationCalculator(["A", "B", "C", "D"])
-        >>> result = []
-        >>> calc._select(0, [], 2, result)
-        >>> result
-        [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D']]
         """
-        if len(resultList) == m:
+        if resultIndex == len(resultList):
             result.append(resultList.copy())
             return
-        
+
         for i in range(dataIndex, len(self.datas)):
-            resultList.append(self.datas[i])
-            self._select(i + 1, resultList, m, result)
-            resultList.pop()
+            resultList[resultIndex] = self.datas[i]
+            self._select(i + 1, resultList, resultIndex + 1, result)

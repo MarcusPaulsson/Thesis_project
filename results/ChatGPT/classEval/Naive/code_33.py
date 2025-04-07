@@ -1,6 +1,6 @@
 class DiscountStrategy:
     """
-    This class allows the use of different discount strategies based on shopping credit or shopping cart in a supermarket.
+    This is a class that allows to use different discount strategy based on shopping credit or shopping cart in supermarket.
     """
 
     def __init__(self, customer, cart, promotion=None):
@@ -26,39 +26,43 @@ class DiscountStrategy:
         Calculate the final amount to be paid after applying the discount.
         :return: float, final amount to be paid
         """
-        total_cost = self.total()
-        discount = self.promotion(self) if self.promotion else 0
-        return total_cost - discount
+        total_amount = self.total()
+        if self.promotion:
+            discount = self.promotion(self)
+            return total_amount - discount
+        return total_amount
 
     @staticmethod
     def FidelityPromo(order):
         """
         Calculate the discount based on the fidelity points of the customer.
-        :param order: DiscountStrategy, the order to apply the discount to
+        :param order: object, the order to apply the discount to
         :return: float, discount amount
         """
         if order.customer['fidelity'] >= 1000:
             return order.total() * 0.05
-        return 0.0
+        return 0
 
     @staticmethod
     def BulkItemPromo(order):
         """
         Calculate the discount based on bulk item quantity in the order.
-        :param order: DiscountStrategy, the order to apply the discount to
+        :param order: object, the order to apply the discount to
         :return: float, discount amount
         """
-        discount = sum(item['quantity'] * item['price'] * 0.10 
-                       for item in order.cart if item['quantity'] >= 20)
+        discount = 0
+        for item in order.cart:
+            if item['quantity'] >= 20:
+                discount += item['quantity'] * item['price'] * 0.10
         return discount
 
     @staticmethod
     def LargeOrderPromo(order):
         """
         Calculate the discount based on the number of different products in the order.
-        :param order: DiscountStrategy, the order to apply the discount to
+        :param order: object, the order to apply the discount to
         :return: float, discount amount
         """
         if len(order.cart) >= 10:
             return order.total() * 0.07
-        return 0.0
+        return 0

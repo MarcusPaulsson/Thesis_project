@@ -15,13 +15,16 @@ class UserLoginDB:
         self.create_table()
 
     def create_table(self):
-        """Creates the users table if it doesn't already exist."""
-        self.cursor.execute('''
+        """
+        Creates the "users" table if it doesn't already exist.
+        """
+        create_table_query = """
             CREATE TABLE IF NOT EXISTS users (
                 username TEXT PRIMARY KEY,
-                password TEXT NOT NULL
+                password TEXT
             )
-        ''')
+        """
+        self.cursor.execute(create_table_query)
         self.connection.commit()
 
     def insert_user(self, username, password):
@@ -30,51 +33,43 @@ class UserLoginDB:
         :param username: str, the username of the user.
         :param password: str, the password of the user.
         :return: None
-        >>> user_db = UserLoginDB("user_database.db")
-        >>> user_db.insert_user('user1', 'pass1')
         """
-        self.cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-        self.connection.commit()
+        try:
+            self.cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+            self.connection.commit()
+        except sqlite3.IntegrityError:
+            pass  # Ignore if user already exists
 
     def search_user_by_username(self, username):
         """
         Searches for users in the "users" table by username.
         :param username: str, the username of the user to search for.
         :return: list of tuples, the rows from the "users" table that match the search criteria.
-        >>> user_db = UserLoginDB("user_database.db")
-        >>> user_db.insert_user('user1', 'pass1')
-        >>> result = user_db.search_user_by_username('user1')
-        len(result) == 1
         """
-        self.cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
-        return self.cursor.fetchall()
+        self.cursor.execute("SELECT username, password FROM users WHERE username = ?", (username,))
+        return self.cursor.fetchone()
 
     def delete_user_by_username(self, username):
         """
         Deletes a user from the "users" table by username.
         :param username: str, the username of the user to delete.
         :return: None
-        >>> user_db = UserLoginDB("user_database.db")
-        >>> user_db.insert_user('user1', 'pass1')
-        >>> user_db.delete_user_by_username('user1')
         """
-        self.cursor.execute('DELETE FROM users WHERE username = ?', (username,))
+        self.cursor.execute("DELETE FROM users WHERE username = ?", (username,))
         self.connection.commit()
 
     def validate_user_login(self, username, password):
         """
-        Determine whether the user can log in, that is, the user is in the database and the password is correct.
+        Determine whether the user can log in, that is, the user is in the database and the password is correct
         :param username: str, the username of the user to validate.
         :param password: str, the password of the user to validate.
-        :return: bool, representing whether the user can log in correctly.
-        >>> user_db = UserLoginDB("user_database.db")
-        >>> user_db.insert_user('user1', 'pass1')
-        >>> user_db.validate_user_login('user1', 'pass1')
-        True
+        :return: bool, representing whether the user can log in correctly
         """
-        self.cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
-        return self.cursor.fetchone() is not None
+        user = self.search_user_by_username(username)
+        return user is not None and user[1] == password
 
     def close(self):
-        """Closes the database connection."""
+        """
+        Closes the database connection.
+        """
         self.connection.close()

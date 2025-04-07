@@ -23,16 +23,12 @@ class Order:
         And if the dish has successfully been added, change the count in self.menu.
         :param dish: dict, the information of dish. dish = {"dish": dish name, "count": count, price: price}
         :return: True if successfully added, or False otherwise.
-        >>> order = Order()
-        >>> order.menu.append({"dish": "dish1", "price": 10, "count": 5})
-        >>> order.add_dish({"dish": "dish1", "price": 10, "count": 3})
-        True
         """
-        for item in self.menu:
-            if item["dish"] == dish["dish"]:
-                if item["count"] >= dish["count"]:
-                    item["count"] -= dish["count"]
-                    self.selected_dishes.append({"dish": dish["dish"], "count": dish["count"], "price": dish["price"]})
+        for menu_dish in self.menu:
+            if menu_dish["dish"] == dish["dish"]:
+                if menu_dish["count"] >= dish["count"]:
+                    menu_dish["count"] -= dish["count"]
+                    self.selected_dishes.append(dish)
                     return True
                 else:
                     return False
@@ -42,21 +38,10 @@ class Order:
         """
         Calculate the total price of dishes that have been ordered. Multiply the count, price and sales.
         :return total: float, the final total price.
-        >>> order = Order()
-        >>> order.menu.append({"dish": "dish1", "price": 10, "count": 5})
-        >>> order.sales = {"dish1": 0.8}
-        >>> order.add_dish({"dish": "dish1", "price": 10, "count": 4})
-        True
-        >>> order.calculate_total()
-        32.0
         """
-        total = 0.0
+        total = 0
         for selected in self.selected_dishes:
-            dish_name = selected["dish"]
-            count = selected["count"]
-            price = selected["price"]
-            discount = self.sales.get(dish_name, 1)
-            total += count * price * discount
+            total += selected["count"] * selected["price"] * self.sales.get(selected["dish"], 1)
         return total
 
     def checkout(self):
@@ -64,14 +49,9 @@ class Order:
         Check out the dishes ordered. IF the self.selected_dishes is not empty, invoke the calculate_total
         method to check out.
         :return False if the self.selected_dishes is empty, or total(return value of calculate_total) otherwise.
-        >>> order = Order()
-        >>> order.menu.append({"dish": "dish1", "price": 10, "count": 5})
-        >>> order.sales = {"dish1": 0.8}
-        >>> order.add_dish({"dish": "dish1", "price": 10, "count": 4})
-        True
-        >>> order.checkout()
-        32.0
         """
         if not self.selected_dishes:
             return False
-        return self.calculate_total()
+        total = self.calculate_total()
+        self.selected_dishes.clear()  # Clear the selected dishes after checkout
+        return total

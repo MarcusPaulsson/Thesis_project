@@ -18,17 +18,22 @@ class Interpolation:
         >>> interpolation.interpolate_1d([1, 2, 3], [1, 2, 3], [1.5, 2.5])
         [1.5, 2.5]
         """
-        result = []
+        if not x_interp:
+            return []
+
+        y_interp = []
         for xi in x_interp:
-            if xi < x[0] or xi > x[-1]:
-                raise ValueError("Interpolation point out of bounds.")
-            for i in range(len(x) - 1):
-                if x[i] <= xi <= x[i + 1]:
-                    slope = (y[i + 1] - y[i]) / (x[i + 1] - x[i])
-                    interpolated_value = y[i] + slope * (xi - x[i])
-                    result.append(interpolated_value)
-                    break
-        return result
+            if xi < x[0]:
+                y_interp.append(y[0] + (y[1] - y[0]) * (xi - x[0]) / (x[1] - x[0]))
+            elif xi > x[-1]:
+                y_interp.append(y[-2] + (y[-1] - y[-2]) * (xi - x[-2]) / (x[-1] - x[-2]))
+            else:
+                for i in range(len(x) - 1):
+                    if x[i] <= xi <= x[i + 1]:
+                        y_interp.append(y[i] + (y[i + 1] - y[i]) * (xi - x[i]) / (x[i + 1] - x[i]))
+                        break
+
+        return y_interp
 
     @staticmethod
     def interpolate_2d(x, y, z, x_interp, y_interp):
@@ -36,7 +41,7 @@ class Interpolation:
         Linear interpolation of two-dimensional data
         :param x: The x-coordinate of the data point, list.
         :param y: The y-coordinate of the data point, list.
-        :param z: The z-coordinate of the data point, list of lists.
+        :param z: The z-coordinate of the data point, list.
         :param x_interp: The x-coordinate of the interpolation point, list.
         :param y_interp: The y-coordinate of the interpolation point, list.
         :return: The z-coordinate of the interpolation point, list.
@@ -44,33 +49,30 @@ class Interpolation:
         >>> interpolation.interpolate_2d([1, 2, 3], [1, 2, 3], [[1, 2, 3], [4, 5, 6], [7, 8, 9]], [1.5, 2.5], [1.5, 2.5])
         [3.0, 7.0]
         """
-        result = []
+        if not x_interp or not y_interp:
+            return []
+
+        z_interp = []
         for xi, yi in zip(x_interp, y_interp):
-            if xi < x[0] or xi > x[-1] or yi < y[0] or yi > y[-1]:
-                raise ValueError("Interpolation point out of bounds.")
-            x1, x2 = None, None
-            y1, y2 = None, None
-            
-            # Find the surrounding points
-            for i in range(len(x) - 1):
-                if x[i] <= xi <= x[i + 1]:
-                    x1, x2 = x[i], x[i + 1]
-                    break
-            for j in range(len(y) - 1):
-                if y[j] <= yi <= y[j + 1]:
-                    y1, y2 = y[j], y[j + 1]
-                    break
-            
-            # Calculate the four corners of the grid
-            q11 = z[y.index(y1)][x.index(x1)]
-            q21 = z[y.index(y1)][x.index(x2)]
-            q12 = z[y.index(y2)][x.index(x1)]
-            q22 = z[y.index(y2)][x.index(x2)]
+            # Find the surrounding points in x
+            x1_idx = next(i for i in range(len(x) - 1) if x[i] <= xi <= x[i + 1])
+            x1, x2 = x[x1_idx], x[x1_idx + 1]
+            # Find the surrounding points in y
+            y1_idx = next(i for i in range(len(y) - 1) if y[i] <= yi <= y[i + 1])
+            y1, y2 = y[y1_idx], y[y1_idx + 1]
 
             # Perform bilinear interpolation
-            interpolated_value = (q11 * (x2 - xi) * (y2 - yi) +
-                                  q21 * (xi - x1) * (y2 - yi) +
-                                  q12 * (x2 - xi) * (yi - y1) +
-                                  q22 * (xi - x1) * (yi - y1)) / ((x2 - x1) * (y2 - y1))
-            result.append(interpolated_value)
-        return result
+            z11 = z[y1_idx][x1_idx]
+            z12 = z[y1_idx][x1_idx + 1]
+            z21 = z[y1_idx + 1][x1_idx]
+            z22 = z[y1_idx + 1][x1_idx + 1]
+
+            z_interp.append(
+                (z11 * (x2 - xi) * (y2 - yi) +
+                 z12 * (xi - x1) * (y2 - yi) +
+                 z21 * (x2 - xi) * (yi - y1) +
+                 z22 * (xi - x1) * (yi - y1)) /
+                ((x2 - x1) * (y2 - y1))
+            )
+
+        return z_interp

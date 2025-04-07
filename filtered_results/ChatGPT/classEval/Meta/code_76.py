@@ -1,6 +1,6 @@
 class SignInSystem:
     """
-    This is a class as sign in system, including adding users, signing in/out, checking sign-in status, and retrieving signed-in/not signed-in users.
+    This is a class as sign-in system, including adding users, signing in/out, checking sign-in status, and retrieving signed-in/not signed-in users.
     """
 
     def __init__(self):
@@ -17,7 +17,7 @@ class SignInSystem:
         :return: bool, True if the user is added successfully, False if the user already exists.
         """
         if username not in self.users:
-            self.users[username] = False  # False indicates the user is not signed in
+            self.users[username] = False
             return True
         return False
 
@@ -27,8 +27,8 @@ class SignInSystem:
         :param username: str, the username to be signed in.
         :return: bool, True if the user is signed in successfully, False if the user does not exist.
         """
-        if username in self.users and not self.users[username]:
-            self.users[username] = True  # Change state to signed in
+        if username in self.users:
+            self.users[username] = True
             return True
         return False
 

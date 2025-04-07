@@ -1,32 +1,37 @@
 def construct_binary_string(a, b, x):
-    # Start with an empty list to build the string
+    # Initialize the string
     s = []
     
-    # Determine the starting character based on the counts of 0s and 1s
-    if a + b < x + 1 or (x % 2 == 1 and (a == 0 or b == 0)):
-        print("Impossible to construct the string with the given parameters.")
-        return
-    
-    is_zero_turn = a >= b  # Start with '0' if more or equal zeros than ones
-    for i in range(x + 1):
-        if is_zero_turn:
-            if a > 0:
-                s.append('0')
-                a -= 1
-            is_zero_turn = False
-        else:
-            if b > 0:
-                s.append('1')
-                b -= 1
-            is_zero_turn = True
-            
-    # Fill the rest with the remaining characters
-    s.extend(['0'] * a)
-    s.extend(['1'] * b)
-    
-    # Join the list into a string and print it
-    print(''.join(s))
+    # Determine the starting character
+    if a > b:
+        s.append('0')
+        a -= 1
+    else:
+        s.append('1')
+        b -= 1
 
-# Input reading
+    # Current segments of different characters
+    current_segments = 1
+
+    # Add alternating characters until we reach x
+    while current_segments < x and (a > 0 or b > 0):
+        if s[-1] == '0' and b > 0:
+            s.append('1')
+            b -= 1
+        elif s[-1] == '1' and a > 0:
+            s.append('0')
+            a -= 1
+        current_segments += 1
+
+    # Fill the remaining with the last character
+    last_char = s[-1]
+    remaining_count = a if last_char == '0' else b
+    s.extend([last_char] * remaining_count)
+    s.extend(['1' if last_char == '0' else '0'] * (b if last_char == '0' else a))
+
+    return ''.join(s)
+
+# Read input values
 a, b, x = map(int, input().split())
-construct_binary_string(a, b, x)
+# Generate and print the binary string
+print(construct_binary_string(a, b, x))

@@ -2,8 +2,7 @@ from datetime import datetime
 
 class Classroom:
     """
-    This is a class representing a classroom, capable of adding and removing courses,
-    checking availability at a given time, and detecting conflicts when scheduling new courses.
+    This is a class representing a classroom, capable of adding and removing courses, checking availability at a given time, and detecting conflicts when scheduling new courses.
     """
 
     def __init__(self, id):
@@ -32,30 +31,30 @@ class Classroom:
 
     def is_free_at(self, check_time):
         """
-        Check if the classroom is free at a given time.
-        :param check_time: str, the time need to be checked in '%H:%M' format
-        :return: True if the check_time does not conflict with any course time, else False.
+        change the time format as '%H:%M' and check the time is free or not in the classroom.
+        :param check_time: str, the time need to be checked
+        :return: True if the check_time does not conflict with every course time, or False otherwise.
         """
-        check_time = datetime.strptime(check_time, '%H:%M').time()
+        check_time_dt = datetime.strptime(check_time, '%H:%M')
         for course in self.courses:
-            start_time = datetime.strptime(course['start_time'], '%H:%M').time()
-            end_time = datetime.strptime(course['end_time'], '%H:%M').time()
-            if start_time <= check_time < end_time:
+            start_time_dt = datetime.strptime(course['start_time'], '%H:%M')
+            end_time_dt = datetime.strptime(course['end_time'], '%H:%M')
+            if start_time_dt <= check_time_dt < end_time_dt:
                 return False
         return True
 
     def check_course_conflict(self, new_course):
         """
-        Check if the new course time conflicts with any other course.
+        Before adding a new course, check if the new course time conflicts with any other course.
         :param new_course: dict, information of the course, including 'start_time', 'end_time' and 'name'
-        :return: False if there is a conflict, True otherwise.
+        :return: False if the new course time conflicts(including two courses have the same boundary time) with other courses, or True otherwise.
         """
-        new_start = datetime.strptime(new_course['start_time'], '%H:%M').time()
-        new_end = datetime.strptime(new_course['end_time'], '%H:%M').time()
+        new_start_time_dt = datetime.strptime(new_course['start_time'], '%H:%M')
+        new_end_time_dt = datetime.strptime(new_course['end_time'], '%H:%M')
         
         for course in self.courses:
-            start_time = datetime.strptime(course['start_time'], '%H:%M').time()
-            end_time = datetime.strptime(course['end_time'], '%H:%M').time()
-            if not (new_end <= start_time or new_start >= end_time):
+            start_time_dt = datetime.strptime(course['start_time'], '%H:%M')
+            end_time_dt = datetime.strptime(course['end_time'], '%H:%M')
+            if not (new_end_time_dt <= start_time_dt or new_start_time_dt >= end_time_dt):
                 return False
         return True

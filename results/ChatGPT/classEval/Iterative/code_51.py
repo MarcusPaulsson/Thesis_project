@@ -2,46 +2,65 @@ import numpy as np
 
 class KappaCalculator:
     """
-    This class calculates Cohen's and Fleiss' kappa coefficients.
+    A class to calculate Cohen's and Fleiss' kappa coefficients.
     """
 
     @staticmethod
-    def kappa(testData):
+    def kappa(testData, k):
         """
-        Calculate Cohen's kappa value of a square matrix.
-        :param testData: 2D list or numpy array, the confusion matrix
-        :return: float, Cohen's kappa value
-        >>> KappaCalculator.kappa([[2, 1, 1], [1, 2, 1], [1, 1, 2]])
+        Calculate Cohen's kappa value of a k-dimensional matrix.
+        
+        :param testData: The k-dimensional matrix for which to calculate Cohen's kappa value.
+        :param k: int, Matrix dimension.
+        :return: float, the Cohen's kappa value of the matrix.
+        
+        >>> KappaCalculator.kappa([[2, 1, 1], [1, 2, 1], [1, 1, 2]], 3)
         0.25
         """
         testData = np.array(testData)
         n = np.sum(testData)
-        p0 = np.trace(testData) / n  # observed agreement
-        pe = np.sum(np.square(np.sum(testData, axis=0))) / (n**2)  # expected agreement
-        return (p0 - pe) / (1 - pe) if (1 - pe) != 0 else 0.0
+        total_agreement = np.sum(np.diag(testData))
+        expected_agreement = np.sum(np.sum(testData, axis=0) ** 2) / (n ** 2)
+        observed_agreement = total_agreement / n
+        
+        # Avoid division by zero
+        if expected_agreement == 1:
+            return 1.0 if observed_agreement == expected_agreement else 0.0
+        
+        kappa_value = (observed_agreement - expected_agreement) / (1 - expected_agreement)
+        return kappa_value
 
     @staticmethod
-    def fleiss_kappa(testData):
+    def fleiss_kappa(testData, N, k, n):
         """
-        Calculate Fleiss' kappa value of an N x k matrix.
-        :param testData: 2D list or numpy array, N x k matrix of ratings
-        :return: float, Fleiss' kappa value
+        Calculate Fleiss' kappa value of an N * k matrix.
+        
+        :param testData: Input data matrix, N * k.
+        :param N: int, Number of samples.
+        :param k: int, Number of categories.
+        :param n: int, Number of raters.
+        :return: float, Fleiss' kappa value.
+        
         >>> KappaCalculator.fleiss_kappa([[0, 0, 0, 0, 14],
-        >>>                                 [0, 2, 6, 4, 2],
-        >>>                                 [0, 0, 3, 5, 6],
-        >>>                                 [0, 3, 9, 2, 0],
-        >>>                                 [2, 2, 8, 1, 1],
-        >>>                                 [7, 7, 0, 0, 0],
-        >>>                                 [3, 2, 6, 3, 0],
-        >>>                                 [2, 5, 3, 2, 2],
-        >>>                                 [6, 5, 2, 1, 0],
-        >>>                                 [0, 2, 2, 3, 7]], 10)
+        >>>                                  [0, 2, 6, 4, 2],
+        >>>                                  [0, 0, 3, 5, 6],
+        >>>                                  [0, 3, 9, 2, 0],
+        >>>                                  [2, 2, 8, 1, 1],
+        >>>                                  [7, 7, 0, 0, 0],
+        >>>                                  [3, 2, 6, 3, 0],
+        >>>                                  [2, 5, 3, 2, 2],
+        >>>                                  [6, 5, 2, 1, 0],
+        >>>                                  [0, 2, 2, 3, 7]], 10, 5, 14)
         0.20993070442195522
         """
         testData = np.array(testData)
-        N, k = testData.shape
-        n = np.sum(testData, axis=1)  # total ratings for each sample
-        p = np.sum(testData, axis=0) / np.sum(testData)  # proportion of ratings for each category
-        P = np.sum((n / np.sum(testData))**2)  # observed agreement
-        Pe = np.sum(p**2)  # expected agreement
-        return (P - Pe) / (1 - Pe) if (1 - Pe) != 0 else 0.0
+        p = np.sum(testData, axis=0) / (N * n)
+        P_e = np.sum(p ** 2)
+        P = np.sum(np.diag(np.dot(testData, testData.T))) / (n * (n - 1))
+        
+        # Avoid division by zero
+        if P_e == 1:
+            return 1.0 if P == P_e else 0.0
+        
+        fleiss_kappa_value = (P - P_e) / (1 - P_e)
+        return fleiss_kappa_value

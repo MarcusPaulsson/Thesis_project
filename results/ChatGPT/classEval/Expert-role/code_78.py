@@ -10,21 +10,18 @@ class SplitSentence:
         Split a string into a list of sentences. Sentences end with . or ? and with a space after that. Please note that Mr. also end with . but are not sentences.
         :param sentences_string: string, string to split
         :return:list, split sentence list
-        >>> ss = SplitSentence()
-        >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
-        ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        # Regex to match sentences correctly, avoiding "Mr."
-        return re.split(r'(?<!Mr)\. |\? ', sentences_string)
+        # Regex to split sentences while ignoring abbreviations like Mr.
+        sentences = re.split(r'(?<!\bMr\.)[.?\s]+', sentences_string.strip())
+        return [s.strip() for s in sentences if s.strip()]
 
     def count_words(self, sentence):
         """
         Count the number of words in a sentence. Note that words are separated by spaces and that punctuation marks and numbers are not counted as words.
         :param sentence:string, sentence to be counted, where words are separated by spaces
         :return:int, number of words in the sentence
-        >>> ss.count_words("abc def")
-        2
         """
+        # Split the sentence into words and count them, ignoring numbers and punctuation
         words = re.findall(r'\b[a-zA-Z]+\b', sentence)
         return len(words)
 
@@ -33,9 +30,13 @@ class SplitSentence:
         Given a text, return the number of words in the longest sentence
         :param sentences_string: string, undivided long sentence
         :return:int, the number of words in the longest sentence
-        >>> ss.process_text_file("aaa aaaa. bb bbbb bbb? cccc ccccccc cc ccc. dd ddd?")
-        4
         """
         sentences = self.split_sentences(sentences_string)
-        max_word_count = max(self.count_words(sentence) for sentence in sentences)
+        max_word_count = 0
+        
+        for sentence in sentences:
+            word_count = self.count_words(sentence)
+            if word_count > max_word_count:
+                max_word_count = word_count
+                
         return max_word_count

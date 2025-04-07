@@ -34,6 +34,7 @@ class PageUtil:
         """
         if page_number < 1 or page_number > self.total_pages:
             return {}
+        current_page_data = self.get_page(page_number)
         return {
             "current_page": page_number,
             "per_page": self.page_size,
@@ -41,7 +42,7 @@ class PageUtil:
             "total_items": self.total_items,
             "has_previous": page_number > 1,
             "has_next": page_number < self.total_pages,
-            "data": self.get_page(page_number)
+            "data": current_page_data
         }
 
     def search(self, keyword):
@@ -50,7 +51,7 @@ class PageUtil:
         :param keyword: str, the keyword to search for
         :return: dict, containing search information such as total results and matching items
         """
-        results = [item for item in self.data if str(item).find(keyword) != -1]
+        results = [item for item in self.data if str(item) in keyword]
         total_results = len(results)
         total_pages = (total_results + self.page_size - 1) // self.page_size
         return {

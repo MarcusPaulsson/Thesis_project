@@ -1,29 +1,40 @@
-def is_stack_sortable(k, p):
+def is_stack_sortable(p):
     stack = []
     b = []
-    next_to_push = 1
-    for i in range(k):
-        while next_to_push <= len(p) and (next_to_push in stack or next_to_push in p[:k]):
-            next_to_push += 1
-        if p[i] < next_to_push:
-            return False
-        stack.append(p[i])
-        while stack and (not b or stack[-1] < b[-1]):
+    index = 0
+    n = len(p)
+
+    for x in range(1, n + 1):
+        while stack and stack[-1] == p[index]:
             b.append(stack.pop())
-    return True
+            index += 1
+        if index < n and p[index] == x:
+            b.append(x)
+            index += 1
+        else:
+            stack.append(x)
+
+    while stack:
+        b.append(stack.pop())
+
+    return b == sorted(b)
 
 def restore_permutation(n, k, p):
-    if not is_stack_sortable(k, p):
+    used = set(p)
+    remaining = [x for x in range(1, n + 1) if x not in used]
+    
+    if not is_stack_sortable(p + remaining):
         return -1
-    
-    remaining_numbers = set(range(1, n + 1)) - set(p)
+
     result = p.copy()
-    
-    for _ in range(n - k):
-        next_to_add = max(remaining_numbers)
-        result.append(next_to_add)
-        remaining_numbers.remove(next_to_add)
-    
+    remaining.sort(reverse=True)
+    j = 0
+
+    for x in remaining:
+        while j < len(remaining) and (not result or x > remaining[j]):
+            result.append(remaining[j])
+            j += 1
+            
     return result
 
 n, k = map(int, input().split())
@@ -31,6 +42,6 @@ p = list(map(int, input().split()))
 
 result = restore_permutation(n, k, p)
 if result == -1:
-    print(result)
+    print(-1)
 else:
     print(" ".join(map(str, result)))

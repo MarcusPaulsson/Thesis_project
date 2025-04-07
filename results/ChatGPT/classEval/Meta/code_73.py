@@ -25,7 +25,7 @@ class RPGCharacter:
         :param other_character: RPGCharacter, The character being attacked.
         """
         damage = max(0, self.attack_power - other_character.defense)
-        other_character.hp = max(0, other_character.hp - damage)
+        other_character.hp -= damage
 
     def heal(self):
         """
@@ -42,19 +42,19 @@ class RPGCharacter:
         :param amount: int, the amount of experience points to gain.
         """
         self.exp += amount
-        while self.exp >= 100 * self.level and self.level < 100:
-            self.exp -= 100 * self.level
+        while self.exp >= self.level * 100 and self.level < 100:
+            self.exp -= self.level * 100
             self.level_up()
 
     def level_up(self):
         """
         Level up the character and return to zero experience points, increase hp by 20 points, attack power and defense points by 5 points.
-        max level is 100.
+        max level is 100
         :return: tuple[int, int, int, int], the new level, health points, attack power, and defense points after leveling up.
         """
         if self.level < 100:
             self.level += 1
-            self.hp += 20
+            self.hp = min(100, self.hp + 20)
             self.attack_power += 5
             self.defense += 5
         return (self.level, self.hp, self.attack_power, self.defense)

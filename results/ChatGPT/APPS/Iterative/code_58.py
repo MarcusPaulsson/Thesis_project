@@ -1,35 +1,27 @@
-def color_array(n, k, a):
-    from collections import defaultdict
+n, k = map(int, input().split())
+a = list(map(int, input().split()))
 
-    color = [0] * n
-    freq = defaultdict(list)
+from collections import defaultdict
 
-    for index, value in enumerate(a):
-        freq[value].append(index)
+coloring = [0] * n
+color_used = defaultdict(list)
 
-    if len(freq) < k:
-        print("NO")
-        return
+# Gather indices of each unique element
+for i in range(n):
+    color_used[a[i]].append(i)
 
-    color_count = [0] * (k + 1)
+# Check if any element appears more than k times
+if any(len(indices) > k for indices in color_used.values()):
+    print("NO")
+else:
+    print("YES")
     current_color = 1
-
-    for indices in freq.values():
+    # Assign colors while ensuring distinctness
+    for indices in color_used.values():
         for index in indices:
-            color[index] = current_color
-            color_count[current_color] += 1
+            coloring[index] = current_color
             current_color += 1
             if current_color > k:
                 current_color = 1
 
-    if any(c == 0 for c in color_count[1:k + 1]):
-        print("NO")
-    else:
-        print("YES")
-        print(" ".join(map(str, color)))
-
-# Example usage
-if __name__ == "__main__":
-    n, k = map(int, input().split())
-    a = list(map(int, input().split()))
-    color_array(n, k, a)
+    print(" ".join(map(str, coloring)))

@@ -7,21 +7,36 @@ class NLPDataProcessor2:
     """
 
     def process_data(self, string_list):
+        """
+        keep only English letters and spaces in the string, then convert the string to lower case, and then split the string into a list of words.
+        :param string_list: a list of strings
+        :return: words_list: a list of words lists
+        """
         words_list = []
         for string in string_list:
-            # Keep only English letters and spaces, convert to lower case, and split into words
+            # Use regex to keep only English letters and spaces
             cleaned_string = re.sub(r'[^a-zA-Z\s]', '', string).lower()
             words = cleaned_string.split()
             words_list.append(words)
         return words_list
 
     def calculate_word_frequency(self, words_list):
-        word_frequency = Counter()
+        """
+        Calculate the word frequency of each word in the list of words list, and sort the word frequency dictionary by value in descending order.
+        :param words_list: a list of words lists
+        :return: top 5 word frequency dictionary, a dictionary of word frequency, key is word, value is frequency
+        """
+        word_count = Counter()
         for words in words_list:
-            word_frequency.update(words)
+            word_count.update(words)
         # Get the top 5 most common words
-        return dict(word_frequency.most_common(5))
+        return dict(word_count.most_common(5))
 
     def process(self, string_list):
+        """
+        keep only English letters and spaces in the string, then convert the string to lower case, and then split the string into a list of words. Calculate the word frequency of each word in the list of words list, and sort the word frequency dictionary by value in descending order.
+        :param string_list: a list of strings
+        :return: top 5 word frequency dictionary, a dictionary of word frequency, key is word, value is frequency
+        """
         words_list = self.process_data(string_list)
         return self.calculate_word_frequency(words_list)

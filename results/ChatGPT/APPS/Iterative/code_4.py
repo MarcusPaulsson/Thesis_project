@@ -1,29 +1,17 @@
-def is_lucky(h, m):
-    return '7' in f"{h:02d}{m:02d}"
+def is_lucky(hh, mm):
+    return '7' in f"{hh:02d}{mm:02d}"
 
-def time_before(hh, mm, x):
-    mm -= x
-    if mm < 0:
-        mm += 60
-        hh -= 1
-    if hh < 0:
-        hh += 24
-    return hh, mm
+def time_before(hh, mm, minutes):
+    total_minutes = (hh * 60 + mm - minutes) % (24 * 60)
+    return divmod(total_minutes, 60)
 
-def main():
-    x = int(input("Enter the number of minutes to go back: "))
-    hh, mm = map(int, input("Enter the current time (hh mm): ").split())
-
-    if not (0 <= hh < 24 and 0 <= mm < 60):
-        print("Invalid time format. Please enter hours (0-23) and minutes (0-59).")
-        return
-
+def min_snoozes(x, hh, mm):
     y = 0
-    while not is_lucky(hh, mm):
-        hh, mm = time_before(hh, mm, x)
+    while not is_lucky(*time_before(hh, mm, x * y)):
         y += 1
+    return y
 
-    print(y)
+x = int(input().strip())
+hh, mm = map(int, input().strip().split())
 
-if __name__ == "__main__":
-    main()
+print(min_snoozes(x, hh, mm))

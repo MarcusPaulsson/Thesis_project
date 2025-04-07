@@ -1,77 +1,123 @@
-import math
+import unittest
 
-class AreaCalculator:
-    """
-    This class calculates the area of various shapes, including a circle, sphere, cylinder, sector, and annulus.
-    """
+class AreaCalculatorTestCalculateCircleArea(unittest.TestCase):
+    def test_calculate_circle_area(self):
+        areaCalculator = AreaCalculator(2)
+        self.assertAlmostEqual(12.57, areaCalculator.calculate_circle_area(), delta=0.01)
 
-    def __init__(self, radius):
-        """
-        Initialize the radius for shapes.
-        :param radius: float, the radius of the shapes
-        """
-        if radius < 0:
-            raise ValueError("Radius must be a non-negative value.")
-        self.radius = radius
+    def test_calculate_circle_area_2(self):
+        areaCalculator = AreaCalculator(2.5)
+        self.assertAlmostEqual(19.63, areaCalculator.calculate_circle_area(), delta=0.01)
 
-    def calculate_circle_area(self):
-        """
-        Calculate the area of a circle based on self.radius.
-        :return: area of circle, float
-        >>> area_calculator = AreaCalculator(2)
-        >>> area_calculator.calculate_circle_area()
-        12.566370614359172
-        """
-        return math.pi * self.radius ** 2
+    def test_calculate_circle_area_3(self):
+        areaCalculator = AreaCalculator(2000)
+        self.assertAlmostEqual(12566370.61, areaCalculator.calculate_circle_area(), delta=0.01)
 
-    def calculate_sphere_area(self):
-        """
-        Calculate the surface area of a sphere based on self.radius.
-        :return: surface area of sphere, float
-        >>> area_calculator = AreaCalculator(2)
-        >>> area_calculator.calculate_sphere_area()
-        50.26548245743669
-        """
-        return 4 * math.pi * self.radius ** 2
+    def test_calculate_circle_area_4(self):
+        areaCalculator = AreaCalculator(0)
+        self.assertAlmostEqual(0, areaCalculator.calculate_circle_area(), delta=0.01)
 
-    def calculate_cylinder_area(self, height):
-        """
-        Calculate the surface area of a cylinder based on self.radius and height.
-        :param height: float, height of the cylinder
-        :return: surface area of cylinder, float
-        >>> area_calculator = AreaCalculator(2)
-        >>> area_calculator.calculate_cylinder_area(3)
-        62.83185307179586
-        """
-        if height < 0:
-            raise ValueError("Height must be a non-negative value.")
-        return 2 * math.pi * self.radius * (self.radius + height)
+    def test_calculate_circle_area_5(self):
+        areaCalculator = AreaCalculator(0.1)
+        self.assertAlmostEqual(0.0314, areaCalculator.calculate_circle_area(), delta=0.01)
 
-    def calculate_sector_area(self, angle):
-        """
-        Calculate the area of a sector based on self.radius and angle in radians.
-        :param angle: float, angle of the sector in radians
-        :return: area of sector, float
-        >>> area_calculator = AreaCalculator(2)
-        >>> area_calculator.calculate_sector_area(math.pi)
-        6.283185307179586
-        """
-        if angle < 0:
-            raise ValueError("Angle must be a non-negative value.")
-        return 0.5 * self.radius ** 2 * angle
 
-    def calculate_annulus_area(self, inner_radius, outer_radius):
-        """
-        Calculate the area of an annulus based on inner_radius and outer_radius.
-        :param inner_radius: float, inner radius of the annulus
-        :param outer_radius: float, outer radius of the annulus
-        :return: area of annulus, float
-        >>> area_calculator = AreaCalculator(2)
-        >>> area_calculator.calculate_annulus_area(1, 3)
-        12.566370614359172
-        """
-        if inner_radius < 0 or outer_radius < 0:
-            raise ValueError("Both inner and outer radii must be non-negative values.")
-        if inner_radius >= outer_radius:
-            raise ValueError("Outer radius must be greater than inner radius.")
-        return math.pi * (outer_radius ** 2 - inner_radius ** 2)
+class AreaCalculatorTestCalculateSphereArea(unittest.TestCase):
+    def test_calculate_sphere_area(self):
+        areaCalculator = AreaCalculator(2)
+        self.assertAlmostEqual(50.27, areaCalculator.calculate_sphere_area(), delta=0.01)
+
+    def test_calculate_sphere_area_2(self):
+        areaCalculator = AreaCalculator(2.5)
+        self.assertAlmostEqual(78.54, areaCalculator.calculate_sphere_area(), delta=0.01)
+
+    def test_calculate_sphere_area_3(self):
+        areaCalculator = AreaCalculator(2000)
+        self.assertAlmostEqual(50265482.46, areaCalculator.calculate_sphere_area(), delta=0.01)
+
+    def test_calculate_sphere_area_4(self):
+        areaCalculator = AreaCalculator(0)
+        self.assertAlmostEqual(0, areaCalculator.calculate_sphere_area(), delta=0.01)
+
+    def test_calculate_sphere_area_5(self):
+        areaCalculator = AreaCalculator(0.1)
+        self.assertAlmostEqual(0.1257, areaCalculator.calculate_sphere_area(), delta=0.01)
+
+
+class AreaCalculatorTestCalculateCylinderArea(unittest.TestCase):
+    def test_calculate_cylinder_area(self):
+        areaCalculator = AreaCalculator(2)
+        self.assertAlmostEqual(50.27, areaCalculator.calculate_cylinder_area(2), delta=0.01)
+
+    def test_calculate_cylinder_area_2(self):
+        areaCalculator = AreaCalculator(2)
+        self.assertAlmostEqual(25.13, areaCalculator.calculate_cylinder_area(0), delta=0.01)
+
+    def test_calculate_cylinder_area_3(self):
+        areaCalculator = AreaCalculator(0)
+        self.assertAlmostEqual(0, areaCalculator.calculate_cylinder_area(2000), delta=0.01)
+
+    def test_calculate_cylinder_area_4(self):
+        areaCalculator = AreaCalculator(2.5)
+        self.assertAlmostEqual(70.68, areaCalculator.calculate_cylinder_area(2), delta=0.01)
+
+    def test_calculate_cylinder_area_5(self):
+        areaCalculator = AreaCalculator(2.5)
+        self.assertAlmostEqual(62.83, areaCalculator.calculate_cylinder_area(1.5), delta=0.01)
+
+
+class AreaCalculatorTestCalculateSectorArea(unittest.TestCase):
+    def test_calculate_sector_area(self):
+        areaCalculator = AreaCalculator(1.5)
+        self.assertAlmostEqual(3.53, areaCalculator.calculate_sector_area(math.pi), delta=0.01)
+
+    def test_calculate_sector_area_2(self):
+        areaCalculator = AreaCalculator(2)
+        self.assertAlmostEqual(3.14, areaCalculator.calculate_sector_area(math.pi/2), delta=0.01)
+
+    def test_calculate_sector_area_3(self):
+        areaCalculator = AreaCalculator(2)
+        self.assertAlmostEqual(0, areaCalculator.calculate_sector_area(0), delta=0.01)
+
+    def test_calculate_sector_area_4(self):
+        areaCalculator = AreaCalculator(2)
+        self.assertAlmostEqual(12.57, areaCalculator.calculate_sector_area(2 * math.pi), delta=0.01)
+
+    def test_calculate_sector_area_5(self):
+        areaCalculator = AreaCalculator(0)
+        self.assertAlmostEqual(0, areaCalculator.calculate_sector_area(math.pi), delta=0.01)
+
+
+class AreaCalculatorTestCalculateAnnulusArea(unittest.TestCase):
+    def test_calculate_annulus_area(self):
+        areaCalculator = AreaCalculator(0)  # Radius is not used for annulus
+        self.assertAlmostEqual(25.13, areaCalculator.calculate_annulus_area(1, 3), delta=0.01)
+
+    def test_calculate_annulus_area_2(self):
+        areaCalculator = AreaCalculator(2.5)  # Radius is not used for annulus
+        self.assertAlmostEqual(0, areaCalculator.calculate_annulus_area(3, 3), delta=0.01)
+
+    def test_calculate_annulus_area_3(self):
+        areaCalculator = AreaCalculator(2000)  # Radius is not used for annulus
+        self.assertAlmostEqual(3.14, areaCalculator.calculate_annulus_area(0, 1), delta=0.01)
+
+    def test_calculate_annulus_area_4(self):
+        areaCalculator = AreaCalculator(0)  # Radius is not used for annulus
+        self.assertAlmostEqual(25.13, areaCalculator.calculate_annulus_area(1, 3), delta=0.01)
+
+    def test_calculate_annulus_area_5(self):
+        areaCalculator = AreaCalculator(2.5)  # Radius is not used for annulus
+        self.assertAlmostEqual(25.13, areaCalculator.calculate_annulus_area(1, 3), delta=0.01)
+
+
+class AreaCalculatorTestCalculateMain(unittest.TestCase):
+    def test_main(self):
+        areaCalculator = AreaCalculator(2)
+        self.assertAlmostEqual(12.57, areaCalculator.calculate_circle_area(), delta=0.01)
+        self.assertAlmostEqual(50.27, areaCalculator.calculate_sphere_area(), delta=0.01)
+        self.assertAlmostEqual(50.27, areaCalculator.calculate_cylinder_area(2), delta=0.01)
+        self.assertAlmostEqual(6.28, areaCalculator.calculate_sector_area(math.pi), delta=0.01)
+        self.assertAlmostEqual(25.13, areaCalculator.calculate_annulus_area(1, 3), delta=0.01)
+
+if __name__ == '__main__':
+    unittest.main()

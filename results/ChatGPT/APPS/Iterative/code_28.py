@@ -1,16 +1,26 @@
 n = int(input())
 files = [input().split() for _ in range(n)]
 
-examples = [f[0] for f in files if f[1] == '1']
-regulars = [f[0] for f in files if f[1] == '0']
+examples = []
+regulars = []
+for name, type_ in files:
+    if type_ == '1':
+        examples.append(name)
+    else:
+        regulars.append(name)
+
+num_examples = len(examples)
+num_regulars = len(regulars)
 
 moves = []
+# Renaming example files
+for i in range(num_examples):
+    moves.append(f"move {examples[i]} {i + 1}")
 
-# Move examples to their new positions
-moves.extend(f"move {file} {i + 1}" for i, file in enumerate(examples))
+# Renaming regular files
+for i in range(num_regulars):
+    moves.append(f"move {regulars[i]} {num_examples + i + 1}")
 
-# Move regulars to their new positions
-moves.extend(f"move {file} {len(examples) + i + 1}" for i, file in enumerate(regulars))
-
+# Output the result
 print(len(moves))
 print("\n".join(moves))

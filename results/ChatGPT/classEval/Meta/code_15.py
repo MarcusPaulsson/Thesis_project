@@ -18,20 +18,21 @@ class BoyerMooreSearch:
         :param char: The character to be searched for, str.
         :return: The index of the rightmost occurrence of the character in the pattern, int.
         """
-        for i in range(self.patLen - 1, -1, -1):
+        index = -1
+        for i in range(self.patLen):
             if self.pattern[i] == char:
-                return i
-        return -1
+                index = i
+        return index
 
     def mismatch_in_text(self, currentPos):
         """
-        Determines the position of the first dismatch between the pattern and the text.
+        Determines the position of the first mismatch between the pattern and the text.
         :param currentPos: The current position in the text, int.
-        :return: The position of the first dismatch between the pattern and the text, int, otherwise -1.
+        :return: The position of the first mismatch between the pattern and the text, int, otherwise -1.
         """
-        for i in range(self.patLen - 1, -1, -1):
+        for i in range(self.patLen):
             if currentPos + i >= self.textLen or self.text[currentPos + i] != self.pattern[i]:
-                return i
+                return currentPos + i
         return -1
 
     def bad_character_heuristic(self):
@@ -40,12 +41,19 @@ class BoyerMooreSearch:
         :return: A list of all positions of the pattern in the text, list.
         """
         positions = []
-        skip = 0
-        while skip <= self.textLen - self.patLen:
-            mismatch_index = self.mismatch_in_text(skip)
-            if mismatch_index == -1:
-                positions.append(skip)
-                skip += (self.patLen - self.match_in_pattern(self.text[skip + self.patLen - 1]) if skip + self.patLen < self.textLen else 1)
+        n = self.textLen
+        m = self.patLen
+        s = 0  # shift of the pattern with respect to text
+        while s <= n - m:
+            j = m - 1
+            
+            while j >= 0 and self.pattern[j] == self.text[s + j]:
+                j -= 1
+
+            if j < 0:
+                positions.append(s)
+                s += (m - self.match_in_pattern(self.text[s + m]) if s + m < n else 1)
             else:
-                skip += max(1, mismatch_index - self.match_in_pattern(self.text[skip + mismatch_index]))
+                s += max(1, j - self.match_in_pattern(self.text[s + j]))
+
         return positions

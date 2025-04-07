@@ -2,39 +2,36 @@ def can_construct_square(n, m, tiles):
     if m % 2 != 0:
         return "NO"
     
-    # Check if any tile can form a square
-    for tile_top, tile_bottom in tiles:
-        if tile_top[1] == tile_bottom[0]:  # Check if top right == bottom left
-            return "YES"
-    
-    return "NO"
+    # To construct a symmetric matrix, we need matching tiles
+    tile_pairs = set()
 
-def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
+    for tile in tiles:
+        top_left, top_right = tile[0]
+        bottom_left, bottom_right = tile[1]
+        tile_pairs.add((top_right, bottom_left, bottom_right, top_left))
     
-    index = 0
-    t = int(data[index])
-    index += 1
-    results = []
+    # Check for each tile if there is a corresponding tile to match
+    for tile in tiles:
+        top_left, top_right = tile[0]
+        bottom_left, bottom_right = tile[1]
+        if (bottom_right, top_left, top_left, bottom_left) not in tile_pairs:
+            return "NO"
     
-    for _ in range(t):
-        n, m = map(int, data[index].split())
-        index += 1
-        
-        tiles = []
-        for __ in range(n):
-            tile_top = list(map(int, data[index].split()))
-            index += 1
-            tile_bottom = list(map(int, data[index].split()))
-            index += 1
-            tiles.append((tile_top, tile_bottom))
-        
-        result = can_construct_square(n, m, tiles)
-        results.append(result)
-    
-    print("\n".join(results))
+    return "YES"
 
-if __name__ == "__main__":
-    main()
+t = int(input())
+results = []
+
+for _ in range(t):
+    n, m = map(int, input().split())
+    tiles = []
+    
+    for _ in range(n):
+        top = list(map(int, input().split()))
+        bottom = list(map(int, input().split()))
+        tiles.append((top, bottom))
+    
+    result = can_construct_square(n, m, tiles)
+    results.append(result)
+
+print("\n".join(results))

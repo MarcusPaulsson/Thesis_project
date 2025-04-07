@@ -47,10 +47,10 @@ class HRManagementSystem:
         :param employee_info: The employee's information, dict.
         :return: If the employee is already in the HRManagementSystem, returns True, otherwise, returns False.
         """
-        if employee_id in self.employees:
-            self.employees[employee_id].update(employee_info)
-            return True
-        return False
+        if employee_id not in self.employees:
+            return False
+        self.employees[employee_id].update(employee_info)
+        return True
 
     def get_employee(self, employee_id):
         """
@@ -63,6 +63,6 @@ class HRManagementSystem:
     def list_employees(self):
         """
         List all employees' information in the HRManagementSystem.
-        :return: A dictionary of all employees' information.
+        :return: A list of all employees' information, dict.
         """
-        return {employee_id: {**{'employee_ID': employee_id}, **info} for employee_id, info in self.employees.items()}
+        return {employee_id: {**info, 'employee_ID': employee_id} for employee_id, info in self.employees.items()}

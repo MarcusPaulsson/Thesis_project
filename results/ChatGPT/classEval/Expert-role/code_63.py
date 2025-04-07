@@ -9,15 +9,18 @@ class NLPDataProcessor2:
     def process_data(self, string_list):
         words_list = []
         for string in string_list:
+            # Keep only English letters and spaces, convert to lower case, and split into words
             cleaned_string = re.sub(r'[^a-zA-Z\s]', '', string).lower()
             words = cleaned_string.split()
             words_list.append(words)
         return words_list
 
     def calculate_word_frequency(self, words_list):
-        flat_words = [word for sublist in words_list for word in sublist]
-        word_counts = Counter(flat_words)
-        return dict(word_counts.most_common(5))
+        word_counter = Counter()
+        for words in words_list:
+            word_counter.update(words)
+        # Get the top 5 most common words
+        return dict(word_counter.most_common(5))
 
     def process(self, string_list):
         words_list = self.process_data(string_list)

@@ -33,7 +33,7 @@ class MusicPlayer:
         Plays the current song in the playlist.
         :return: The current song in the playlist, or False if there is no current song.
         """
-        if self.current_song_index is not None:
+        if self.current_song_index is not None and self.playlist:
             return self.playlist[self.current_song_index]
         return False
 
@@ -57,8 +57,10 @@ class MusicPlayer:
                 self.current_song_index = 0
             else:
                 self.current_song_index += 1
-                if self.current_song_index >= len(self.playlist):
-                    self.current_song_index = 0
+            
+            if self.current_song_index >= len(self.playlist):
+                return False
+            
             return True
         return False
 
@@ -71,9 +73,10 @@ class MusicPlayer:
             if self.current_song_index is None:
                 self.current_song_index = len(self.playlist) - 1
             else:
-                self.current_song_index -= 1
-                if self.current_song_index < 0:
-                    self.current_song_index = len(self.playlist) - 1
+                if self.current_song_index > 0:
+                    self.current_song_index -= 1
+                else:
+                    return False
             return True
         return False
 

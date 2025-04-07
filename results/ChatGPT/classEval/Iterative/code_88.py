@@ -1,4 +1,4 @@
-from math import pi
+from math import pi, factorial as math_factorial, fabs
 
 class TriCalculator:
     """
@@ -10,89 +10,66 @@ class TriCalculator:
 
     def cos(self, x):
         """
-        Calculate the cos value of the x-degree angle.
+        Calculate the cos value of the x-degree angle
         :param x: float
         :return: float
-        >>> tricalculator = TriCalculator()
-        >>> tricalculator.cos(60)
-        0.5
         """
-        return self.taylor_cos(x, 50)
+        return self.taylor(x, 50)  # 50 terms for approximation
 
     def factorial(self, a):
         """
-        Calculate the factorial of a non-negative integer a.
+        Calculate the factorial of a
         :param a: int
         :return: int
-        >>> tricalculator = TriCalculator()
-        >>> tricalculator.factorial(5)
-        120
         """
         if a < 0:
-            raise ValueError("Factorial is not defined for negative numbers.")
-        if a == 0 or a == 1:
-            return 1
-        result = 1
-        for i in range(2, a + 1):
-            result *= i
-        return result
+            raise ValueError("Factorial is not defined for negative numbers")
+        return 1 if a == 0 else math_factorial(a)
 
-    def taylor_cos(self, x, n):
+    def taylor(self, x, n):
         """
-        Finding the n-order Taylor expansion value of cos (x/180 * pi).
+        Finding the n-order Taylor expansion value of cos (x/180 * pi)
         :param x: int
         :param n: int
         :return: float
-        >>> tricalculator = TriCalculator()
-        >>> tricalculator.taylor_cos(60, 50)
-        0.5000000000000001
         """
-        radians = x * (pi / 180)
-        cos_value = 0
+        x_rad = x * (pi / 180)  # Convert degrees to radians
+        cos_value = 0.0
         for i in range(n):
-            sign = (-1) ** i
-            cos_value += sign * (radians ** (2 * i)) / self.factorial(2 * i)
+            term = ((-1) ** i) * (x_rad ** (2 * i)) / self.factorial(2 * i)
+            cos_value += term
         return cos_value
 
     def sin(self, x):
         """
-        Calculate the sin value of the x-degree angle.
+        Calculate the sin value of the x-degree angle
         :param x: float
         :return: float
-        >>> tricalculator = TriCalculator()
-        >>> tricalculator.sin(30)
-        0.5
         """
-        return self.taylor_sin(x, 50)
+        return self.taylor_sine(x, 50)  # 50 terms for approximation
 
-    def taylor_sin(self, x, n):
+    def taylor_sine(self, x, n):
         """
-        Finding the n-order Taylor expansion value of sin (x/180 * pi).
+        Finding the n-order Taylor expansion value of sin (x/180 * pi)
         :param x: int
         :param n: int
         :return: float
-        >>> tricalculator = TriCalculator()
-        >>> tricalculator.taylor_sin(30, 50)
-        0.49999999999999994
         """
-        radians = x * (pi / 180)
-        sin_value = 0
+        x_rad = x * (pi / 180)  # Convert degrees to radians
+        sin_value = 0.0
         for i in range(n):
-            sign = (-1) ** i
-            sin_value += sign * (radians ** (2 * i + 1)) / self.factorial(2 * i + 1)
+            term = ((-1) ** i) * (x_rad ** (2 * i + 1)) / self.factorial(2 * i + 1)
+            sin_value += term
         return sin_value
 
     def tan(self, x):
         """
-        Calculate the tan value of the x-degree angle.
+        Calculate the tan value of the x-degree angle
         :param x: float
         :return: float
-        >>> tricalculator = TriCalculator()
-        >>> tricalculator.tan(45)
-        1.0
         """
         sin_value = self.sin(x)
         cos_value = self.cos(x)
-        if cos_value == 0:
-            raise ValueError("Tangent is undefined for angles that result in cos being 0.")
+        if fabs(cos_value) < 1e-10:  # Check for division by zero
+            return False
         return sin_value / cos_value

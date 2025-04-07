@@ -1,11 +1,11 @@
 from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-import os
+
 
 class DocFileHandler:
     """
-    This class handles Word documents and provides functionalities for reading, writing, and modifying the content of Word documents.
+    This is a class that handles Word documents and provides functionalities for reading, writing, and modifying the content of Word documents.
     """
 
     def __init__(self, file_path):
@@ -13,17 +13,20 @@ class DocFileHandler:
         Initializes the DocFileHandler object with the specified file path.
         :param file_path: str, the path to the Word document file.
         """
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"The file {file_path} does not exist.")
         self.file_path = file_path
-        self.document = Document(file_path)
 
     def read_text(self):
         """
         Reads the content of a Word document and returns it as a string.
         :return: str, the content of the Word document.
         """
-        return '\n'.join(paragraph.text for paragraph in self.document.paragraphs)
+        try:
+            doc = Document(self.file_path)
+            text = [para.text for para in doc.paragraphs]
+            return '\n'.join(text)
+        except Exception as e:
+            print(f"Error reading document: {e}")
+            return ""
 
     def write_text(self, content, font_size=12, alignment='left'):
         """
@@ -34,13 +37,15 @@ class DocFileHandler:
         :return: bool, True if the write operation is successful, False otherwise.
         """
         try:
-            paragraph = self.document.add_paragraph(content)
-            run = paragraph.runs[0]
+            doc = Document()
+            p = doc.add_paragraph(content)
+            run = p.runs[0]
             run.font.size = Pt(font_size)
-            paragraph.alignment = self._get_alignment_value(alignment)
+            p.alignment = self._get_alignment_value(alignment)
+            doc.save(self.file_path)
             return True
         except Exception as e:
-            print(f"Error writing text: {e}")
+            print(f"Error writing document: {e}")
             return False
 
     def add_heading(self, heading, level=1):
@@ -51,7 +56,9 @@ class DocFileHandler:
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            self.document.add_heading(heading, level=level)
+            doc = Document(self.file_path)
+            doc.add_heading(heading, level=level)
+            doc.save(self.file_path)
             return True
         except Exception as e:
             print(f"Error adding heading: {e}")
@@ -63,15 +70,13 @@ class DocFileHandler:
         :param data: list of lists, the data to populate the table.
         :return: bool, True if the table is successfully added, False otherwise.
         """
-        if not data or not all(isinstance(row, list) for row in data):
-            print("Invalid data format for table. Must be a list of lists.")
-            return False
-
         try:
-            table = self.document.add_table(rows=len(data), cols=len(data[0]))
-            for row_idx, row in enumerate(data):
-                for col_idx, cell_data in enumerate(row):
-                    table.cell(row_idx, col_idx).text = str(cell_data)
+            doc = Document(self.file_path)
+            table = doc.add_table(rows=len(data), cols=len(data[0]))
+            for i, row in enumerate(data):
+                for j, cell in enumerate(row):
+                    table.cell(i, j).text = cell
+            doc.save(self.file_path)
             return True
         except Exception as e:
             print(f"Error adding table: {e}")
@@ -83,20 +88,9 @@ class DocFileHandler:
         :param alignment: str, the alignment string ('left', 'center', or 'right').
         :return: int, the alignment value.
         """
-        alignment_map = {
-            'center': WD_PARAGRAPH_ALIGNMENT.CENTER,
-            'right': WD_PARAGRAPH_ALIGNMENT.RIGHT,
-            'left': WD_PARAGRAPH_ALIGNMENT.LEFT
-        }
-        return alignment_map.get(alignment, WD_PARAGRAPH_ALIGNMENT.LEFT)
-
-    def save(self):
-        """
-        Saves the document to the specified file path.
-        """
-        try:
-            self.document.save(self.file_path)
-            return True
-        except Exception as e:
-            print(f"Error saving document: {e}")
-            return False
+        if alignment == 'center':
+            return WD_PARAGRAPH_ALIGNMENT.CENTER
+        elif alignment == 'right':
+            return WD_PARAGRAPH_ALIGNMENT.RIGHT
+        else:
+            return WD_PARAGRAPH_ALIGNMENT.LEFT

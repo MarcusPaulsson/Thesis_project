@@ -17,9 +17,14 @@ class SQLGenerator:
         :param condition: str, optional. Default is None. The condition expression for the query.
         :return: str. The generated SQL statement.
         """
-        fields_str = ', '.join(fields) if fields else '*'
-        condition_str = f' WHERE {condition}' if condition else ''
-        return f'SELECT {fields_str} FROM {self.table_name}{condition_str};'
+        fields = fields or ['*']
+        if isinstance(fields, list):
+            fields = ', '.join(fields)
+        query = f"SELECT {fields} FROM {self.table_name}"
+        if condition:
+            query += f" WHERE {condition}"
+        query += ";"
+        return query
 
     def insert(self, data):
         """
@@ -27,9 +32,9 @@ class SQLGenerator:
         :param data: dict. The data to be inserted, in dictionary form where keys are field names and values are field values.
         :return: str. The generated SQL statement.
         """
-        keys = ', '.join(data.keys())
-        values = ', '.join(self._format_value(value) for value in data.values())
-        return f"INSERT INTO {self.table_name} ({keys}) VALUES ({values});"
+        fields = ', '.join(data.keys())
+        values = ', '.join([f"'{v}'" for v in data.values()])
+        return f"INSERT INTO {self.table_name} ({fields}) VALUES ({values});"
 
     def update(self, data, condition):
         """
@@ -38,8 +43,8 @@ class SQLGenerator:
         :param condition: str. The condition expression for the update.
         :return: str. The generated SQL statement.
         """
-        set_str = ', '.join(f"{key} = {self._format_value(value)}" for key, value in data.items())
-        return f"UPDATE {self.table_name} SET {set_str} WHERE {condition};"
+        set_clause = ', '.join([f"{k} = '{v}'" for k, v in data.items()])
+        return f"UPDATE {self.table_name} SET {set_clause} WHERE {condition};"
 
     def delete(self, condition):
         """
@@ -47,7 +52,7 @@ class SQLGenerator:
         :param condition: str. The condition expression for the delete.
         :return: str. The generated SQL statement.
         """
-        return f'DELETE FROM {self.table_name} WHERE {condition};'
+        return f"DELETE FROM {self.table_name} WHERE {condition};"
 
     def select_female_under_age(self, age):
         """
@@ -64,16 +69,4 @@ class SQLGenerator:
         :param max_age: int. The maximum age.
         :return: str. The generated SQL statement.
         """
-        return f'SELECT * FROM {self.table_name} WHERE age BETWEEN {min_age} AND {max_age};'
-
-    def _format_value(self, value):
-        """
-        Formats a value for SQL insertion, handling strings and other types appropriately.
-        :param value: The value to format.
-        :return: str. The formatted value.
-        """
-        if isinstance(value, str):
-            return f"'{value}'"
-        elif value is None:
-            return 'NULL'
-        return str(value)
+        return f"SELECT * FROM {self.table_name} WHERE age BETWEEN {min_age} AND {max_age};"

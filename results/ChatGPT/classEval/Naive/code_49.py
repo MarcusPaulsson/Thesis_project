@@ -1,7 +1,6 @@
 class JobMarketplace:
     """
-    This class provides functionalities to publish positions, remove positions, submit resumes,
-    withdraw resumes, search for positions, and obtain candidate information.
+    This is a class that provides functionalities to publish positions, remove positions, submit resumes, withdraw resumes, search for positions, and obtain candidate information.
     """
 
     def __init__(self):
@@ -10,74 +9,69 @@ class JobMarketplace:
 
     def post_job(self, job_title, company, requirements):
         """
-        Publish a job position and add it to the job_listings list.
-        
+        This function is used to publish positions, and add the position information to the job_listings list.
         :param job_title: The title of the position, str.
         :param company: The company of the position, str.
         :param requirements: The requirements of the position, list.
+        :return: None
         """
-        job = {
+        self.job_listings.append({
             'job_title': job_title,
             'company': company,
             'requirements': requirements
-        }
-        self.job_listings.append(job)
+        })
 
     def remove_job(self, job):
         """
-        Remove a job position from the job_listings list.
-        
+        This function is used to remove positions, and remove the position information from the job_listings list.
         :param job: The position information to be removed, dict.
+        :return: None
         """
-        if job in self.job_listings:
-            self.job_listings.remove(job)
+        self.job_listings.remove(job)
 
     def submit_resume(self, name, skills, experience):
         """
-        Submit a resume and add it to the resumes list.
-        
-        :param name: The name of the candidate, str.
-        :param skills: The skills of the candidate, list.
-        :param experience: The experience of the candidate, str.
+        This function is used to submit resumes, and add the resume information to the resumes list.
+        :param name: The name of the resume, str.
+        :param skills: The skills of the resume, list.
+        :param experience: The experience of the resume, str.
+        :return: None
         """
-        resume = {
+        self.resumes.append({
             'name': name,
             'skills': skills,
             'experience': experience
-        }
-        self.resumes.append(resume)
+        })
 
     def withdraw_resume(self, resume):
         """
-        Withdraw a resume from the resumes list.
-        
+        This function is used to withdraw resumes, and remove the resume information from the resumes list.
         :param resume: The resume information to be removed, dict.
+        :return: None
         """
-        if resume in self.resumes:
-            self.resumes.remove(resume)
+        self.resumes.remove(resume)
 
     def search_jobs(self, criteria):
         """
-        Search for job positions that meet the given criteria.
-        
-        :param criteria: The search criteria, str.
-        :return: A list of job positions that match the criteria.
+        This function is used to search for positions, and return the position information that meets the requirements.
+        :param criteria: The requirements of the position, str.
+        :return: The position information that meets the requirements, list.
         """
-        matching_jobs = [
-            job for job in self.job_listings
-            if any(skill in job['requirements'] for skill in criteria)
-        ]
-        return matching_jobs
+        return [job for job in self.job_listings if criteria in job['requirements']]
 
     def get_job_applicants(self, job):
         """
-        Obtain candidate information for a specific job position.
-        
+        This function is used to obtain candidate information, and return the candidate information that meets the requirements by calling the matches_requirements function.
         :param job: The position information, dict.
-        :return: A list of candidate information that meets the job requirements.
+        :return: The candidate information that meets the requirements, list.
         """
-        applicants = [
-            resume for resume in self.resumes
-            if all(skill in resume['skills'] for skill in job['requirements'])
-        ]
-        return applicants
+        return [resume for resume in self.resumes if self.matches_requirements(resume, job['requirements'])]
+
+    def matches_requirements(self, resume, requirements):
+        """
+        This function checks if the resume matches the job requirements.
+        :param resume: The resume information, dict.
+        :param requirements: The job requirements, list.
+        :return: True if the resume matches the requirements, False otherwise.
+        """
+        return all(skill in resume['skills'] for skill in requirements)

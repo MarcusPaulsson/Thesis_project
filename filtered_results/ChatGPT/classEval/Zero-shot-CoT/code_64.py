@@ -12,7 +12,7 @@ class NumberConverter:
         >>> NumberConverter.decimal_to_binary(42423)
         '1010010110110111'
         """
-        return bin(decimal_num)[2:]
+        return bin(decimal_num).replace("0b", "")
 
     @staticmethod
     def binary_to_decimal(binary_num):
@@ -34,7 +34,7 @@ class NumberConverter:
         >>> NumberConverter.decimal_to_octal(42423)
         '122667'
         """
-        return oct(decimal_num)[2:]
+        return oct(decimal_num).replace("0o", "")
 
     @staticmethod
     def octal_to_decimal(octal_num):
@@ -56,7 +56,7 @@ class NumberConverter:
         >>> NumberConverter.decimal_to_hex(42423)
         'a5b7'
         """
-        return hex(decimal_num)[2:]
+        return hex(decimal_num).replace("0x", "").lower()
 
     @staticmethod
     def hex_to_decimal(hex_num):

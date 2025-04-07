@@ -1,21 +1,21 @@
 def max_accordion_length(s):
-    left_bracket_index = s.find('[')
-    right_bracket_index = s.rfind(']')
-    
-    if left_bracket_index == -1 or right_bracket_index == -1 or right_bracket_index < left_bracket_index:
+    # Initialize positions for the required characters
+    left_bracket_pos = s.find('[')
+    first_colon_pos = s.find(':', left_bracket_pos + 1)
+    second_colon_pos = s.find(':', first_colon_pos + 1)
+    right_bracket_pos = s.find(']', second_colon_pos + 1)
+
+    # Check if all required characters were found in the correct order
+    if left_bracket_pos == -1 or first_colon_pos == -1 or second_colon_pos == -1 or right_bracket_pos == -1:
         return -1
 
-    colon_count = s.count(':', left_bracket_index, right_bracket_index)
-    
-    if colon_count < 2:
-        return -1
+    # Calculate the number of vertical lines '|' between the two colons
+    vertical_lines_count = s[first_colon_pos + 1:second_colon_pos].count('|')
 
-    vertical_lines = s.count('|', left_bracket_index, right_bracket_index)
-    
-    max_length = 4 + vertical_lines
-    return max_length
+    # The length of the accordion is 4 (for the brackets and colons) plus the vertical lines
+    return 4 + vertical_lines_count
 
-# Read input
+# Input reading
 s = input().strip()
-# Output the result
+# Output the maximum accordion length
 print(max_accordion_length(s))

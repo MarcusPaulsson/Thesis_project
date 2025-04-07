@@ -1,6 +1,6 @@
 class AssessmentSystem:
     """
-    This is a class as an student assessment system, which supports add student, add course score, calculate GPA, and other functions for students and courses.
+    This is a class as a student assessment system, which supports adding students, adding course scores, calculating GPA, and other functions for students and courses.
     """
 
     def __init__(self):
@@ -16,12 +16,7 @@ class AssessmentSystem:
         :param grade: int, student grade
         :param major: str, student major
         """
-        self.students[name] = {
-            'name': name,
-            'grade': grade,
-            'major': major,
-            'courses': {}
-        }
+        self.students[name] = {'name': name, 'grade': grade, 'major': major, 'courses': {}}
 
     def add_course_score(self, name, course, score):
         """
@@ -37,43 +32,40 @@ class AssessmentSystem:
         """
         Get average grade of one student.
         :param name: str, student name
-        :return: float or None
+        :return: if name is in students and this student has course grades, return average grade(float)
+                    or None otherwise
         """
-        if name in self.students and self.students[name]['courses']:
-            total_score = sum(self.students[name]['courses'].values())
-            num_courses = len(self.students[name]['courses'])
-            return total_score / num_courses
+        if name in self.students:
+            scores = self.students[name]['courses'].values()
+            if scores:
+                return sum(scores) / len(scores)
         return None
 
     def get_all_students_with_fail_course(self):
         """
         Get all students who have any score below 60
-        :return: list of str, student name
+        :return: list of str, student names
         """
-        failing_students = []
-        for name, data in self.students.items():
-            if any(score < 60 for score in data['courses'].values()):
-                failing_students.append(name)
-        return failing_students
+        return [name for name, info in self.students.items() if any(score < 60 for score in info['courses'].values())]
 
     def get_course_average(self, course):
         """
         Get the average score of a specific course.
         :param course: str, course name
-        :return: float or None
+        :return: float, average scores of this course if anyone has scores for this course, or None if nobody has records.
         """
         total_score = 0
         count = 0
-        for data in self.students.values():
-            if course in data['courses']:
-                total_score += data['courses'][course]
+        for info in self.students.values():
+            if course in info['courses']:
+                total_score += info['courses'][course]
                 count += 1
         return total_score / count if count > 0 else None
 
     def get_top_student(self):
         """
-        Calculate every student's gpa with get_gpa method, and find the student with highest gpa
-        :return: str, name of student whose gpa is highest
+        Calculate every student's GPA with get_gpa method, and find the student with the highest GPA
+        :return: str, name of student whose GPA is highest
         """
         top_student = None
         highest_gpa = -1

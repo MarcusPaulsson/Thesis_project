@@ -18,16 +18,22 @@ class NumericEntityUnescaper:
         import re
 
         def replace_entity(match):
-            num = match.group(1)
-            if num.startswith('x') or num.startswith('X'):
-                # Hexadecimal
-                char_code = int(num[1:], 16)
-            else:
-                # Decimal
-                char_code = int(num)
-            return chr(char_code)
+            entity = match.group(0)
+            if entity.startswith("&#X") or entity.startswith("&#x"):
+                try:
+                    code = int(entity[3:-1], 16)  # Hexadecimal
+                    return chr(code)
+                except ValueError:
+                    return entity  # Return as is if cannot convert
+            elif entity.startswith("&#"):
+                try:
+                    code = int(entity[2:-1])  # Decimal
+                    return chr(code)
+                except ValueError:
+                    return entity  # Return as is if cannot convert
+            return entity  # Return as is if does not match
 
-        return re.sub(r'&#(x?[0-9a-fA-F]+);', replace_entity, string)
+        return re.sub(r'&#X?[0-9A-Fa-f]+;|&#[0-9]+;', replace_entity, string)
 
     @staticmethod
     def is_hex_char(char):
@@ -37,7 +43,5 @@ class NumericEntityUnescaper:
         :return: bool, True if the character is a hexadecimal digit, False otherwise.
         >>> NumericEntityUnescaper.is_hex_char('a')
         True
-        >>> NumericEntityUnescaper.is_hex_char('G')
-        False
         """
-        return char.lower() in '0123456789abcdef'
+        return char in '0123456789abcdefABCDEF'

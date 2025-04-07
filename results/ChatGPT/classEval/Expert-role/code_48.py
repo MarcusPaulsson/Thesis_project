@@ -5,8 +5,7 @@ import re
 
 class IpUtil:
     """
-    This is a class as a tool for IP that can be used to obtain the local IP address, validate its validity, 
-    and also provides the functionality to retrieve the corresponding hostname.
+    This is a class as a tool for IP that can be used to obtain the local IP address, validate its validity, and also provides the functionality to retrieve the corresponding hostname.
     """
 
     @staticmethod
@@ -20,11 +19,11 @@ class IpUtil:
         >>> IpUtil.is_valid_ipv4('256.0.0.0')
         False
         """
-        pattern = r'^([0-9]{1,3}\.){3}[0-9]{1,3}$'
-        if re.match(pattern, ip_address):
-            parts = list(map(int, ip_address.split('.')))
-            return all(0 <= part < 256 for part in parts)
-        return False
+        pattern = r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+                  r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+                  r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.' \
+                  r'(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+        return re.match(pattern, ip_address) is not None
 
     @staticmethod
     def is_valid_ipv6(ip_address):
@@ -52,7 +51,6 @@ class IpUtil:
         >>> IpUtil.get_hostname('110.242.68.3')
         'www.baidu.com'
         >>> IpUtil.get_hostname('10.0.0.1')
-        'localhost'
         """
         try:
             return socket.gethostbyaddr(ip_address)[0]

@@ -20,11 +20,12 @@ class TextFileProcessor:
         :return data: dict if the file is stored as json format, or str/int/float.. according to the file content otherwise.
         """
         with open(self.file_path, 'r') as file:
-            return json.load(file)
+            content = file.read()
+            return json.loads(content)
 
     def read_file(self):
         """
-        Read and return the content of self.file_path file.
+        Read the return the content of self.file_path file.
         :return: the same return as the read() method
         """
         with open(self.file_path, 'r') as file:

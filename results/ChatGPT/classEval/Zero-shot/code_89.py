@@ -13,7 +13,7 @@ class TwentyFourPointGame:
         """
         Generate random numbers between 1 and 9 for the cards.
         """
-        self.nums = random.sample(range(1, 10), 4)
+        self.nums = [random.randint(1, 9) for _ in range(4)]
 
     def get_my_cards(self):
         """
@@ -50,5 +50,5 @@ class TwentyFourPointGame:
         """
         try:
             return eval(expression) == 24
-        except Exception:
+        except (SyntaxError, NameError):
             return False

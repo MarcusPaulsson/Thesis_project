@@ -2,7 +2,8 @@ import sqlite3
 
 class MovieTicketDB:
     """
-    This is a class for movie database operations, which allows for inserting movie information, searching for movie information by name, and deleting movie information by name.
+    This is a class for movie database operations, which allows for inserting movie information,
+    searching for movie information by name, and deleting movie information by name.
     """
 
     def __init__(self, db_name):
@@ -17,7 +18,8 @@ class MovieTicketDB:
     def create_table(self):
         """
         Creates a "tickets" table in the database if it does not exist already.
-        Fields include ID of type int, movie name of type str, theater name of type str, seat number of type str, and customer name of type str.
+        Fields include ID of type int, movie name of type str, theater name of type str,
+        seat number of type str, and customer name of type str.
         :return: None
         """
         self.cursor.execute('''

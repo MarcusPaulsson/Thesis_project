@@ -1,36 +1,37 @@
-from math import gcd
+def count_intersection(a1, b1, a2, b2, L, R):
+    from math import gcd
 
-def count_common_terms(a1, b1, a2, b2, L, R):
-    # Normalize b1 and b2 to the same form
-    b1_mod_a1 = b1 % a1
-    b2_mod_a2 = b2 % a2
+    # Adjust b1 and b2 for the equations
+    b1 = b1 % a1
+    b2 = b2 % a2
 
-    # Find the step size using the gcd
-    step = abs(a1 * a2 // gcd(a1, a2))
+    # Calculate the step size (lcm) and the gcd
+    g = gcd(a1, a2)
+    step = (a1 // g) * a2  # lcm(a1, a2)
 
-    # Find the first valid x in the range [L, R]
-    first_x = None
-    for k in range(max(0, (L - b1) // a1), (R - b1) // a1 + 1):
-        x = a1 * k + b1
-        if L <= x <= R:
-            first_x = x
-            break
+    # Determine the values of x that satisfy both equations
+    diff = (b2 - b1) % a2
+    inv_a1 = pow(a1 // g, -1, a2 // g)  # Modular inverse
+    t = (diff * inv_a1) % (a2 // g)
 
-    if first_x is None:
+    # Particular solution x0
+    x0 = b1 + a1 * t
+
+    # Adjust x0 to be within the bounds [L, R]
+    if x0 < L:
+        x0 += ((L - x0 + step - 1) // step) * step
+    elif x0 > R:
+        return 0  # No valid solution if x0 is beyond R
+
+    # Count the number of valid solutions in the range [L, R]
+    last_valid = R - (R - x0) % step
+
+    if last_valid < x0:
         return 0
 
-    # Adjust first_x to satisfy the second equation
-    if (first_x - b2) % a2 != 0:
-        first_x += (a2 - (first_x - b2) % a2) % a2
+    return (last_valid - x0) // step + 1
 
-    if first_x > R:
-        return 0
-
-    # Calculate the count of valid x's in the range [L, R]
-    count = (R - first_x) // step + 1
-    return count
-
-# Read input
+# Input reading
 a1, b1, a2, b2, L, R = map(int, input().split())
 # Output the result
-print(count_common_terms(a1, b1, a2, b2, L, R))
+print(count_intersection(a1, b1, a2, b2, L, R))

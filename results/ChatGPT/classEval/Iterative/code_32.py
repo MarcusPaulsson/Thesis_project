@@ -1,6 +1,6 @@
 class DecryptionUtils:
     """
-    This class provides methods for decryption, including the Caesar cipher, Vigenere cipher, and Rail Fence cipher.
+    This is a class that provides methods for decryption, including the Caesar cipher, Vigenere cipher, and Rail Fence cipher.
     """
 
     def __init__(self, key):
@@ -8,7 +8,7 @@ class DecryptionUtils:
         Initializes the decryption utility with a key.
         :param key: The key to use for decryption, str.
         """
-        self.key = key.lower()  # Normalize the key to lowercase for consistency
+        self.key = key.lower()  # Ensure key is in lowercase for consistency
 
     def caesar_decipher(self, ciphertext, shift):
         """
@@ -20,12 +20,13 @@ class DecryptionUtils:
         >>> d.caesar_decipher('ifmmp', 1)
         'hello'
         """
+        shift = shift % 26  # Normalize shift
         plaintext = []
         for char in ciphertext:
             if char.isalpha():
                 base = ord('a') if char.islower() else ord('A')
-                new_char = chr((ord(char) - base - shift) % 26 + base)
-                plaintext.append(new_char)
+                shifted = (ord(char) - base - shift) % 26 + base
+                plaintext.append(chr(shifted))
             else:
                 plaintext.append(char)
         return ''.join(plaintext)
@@ -37,21 +38,20 @@ class DecryptionUtils:
         :return: The deciphered plaintext, str.
         >>> d = DecryptionUtils('key')
         >>> d.vigenere_decipher('ifmmp')
-        'hello'
+        'ybocl'
         """
         plaintext = []
         key_length = len(self.key)
-        key_index = 0
+        key_as_int = [ord(i) - ord('a') for i in self.key]
+        ciphertext_int = [ord(i) - ord('a') for i in ciphertext.lower() if i.isalpha()]
 
-        for char in ciphertext:
+        for i, char in enumerate(ciphertext):
             if char.isalpha():
-                shift = (ord(self.key[key_index]) - ord('a')) % 26
-                base = ord('a') if char.islower() else ord('A')
-                new_char = chr((ord(char) - base - shift) % 26 + base)
-                plaintext.append(new_char)
-                key_index = (key_index + 1) % key_length  # Only increment for letters
+                value = (ciphertext_int[i] - key_as_int[i % key_length]) % 26
+                plaintext.append(chr(value + ord('a')))
             else:
                 plaintext.append(char)
+
         return ''.join(plaintext)
 
     def rail_fence_decipher(self, encrypted_text, rails):
@@ -65,24 +65,29 @@ class DecryptionUtils:
         'Hello, World!'
         """
         if rails <= 0:
-            raise ValueError("Number of rails must be greater than 0")
+            return encrypted_text
 
-        length = len(encrypted_text)
-        rail = [['' for _ in range(length)] for _ in range(rails)]
-        dir_down = False
+        n = len(encrypted_text)
+        rail = [['\n' for _ in range(n)] for _ in range(rails)]
+        
+        dir_down = None
         row, col = 0, 0
 
-        for i in range(length):
-            if row == 0 or row == rails - 1:
-                dir_down = not dir_down
+        for i in range(n):
+            if row == 0:
+                dir_down = True
+            if row == rails - 1:
+                dir_down = False
+
             rail[row][col] = encrypted_text[i]
             col += 1
+
             row += 1 if dir_down else -1
 
         result = []
         for i in range(rails):
-            for j in range(length):
-                if rail[i][j] != '':
+            for j in range(n):
+                if rail[i][j] != '\n':
                     result.append(rail[i][j])
 
         return ''.join(result)

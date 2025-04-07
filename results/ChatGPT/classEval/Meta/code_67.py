@@ -9,7 +9,7 @@ class Order:
         self.menu stores the dishes of restaurant inventory
         menu = [{"dish": dish name, "price": price, "count": count}, ...]
         self.selected_dishes stores the dishes selected by customer
-        selected_dishes = [{"dish": dish name, "count": count, "price": price}, ...]
+        selected_dish = {"dish": dish name, "count": count, price: price}
         self.sales stores the sales of each dish
         sales = {dish name: sales}
         """
@@ -24,12 +24,12 @@ class Order:
         :param dish: dict, the information of dish. dish = {"dish": dish name, "count": count, price: price}
         :return: True if successfully added, or False otherwise.
         """
-        for menu_item in self.menu:
-            if menu_item["dish"] == dish["dish"]:
-                if menu_item["count"] >= dish["count"]:
-                    self.selected_dishes.append({"dish": dish["dish"], "count": dish["count"], "price": dish["price"]})
-                    menu_item["count"] -= dish["count"]
-                    return True
+        menu_item = next((item for item in self.menu if item["dish"] == dish["dish"]), None)
+        
+        if menu_item and dish["count"] <= menu_item["count"]:
+            self.selected_dishes.append(dish)
+            menu_item["count"] -= dish["count"]
+            return True
         return False
 
     def calculate_total(self):
@@ -39,8 +39,9 @@ class Order:
         """
         total = 0.0
         for selected in self.selected_dishes:
-            sales_multiplier = self.sales.get(selected["dish"], 1)  # Default to 1 if no sale
-            total += selected["count"] * selected["price"] * sales_multiplier
+            dish_price = selected["price"]
+            sales_rate = self.sales.get(selected["dish"], 1)
+            total += selected["count"] * dish_price * sales_rate
         return total
 
     def checkout(self):
@@ -51,4 +52,6 @@ class Order:
         """
         if not self.selected_dishes:
             return False
-        return self.calculate_total()
+        total = self.calculate_total()
+        self.selected_dishes.clear()  # Clear selected dishes after checkout
+        return total

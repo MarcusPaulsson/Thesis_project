@@ -1,59 +1,67 @@
 import numpy as np
 
-class MetricsCalculator:
+
+class MetricsCalculator2:
     """
-    The class provides methods to calculate Mean Reciprocal Rank (MRR) and Mean Average Precision (MAP) based on input data,
+    The class provides to calculate Mean Reciprocal Rank (MRR) and Mean Average Precision (MAP) based on input data,
     where MRR measures the ranking quality and MAP measures the average precision.
     """
 
     @staticmethod
     def mrr(data):
         """
-        Compute the MRR of the input data.
-        :param data: A tuple or a list of tuples, where each tuple contains the actual results (list of 0s and 1s) and the total number of ground truths.
-        :return: A tuple containing the mean MRR and a list of MRR scores for each input.
+        Compute the MRR of the input data. MRR is a widely used evaluation index. It is the mean of reciprocal rank.
+        :param data: the data must be a list of tuples, where each tuple contains (actual result, ground truth num).
+        1 stands for a correct answer, 0 stands for a wrong answer.
+        :return: A tuple of the mean MRR value and a list of reciprocal ranks for each input.
         """
+        if not isinstance(data, (list, tuple)):
+            raise ValueError("Input data must be a list or tuple.")
+
         if isinstance(data, tuple):
             data = [data]
-        
-        mrr_scores = []
-        
-        for actual_results, _ in data:
-            if not actual_results:
-                mrr_scores.append(0.0)
-                continue
-            
-            reciprocal_rank = next((1 / (idx + 1) for idx, value in enumerate(actual_results) if value == 1), 0.0)
-            mrr_scores.append(reciprocal_rank)
 
-        return np.mean(mrr_scores), mrr_scores
+        reciprocal_ranks = []
+        for actual, total in data:
+            if total <= 0:
+                reciprocal_ranks.append(0.0)
+                continue
+
+            rank = next((i + 1 for i, value in enumerate(actual) if value == 1), None)
+            reciprocal_ranks.append(1 / rank if rank is not None else 0.0)
+
+        mrr_value = np.mean(reciprocal_ranks) if reciprocal_ranks else 0.0
+        return mrr_value, reciprocal_ranks
 
     @staticmethod
     def map(data):
         """
-        Compute the MAP of the input data.
-        :param data: A tuple or a list of tuples, where each tuple contains the actual results (list of 0s and 1s) and the total number of ground truths.
-        :return: A tuple containing the mean MAP and a list of MAP scores for each input.
+        Compute the MAP of the input data. MAP is a widely used evaluation index. It is the mean of AP (average precision).
+        :param data: the data must be a list of tuples, where each tuple contains (actual result, ground truth num).
+        1 stands for a correct answer, 0 stands for a wrong answer.
+        :return: A tuple of the mean MAP value and a list of average precisions for each input.
         """
+        if not isinstance(data, (list, tuple)):
+            raise ValueError("Input data must be a list or tuple.")
+
         if isinstance(data, tuple):
             data = [data]
-        
-        map_scores = []
-        
-        for actual_results, ground_truth_num in data:
-            if not actual_results or ground_truth_num == 0:
-                map_scores.append(0.0)
-                continue
-            
-            relevant_count = 0
-            precision_at_k = []
 
-            for idx, value in enumerate(actual_results):
+        average_precisions = []
+        for actual, total in data:
+            if total <= 0:
+                average_precisions.append(0.0)
+                continue
+
+            relevant_count = 0
+            precision_sum = 0.0
+            for i, value in enumerate(actual):
                 if value == 1:
                     relevant_count += 1
-                    precision_at_k.append(relevant_count / (idx + 1))
-            
-            average_precision = np.mean(precision_at_k) if precision_at_k else 0.0
-            map_scores.append(average_precision)
+                    precision_sum += relevant_count / (i + 1)
 
-        return np.mean(map_scores), map_scores
+            ap_value = precision_sum / relevant_count if relevant_count > 0 else 0.0
+            average_precisions.append(ap_value)
+
+        map_value = np.mean(average_precisions) if average_precisions else 0.0
+        return map_value, average_precisions

@@ -52,7 +52,7 @@ class AreaCalculator:
         >>> areaCalculator.calculate_sector_area(math.pi)
         6.283185307179586
         """
-        return 0.5 * (angle) * (self.radius ** 2)
+        return 0.5 * self.radius ** 2 * angle
 
     def calculate_annulus_area(self, inner_radius, outer_radius):
         """
@@ -60,7 +60,6 @@ class AreaCalculator:
         :param inner_radius: inner radius of sector, float
         :param outer_radius: outer radius of sector, float
         :return: area of annulus, float
-        >>> areaCalculator = AreaCalculator(2)
         >>> areaCalculator.calculate_annulus_area(2, 3)
         15.707963267948966
         """

@@ -37,7 +37,10 @@ class ArrangementCalculator:
         >>> ArrangementCalculator.count_all(4)
         64
         """
-        return sum(ArrangementCalculator.count(n, m) for m in range(1, n + 1))
+        total = 0
+        for m in range(1, n + 1):
+            total += ArrangementCalculator.count(n, m)
+        return total
 
     def select(self, m=None):
         """
@@ -51,7 +54,7 @@ class ArrangementCalculator:
         """
         if m is None:
             m = len(self.datas)
-        return list(itertools.permutations(self.datas, m))
+        return [list(p) for p in itertools.permutations(self.datas, m)]
 
     def select_all(self):
         """
@@ -61,10 +64,10 @@ class ArrangementCalculator:
         >>> ac.select_all()
         [[1], [2], [3], [1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2], [1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
         """
-        all_arrangements = []
+        arrangements = []
         for m in range(1, len(self.datas) + 1):
-            all_arrangements.extend(self.select(m))
-        return all_arrangements
+            arrangements.extend(self.select(m))
+        return arrangements
 
     @staticmethod
     def factorial(n):

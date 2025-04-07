@@ -37,19 +37,20 @@ class Words2Numbers:
         "32"
         """
         textnum = textnum.replace("-", " ")
-        tokens = textnum.split()
+        parts = textnum.split()
         current = result = 0
 
-        for token in tokens:
-            if token not in self.numwords:
-                raise ValueError(f"Invalid input: '{token}'")
-            scale, increment = self.numwords[token]
-            current += increment
-            if scale > 1:
-                current *= scale
-                result += current
-                current = 0
-        
+        for part in parts:
+            if part in self.numwords:
+                scale, increment = self.numwords[part]
+                current += increment
+                if scale > 1:
+                    current *= scale
+                    result += current
+                    current = 0
+            else:
+                raise ValueError(f"Invalid word: {part}")
+
         return str(result + current)
 
     def is_valid_input(self, textnum):
@@ -61,5 +62,6 @@ class Words2Numbers:
         >>> w2n.is_valid_input("thirty-two")
         False
         """
-        tokens = textnum.replace("-", " ").split()
-        return all(token in self.numwords or token in self.ordinal_words for token in tokens)
+        textnum = textnum.replace("-", " ")
+        parts = textnum.split()
+        return all(part in self.numwords for part in parts)

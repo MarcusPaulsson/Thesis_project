@@ -1,35 +1,24 @@
 def can_complete_projects(n, r, projects):
-    # Sort projects based on the required rating
+    # Sort projects based on their required rating (a_i)
     projects.sort(key=lambda x: x[0])
     
-    for a, b in projects:
-        if r < a:  # If current rating is less than required for the project
+    current_rating = r
+    
+    for required_rating, rating_change in projects:
+        # Check if current rating is sufficient to start the project
+        if current_rating < required_rating:
             return "NO"
-        r += b  # Update the rating after completing the project
-        if r < 0:  # If rating goes below zero, return "NO"
+        # Update current rating after completing the project
+        current_rating += rating_change
+        # Ensure the rating does not drop below zero
+        if current_rating < 0:
             return "NO"
     
     return "YES"
 
-# Input reading
-try:
-    n, r = map(int, input().split())
-    if n < 1 or r < 0:
-        raise ValueError("Invalid input values for n or r.")
-except ValueError as e:
-    print(f"Error: {e}")
-    exit(1)
-
-projects = []
-for _ in range(n):
-    try:
-        project = tuple(map(int, input().split()))
-        if len(project) != 2 or project[0] < 0 or project[1] < -r:
-            raise ValueError("Invalid project data.")
-        projects.append(project)
-    except ValueError as e:
-        print(f"Error: {e}")
-        exit(1)
+# Input handling
+n, r = map(int, input().split())
+projects = [tuple(map(int, input().split())) for _ in range(n)]
 
 # Output the result
 print(can_complete_projects(n, r, projects))

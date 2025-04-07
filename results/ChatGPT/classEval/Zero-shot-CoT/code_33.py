@@ -27,11 +27,9 @@ class DiscountStrategy:
         Calculate the final amount to be paid after applying the discount.
         :return: float, final amount to be paid
         """
-        if self.promotion:
-            discount = self.promotion(self)
-        else:
-            discount = 0
-        return self.total() - discount
+        total_cost = self.total()
+        discount = self.promotion(self) if self.promotion else 0
+        return total_cost - discount
 
     @staticmethod
     def FidelityPromo(order):
@@ -40,7 +38,9 @@ class DiscountStrategy:
         :param order: object, the order to apply the discount to
         :return: float, discount amount
         """
-        return order.total() * 0.05 if order.customer['fidelity'] >= 1000 else 0
+        if order.customer['fidelity'] >= 1000:
+            return order.total() * 0.05
+        return 0
 
     @staticmethod
     def BulkItemPromo(order):
@@ -62,4 +62,6 @@ class DiscountStrategy:
         :param order: object, the order to apply the discount to
         :return: float, discount amount
         """
-        return order.total() * 0.07 if len(order.cart) >= 10 else 0
+        if len(order.cart) >= 10:
+            return order.total() * 0.07
+        return 0

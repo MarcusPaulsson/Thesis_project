@@ -2,8 +2,7 @@ import random
 
 class MusicPlayer:
     """
-    A music player class that allows playing, stopping, adding/removing songs, 
-    setting volume, shuffling, and switching between songs.
+    This is a class as a music player that provides functionalities to play, stop, add songs, remove songs, set volume, shuffle, and switch to the next or previous song.
     """
 
     def __init__(self):
@@ -11,7 +10,7 @@ class MusicPlayer:
         Initializes the music player with an empty playlist, no current song, and a default volume of 50.
         """
         self.playlist = []
-        self.current_song_index = -1
+        self.current_song_index = None
         self.volume = 50
 
     def add_song(self, song):
@@ -19,8 +18,7 @@ class MusicPlayer:
         Adds a song to the playlist.
         :param song: The song to add to the playlist, str.
         """
-        if isinstance(song, str) and song not in self.playlist:
-            self.playlist.append(song)
+        self.playlist.append(song)
 
     def remove_song(self, song):
         """
@@ -29,23 +27,27 @@ class MusicPlayer:
         """
         if song in self.playlist:
             self.playlist.remove(song)
+            # Adjust current song index if necessary
+            if self.current_song_index is not None and self.playlist:
+                if self.current_song_index >= len(self.playlist):
+                    self.current_song_index = len(self.playlist) - 1
 
     def play(self):
         """
         Plays the current song in the playlist.
-        :return: The current song in the playlist, or None if there is no current song.
+        :return: The current song in the playlist, or False if there is no current song.
         """
-        if 0 <= self.current_song_index < len(self.playlist):
+        if self.current_song_index is not None and 0 <= self.current_song_index < len(self.playlist):
             return self.playlist[self.current_song_index]
-        return None
+        return False
 
     def stop(self):
         """
         Stops the current song in the playlist.
         :return: True if the current song was stopped, False if there was no current song.
         """
-        if self.current_song_index >= 0:
-            self.current_song_index = -1
+        if self.current_song_index is not None:
+            self.current_song_index = None
             return True
         return False
 
@@ -55,7 +57,12 @@ class MusicPlayer:
         :return: True if the next song was switched to, False if there was no next song.
         """
         if self.playlist:
-            self.current_song_index = (self.current_song_index + 1) % len(self.playlist)
+            if self.current_song_index is None:
+                self.current_song_index = 0
+            elif self.current_song_index < len(self.playlist) - 1:
+                self.current_song_index += 1
+            else:
+                return False
             return True
         return False
 
@@ -64,8 +71,8 @@ class MusicPlayer:
         Switches to the previous song in the playlist.
         :return: True if the previous song was switched to, False if there was no previous song.
         """
-        if self.playlist:
-            self.current_song_index = (self.current_song_index - 1) % len(self.playlist)
+        if self.playlist and self.current_song_index is not None and self.current_song_index > 0:
+            self.current_song_index -= 1
             return True
         return False
 
@@ -87,5 +94,7 @@ class MusicPlayer:
         """
         if self.playlist:
             random.shuffle(self.playlist)
+            # Reset the current song index after shuffling
+            self.current_song_index = 0
             return True
         return False

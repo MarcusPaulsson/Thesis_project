@@ -1,6 +1,6 @@
 class NumberConverter:
     """
-    The class allows converting between decimal, binary, octal, and hexadecimal formats.
+    The class allows to convert decimal to binary, octal and hexadecimal respectively and contrarily
     """
 
     @staticmethod
@@ -40,7 +40,7 @@ class NumberConverter:
     def octal_to_decimal(octal_num):
         """
         Convert a number from octal format to decimal format.
-        :param octal_num: str, octal number
+        :param octal_num: str, octal num
         :return: int, the decimal representation of octal number str.
         >>> NumberConverter.octal_to_decimal('122667')
         42423
@@ -52,7 +52,7 @@ class NumberConverter:
         """
         Convert a number from decimal format to hex format.
         :param decimal_num: int, decimal number
-        :return: str, the hex representation of an integer.
+        :return hex_num: str, the hex representation of an integer.
         >>> NumberConverter.decimal_to_hex(42423)
         'a5b7'
         """
@@ -62,7 +62,7 @@ class NumberConverter:
     def hex_to_decimal(hex_num):
         """
         Convert a number from hex format to decimal format.
-        :param hex_num: str, hex number
+        :param hex_num: str, hex num
         :return: int, the decimal representation of hex number str.
         >>> NumberConverter.hex_to_decimal('a5b7')
         42423

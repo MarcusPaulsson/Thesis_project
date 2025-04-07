@@ -25,12 +25,13 @@ class EmailClient:
         """
         if recv.is_full_with_one_more_email(size):
             return False
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         email = {
             'sender': self.addr,
             'receiver': recv.addr,
             'content': content,
             'size': size,
-            'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'time': timestamp,
             'state': 'unread'
         }
         recv.inbox.append(email)

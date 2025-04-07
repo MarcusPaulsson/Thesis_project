@@ -1,12 +1,15 @@
 n = int(input())
-ratings = [tuple(map(int, input().split())) for _ in range(n)]
+participants = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Check if any rating has changed
-if any(a != b for a, b in ratings):
+# Check if any participant's rating has changed
+rated = any(a != b for a, b in participants)
+
+# Check if participants are in non-increasing order by their pre-round ratings
+unrated = any(participants[i][0] < participants[i + 1][0] for i in range(n - 1))
+
+if rated:
     print("rated")
+elif unrated:
+    print("unrated")
 else:
-    # Check the order of the ratings
-    if all(ratings[i][0] >= ratings[i + 1][0] for i in range(n - 1)):
-        print("maybe")
-    else:
-        print("unrated")
+    print("maybe")

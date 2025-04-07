@@ -21,7 +21,7 @@ class BalancedBrackets:
         >>> b.expr
         '()'
         """
-        self.expr = ''.join(c for c in self.expr if c in self.left_brackets + self.right_brackets)
+        self.expr = ''.join(filter(lambda char: char in self.left_brackets + self.right_brackets, self.expr))
 
     def check_balanced_brackets(self):
         """
@@ -31,7 +31,7 @@ class BalancedBrackets:
         >>> b.check_balanced_brackets()
         True
         """
-        self.clear_expr()
+        self.stack.clear()
         for char in self.expr:
             if char in self.left_brackets:
                 self.stack.append(char)

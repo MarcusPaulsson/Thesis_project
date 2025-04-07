@@ -15,3 +15,5 @@ output_directory/
 test.txt
 test.db
 tempfolder
+*.zip
+*.csv

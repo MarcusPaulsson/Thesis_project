@@ -5,8 +5,9 @@ class SQLQueryBuilder:
 
     @staticmethod
     def select(table, columns='*', where=None):
-        columns_str = ', '.join(columns) if isinstance(columns, list) else columns
-        query = f"SELECT {columns_str} FROM {table}"
+        if isinstance(columns, list):
+            columns = ', '.join(columns)
+        query = f"SELECT {columns} FROM {table}"
         if where:
             conditions = ' AND '.join([f"{key}='{value}'" for key, value in where.items()])
             query += f" WHERE {conditions}"
@@ -14,10 +15,9 @@ class SQLQueryBuilder:
 
     @staticmethod
     def insert(table, data):
-        columns = ', '.join(data.keys())
+        keys = ', '.join(data.keys())
         values = ', '.join([f"'{value}'" for value in data.values()])
-        query = f"INSERT INTO {table} ({columns}) VALUES ({values})"
-        return query
+        return f"INSERT INTO {table} ({keys}) VALUES ({values})"
 
     @staticmethod
     def delete(table, where=None):

@@ -15,10 +15,10 @@ class NLPDataProcessor2:
         return words_list
 
     def calculate_word_frequency(self, words_list):
-        word_count = Counter()
+        word_counter = Counter()
         for words in words_list:
-            word_count.update(words)
-        return dict(word_count.most_common(5))
+            word_counter.update(words)
+        return dict(word_counter.most_common())
 
     def process(self, string_list):
         words_list = self.process_data(string_list)

@@ -8,8 +8,8 @@ class BalancedBrackets:
         Initializes the class with an expression.
         :param expr: The expression to check for balanced brackets, str.
         """
-        self.stack = []
-        self.bracket_map = {")": "(", "}": "{", "]": "["}
+        self.left_brackets = ["(", "{", "["]
+        self.right_brackets = [")", "}", "]"]
         self.expr = expr
 
     def clear_expr(self):
@@ -20,7 +20,7 @@ class BalancedBrackets:
         >>> b.expr
         '()'
         """
-        self.expr = ''.join(char for char in self.expr if char in self.bracket_map or char in self.bracket_map.values())
+        self.expr = ''.join(c for c in self.expr if c in self.left_brackets + self.right_brackets)
 
     def check_balanced_brackets(self):
         """
@@ -29,18 +29,17 @@ class BalancedBrackets:
         >>> b = BalancedBrackets("a(b)c")
         >>> b.check_balanced_brackets()
         True
-        >>> b = BalancedBrackets("a(b{c)d}e")
-        >>> b.check_balanced_brackets()
-        True
-        >>> b = BalancedBrackets("a(b[c}d)e")
-        >>> b.check_balanced_brackets()
-        False
         """
-        self.clear_expr()
+        self.clear_expr()  # Ensure we are checking the cleared expression
+        stack = []
+        bracket_map = {")": "(", "}": "{", "]": "["}
+
         for char in self.expr:
-            if char in self.bracket_map.values():
-                self.stack.append(char)
-            elif char in self.bracket_map.keys():
-                if not self.stack or self.stack.pop() != self.bracket_map[char]:
+            if char in self.left_brackets:
+                stack.append(char)
+            elif char in self.right_brackets:
+                if not stack or stack[-1] != bracket_map[char]:
                     return False
-        return len(self.stack) == 0
+                stack.pop()
+
+        return len(stack) == 0

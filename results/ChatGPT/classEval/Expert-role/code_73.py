@@ -24,15 +24,15 @@ class RPGCharacter:
         Attack another character. The damage caused needs to offset the defense value.
         :param other_character: RPGCharacter, The character being attacked.
         """
-        damage = max(0, self.attack_power - other_character.defense)
-        other_character.hp -= damage
+        damage = max(self.attack_power - other_character.defense, 0)
+        other_character.hp = max(other_character.hp - damage, 0)
 
     def heal(self):
         """
         Heal the character with 10 hp and the max hp is 100.
         :return: int, the current health points after healing.
         """
-        self.hp = min(100, self.hp + 10)
+        self.hp = min(self.hp + 10, 100)
         return self.hp
 
     def gain_exp(self, amount):
@@ -43,20 +43,20 @@ class RPGCharacter:
         """
         self.exp += amount
         while self.exp >= 100 * self.level and self.level < 100:
+            self.exp -= 100 * self.level
             self.level_up()
-        
+
     def level_up(self):
         """
         Level up the character and return to zero experience points, increase hp by 20 points, attack power and defense points by 5 points.
-        max level is 100.
+        max level is 100
         :return: tuple[int, int, int, int], the new level, health points, attack power, and defense points after leveling up.
         """
         if self.level < 100:
             self.level += 1
-            self.hp = min(100, self.hp + 20)
+            self.hp = min(self.hp + 20, 100)
             self.attack_power += 5
             self.defense += 5
-            self.exp = 0
         return self.level, self.hp, self.attack_power, self.defense
 
     def is_alive(self):

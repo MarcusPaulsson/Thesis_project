@@ -1,49 +1,42 @@
-from math import gcd
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
 
 def birthday_paradox(n, k):
-    days = 1 << n  # This is 2^n
-    if k > days:
-        return 1, 1  # Guaranteed collision
-
-    # Calculate the probability of no collision
-    no_collision_num = 1
-    for i in range(k):
-        no_collision_num *= (days - i)
-
-    no_collision_den = days ** k
-
-    # The probability of at least one collision
-    collision_num = no_collision_den - no_collision_num
-    collision_den = no_collision_den
-
-    # Reduce the fraction
-    common_divisor = gcd(collision_num, collision_den)
-    A = collision_num // common_divisor
-    B = collision_den // common_divisor
-
-    # Take modulo
     MOD = 10**6 + 3
-    A %= MOD
-    B %= MOD
+    days = 1 << n  # 2^n
+    
+    if k > days:
+        return 1, 1  # Guaranteed to have at least one shared birthday
+    
+    # Calculate the probability of no shared birthdays
+    numerator = 1
+    denominator = 1
+    for i in range(k):
+        numerator *= (days - i)
+        denominator *= days
+        if numerator >= MOD:
+            numerator %= MOD
+        if denominator >= MOD:
+            denominator %= MOD
 
-    # Ensure A and B are coprime after modulo
-    if gcd(A, B) != 1:
-        raise ValueError("A and B are not coprime after modulo.")
+    # Probability of at least one shared birthday
+    prob_shared_num = (denominator - numerator + MOD) % MOD
+    prob_shared_den = denominator % MOD
+    
+    # Reduce fraction
+    common_gcd = gcd(prob_shared_num, prob_shared_den)
+    prob_shared_num //= common_gcd
+    prob_shared_den //= common_gcd
+    
+    # Apply modulo to ensure coprimality
+    prob_shared_num %= MOD
+    prob_shared_den %= MOD
+    
+    return prob_shared_num, prob_shared_den
 
-    return A, B
-
-def main():
-    # Read input and validate
-    try:
-        n, k = map(int, input("Enter n and k separated by space: ").split())
-        if n < 1 or k < 1:
-            raise ValueError("n and k must be positive integers.")
-    except ValueError as e:
-        print(f"Input error: {e}")
-        return
-
-    A, B = birthday_paradox(n, k)
-    print(A, B)
-
-if __name__ == "__main__":
-    main()
+# Read input
+n, k = map(int, input().split())
+A, B = birthday_paradox(n, k)
+print(A, B)

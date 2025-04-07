@@ -2,7 +2,7 @@ import random
 
 class Snake:
     """
-    The class is a snake game, with allows snake to move and eat food, and also enables to reset, and generate a random food position.
+    The class is a snake game, which allows the snake to move and eat food, and also enables resetting and generating a random food position.
     """
 
     def __init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, BLOCK_SIZE, food_position):
@@ -17,28 +17,31 @@ class Snake:
         self.SCREEN_WIDTH = SCREEN_WIDTH
         self.SCREEN_HEIGHT = SCREEN_HEIGHT
         self.BLOCK_SIZE = BLOCK_SIZE
-        self.positions = [((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))]
+        self.positions = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         self.score = 0
         self.food_position = food_position
 
     def move(self, direction):
         """
-        Move the snake in the specified direction. If the new position of the snake's head is equal to the position of the food, then eat the food; If the position of the snake's head is equal to the position of its body, then start over, otherwise its own length plus one.
+        Move the snake in the specified direction. If the new position of the snake's head is equal to the position of the food, then eat the food; 
+        If the position of the snake's head is equal to the position of its body, then start over, otherwise increase its own length by one.
         :param direction: tuple, representing the direction of movement (x, y).
         :return: None
         """
-        new_head_x = self.positions[0][0] + direction[0] * self.BLOCK_SIZE
-        new_head_y = self.positions[0][1] + direction[1] * self.BLOCK_SIZE
-        new_head = (new_head_x, new_head_y)
+        head_x, head_y = self.positions[0]
+        new_head = (head_x + direction[0] * self.BLOCK_SIZE, head_y + direction[1] * self.BLOCK_SIZE)
 
+        # Check if the snake has eaten the food
         if new_head == self.food_position:
             self.eat_food()
-        elif new_head in self.positions:
-            self.reset()
         else:
-            self.positions.insert(0, new_head)
+            self.positions.insert(0, new_head)  # Add new head position
             if len(self.positions) > self.length:
-                self.positions.pop()
+                self.positions.pop()  # Remove tail if length exceeds
+
+        # Check if the snake has run into itself
+        if new_head in self.positions[1:]:
+            self.reset()
 
     def random_food_position(self):
         """
@@ -46,19 +49,20 @@ class Snake:
         :return: None, Change the food position
         """
         while True:
-            x = random.randint(0, (self.SCREEN_WIDTH - self.BLOCK_SIZE) // self.BLOCK_SIZE) * self.BLOCK_SIZE
-            y = random.randint(0, (self.SCREEN_HEIGHT - self.BLOCK_SIZE) // self.BLOCK_SIZE) * self.BLOCK_SIZE
-            self.food_position = (x, y)
-            if self.food_position not in self.positions:
+            new_food_position = (random.randint(0, (self.SCREEN_WIDTH - self.BLOCK_SIZE) // self.BLOCK_SIZE) * self.BLOCK_SIZE,
+                                 random.randint(0, (self.SCREEN_HEIGHT - self.BLOCK_SIZE) // self.BLOCK_SIZE) * self.BLOCK_SIZE)
+            if new_food_position not in self.positions:
+                self.food_position = new_food_position
                 break
 
     def reset(self):
         """
-        Reset the snake to its initial state. Set the length to 1, the snake head position to ((SCREEN_WIDTH/2), (SCREEN_HEIGHT/2)), the score to 0, and randomly generate new food position.
+        Reset the snake to its initial state. Set the length to 1, the snake head position to ((SCREEN_WIDTH/2), (SCREEN_HEIGHT/2)), 
+        the score to 0, and randomly generate new food position.
         :return: None
         """
         self.length = 1
-        self.positions = [((self.SCREEN_WIDTH / 2), (self.SCREEN_HEIGHT / 2))]
+        self.positions = [(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 2)]
         self.score = 0
         self.random_food_position()
 

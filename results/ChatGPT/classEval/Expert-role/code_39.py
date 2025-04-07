@@ -11,74 +11,64 @@ class ExpressionCalculator:
         Initialize the expression calculator
         """
         self.postfix_stack = deque()
-        self.operator_priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
+        self.operat_priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
 
     def calculate(self, expression):
         """
-        Calculate the result of the given postfix expression
-        :param expression: string, the postfix expression to be calculated
+        Calculate the result of the given expression
+        :param expression: string, the infix expression to be calculated
         :return: float, the calculated result
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.calculate("2 3 4 * +")
-        14.0
         """
-        tokens = expression.split()
+        self.prepare(expression)
         stack = []
-
-        for token in tokens:
-            if token.isdigit() or '.' in token:  # check if token is a number
+        for token in self.postfix_stack:
+            if not self.is_operator(token):
                 stack.append(Decimal(token))
             else:
-                second = stack.pop()
-                first = stack.pop()
-                result = self._calculate(first, second, token)
+                second_value = stack.pop()
+                first_value = stack.pop()
+                result = self._calculate(first_value, second_value, token)
                 stack.append(result)
-
-        return float(stack.pop())
+        return float(stack[0])
 
     def prepare(self, expression):
         """
         Prepare the infix expression for conversion to postfix notation
         :param expression: string, the infix expression to be prepared
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.prepare("2+3*4")
-        expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
         output = []
-        stack = []
-        tokens = self.transform(expression).split()
+        operators = []
+        expression = self.transform(expression)
+        tokens = expression.split()
 
         for token in tokens:
-            if token.isdigit() or '.' in token:
+            if token.isnumeric():
                 output.append(token)
-            elif token in self.operator_priority:
-                while (stack and stack[-1] != '(' and
-                       self.compare(token, stack[-1])):
-                    output.append(stack.pop())
-                stack.append(token)
+            elif self.is_operator(token):
+                while (operators and operators[-1] in self.operat_priority and
+                       self.operat_priority[operators[-1]] >= self.operat_priority[token]):
+                    output.append(operators.pop())
+                operators.append(token)
             elif token == '(':
-                stack.append(token)
+                operators.append(token)
             elif token == ')':
-                while stack and stack[-1] != '(':
-                    output.append(stack.pop())
-                stack.pop()  # Pop the '('
+                while operators and operators[-1] != '(':
+                    output.append(operators.pop())
+                operators.pop()  # Remove the '('
 
-        while stack:
-            output.append(stack.pop())
+        while operators:
+            output.append(operators.pop())
 
-        self.postfix_stack = output
+        self.postfix_stack = deque(output)
 
     @staticmethod
     def is_operator(c):
         """
-        Check if a character is an operator in {'+', '-', '*', '/', '(', ')', '%'}
+        Check if a character is an operator
         :param c: string, the character to be checked
         :return: bool, True if the character is an operator, False otherwise
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.is_operator("+")
-        True
         """
-        return c in {'+', '-', '*', '/', '(', ')', '%'}
+        return c in {'+', '-', '*', '/', '%', '(', ')'}
 
     def compare(self, cur, peek):
         """
@@ -86,37 +76,30 @@ class ExpressionCalculator:
         :param cur: string, the current operator
         :param peek: string, the operator at the top of the operator stack
         :return: bool, True if the current operator has higher or equal precedence, False otherwise
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.compare("+", "-")
-        True
         """
-        return self.operator_priority[cur] <= self.operator_priority[peek]
+        return self.operat_priority.get(cur, 0) >= self.operat_priority.get(peek, 0)
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
         """
         Perform the mathematical calculation based on the given operands and operator
-        :param first_value: string, the first operand
-        :param second_value: string, the second operand
+        :param first_value: decimal.Decimal, the first operand
+        :param second_value: decimal.Decimal, the second operand
         :param current_op: string, the operator
         :return: decimal.Decimal, the calculated result
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator._calculate("2", "3", "+")
-        5.0
         """
-        first_value = Decimal(first_value)
-        second_value = Decimal(second_value)
-
-        if current_op == '+':
+        if current_op == "+":
             return first_value + second_value
-        elif current_op == '-':
+        elif current_op == "-":
             return first_value - second_value
-        elif current_op == '*':
+        elif current_op == "*":
             return first_value * second_value
-        elif current_op == '/':
+        elif current_op == "/":
             return first_value / second_value
-        elif current_op == '%':
+        elif current_op == "%":
             return first_value % second_value
+        else:
+            raise ValueError("Invalid operator")
 
     @staticmethod
     def transform(expression):
@@ -124,8 +107,5 @@ class ExpressionCalculator:
         Transform the infix expression to a format suitable for conversion
         :param expression: string, the infix expression to be transformed
         :return: string, the transformed expression
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.transform("2 + 3 * 4")
-        "2+3*4"
         """
-        return expression.replace(" ", "")
+        return ''.join(expression.split())

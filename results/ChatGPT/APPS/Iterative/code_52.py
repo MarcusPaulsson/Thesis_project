@@ -1,22 +1,19 @@
 def max_sum_divisible_by_k(n, m, k, matrix):
     from itertools import combinations
 
-    max_elements = m // 2
+    max_choose = m // 2
     total_sum = 0
 
-    # Process each row to get the best possible sums modulo k
     for row in matrix:
-        best_mod_sums = [0] * k  # Array to keep track of max sums for each modulo k
-
-        # Consider all combinations of choosing up to max_elements from the row
-        for count in range(max_elements + 1):
-            for combo in combinations(row, count):
-                current_sum = sum(combo)
-                mod = current_sum % k
-                best_mod_sums[mod] = max(best_mod_sums[mod], current_sum)
-
-        # Add the best found sum to the total sum
-        total_sum += max(best_mod_sums)
+        max_row_sum = 0
+        # Generate all combinations of the row with sizes from 0 to max_choose
+        for r in range(max_choose + 1):
+            for comb in combinations(row, r):
+                current_sum = sum(comb)
+                if current_sum % k == 0:
+                    max_row_sum = max(max_row_sum, current_sum)
+        
+        total_sum += max_row_sum
 
     return total_sum
 

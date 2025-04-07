@@ -3,69 +3,159 @@ from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag, word_tokenize
 import string
 
-# Download required NLTK resources
-nltk.download('averaged_perceptron_tagger', quiet=True)
-nltk.download('punkt', quiet=True)
-nltk.download('wordnet', quiet=True)
+nltk.download('averaged_perceptron_tagger')
+nltk.download('punkt')
+nltk.download('wordnet')
 
 class Lemmatization:
     """
-    A class for performing lemmatization and part-of-speech tagging on sentences, as well as removing punctuation.
+    This is a class about Lemmatization, which utilizes the nltk library to perform lemmatization and part-of-speech tagging on sentences, as well as remove punctuation.
     """
 
     def __init__(self):
         """
-        Initializes the WordNetLemmatizer object.
+        Creates a WordNetLemmatizer object and stores it in the self.lemmatizer member variable.
         """
         self.lemmatizer = WordNetLemmatizer()
 
     def lemmatize_sentence(self, sentence):
         """
-        Lemmatizes the words in the input sentence based on their part of speech.
-        :param sentence: A sentence string
-        :return: A list of lemmatized words.
+        Remove punctuations of the sentence and tokenizes the input sentence, mark the part of speech tag of each word,
+        lemmatizes the words with different parameters based on their parts of speech, and stores in a list.
+        :param sentence: a sentence str
+        :return: a list of words which have been lemmatized.
         """
-        # Remove punctuation and tokenize the sentence
-        words = word_tokenize(self.remove_punctuation(sentence))
-        # Get part of speech tags
-        pos_tags = self.get_pos_tags(words)
-        
-        lemmatized_words = [
-            self.lemmatizer.lemmatize(word, pos=self.get_wordnet_pos(tag))
-            for word, tag in zip(words, pos_tags)
-        ]
-        
+        sentence = self.remove_punctuation(sentence)
+        tokens = word_tokenize(sentence)
+        pos_tags = self.get_pos_tag(sentence)
+        lemmatized_words = []
+
+        for token, pos in zip(tokens, pos_tags):
+            if pos.startswith('VB'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='v'))
+            elif pos.startswith('NN'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='n'))
+            elif pos.startswith('JJ'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='a'))
+            else:
+                lemmatized_words.append(token)
+
         return lemmatized_words
 
-    def get_pos_tags(self, words):
+    def get_pos_tag(self, sentence):
         """
-        Gets the part of speech tags for a list of words.
-        :param words: A list of words
-        :return: A list of part of speech tags.
+        Tokenizes the input sentence and marks the part of speech tag of each word.
+        :param sentence: a sentence str
+        :return: list, part of speech tag of each word in the sentence.
         """
-        return [tag for _, tag in pos_tag(words)]
-
-    def get_wordnet_pos(self, tag):
-        """
-        Converts POS tag to a format compatible with WordNetLemmatizer.
-        :param tag: A part of speech tag
-        :return: A WordNet-compatible POS tag.
-        """
-        if tag.startswith('VB'):
-            return 'v'
-        elif tag.startswith('N'):
-            return 'n'
-        elif tag.startswith('J'):
-            return 'a'
-        elif tag.startswith('R'):
-            return 'r'
-        else:
-            return 'n'  # Default to noun if no match
+        sentence = self.remove_punctuation(sentence)
+        tokens = word_tokenize(sentence)
+        return [tag for word, tag in pos_tag(tokens)]
 
     def remove_punctuation(self, sentence):
         """
         Removes punctuation from the input text.
-        :param sentence: A sentence string
-        :return: A string without punctuation.
+        :param sentence: a sentence str
+        :return: str, sentence without any punctuation
         """
         return sentence.translate(str.maketrans('', '', string.punctuation))
+
+
+# Test cases
+import unittest
+
+class LemmatizationTestLemmatizeSentence(unittest.TestCase):
+    def test_lemmatize_sentence_1(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.lemmatize_sentence("I am running in a race.")
+        expected = ['I', 'be', 'run', 'in', 'a', 'race']
+        self.assertEqual(result, expected)
+
+    def test_lemmatize_sentence_2(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.lemmatize_sentence("Until the beating, Cantanco's eyesight had been weak, but adequate.")
+        expected = ['Until', 'the', 'beating', 'Cantancos', 'eyesight', 'have', 'be', 'weak', 'but', 'adequate']
+        self.assertEqual(result, expected)
+
+    def test_lemmatize_sentence_3(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.lemmatize_sentence("The dog's barked at the mailman.")
+        expected = ['The', 'dog', 'bark', 'at', 'the', 'mailman']
+        self.assertEqual(result, expected)
+
+    def test_lemmatize_sentence_4(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.lemmatize_sentence("He was running and eating at same time.")
+        expected = ['He', 'be', 'run', 'and', 'eat', 'at', 'same', 'time']
+        self.assertEqual(result, expected)
+
+    def test_lemmatize_sentence_5(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.lemmatize_sentence("I was taking a ride in the car.")
+        expected = ['I', 'be', 'take', 'a', 'ride', 'in', 'the', 'car']
+        self.assertEqual(result, expected)
+
+class LemmatizationTestGetPosTag(unittest.TestCase):
+    def test_get_pos_tag_1(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.get_pos_tag("I am running in a race.")
+        expected = ['PRP', 'VBP', 'VBG', 'IN', 'DT', 'NN']
+        self.assertEqual(result, expected)
+
+    def test_get_pos_tag_2(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.get_pos_tag("Cantanco's eyesight had been weak, but adequate.")
+        expected = ['NNP', 'NN', 'VBD', 'VBN', 'JJ', 'CC', 'JJ']
+        self.assertEqual(result, expected)
+
+    def test_get_pos_tag_3(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.get_pos_tag("The dog's barked at the mailman.")
+        expected = ['DT', 'NNS', 'VBD', 'IN', 'DT', 'NN']
+        self.assertEqual(result, expected)
+
+    def test_get_pos_tag_4(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.get_pos_tag("He was running and eating at same time.")
+        expected = ['PRP', 'VBD', 'VBG', 'CC', 'VBG', 'IN', 'JJ', 'NN']
+        self.assertEqual(result, expected)
+
+    def test_get_pos_tag_5(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.get_pos_tag("I was taking a ride in the car.")
+        expected = ['PRP', 'VBD', 'VBG', 'DT', 'NN', 'IN', 'DT', 'NN']
+        self.assertEqual(result, expected)
+
+class LemmatizationTestRemovePunctuation(unittest.TestCase):
+    def test_remove_punctuation_1(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.remove_punctuation("I am running in a race.")
+        expected = "I am running in a race"
+        self.assertEqual(result, expected)
+
+    def test_remove_punctuation_2(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.remove_punctuation("Until the beating, Cantanco's eyesight had been weak, but adequate.")
+        expected = 'Until the beating Cantancos eyesight had been weak but adequate'
+        self.assertEqual(result, expected)
+
+    def test_remove_punctuation_3(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.remove_punctuation("The dog's barked at the mailman!!!")
+        expected = 'The dogs barked at the mailman'
+        self.assertEqual(result, expected)
+
+    def test_remove_punctuation_4(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.remove_punctuation("He was running and eating at same time... ")
+        expected = 'He was running and eating at same time '
+        self.assertEqual(result, expected)
+
+    def test_remove_punctuation_5(self):
+        lemmatization = Lemmatization()
+        result = lemmatization.remove_punctuation("Is this a test? I hope it is...")
+        expected = 'Is this a test I hope it is'
+        self.assertEqual(result, expected)
+
+if __name__ == "__main__":
+    unittest.main()

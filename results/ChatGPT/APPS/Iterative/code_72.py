@@ -1,36 +1,34 @@
+def max_intersection_length(n, segments):
+    # Extract left and right endpoints
+    lefts = [l for l, r in segments]
+    rights = [r for l, r in segments]
+    
+    # Calculate the maximum and second maximum of lefts and rights
+    max_left = max(lefts)
+    second_max_left = sorted(lefts)[-2] if n > 2 else float('-inf')
+    
+    max_right = max(rights)
+    second_max_right = sorted(rights)[-2] if n > 2 else float('inf')
+    
+    max_length = 0
+    
+    for i in range(n):
+        l_i, r_i = segments[i]
+        
+        # Determine the effective left and right after removing segment i
+        effective_left = max(max_left if l_i != max_left else second_max_left, l_i)
+        effective_right = min(max_right if r_i != max_right else second_max_right, r_i)
+        
+        # Calculate the intersection length
+        intersection_length = max(0, effective_right - effective_left)
+        max_length = max(max_length, intersection_length)
+    
+    return max_length
+
+# Read input
 n = int(input())
 segments = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Precompute the maximum left endpoint and minimum right endpoint
-max_left = [0] * n
-min_right = [0] * n
-
-max_left[0] = segments[0][0]
-min_right[0] = segments[0][1]
-
-for i in range(1, n):
-    max_left[i] = max(max_left[i - 1], segments[i][0])
-    min_right[i] = min(min_right[i - 1], segments[i][1])
-
-max_left_suffix = [0] * n
-min_right_suffix = [0] * n
-
-max_left_suffix[n - 1] = segments[n - 1][0]
-min_right_suffix[n - 1] = segments[n - 1][1]
-
-for i in range(n - 2, -1, -1):
-    max_left_suffix[i] = max(max_left_suffix[i + 1], segments[i][0])
-    min_right_suffix[i] = min(min_right_suffix[i + 1], segments[i][1])
-
-max_length = 0
-
-for i in range(n):
-    left = max(max_left[i - 1] if i > 0 else float('-inf'),
-                max_left_suffix[i + 1] if i < n - 1 else float('-inf'))
-    right = min(min_right[i - 1] if i > 0 else float('inf'),
-                 min_right_suffix[i + 1] if i < n - 1 else float('inf'))
-
-    if left <= right:
-        max_length = max(max_length, right - left)
-
-print(max_length)
+# Get the result and print it
+result = max_intersection_length(n, segments)
+print(result)

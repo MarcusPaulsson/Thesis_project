@@ -3,6 +3,9 @@ class ComplexCalculator:
     This is a class that implements addition, subtraction, multiplication, and division operations for complex numbers.
     """
 
+    def __init__(self):
+        pass
+
     @staticmethod
     def add(c1, c2):
         """
@@ -53,6 +56,4 @@ class ComplexCalculator:
         >>> complexCalculator.divide(1+2j, 3+4j)
         (0.44+0.08j)
         """
-        if c2 == 0:
-            raise ValueError("Cannot divide by zero.")
         return c1 / c2

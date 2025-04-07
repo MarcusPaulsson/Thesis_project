@@ -2,12 +2,13 @@ from datetime import datetime, timedelta
 
 class CalendarUtil:
     """
-    A class that provides functionalities to manage calendar events,
-    schedule appointments, and perform conflict checks.
+    This is a class as CalendarUtil that provides functionalities to manage calendar events, schedule appointments, and perform conflict checks.
     """
 
     def __init__(self):
-        """Initialize the calendar with an empty list of events."""
+        """
+        Initialize the calendar with an empty list of events.
+        """
         self.events = []
 
     def add_event(self, event):
@@ -31,7 +32,7 @@ class CalendarUtil:
         :param date: The date to get events for, datetime.
         :return: A list of events on the given date, list.
         """
-        return [event for event in self.events if event['date'].date() == date.date()]
+        return [event for event in self.events if event['date'] == date]
 
     def is_available(self, start_time, end_time):
         """
@@ -51,32 +52,31 @@ class CalendarUtil:
         :param date: The date to get available time slots for, datetime.
         :return: A list of available time slots on the given date, list.
         """
-        day_start = datetime.combine(date.date(), datetime.min.time())
-        day_end = datetime.combine(date.date(), datetime.max.time())
-        busy_slots = [(event['start_time'], event['end_time']) for event in self.get_events(date)]
-        
-        if not busy_slots:
-            return [(day_start, day_end)]
+        slots = []
+        start_of_day = datetime(date.year, date.month, date.day, 0, 0)
+        end_of_day = datetime(date.year, date.month, date.day, 23, 0)
 
-        available_slots = []
-        current_start = day_start
+        # Start with the beginning of the day
+        last_end_time = start_of_day
 
-        for start, end in sorted(busy_slots):
-            if current_start < start:
-                available_slots.append((current_start, start))
-            current_start = max(current_start, end)
+        for event in sorted(self.events, key=lambda x: x['start_time']):
+            if event['date'] == date:
+                if last_end_time < event['start_time']:
+                    slots.append((last_end_time, event['start_time']))
+                last_end_time = max(last_end_time, event['end_time'])
 
-        if current_start < day_end:
-            available_slots.append((current_start, day_end))
+        if last_end_time < end_of_day:
+            slots.append((last_end_time, end_of_day))
 
-        return available_slots
+        return slots
 
     def get_upcoming_events(self, num_events):
         """
-        Get the next n upcoming events from the current date.
+        Get the next n upcoming events from a given date.
         :param num_events: The number of upcoming events to get, int.
-        :return: A list of the next n upcoming events from the current date, list.
+        :return: A list of the next n upcoming events from the given date, list.
         """
         now = datetime.now()
-        upcoming_events = [event for event in self.events if event['start_time'] > now]
-        return sorted(upcoming_events, key=lambda x: x['start_time'])[:num_events]
+        upcoming_events = sorted([event for event in self.events if event['start_time'] > now], 
+                                 key=lambda x: x['start_time'])
+        return upcoming_events[:num_events]

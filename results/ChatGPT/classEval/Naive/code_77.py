@@ -2,66 +2,72 @@ import random
 
 class Snake:
     """
-    The class represents a snake game where the snake can move, eat food, reset, and generate a random food position.
+    The class is a snake game, with allows snake to move and eat food, and also enables to reset, and generat a random food position.
     """
 
-    def __init__(self, screen_width, screen_height, block_size):
+    def __init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, BLOCK_SIZE, food_position):
         """
-        Initialize the snake's initial state.
-        :param screen_width: int, width of the game screen.
-        :param screen_height: int, height of the game screen.
-        :param block_size: int, size of moving units.
+        Initialize the length of the snake, screen width, screen height, block size, snake head position, score, and food position.
+        :param SCREEN_WIDTH: int
+        :param SCREEN_HEIGHT: int
+        :param BLOCK_SIZE: int, Size of moving units
+        :param food_position: tuple, representing the position(x, y) of food.
         """
         self.length = 1
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-        self.block_size = block_size
-        self.positions = [(screen_width // 2, screen_height // 2)]
+        self.SCREEN_WIDTH = SCREEN_WIDTH
+        self.SCREEN_HEIGHT = SCREEN_HEIGHT
+        self.BLOCK_SIZE = BLOCK_SIZE
+        self.positions = [((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))]
         self.score = 0
-        self.food_position = self.random_food_position()
+        self.food_position = food_position
 
     def move(self, direction):
         """
-        Move the snake in the specified direction.
-        :param direction: tuple, representing the direction of movement (dx, dy).
+        Move the snake in the specified direction. If the new position of the snake's head is equal to the position of the food, then eat the food; If the position of the snake's head is equal to the position of its body, then start over, otherwise its own length plus one.
+        :param direction: tuple, representing the direction of movement (x, y).
+        :return: None
         """
-        new_head = (self.positions[0][0] + direction[0] * self.block_size,
-                     self.positions[0][1] + direction[1] * self.block_size)
+        new_head = (self.positions[0][0] + direction[0] * self.BLOCK_SIZE,
+                     self.positions[0][1] + direction[1] * self.BLOCK_SIZE)
 
         if new_head == self.food_position:
             self.eat_food()
-        elif new_head in self.positions:
-            self.reset()
         else:
-            self.positions.insert(0, new_head)
-            if len(self.positions) > self.length:
-                self.positions.pop()
+            if new_head in self.positions:  # Collision with itself
+                self.reset()
+            else:
+                self.length += 1
+                self.positions.insert(0, new_head)
+                if len(self.positions) > self.length:
+                    self.positions.pop()
 
     def random_food_position(self):
         """
-        Randomly generate a new food position that is not occupied by the snake.
-        :return: tuple, representing the position (x, y) of food.
+        Randomly generate a new food position, but don't place it on the snake.
+        :return: None, Change the food position
         """
         while True:
-            x = random.randint(0, (self.screen_width - self.block_size) // self.block_size) * self.block_size
-            y = random.randint(0, (self.screen_height - self.block_size) // self.block_size) * self.block_size
-            food_position = (x, y)
-            if food_position not in self.positions:
-                return food_position
+            x = random.randint(0, (self.SCREEN_WIDTH // self.BLOCK_SIZE) - 1) * self.BLOCK_SIZE
+            y = random.randint(0, (self.SCREEN_HEIGHT // self.BLOCK_SIZE) - 1) * self.BLOCK_SIZE
+            self.food_position = (x, y)
+            if self.food_position not in self.positions:
+                break
 
     def reset(self):
         """
-        Reset the snake to its initial state.
+        Reset the snake to its initial state. Set the length to 1, the snake head position to ((SCREEN_WIDTH/2), (SCREEN_HEIGHT/2)), the score to 0, and randomly generate new food position.
+        :return: None
         """
         self.length = 1
-        self.positions = [(self.screen_width // 2, self.screen_height // 2)]
+        self.positions = [((self.SCREEN_WIDTH / 2), (self.SCREEN_HEIGHT / 2))]
         self.score = 0
-        self.food_position = self.random_food_position()
+        self.random_food_position()
 
     def eat_food(self):
         """
-        Increase the length of the snake and the score by 100, and generate a new food position.
+        Increase the length of the snake by 1 and increase the score by 100. Randomly generate a new food position, but don't place it on the snake.
+        :return: None
         """
         self.length += 1
         self.score += 100
-        self.food_position = self.random_food_position()
+        self.random_food_position()

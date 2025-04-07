@@ -1,38 +1,41 @@
-def is_valid_result(res, s, t):
-    return not (s in res or t in res)
-
-def add_char(res, char, last_chars):
-    if res and res[-1] == char:
-        return False
-    if len(res) >= 2 and (res[-1] == last_chars[0] and res[-2] == last_chars[1]):
-        return False
-    res.append(char)
-    return True
-
-def build_result(n, s, t):
-    a_count = b_count = c_count = n
-    res = []
-
-    while a_count > 0 or b_count > 0 or c_count > 0:
-        if a_count > 0 and add_char(res, 'a', (s[0], t[0])):
-            a_count -= 1
-        elif b_count > 0 and add_char(res, 'b', (s[0], t[0])):
-            b_count -= 1
-        elif c_count > 0 and add_char(res, 'c', (s[0], t[0])):
-            c_count -= 1
-        else:
-            return "NO", ""
-
-    result_str = ''.join(res)
-    return ("NO", "") if not is_valid_result(result_str, s, t) else ("YES", result_str)
-
 n = int(input())
 s = input().strip()
 t = input().strip()
 
-result = build_result(n, s, t)
-if result[0] == "NO":
-    print("NO")
-else:
+# Create the resulting string with n 'a's, n 'b's, and n 'c's
+res = ['a'] * n + ['b'] * n + ['c'] * n
+
+# Function to check if the substrings s or t are present
+def contains_substrings(res, s, t):
+    result_str = ''.join(res)
+    return s in result_str or t in result_str
+
+# Generate a valid string
+def generate_valid_string(n, s, t):
+    # Create a simple base pattern
+    base_pattern = "abc" * n
+    # Check if the basic pattern contains s or t
+    if contains_substrings(base_pattern, s, t):
+        # If it does, we can try a different arrangement
+        # Attempt to create a pattern that avoids s and t
+        res = []
+        for i in range(n):
+            res.append('a')
+            res.append('b')
+            res.append('c')
+        
+        # Convert to string
+        res_str = ''.join(res)
+        if not contains_substrings(res_str, s, t):
+            return res_str
+    
+    # If the basic pattern works, return it
+    return base_pattern
+
+result = generate_valid_string(n, s, t)
+
+if result:
     print("YES")
-    print(result[1])
+    print(result)
+else:
+    print("NO")

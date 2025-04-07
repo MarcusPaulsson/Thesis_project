@@ -37,15 +37,15 @@ class PushBoxGame:
         >>> game.player_col
         1
         """
-        for r, line in enumerate(self.map):
-            for c, char in enumerate(line):
-                if char == 'O':
+        for r in range(len(self.map)):
+            for c in range(len(self.map[r])):
+                if self.map[r][c] == 'O':
                     self.player_row, self.player_col = r, c
-                elif char == 'G':
+                elif self.map[r][c] == 'G':
                     self.targets.append((r, c))
-                    self.target_count += 1
-                elif char == 'X':
+                elif self.map[r][c] == 'X':
                     self.boxes.append((r, c))
+        self.target_count = len(self.targets)
 
     def check_win(self):
         """
@@ -54,7 +54,6 @@ class PushBoxGame:
         :return self.is_game_over: True if all the boxes are placed on target positions, or False otherwise.
         >>> game = PushBoxGame(["#####", "#O  #", "# X #", "#  G#", "#####"]) 
         >>> game.check_win()
-        False
         """
         self.is_game_over = all(box in self.targets for box in self.boxes)
         return self.is_game_over
@@ -90,42 +89,30 @@ class PushBoxGame:
             'a': (0, -1),
             'd': (0, 1)
         }
-        
+
         if direction not in direction_map:
             return False
-        
-        d_row, d_col = direction_map[direction]
-        new_player_row = self.player_row + d_row
-        new_player_col = self.player_col + d_col
+
+        delta_row, delta_col = direction_map[direction]
+        new_player_row = self.player_row + delta_row
+        new_player_col = self.player_col + delta_col
 
         if self.map[new_player_row][new_player_col] == '#':
-            return False  # Wall collision
+            return False  # Hit a wall
 
         if (new_player_row, new_player_col) in self.boxes:
-            new_box_row = new_player_row + d_row
-            new_box_col = new_player_col + d_col
-            
+            new_box_row = new_player_row + delta_row
+            new_box_col = new_player_col + delta_col
+
             if self.map[new_box_row][new_box_col] == '#' or (new_box_row, new_box_col) in self.boxes:
-                return False  # Wall or box collision
-            
+                return False  # Hit a wall or another box
+
             # Move the box
             box_index = self.boxes.index((new_player_row, new_player_col))
             self.boxes[box_index] = (new_box_row, new_box_col)
 
         # Move the player
-        self.player_row, self.player_col = new_player_row, new_player_col
-        
-        return self.check_win()
+        self.player_row = new_player_row
+        self.player_col = new_player_col
 
-    def print_map(self):
-        """
-        Prints the current state of the game map.
-        """
-        for r in range(len(self.map)):
-            row = list(self.map[r])
-            if (r, self.player_col) == (self.player_row, self.player_col):
-                row[self.player_col] = 'O'
-            for box in self.boxes:
-                if box[0] == r:
-                    row[box[1]] = 'X'
-            print(''.join(row))
+        return self.check_win()

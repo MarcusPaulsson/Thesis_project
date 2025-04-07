@@ -1,6 +1,6 @@
 class ShoppingCart:
     """
-    The class manages items, their prices, quantities, and allows to add, remove, view items, and calculate the total price.
+    The class manages items, their prices, quantities, and allows to for add, remove, view items, and calculate the total price.
     """
 
     def __init__(self):
@@ -14,13 +14,13 @@ class ShoppingCart:
         Add item information to the shopping list items, including price and quantity. The default quantity is 1
         :param item: string, Item to be added
         :param price: float, The price of the item
-        :param quantity: int, The number of items, defaults to 1
+        :param quantity:int, The number of items, defaults to 1
         :return: None
         """
         if item in self.items:
             self.items[item]['quantity'] += quantity
         else:
-            self.items[item] = {"price": price, "quantity": quantity}
+            self.items[item] = {'price': price, 'quantity': quantity}
 
     def remove_item(self, item, quantity=1):
         """
@@ -30,10 +30,9 @@ class ShoppingCart:
         :return: None
         """
         if item in self.items:
-            if self.items[item]['quantity'] > quantity:
-                self.items[item]['quantity'] -= quantity
-            else:
-                del self.items[item]  # Remove item if quantity goes to 0 or less
+            self.items[item]['quantity'] -= quantity
+            if self.items[item]['quantity'] <= 0:
+                del self.items[item]
 
     def view_items(self) -> dict:
         """

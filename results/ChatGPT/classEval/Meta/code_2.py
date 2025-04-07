@@ -7,7 +7,7 @@ class ArgumentParser:
         """
         Initialize the fields.
         self.arguments is a dict that stores the args in a command line
-        self.requried is a set that stores the required arguments
+        self.required is a set that stores the required arguments
         self.types is a dict that stores type of every arguments.
         """
         self.arguments = {}
@@ -16,34 +16,26 @@ class ArgumentParser:
 
     def parse_arguments(self, command_string):
         """
-        Parses the given command line argument string and invoke _convert_type to stores the parsed result in specific type in the arguments dictionary.
+        Parses the given command line argument string and invokes _convert_type to store the parsed result in specific type in the arguments dictionary.
         Checks for missing required arguments, if any, and returns False with the missing argument names, otherwise returns True.
         :param command_string: str, command line argument string, formatted like "python script.py --arg1=value1 -arg2 value2 --option1 -option2"
         :return tuple: (True, None) if parsing is successful, (False, missing_args) if parsing fails,
             where missing_args is a set of the missing argument names which are str.
         """
-        # Split the command string into parts
-        parts = command_string.split()
-        # Ignore the first part (the script name)
-        args = parts[2:]
+        tokens = command_string.split()
+        for token in tokens[1:]:  # Skip the script name
+            if '=' in token:
+                key, value = token.split('=', 1)
+            else:
+                key = token
+                value = True  # For flags/switches
 
-        # Parse arguments
-        for i in range(len(args)):
-            arg = args[i]
-            if arg.startswith('--'):
-                key = arg[2:]
-                value = None
-                if '=' in key:
-                    key, value = key.split('=')
-                elif i + 1 < len(args) and not args[i + 1].startswith('-'):
-                    value = args[i + 1]
-                    i += 1
-                self.arguments[key] = self._convert_type(key, value) if value is not None else True
-            elif arg.startswith('-'):
-                key = arg[1:]
-                self.arguments[key] = True
+            key = key.lstrip('-')  # Remove leading dashes
+            if key not in self.types:
+                continue  # Ignore unrecognized arguments
 
-        # Check for missing required arguments
+            self.arguments[key] = self._convert_type(key, value)
+
         missing_args = self.required - self.arguments.keys()
         if missing_args:
             return False, missing_args
@@ -55,13 +47,13 @@ class ArgumentParser:
         :param key: str, argument name
         :return: The value of the argument, or None if the argument does not exist.
         """
-        return self.arguments.get(key, None)
+        return self.arguments.get(key)
 
     def add_argument(self, arg, required=False, arg_type=str):
         """
         Adds an argument to self.types and self.required.
         Check if it is a required argument and store the argument type.
-        If the argument is set as required, it wull be added to the required set.
+        If the argument is set as required, it will be added to the required set.
         The argument type and name are stored in the types dictionary as key-value pairs.
         :param arg: str, argument name
         :param required: bool, whether the argument is required, default is False
@@ -77,9 +69,7 @@ class ArgumentParser:
         :param value: str, the input value in command line
         :return: return corresponding value in self.types if convert successfully, or the input value otherwise
         """
-        if arg in self.types:
-            try:
-                return self.types[arg](value)
-            except ValueError:
-                return value
-        return value
+        try:
+            return self.types[arg](value)
+        except (ValueError, TypeError):
+            return value

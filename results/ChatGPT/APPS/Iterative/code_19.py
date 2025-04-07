@@ -1,31 +1,36 @@
-def check_records(test_cases):
+def is_stats_correct(test_cases):
     results = []
-    
-    for n, stats in test_cases:
-        valid = True
+    for stats in test_cases:
+        n = stats[0]
+        plays_and_clears = stats[1]
         
-        for i in range(1, n):
-            p, c = stats[i]
-            prev_p, prev_c = stats[i - 1]
-            if p < prev_p or c < prev_c or c > p or c - prev_c > p - prev_p:
+        valid = True
+        prev_p, prev_c = 0, 0
+        
+        for p, c in plays_and_clears:
+            if p < prev_p or c < prev_c or c > p:
                 valid = False
                 break
+            if (c - prev_c) > (p - prev_p):
+                valid = False
+                break
+            prev_p, prev_c = p, c
         
         results.append("YES" if valid else "NO")
     
     return results
 
-# Read input
-T = int(input().strip())
+# Input reading
+T = int(input())
 test_cases = []
 
 for _ in range(T):
-    n = int(input().strip())
-    stats = [tuple(map(int, input().strip().split())) for _ in range(n)]
-    test_cases.append((n, stats))
+    n = int(input())
+    plays_and_clears = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, plays_and_clears))
 
-# Get results
-results = check_records(test_cases)
+results = is_stats_correct(test_cases)
 
-# Print results
-print("\n".join(results))
+# Output results
+for result in results:
+    print(result)

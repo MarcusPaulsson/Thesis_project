@@ -1,36 +1,35 @@
-def create_symmetric_matrix(n, k):
-    if k > n * n or (n % 2 == 0 and k % 2 == 1) or (n % 2 == 1 and k > n * n - n):
-        return -1
-
-    matrix = [[0] * n for _ in range(n)]
+def create_matrix(n, k):
+    max_possible_k = n * (n + 1) // 2
+    if k > max_possible_k:
+        return -1  # Not enough space to place k ones
     
+    matrix = [[0] * n for _ in range(n)]
+
+    # Fill the matrix to be lexicographically maximal
     for i in range(n):
         if k <= 0:
             break
         for j in range(i, n):
-            if k <= 0:
-                break
-            if i == j:  # Main diagonal
-                if k > 0:
-                    matrix[i][j] = 1
-                    k -= 1
-            else:  # Symmetric positions
-                if k >= 2:
-                    matrix[i][j] = 1
-                    matrix[j][i] = 1
-                    k -= 2
+            if k > 0:
+                matrix[i][j] = 1
+                if i != j:
+                    matrix[j][i] = 1  # Make it symmetric
+                    k -= 2  # Off-diagonal counts as two
+                else:
+                    k -= 1  # Diagonal counts as one
 
-    return matrix if k == 0 else -1
+    if k > 0:
+        return -1  # Still remaining ones that couldn't be placed
 
-def main():
-    n, k = map(int, input("Enter values for n and k: ").split())
-    result = create_symmetric_matrix(n, k)
+    return matrix
 
-    if result == -1:
-        print(-1)
-    else:
-        for row in result:
-            print(' '.join(map(str, row)))
+# Input reading
+n, k = map(int, input().split())
+result = create_matrix(n, k)
 
-if __name__ == "__main__":
-    main()
+# Output result
+if result == -1:
+    print(result)
+else:
+    for row in result:
+        print(" ".join(map(str, row)))

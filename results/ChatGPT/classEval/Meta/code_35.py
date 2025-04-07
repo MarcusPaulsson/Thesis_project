@@ -22,6 +22,7 @@ class EightPuzzle:
             for j in range(3):
                 if state[i][j] == 0:
                     return i, j
+        return None
 
     def move(self, state, direction):
         """
@@ -30,7 +31,7 @@ class EightPuzzle:
         :param direction: str, only has 4 direction 'up', 'down', 'left', 'right'
         :return new_state: a 3*3 size list of Integer, stores the state after moving.
         """
-        new_state = [row[:] for row in state]
+        new_state = [row[:] for row in state]  # Create a copy of the state
         i, j = self.find_blank(state)
 
         if direction == 'up' and i > 0:
@@ -41,7 +42,9 @@ class EightPuzzle:
             new_state[i][j], new_state[i][j-1] = new_state[i][j-1], new_state[i][j]
         elif direction == 'right' and j < 2:
             new_state[i][j], new_state[i][j+1] = new_state[i][j+1], new_state[i][j]
-
+        else:
+            return state  # No move was made
+        
         return new_state
 
     def get_possible_moves(self, state):
@@ -50,19 +53,19 @@ class EightPuzzle:
         :param state: a 3*3 size list of Integer, stores the current state.
         :return moves: a list of str, store all the possible moving directions according to the current state.
         """
-        moves = []
+        possible_moves = []
         i, j = self.find_blank(state)
 
-        if i > 0:
-            moves.append('up')
-        if i < 2:
-            moves.append('down')
-        if j > 0:
-            moves.append('left')
-        if j < 2:
-            moves.append('right')
+        if i > 0:  # Up
+            possible_moves.append('up')
+        if i < 2:  # Down
+            possible_moves.append('down')
+        if j > 0:  # Left
+            possible_moves.append('left')
+        if j < 2:  # Right
+            possible_moves.append('right')
 
-        return moves
+        return possible_moves
 
     def solve(self):
         """
@@ -77,22 +80,17 @@ class EightPuzzle:
 
         open_list = deque([(self.initial_state, [])])
         visited = set()
-        visited.add(tuple(map(tuple, self.initial_state)))
 
         while open_list:
             current_state, path = open_list.popleft()
+            visited.add(tuple(map(tuple, current_state)))
 
             if current_state == self.goal_state:
                 return path
 
-            possible_moves = self.get_possible_moves(current_state)
-
-            for move_direction in possible_moves:
+            for move_direction in self.get_possible_moves(current_state):
                 new_state = self.move(current_state, move_direction)
-                state_tuple = tuple(map(tuple, new_state))
-
-                if state_tuple not in visited:
-                    visited.add(state_tuple)
+                if tuple(map(tuple, new_state)) not in visited:
                     open_list.append((new_state, path + [move_direction]))
 
-        return []
+        return None

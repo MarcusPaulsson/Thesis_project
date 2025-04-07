@@ -31,7 +31,7 @@ class CalendarUtil:
         :param date: The date to get events for, datetime.
         :return: A list of events on the given date, list.
         """
-        return [event for event in self.events if event['date'].date() == date.date()]
+        return [event for event in self.events if event['date'] == date]
 
     def is_available(self, start_time, end_time):
         """
@@ -52,27 +52,33 @@ class CalendarUtil:
         :return: A list of available time slots on the given date, list.
         """
         slots = []
-        day_start = datetime.combine(date.date(), datetime.min.time())
-        day_end = datetime.combine(date.date(), datetime.max.time())
-        last_end = day_start
+        start_of_day = datetime.combine(date, datetime.min.time())
+        end_of_day = datetime.combine(date, datetime.max.time())
 
-        for event in sorted(self.events, key=lambda x: x['start_time']):
-            if event['date'].date() == date.date():
-                if last_end < event['start_time']:
-                    slots.append((last_end, event['start_time']))
-                last_end = max(last_end, event['end_time'])
+        busy_times = [(event['start_time'], event['end_time']) for event in self.events if event['date'] == date]
 
-        if last_end < day_end:
-            slots.append((last_end, day_end))
+        if not busy_times:
+            return [(start_of_day, end_of_day)]
+
+        busy_times.sort()
+        last_end_time = start_of_day
+
+        for start, end in busy_times:
+            if last_end_time < start:
+                slots.append((last_end_time, start))
+            last_end_time = max(last_end_time, end)
+
+        if last_end_time < end_of_day:
+            slots.append((last_end_time, end_of_day))
 
         return slots
 
     def get_upcoming_events(self, num_events):
         """
-        Get the next n upcoming events from a given date.
+        Get the next n upcoming events from the current date.
         :param num_events: The number of upcoming events to get, int.
         :return: A list of the next n upcoming events from the current date, list.
         """
         now = datetime.now()
-        upcoming_events = [event for event in self.events if event['start_time'] > now]
-        return sorted(upcoming_events, key=lambda x: x['start_time'])[:num_events]
+        upcoming_events = sorted(event for event in self.events if event['start_time'] > now)
+        return upcoming_events[:num_events]

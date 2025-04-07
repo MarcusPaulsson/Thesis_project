@@ -1,9 +1,10 @@
 import math
-from statistics import mean, stdev
+import numpy as np
+from scipy.stats import skew, kurtosis, norm
 
 class DataStatistics4:
     """
-    This class performs advanced mathematical calculations and statistics,
+    This is a class that performs advanced mathematical calculations and statistics,
     including correlation coefficient, skewness, kurtosis, and probability density function (PDF)
     for a normal distribution.
     """
@@ -16,15 +17,7 @@ class DataStatistics4:
         :param data2: The second set of data, list.
         :return: The correlation coefficient, float.
         """
-        n = len(data1)
-        if n != len(data2):
-            raise ValueError("Data lists must have the same length.")
-        
-        mean1, mean2 = mean(data1), mean(data2)
-        numerator = sum((x - mean1) * (y - mean2) for x, y in zip(data1, data2))
-        denominator = math.sqrt(sum((x - mean1) ** 2 for x in data1) * sum((y - mean2) ** 2 for y in data2))
-        
-        return numerator / denominator if denominator != 0 else 0.0
+        return np.corrcoef(data1, data2)[0, 1]
 
     @staticmethod
     def skewness(data):
@@ -33,15 +26,7 @@ class DataStatistics4:
         :param data: The input data list, list.
         :return: The skewness, float.
         """
-        n = len(data)
-        if n < 3:
-            raise ValueError("At least three data points are required.")
-        
-        mean_val = mean(data)
-        std_dev = stdev(data)
-        skew = (n / ((n - 1) * (n - 2))) * sum(((x - mean_val) / std_dev) ** 3 for x in data)
-        
-        return skew
+        return skew(data)
 
     @staticmethod
     def kurtosis(data):
@@ -50,15 +35,7 @@ class DataStatistics4:
         :param data: The input data list, list.
         :return: The kurtosis, float.
         """
-        n = len(data)
-        if n < 4:
-            raise ValueError("At least four data points are required.")
-        
-        mean_val = mean(data)
-        std_dev = stdev(data)
-        kurt = (n * (n + 1) * sum(((x - mean_val) / std_dev) ** 4 for x in data) - 3 * (n - 1) ** 2) / ((n - 2) * (n - 3))
-        
-        return kurt
+        return kurtosis(data)
 
     @staticmethod
     def pdf(data, mu, sigma):
@@ -69,9 +46,4 @@ class DataStatistics4:
         :param sigma: The standard deviation of the normal distribution, float.
         :return: The probability density function (PDF), list.
         """
-        if sigma <= 0:
-            raise ValueError("Standard deviation must be positive.")
-        
-        pdf_values = [(1 / (sigma * math.sqrt(2 * math.pi))) * math.exp(-((x - mu) ** 2) / (2 * sigma ** 2)) for x in data]
-        
-        return pdf_values
+        return [norm.pdf(x, mu, sigma) for x in data]

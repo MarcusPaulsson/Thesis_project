@@ -1,27 +1,41 @@
 from collections import Counter
 
-def main():
-    n = int(input("Enter the number of divisors: "))
-    divisors = list(map(int, input("Enter the divisors: ").split()))
-
-    if n != len(divisors):
-        print("Error: The number of divisors provided does not match the count.")
-        return
-
-    # Count occurrences of each divisor
+def restore_xy(n, divisors):
     count = Counter(divisors)
+    
+    # Identify the maximum divisor, which is the candidate for x or y
+    max_divisor = max(divisors)
+    
+    # Find the second maximum divisor which must be x or y
+    second_max_divisor = 1
+    for d in divisors:
+        if d < max_divisor:
+            second_max_divisor = max(second_max_divisor, d)
+    
+    # Calculate potential x and y
+    x = max_divisor
+    y = second_max_divisor
+    
+    # Ensure y is the correct value by checking divisor counts
+    temp_count = count.copy()
+    
+    for d in divisors:
+        if x % d == 0 and temp_count[d] > 0:
+            temp_count[d] -= 1
+        if y % d == 0 and temp_count[d] > 0:
+            temp_count[d] -= 1
+    
+    # Check if all counts are satisfied
+    if all(v == 0 for v in temp_count.values()):
+        return x, y
+    
+    return None
 
-    # The product of the unique divisors
-    unique_divisors = set(divisors)
-    x_y_product = 1
-    for d in unique_divisors:
-        x_y_product *= d
+# Input reading
+n = int(input())
+divisors = list(map(int, input().split()))
 
-    # x is the maximum divisor, y is calculated as the product divided by x
-    x = max(unique_divisors)
-    y = x_y_product // x if x != 0 else 0
-
-    print(x, y)
-
-if __name__ == "__main__":
-    main()
+# Call the function and print the result
+result = restore_xy(n, divisors)
+if result:
+    print(result[0], result[1])

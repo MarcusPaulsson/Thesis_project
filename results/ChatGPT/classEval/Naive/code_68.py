@@ -22,7 +22,6 @@ class PageUtil:
         """
         if page_number < 1 or page_number > self.total_pages:
             return []
-        
         start_index = (page_number - 1) * self.page_size
         end_index = start_index + self.page_size
         return self.data[start_index:end_index]
@@ -33,6 +32,9 @@ class PageUtil:
         :param page_number: int, the page number to fetch information about
         :return: dict, containing page information such as current page number, total pages, etc.
         """
+        if page_number < 1 or page_number > self.total_pages:
+            return {}
+
         page_data = self.get_page(page_number)
         return {
             "current_page": page_number,
@@ -50,8 +52,7 @@ class PageUtil:
         :param keyword: str, the keyword to search for
         :return: dict, containing search information such as total results and matching items
         """
-        keyword = str(keyword)
-        results = [item for item in self.data if keyword in str(item)]
+        results = [item for item in self.data if str(item).find(keyword) != -1]
         total_results = len(results)
         total_pages = (total_results + self.page_size - 1) // self.page_size
 

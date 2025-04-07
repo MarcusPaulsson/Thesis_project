@@ -23,7 +23,8 @@ class CalendarUtil:
         Remove an event from the calendar.
         :param event: The event to be removed from the calendar,dict.
         """
-        self.events.remove(event)
+        if event in self.events:
+            self.events.remove(event)
 
     def get_events(self, date):
         """
@@ -41,7 +42,7 @@ class CalendarUtil:
         :return: True if the calendar is available for the given time slot, False otherwise,bool.
         """
         for event in self.events:
-            if (event['start_time'] < end_time and event['end_time'] > start_time):
+            if (start_time < event['end_time'] and end_time > event['start_time']):
                 return False
         return True
 
@@ -51,26 +52,21 @@ class CalendarUtil:
         :param date: The date to get available time slots for,datetime.
         :return: A list of available time slots on the given date,list.
         """
-        day_start = datetime(date.year, date.month, date.day, 0, 0)
-        day_end = datetime(date.year, date.month, date.day, 23, 59)
-        available_slots = []
-        busy_times = [(event['start_time'], event['end_time']) for event in self.events if event['date'] == date]
+        time_slots = []
+        start_of_day = datetime.combine(date, datetime.min.time())
+        end_of_day = datetime.combine(date, datetime.max.time())
+        taken_slots = [(event['start_time'], event['end_time']) for event in self.events if event['date'] == date]
 
-        if not busy_times:
-            return [(day_start, day_end)]
+        current_time = start_of_day
+        for (start, end) in sorted(taken_slots):
+            if current_time < start:
+                time_slots.append((current_time, start))
+            current_time = max(current_time, end)
 
-        busy_times.sort()
-        last_end = day_start
-        
-        for start, end in busy_times:
-            if last_end < start:
-                available_slots.append((last_end, start))
-            last_end = max(last_end, end)
-        
-        if last_end < day_end:
-            available_slots.append((last_end, day_end))
+        if current_time < end_of_day:
+            time_slots.append((current_time, end_of_day))
 
-        return available_slots
+        return time_slots
 
     def get_upcoming_events(self, num_events):
         """
@@ -78,5 +74,7 @@ class CalendarUtil:
         :param num_events: The number of upcoming events to get,int.
         :return: A list of the next n upcoming events from the given date,list.
         """
-        upcoming_events = sorted(self.events, key=lambda x: x['start_time'])
+        current_datetime = datetime.now()
+        upcoming_events = [event for event in self.events if event['start_time'] > current_datetime]
+        upcoming_events.sort(key=lambda x: x['start_time'])
         return upcoming_events[:num_events]

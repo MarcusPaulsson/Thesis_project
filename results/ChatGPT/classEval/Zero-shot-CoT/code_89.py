@@ -7,7 +7,6 @@ class TwentyFourPointGame:
 
     def __init__(self) -> None:
         self.nums = []
-        self._generate_cards()
 
     def _generate_cards(self):
         """
@@ -22,6 +21,7 @@ class TwentyFourPointGame:
         >>> game = TwentyFourPointGame()
         >>> game.get_my_cards()
         """
+        self._generate_cards()
         return self.nums
 
     def answer(self, expression):
@@ -35,7 +35,7 @@ class TwentyFourPointGame:
         >>> ret = game.answer(ans)
         True
         """
-        return self.evaluate_expression(expression)
+        self.evaluate_expression(expression)
 
     def evaluate_expression(self, expression):
         """
@@ -48,7 +48,11 @@ class TwentyFourPointGame:
         >>> ret = game.evaluate_expression(ans)
         True
         """
+        if not all(char.isdigit() or char in "+-*/()" for char in expression) or not any(char.isdigit() for char in expression):
+            return False
+
         try:
-            return eval(expression) == 24
-        except Exception:
+            result = eval(expression)
+            return result == 24
+        except (SyntaxError, ZeroDivisionError):
             return False

@@ -38,8 +38,7 @@ class StudentDatabaseProcessor:
         :return: None
         """
         self.cursor.execute('''
-            INSERT INTO students (name, age, gender, grade) 
-            VALUES (?, ?, ?, ?)
+            INSERT INTO students (name, age, gender, grade) VALUES (?, ?, ?, ?)
         ''', (student_data['name'], student_data['age'], student_data['gender'], student_data['grade']))
         self.connection.commit()
 
@@ -49,9 +48,7 @@ class StudentDatabaseProcessor:
         :param name: str, the name of the student to search for.
         :return: list of tuples, the rows from the "students" table that match the search criteria.
         """
-        self.cursor.execute('''
-            SELECT * FROM students WHERE name = ?
-        ''', (name,))
+        self.cursor.execute('SELECT * FROM students WHERE name=?', (name,))
         return self.cursor.fetchall()
 
     def delete_student_by_name(self, name):
@@ -60,11 +57,8 @@ class StudentDatabaseProcessor:
         :param name: str, the name of the student to delete.
         :return: None
         """
-        self.cursor.execute('''
-            DELETE FROM students WHERE name = ?
-        ''', (name,))
+        self.cursor.execute('DELETE FROM students WHERE name=?', (name,))
         self.connection.commit()
 
-    def close(self):
-        """Closes the database connection."""
+    def __del__(self):
         self.connection.close()

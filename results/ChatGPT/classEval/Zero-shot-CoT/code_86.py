@@ -9,6 +9,7 @@ class TicTacToe:
         """
         self.board = [[' ' for _ in range(N)] for _ in range(N)]
         self.current_player = 'X'
+        self.N = N
 
     def make_move(self, row, col):
         """
@@ -28,19 +29,28 @@ class TicTacToe:
         Check if there is a winner on the board in rows, columns and diagonals.
         :return: str or None, the mark of the winner ('X' or 'O'), or None if there is no winner yet
         """
-        # Check rows
-        for row in self.board:
-            if row[0] == row[1] == row[2] != ' ':
-                return row[0]
-        # Check columns
-        for col in range(len(self.board)):
-            if self.board[0][col] == self.board[1][col] == self.board[2][col] != ' ':
-                return self.board[0][col]
-        # Check diagonals
-        if self.board[0][0] == self.board[1][1] == self.board[2][2] != ' ':
-            return self.board[0][0]
-        if self.board[0][2] == self.board[1][1] == self.board[2][0] != ' ':
-            return self.board[0][2]
+        for i in range(self.N):
+            if all(self.board[i][j] == 'X' for j in range(self.N)):
+                return 'X'
+            if all(self.board[i][j] == 'O' for j in range(self.N)):
+                return 'O'
+        
+        for j in range(self.N):
+            if all(self.board[i][j] == 'X' for i in range(self.N)):
+                return 'X'
+            if all(self.board[i][j] == 'O' for i in range(self.N)):
+                return 'O'
+        
+        if all(self.board[i][i] == 'X' for i in range(self.N)):
+            return 'X'
+        if all(self.board[i][i] == 'O' for i in range(self.N)):
+            return 'O'
+        
+        if all(self.board[i][self.N - 1 - i] == 'X' for i in range(self.N)):
+            return 'X'
+        if all(self.board[i][self.N - 1 - i] == 'O' for i in range(self.N)):
+            return 'O'
+        
         return None
 
     def is_board_full(self):
@@ -48,4 +58,4 @@ class TicTacToe:
         Check if the game board is completely filled.
         :return: bool, indicating whether the game board is full or not
         """
-        return all(cell != ' ' for row in self.board for cell in row)
+        return all(self.board[i][j] != ' ' for i in range(self.N) for j in range(self.N))

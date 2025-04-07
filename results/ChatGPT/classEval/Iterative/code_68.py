@@ -9,11 +9,6 @@ class PageUtil:
         :param data: list, the data to be paginated
         :param page_size: int, the number of items per page
         """
-        if not isinstance(data, list):
-            raise ValueError("Data must be a list.")
-        if not isinstance(page_size, int) or page_size <= 0:
-            raise ValueError("Page size must be a positive integer.")
-
         self.data = data
         self.page_size = page_size
         self.total_items = len(data)
@@ -24,28 +19,23 @@ class PageUtil:
         Retrieve a specific page of data.
         :param page_number: int, the page number to fetch
         :return: list, the data on the specified page
-        >>> page_util = PageUtil([1, 2, 3, 4], 1)
-        >>> page_util.get_page(1)
-        [1]
         """
         if page_number < 1 or page_number > self.total_pages:
             return []
         start_index = (page_number - 1) * self.page_size
-        return self.data[start_index:start_index + self.page_size]
+        end_index = start_index + self.page_size
+        return self.data[start_index:end_index]
 
     def get_page_info(self, page_number):
         """
         Retrieve information about a specific page.
         :param page_number: int, the page number to fetch information about
         :return: dict, containing page information such as current page number, total pages, etc.
-        >>> page_util = PageUtil([1, 2, 3, 4], 1)
-        >>> page_util.get_page_info(1)
-        {'current_page': 1, 'per_page': 1, 'total_pages': 4, 'total_items': 4, 'has_previous': False, 'has_next': True, 'data': [1]}
         """
         if page_number < 1 or page_number > self.total_pages:
             return {}
-
-        page_data = self.get_page(page_number)
+        
+        current_page_data = self.get_page(page_number)
         return {
             "current_page": page_number,
             "per_page": self.page_size,
@@ -53,7 +43,7 @@ class PageUtil:
             "total_items": self.total_items,
             "has_previous": page_number > 1,
             "has_next": page_number < self.total_pages,
-            "data": page_data
+            "data": current_page_data
         }
 
     def search(self, keyword):
@@ -61,17 +51,10 @@ class PageUtil:
         Search for items in the data that contain the given keyword.
         :param keyword: str, the keyword to search for
         :return: dict, containing search information such as total results and matching items
-        >>> page_util = PageUtil([1, 2, 3, 4], 1)
-        >>> page_util.search("1")
-        {'keyword': '1', 'total_results': 1, 'total_pages': 1, 'results': [1]}
         """
-        if not isinstance(keyword, str):
-            raise ValueError("Keyword must be a string.")
-
-        results = [item for item in self.data if str(item).find(keyword) != -1]
+        results = [item for item in self.data if keyword in str(item)]
         total_results = len(results)
-        total_pages = (total_results + self.page_size - 1) // self.page_size
-
+        total_pages = (total_results + self.page_size - 1) // self.page_size if total_results > 0 else 0
         return {
             "keyword": keyword,
             "total_results": total_results,

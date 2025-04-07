@@ -8,45 +8,50 @@ class KappaCalculator:
     @staticmethod
     def kappa(testData, k):
         """
-        Calculate the Cohen's kappa value of a k-dimensional matrix.
-        :param testData: The k-dimensional matrix that needs to calculate the Cohen's kappa value.
-        :param k: int, Matrix dimension.
-        :return: float, the Cohen's kappa value of the matrix.
-        >>> KappaCalculator.kappa([[2, 1, 1], [1, 2, 1], [1, 1, 2]], 3)
-        0.25
+        Calculate the Cohen's kappa value of a k-dimensional matrix
+        :param testData: The k-dimensional matrix that needs to calculate the Cohen's kappa value
+        :param k: int, Matrix dimension
+        :return: float, the Cohen's kappa value of the matrix
         """
-        testData = np.array(testData)
-        n = np.sum(testData)
-        p0 = np.sum(np.diag(testData)) / n
-        pe = np.sum(np.sum(testData, axis=0) * np.sum(testData, axis=1)) / (n ** 2)
+        # Convert testData to a numpy array for easier calculations
+        matrix = np.array(testData)
+        n = np.sum(matrix)  # Total number of observations
         
-        return (p0 - pe) / (1 - pe) if (1 - pe) != 0 else 0.0
+        # Calculate observed agreement
+        p_o = np.sum(np.diagonal(matrix)) / n
+        
+        # Calculate expected agreement
+        p_e = 0
+        for col in range(k):
+            p_e += (np.sum(matrix[:, col]) / n) ** 2
+        
+        # Calculate Cohen's kappa
+        kappa_value = (p_o - p_e) / (1 - p_e) if (1 - p_e) != 0 else 0
+        return kappa_value
 
     @staticmethod
     def fleiss_kappa(testData, N, k, n):
         """
-        Calculate the Fleiss kappa value of an N * k matrix.
-        :param testData: Input data matrix, N * k.
-        :param N: int, Number of samples.
-        :param k: int, Number of categories.
-        :param n: int, Number of raters.
-        :return: float, Fleiss kappa value.
-        >>> KappaCalculator.fleiss_kappa([[0, 0, 0, 0, 14],
-        >>>                              [0, 2, 6, 4, 2],
-        >>>                              [0, 0, 3, 5, 6],
-        >>>                              [0, 3, 9, 2, 0],
-        >>>                              [2, 2, 8, 1, 1],
-        >>>                              [7, 7, 0, 0, 0],
-        >>>                              [3, 2, 6, 3, 0],
-        >>>                              [2, 5, 3, 2, 2],
-        >>>                              [6, 5, 2, 1, 0],
-        >>>                              [0, 2, 2, 3, 7]], 10, 5, 14)
-        0.20993070442195522
+        Calculate the Fleiss' kappa value of an N * k matrix
+        :param testData: Input data matrix, N * k
+        :param N: int, Number of samples
+        :param k: int, Number of categories
+        :param n: int, Number of raters
+        :return: float, Fleiss kappa value
         """
-        testData = np.array(testData)
-        p = np.sum(testData, axis=0) / (N * n)
-        P_bar = np.sum(np.square(np.sum(testData, axis=1)) - n) / (N * (n - 1))
-        P_e_bar = np.sum(np.square(p))        
-        fleiss_kappa_value = (P_bar - P_e_bar) / (1 - P_e_bar) if (1 - P_e_bar) != 0 else 0.0
+        # Convert testData to a numpy array for easier calculations
+        matrix = np.array(testData)
         
+        # Calculate the proportion of ratings for each category
+        p = np.sum(matrix, axis=0) / (n * N)
+        
+        # Calculate the observed agreement
+        P = np.sum((np.sum(matrix, axis=1) / n) ** 2)
+        P /= N
+        
+        # Calculate the expected agreement
+        P_e = np.sum(p ** 2)
+        
+        # Calculate Fleiss' kappa
+        fleiss_kappa_value = (P - P_e) / (1 - P_e) if (1 - P_e) != 0 else 0
         return fleiss_kappa_value

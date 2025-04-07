@@ -23,7 +23,7 @@ class BitStatusUtil:
         Check if the current status contains the specified status,and check the parameters whether they are legal.
         :param states: Current status,int.
         :param stat: Specified status,int.
-        :return: True if the current status contains the specified status,otherwise False,bool.
+        :return: True if the current status contains the specified status, otherwise False,bool.
         >>> bit_status_util = BitStatusUtil()
         >>> bit_status_util.has(6,2)
         True
@@ -48,7 +48,7 @@ class BitStatusUtil:
     @staticmethod
     def check(args):
         """
-        Check if the parameters are legal, args must be greater than or equal to 0 and must be even,if not,raise ValueError.
+        Check if the parameters are legal, args must be greater than or equal to 0 and must be even, if not, raise ValueError.
         :param args: Parameters to be checked,list.
         :return: None.
         >>> bit_status_util = BitStatusUtil()
@@ -58,7 +58,5 @@ class BitStatusUtil:
         ValueError: 3 not even
         """
         for arg in args:
-            if arg < 0:
-                raise ValueError(f"{arg} is negative")
-            if arg % 2 != 0:
+            if arg < 0 or arg % 2 != 0:
                 raise ValueError(f"{arg} not even")

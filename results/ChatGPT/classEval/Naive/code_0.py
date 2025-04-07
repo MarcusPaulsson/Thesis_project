@@ -7,8 +7,7 @@ class AccessGatewayFilter:
     """
 
     def __init__(self):
-        self.allowed_paths = ['/api', '/login']
-        logging.basicConfig(level=logging.INFO)
+        pass
 
     def filter(self, request):
         """
@@ -16,26 +15,31 @@ class AccessGatewayFilter:
         :param request: dict, the incoming request details
         :return: bool, True if the request is allowed, False otherwise
         """
-        if not isinstance(request, dict):
-            logging.error("Invalid request format.")
-            return False
+        path = request.get('path', '')
+        method = request.get('method', '').upper()
         
-        if self.is_start_with(request.get('path', '')):
-            user = self.get_jwt_user(request)
-            if user:
-                self.set_current_user_info_and_log(user)
-                return True
+        if self.is_start_with(path):
+            return True
         
-        logging.warning("Request denied for path: %s", request.get('path'))
+        if 'headers' in request and 'Authorization' in request['headers']:
+            user_info = self.get_jwt_user(request)
+            if user_info is not None:
+                level = user_info.get('level', 0)
+                if level >= 3:
+                    self.set_current_user_info_and_log(user_info)
+                    return True
+                elif level == 1:
+                    return None
         return False
 
     def is_start_with(self, request_uri):
         """
         Check if the request URI starts with certain prefixes.
+        Currently, the prefixes being checked are "/api" and "/login".
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
         """
-        return any(request_uri.startswith(prefix) for prefix in self.allowed_paths)
+        return request_uri.startswith('/api') or request_uri.startswith('/login')
 
     def get_jwt_user(self, request):
         """
@@ -43,18 +47,19 @@ class AccessGatewayFilter:
         :param request: dict, the incoming request details
         :return: dict or None, the user information if the token is valid, None otherwise
         """
-        try:
-            auth_header = request.get('headers', {}).get('Authorization', {})
-            user_info = auth_header.get('user')
-            # Here we would normally validate JWT, omitted for simplicity
-            return user_info if user_info else None
-        except Exception as e:
-            logging.error("Error retrieving JWT user: %s", e)
-            return None
+        if 'headers' in request and 'Authorization' in request['headers']:
+            auth = request['headers']['Authorization']
+            jwt = auth.get('jwt', '')
+            expected_jwt = auth['user']['name'] + str(datetime.date.today())
+
+            if jwt == expected_jwt:
+                return auth['user']
+        return None
 
     def set_current_user_info_and_log(self, user):
         """
         Set the current user information and log the access.
         :param user: dict, the user information
+        :return: None
         """
-        logging.info("User accessed: %s from address: %s", user.get('name'), user.get('address', 'unknown'))
+        logging.info(f"Access granted for user: {user['name']} from address: {user['address']}")

@@ -13,11 +13,13 @@ class VectorUtil:
         Compute the cosine similarity between one vector and another vector.
         :param vector_1: numpy.ndarray, Vector from which similarities are to be computed, expected shape (dim,).
         :param vector_2: numpy.ndarray, Vector from which similarities are to be computed, expected shape (dim,).
-        :return: numpy.ndarray, Contains cosine distance between `vector_1` and `vector_2`
+        :return: float, Contains cosine distance between `vector_1` and `vector_2`
         """
         dot_product = dot(vector_1, vector_2)
         norm_vector_1 = np.linalg.norm(vector_1)
         norm_vector_2 = np.linalg.norm(vector_2)
+        if norm_vector_1 == 0 or norm_vector_2 == 0:
+            return 0.0
         return dot_product / (norm_vector_1 * norm_vector_2)
 
     @staticmethod
@@ -37,9 +39,12 @@ class VectorUtil:
         Compute cosine similarity between two sets of vectors.
         :param vector_list_1: list of numpy vector
         :param vector_list_2: list of numpy vector
-        :return: numpy.ndarray, Similarities between vector_list_1 and vector_list_2.
+        :return: float, Similarities between vector_list_1 and vector_list_2.
         """
-        similarities = np.array([VectorUtil.similarity(v1, v2) for v1 in vector_list_1 for v2 in vector_list_2])
+        if not vector_list_1 or not vector_list_2:
+            return 0.0
+        
+        similarities = [VectorUtil.similarity(v1, v2) for v1 in vector_list_1 for v2 in vector_list_2]
         return np.mean(similarities)
 
     @staticmethod
@@ -50,5 +55,7 @@ class VectorUtil:
         :param number_dict: dict
         :return: dict
         """
-        idf_dict = {key: np.log((total_num + 1) / (count + 1)) for key, count in number_dict.items()}
-        return idf_dict
+        idf_weights = {}
+        for key, count in number_dict.items():
+            idf_weights[key] = np.log((total_num + 1) / (count + 1))
+        return idf_weights

@@ -36,14 +36,9 @@ class Words2Numbers:
         >>> w2n.text2int("thirty-two")
         "32"
         """
-        if not self.is_valid_input(textnum):
-            raise ValueError("Invalid input")
-
         textnum = textnum.replace("-", " ")
-        words = textnum.split()
         current = result = 0
-
-        for word in words:
+        for word in textnum.split():
             if word in self.numwords:
                 scale, increment = self.numwords[word]
                 current += increment
@@ -52,8 +47,7 @@ class Words2Numbers:
                     result += current
                     current = 0
             else:
-                raise ValueError(f"Unrecognized word: {word}")
-
+                raise ValueError(f"Invalid input: {word}")
         return str(result + current)
 
     def is_valid_input(self, textnum):
@@ -63,7 +57,11 @@ class Words2Numbers:
         :return: True if input is valid, False otherwise.
         >>> w2n = Words2Numbers()
         >>> w2n.is_valid_input("thirty-two")
-        True
+        False
         """
+        valid_words = set(self.numwords.keys())
         words = textnum.replace("-", " ").split()
-        return all(word in self.numwords for word in words)
+        for word in words:
+            if word not in valid_words:
+                return False
+        return True

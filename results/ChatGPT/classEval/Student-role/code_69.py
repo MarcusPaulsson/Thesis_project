@@ -11,7 +11,7 @@ class PDFHandler:
         It creates a list named readers using PyPDF2, where each reader opens a file from the given paths.
         """
         self.filepaths = filepaths
-        self.readers = [PyPDF2.PdfReader(fp) for fp in filepaths]
+        self.readers = [PyPDF2.PdfFileReader(fp) for fp in filepaths]
 
     def merge_pdfs(self, output_filepath):
         """
@@ -19,17 +19,15 @@ class PDFHandler:
         Merge them to one pdf and update the page number, then save in disk.
         :param output_filepath: str, ouput file path to save to
         :return: str, "Merged PDFs saved at {output_filepath}" if successfully merged
-        >>> handler = PDFHandler(['a.pdf', 'b.pdf'])
-        >>> handler.merge_pdfs('out.pdf')
-        Merged PDFs saved at out.pdf
         """
-        pdf_writer = PyPDF2.PdfWriter()
-        for reader in self.readers:
-            for page in range(len(reader.pages)):
-                pdf_writer.add_page(reader.pages[page])
+        writer = PyPDF2.PdfFileWriter()
 
-        with open(output_filepath, 'wb') as out_file:
-            pdf_writer.write(out_file)
+        for reader in self.readers:
+            for page in range(reader.getNumPages()):
+                writer.addPage(reader.getPage(page))
+
+        with open(output_filepath, 'wb') as output_file:
+            writer.write(output_file)
 
         return f"Merged PDFs saved at {output_filepath}"
 
@@ -37,14 +35,11 @@ class PDFHandler:
         """
         Extract text from pdf files in self.readers
         :return pdf_texts: list of str, each element is the text of one pdf file
-        >>> handler = PDFHandler(['a.pdf', 'b.pdf'])
-        >>> handler.extract_text_from_pdfs()
-        ['Test a.pdf', 'Test b.pdf']
         """
         pdf_texts = []
         for reader in self.readers:
-            text = ''
-            for page in range(len(reader.pages)):
-                text += reader.pages[page].extract_text()
-            pdf_texts.append(text.strip())
+            text = ""
+            for page in range(reader.getNumPages()):
+                text += reader.getPage(page).extractText()
+            pdf_texts.append(text)
         return pdf_texts

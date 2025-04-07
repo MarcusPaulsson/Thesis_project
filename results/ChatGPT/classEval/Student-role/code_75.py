@@ -18,9 +18,9 @@ class ShoppingCart:
         :return: None
         """
         if item in self.items:
-            self.items[item]["quantity"] += quantity
+            self.items[item]['quantity'] += quantity
         else:
-            self.items[item] = {"price": price, "quantity": quantity}
+            self.items[item] = {'price': price, 'quantity': quantity}
 
     def remove_item(self, item, quantity=1):
         """
@@ -30,9 +30,8 @@ class ShoppingCart:
         :return: None
         """
         if item in self.items:
-            if self.items[item]["quantity"] > quantity:
-                self.items[item]["quantity"] -= quantity
-            elif self.items[item]["quantity"] == quantity:
+            self.items[item]['quantity'] -= quantity
+            if self.items[item]['quantity'] <= 0:
                 del self.items[item]
 
     def view_items(self) -> dict:
@@ -49,5 +48,5 @@ class ShoppingCart:
         """
         total = 0.0
         for item in self.items.values():
-            total += item["price"] * item["quantity"]
+            total += item['price'] * item['quantity']
         return total

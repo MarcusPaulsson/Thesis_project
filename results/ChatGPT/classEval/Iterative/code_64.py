@@ -25,7 +25,7 @@ class NumberConverter:
         >>> NumberConverter.binary_to_decimal('1010010110110111')
         42423
         """
-        if not isinstance(binary_num, str) or not all(bit in '01' for bit in binary_num):
+        if not isinstance(binary_num, str) or not all(c in '01' for c in binary_num):
             raise ValueError("Input must be a binary string.")
         return int(binary_num, 2)
 
@@ -51,7 +51,7 @@ class NumberConverter:
         >>> NumberConverter.octal_to_decimal('122667')
         42423
         """
-        if not isinstance(octal_num, str) or not all(digit in '01234567' for digit in octal_num):
+        if not isinstance(octal_num, str) or not all(c in '01234567' for c in octal_num):
             raise ValueError("Input must be an octal string.")
         return int(octal_num, 8)
 
@@ -77,6 +77,6 @@ class NumberConverter:
         >>> NumberConverter.hex_to_decimal('a5b7')
         42423
         """
-        if not isinstance(hex_num, str) or not all(char in '0123456789abcdefABCDEF' for char in hex_num):
+        if not isinstance(hex_num, str) or not all(c in '0123456789abcdefABCDEF' for c in hex_num):
             raise ValueError("Input must be a hexadecimal string.")
         return int(hex_num, 16)

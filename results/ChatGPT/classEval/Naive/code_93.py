@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import dot, array, linalg
 
 class VectorUtil:
     """
@@ -9,22 +10,21 @@ class VectorUtil:
     def similarity(vector_1, vector_2):
         """
         Compute the cosine similarity between one vector and another vector.
-        :param vector_1: numpy.ndarray, Vector from which similarities are to be computed, expected shape (dim,).
-        :param vector_2: numpy.ndarray, Vector from which similarities are to be computed, expected shape (dim,).
-        :return: float, Cosine similarity between `vector_1` and `vector_2`
+        :param vector_1: numpy.ndarray
+        :param vector_2: numpy.ndarray
+        :return: float
         """
-        dot_product = np.dot(vector_1, vector_2)
-        norm_1 = np.linalg.norm(vector_1)
-        norm_2 = np.linalg.norm(vector_2)
-        return dot_product / (norm_1 * norm_2) if norm_1 and norm_2 else 0.0
+        if np.linalg.norm(vector_1) == 0 or np.linalg.norm(vector_2) == 0:
+            return 0.0
+        return dot(vector_1, vector_2) / (np.linalg.norm(vector_1) * np.linalg.norm(vector_2))
 
     @staticmethod
     def cosine_similarities(vector_1, vectors_all):
         """
         Compute cosine similarities between one vector and a set of other vectors.
-        :param vector_1: numpy.ndarray, Vector from which similarities are to be computed, expected shape (dim,).
-        :param vectors_all: list of numpy.ndarray, For each row in vectors_all, distance from vector_1 is computed, expected shape (num_vectors, dim).
-        :return: numpy.ndarray, Cosine similarities between `vector_1` and each row in `vectors_all`, shape (num_vectors,).
+        :param vector_1: numpy.ndarray
+        :param vectors_all: list of numpy.ndarray
+        :return: numpy.ndarray
         """
         return np.array([VectorUtil.similarity(vector_1, vector) for vector in vectors_all])
 
@@ -32,12 +32,14 @@ class VectorUtil:
     def n_similarity(vector_list_1, vector_list_2):
         """
         Compute cosine similarity between two sets of vectors.
-        :param vector_list_1: list of numpy.ndarray
-        :param vector_list_2: list of numpy.ndarray
-        :return: numpy.ndarray, Similarities between vector_list_1 and vector_list_2.
+        :param vector_list_1: list of numpy vector
+        :param vector_list_2: list of numpy vector
+        :return: float
         """
+        if not vector_list_1 or not vector_list_2:
+            return 0.0
         similarities = [VectorUtil.similarity(v1, v2) for v1 in vector_list_1 for v2 in vector_list_2]
-        return np.mean(similarities) if similarities else 0.0
+        return np.mean(similarities)
 
     @staticmethod
     def compute_idf_weight_dict(total_num, number_dict):

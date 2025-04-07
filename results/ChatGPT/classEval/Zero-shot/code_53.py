@@ -25,22 +25,17 @@ class LongestWord:
         Words are strictly case sensitive.
         :param sentence: a sentence str
         :return str: longest splited word that is in the self.word_list. return '' if self.word_list is empty.
-        >>> longestWord = LongestWord()
-        >>> longestWord.add_word('A')
-        >>> longestWord.add_word('aM')
-        >>> longestWord.find_longest_word('I am a student.')
-        'a'
         """
         if not self.word_list:
             return ''
-        
+
         # Remove punctuation and split the sentence into words
         words = re.findall(r'\b\w+\b', sentence)
         
-        # Find the longest word in the word_list that is in the words from the sentence
-        longest = ''
+        # Find the longest word in the word list that appears in the sentence
+        longest_word = ''
         for word in words:
-            if word in self.word_list and len(word) > len(longest):
-                longest = word
-        
-        return longest
+            if word in self.word_list and len(word) > len(longest_word):
+                longest_word = word
+
+        return longest_word

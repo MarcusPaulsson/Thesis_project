@@ -1,12 +1,12 @@
 class BalancedBrackets:
     """
-    This is a class that checks for bracket matching.
+    This is a class that checks for bracket matching
     """
 
     def __init__(self, expr):
         """
         Initializes the class with an expression.
-        :param expr: The expression to check for balanced brackets, str.
+        :param expr: The expression to check for balanced brackets,str.
         """
         self.stack = []
         self.left_brackets = ["(", "{", "["]
@@ -21,7 +21,7 @@ class BalancedBrackets:
         >>> b.expr
         '()'
         """
-        self.expr = ''.join([char for char in self.expr if char in self.left_brackets + self.right_brackets])
+        self.expr = "".join(c for c in self.expr if c in self.left_brackets or c in self.right_brackets)
 
     def check_balanced_brackets(self):
         """
@@ -30,18 +30,15 @@ class BalancedBrackets:
         >>> b = BalancedBrackets("a(b)c")
         >>> b.check_balanced_brackets()
         True
-        >>> b = BalancedBrackets("a[b{c}d]e")
-        >>> b.check_balanced_brackets()
-        True
-        >>> b = BalancedBrackets("a(b{c)d}")
-        >>> b.check_balanced_brackets()
-        False
         """
         self.clear_expr()
         for char in self.expr:
             if char in self.left_brackets:
                 self.stack.append(char)
             elif char in self.right_brackets:
-                if not self.stack or self.left_brackets[self.right_brackets.index(char)] != self.stack.pop():
+                if not self.stack:
                     return False
-        return len(self.stack) == 0
+                top = self.stack.pop()
+                if self.left_brackets.index(top) != self.right_brackets.index(char):
+                    return False
+        return not self.stack

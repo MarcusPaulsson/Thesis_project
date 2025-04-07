@@ -3,7 +3,7 @@ import openpyxl
 
 class ExcelProcessor:
     """
-    A class for processing Excel files, including reading, writing, and modifying Excel data.
+    A class for processing Excel files, including reading and writing data, and performing specific operations.
     """
 
     def __init__(self):
@@ -12,60 +12,60 @@ class ExcelProcessor:
     def read_excel(self, file_name):
         """
         Read data from an Excel file.
-        
-        :param file_name: str, path to the Excel file to read.
-        :return: list of tuples, data from the Excel file.
+        :param file_name: str, Excel file name to read.
+        :return: list of tuples, Data in Excel.
         """
+        if not file_name:
+            print("File name is empty.")
+            return None
+
         try:
-            wb = openpyxl.load_workbook(file_name)
-            sheet = wb.active
-            data = [row for row in sheet.iter_rows(values_only=True)]
+            workbook = openpyxl.load_workbook(file_name)
+            sheet = workbook.active
+            data = [tuple(row) for row in sheet.iter_rows(values_only=True)]
             return data
-        except FileNotFoundError:
-            print(f"Error: The file '{file_name}' was not found.")
-            return []
         except Exception as e:
-            print(f"An error occurred while reading the file: {e}")
-            return []
+            print(f"Error reading {file_name}: {e}")
+            return None
 
     def write_excel(self, data, file_name):
         """
-        Write data to an Excel file.
-        
-        :param data: list of tuples, data to write to the Excel file.
-        :param file_name: str, path to the Excel file to write to.
-        :return: bool, True if writing was successful, False otherwise.
+        Write data to the specified Excel file.
+        :param data: list of tuples, Data to be written.
+        :param file_name: str, Excel file name to write to.
+        :return: int, 1 for success, 0 for failure.
         """
+        if not file_name or not data:
+            print("File name or data to write is empty.")
+            return 0
+
         try:
-            wb = openpyxl.Workbook()
-            sheet = wb.active
+            workbook = openpyxl.Workbook()
+            sheet = workbook.active
             for row in data:
                 sheet.append(row)
-            wb.save(file_name)
-            return True
+            workbook.save(file_name)
+            return 1
         except Exception as e:
-            print(f"Error writing to file: {e}")
-            return False
+            print(f"Error writing to {file_name}: {e}")
+            return 0
 
-    def process_excel_data(self, N, source_file_name):
+    def process_excel_data(self, N, save_file_name):
         """
-        Modify a specified column in the Excel file to uppercase.
-        
-        :param N: int, the index of the column to change (0-based).
-        :param source_file_name: str, path to the source Excel file.
-        :return: (bool, str), True if processing was successful, along with the name of the saved file.
+        Change the specified column in the Excel file to uppercase.
+        :param N: int, The serial number of the column to change.
+        :param save_file_name: str, source file name.
+        :return: (int, str), Status of write operation and the saved file name.
         """
-        data = self.read_excel(source_file_name)
-        if not data:
-            return False, source_file_name
-        
-        modified_data = []
+        data = self.read_excel(save_file_name)
+        if data is None or N >= len(data[0]):
+            return 0, ""
+
+        new_data = []
         for row in data:
-            modified_row = list(row)
-            if N < len(modified_row):
-                modified_row[N] = str(modified_row[N]).upper()
-            modified_data.append(tuple(modified_row))
-        
-        output_file_name = f"processed_{source_file_name}"
-        success = self.write_excel(modified_data, output_file_name)
+            new_row = list(row) + [row[N].upper() if isinstance(row[N], str) else row[N]]
+            new_data.append(tuple(new_row))
+
+        output_file_name = f"processed_{save_file_name}"
+        success = self.write_excel(new_data, output_file_name)
         return success, output_file_name

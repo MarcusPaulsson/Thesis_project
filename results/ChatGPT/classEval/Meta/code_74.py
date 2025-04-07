@@ -17,10 +17,10 @@ class Server:
         :param addr: int, address to be added
         :return: new whitelist, return False if the address already exists
         """
-        if addr not in self.white_list:
-            self.white_list.append(addr)
-            return self.white_list
-        return False
+        if addr in self.white_list:
+            return False
+        self.white_list.append(addr)
+        return self.white_list
 
     def del_white_list(self, addr):
         """
@@ -28,10 +28,10 @@ class Server:
         :param addr: int, address to be deleted
         :return: new whitelist, return False if the address does not exist
         """
-        if addr in self.white_list:
-            self.white_list.remove(addr)
-            return self.white_list
-        return False
+        if addr not in self.white_list:
+            return False
+        self.white_list.remove(addr)
+        return self.white_list
 
     def recv(self, info):
         """
@@ -39,11 +39,14 @@ class Server:
         :param info: dict, information dictionary containing address and content
         :return: if successfully received, return the content of the information; otherwise, return False
         """
-        addr = info.get("addr")
-        if addr in self.white_list:
-            self.receive_struct[addr] = info["content"]
-            return info["content"]
-        return False
+        if not isinstance(info, dict) or 'addr' not in info or 'content' not in info:
+            return -1
+        addr = info['addr']
+        content = info['content']
+        if addr not in self.white_list:
+            return False
+        self.receive_struct = info
+        return content
 
     def send(self, info):
         """
@@ -51,8 +54,9 @@ class Server:
         :param info: dict, information dictionary containing address and content
         :return: if successfully sent, return nothing; otherwise, return a string indicating an error message
         """
+        if not isinstance(info, dict) or 'addr' not in info or 'content' not in info:
+            return "info structure is not correct"
         self.send_struct = info
-        return None
 
     def show(self, type):
         """

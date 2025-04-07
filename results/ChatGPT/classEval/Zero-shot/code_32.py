@@ -20,15 +20,15 @@ class DecryptionUtils:
         >>> d.caesar_decipher('ifmmp', 1)
         'hello'
         """
-        plaintext = ""
+        deciphered = []
         for char in ciphertext:
             if char.isalpha():
-                shift_base = ord('a') if char.islower() else ord('A')
-                deciphered_char = chr((ord(char) - shift_base - shift) % 26 + shift_base)
-                plaintext += deciphered_char
+                shift_amount = 65 if char.isupper() else 97
+                deciphered_char = chr((ord(char) - shift_amount - shift) % 26 + shift_amount)
+                deciphered.append(deciphered_char)
             else:
-                plaintext += char
-        return plaintext
+                deciphered.append(char)
+        return ''.join(deciphered)
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -39,15 +39,19 @@ class DecryptionUtils:
         >>> d.vigenere_decipher('ifmmp')
         'ybocl'
         """
-        plaintext = []
+        deciphered = []
         key_length = len(self.key)
-        key_as_int = [ord(i) - ord('a') for i in self.key.lower()]
-        ciphertext_int = [ord(i) - ord('a') for i in ciphertext.lower()]
-
+        key_as_int = [ord(i) - 97 for i in self.key.lower()]
+        ciphertext_int = [ord(i) - 97 for i in ciphertext.lower()]
+        
         for i in range(len(ciphertext_int)):
-            value = (ciphertext_int[i] - key_as_int[i % key_length]) % 26
-            plaintext.append(chr(value + ord('a')))
-        return ''.join(plaintext)
+            if ciphertext[i].isalpha():
+                value = (ciphertext_int[i] - key_as_int[i % key_length]) % 26
+                deciphered.append(chr(value + 97))
+            else:
+                deciphered.append(ciphertext[i])
+        
+        return ''.join(deciphered)
 
     def rail_fence_decipher(self, encrypted_text, rails):
         """
@@ -59,14 +63,47 @@ class DecryptionUtils:
         >>> d.rail_fence_decipher('Hoo!el,Wrdl l', 3)
         'Hello, World!'
         """
-        decrypted_text = [''] * rails
-        rail = 0
-        direction = 1  # 1 means going down, -1 means going up
+        rail = [['\n' for i in range(len(encrypted_text))]
+                for j in range(rails)]
+        dir_down = None
+        row, col = 0, 0
 
-        for char in encrypted_text:
-            decrypted_text[rail] += char
-            rail += direction
-            if rail == 0 or rail == rails - 1:
-                direction *= -1
+        for i in range(len(encrypted_text)):
+            if row == 0:
+                dir_down = True
+            if row == rails - 1:
+                dir_down = False
 
-        return ''.join(decrypted_text)
+            rail[row][col] = '*'
+            col += 1
+
+            if dir_down:
+                row += 1
+            else:
+                row -= 1
+
+        index = 0
+        for i in range(rails):
+            for j in range(len(encrypted_text)):
+                if ((rail[i][j] == '*') and (index < len(encrypted_text))):
+                    rail[i][j] = encrypted_text[index]
+                    index += 1
+
+        result = []
+        row, col = 0, 0
+        for i in range(len(encrypted_text)):
+            if row == 0:
+                dir_down = True
+            if row == rails - 1:
+                dir_down = False
+
+            if (rail[row][col] != '*'):
+                result.append(rail[row][col])
+                col += 1
+
+            if dir_down:
+                row += 1
+            else:
+                row -= 1
+
+        return ''.join(result)

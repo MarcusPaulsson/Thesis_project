@@ -1,8 +1,6 @@
-try:
-    a = int(input("Enter a positive integer: "))
-    if a <= 0:
-        raise ValueError("Input must be a positive integer.")
+a = int(input())
+if 1 <= a <= 64:
     output = (a - 1).bit_length()
     print(output)
-except ValueError as e:
-    print(e)
+else:
+    print("Input must be between 1 and 64.")

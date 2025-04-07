@@ -1,31 +1,32 @@
 def min_colors_to_sort(n, s):
-    # To store the index of characters
-    char_indices = {}
-
-    # Collect the positions of each character
-    for i, char in enumerate(s):
-        if char not in char_indices:
-            char_indices[char] = []
-        char_indices[char].append(i)
-
-    # Initialize the colors array
+    # Create a list to store the coloring
     colors = [0] * n
-    color = 0
+    color = 1
+    last_seen = {}
+    
+    for i in range(n):
+        char = s[i]
+        # If this character has been seen before and is not adjacent
+        if char in last_seen and last_seen[char] != i - 1:
+            colors[i] = color + 1
+            color += 1
+        else:
+            colors[i] = color
+        
+        last_seen[char] = i  # Update last seen position
+    
+    # The number of colors used
+    res = max(colors)
+    
+    return res, colors
 
-    # Iterate through the sorted unique characters
-    for char in sorted(char_indices.keys()):
-        color += 1  # Increment the color for each unique character
-        for idx in char_indices[char]:
-            colors[idx] = color
+# Input reading
+n = int(input())
+s = input().strip()
 
-    # The number of colors used is the maximum color value
-    res = color
+# Get the result
+res, coloring = min_colors_to_sort(n, s)
 
-    print(res)
-    print(' '.join(map(str, colors)))
-
-# Read input
-if __name__ == "__main__":
-    n = int(input().strip())
-    s = input().strip()
-    min_colors_to_sort(n, s)
+# Output the result
+print(res)
+print(" ".join(map(str, coloring)))

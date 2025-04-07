@@ -1,20 +1,16 @@
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# Ensure the input number is long enough
-if len(number) != n:
-    raise ValueError("The length of the input number does not match n.")
+# Create the target pattern: '0' * y + '1' + '0' * (x - y - 1)
+target = ['0'] * x
+target[y] = '1'
 
-# Calculate the number of changes needed
-changes = 0
+# Initialize a counter for the number of operations needed
+operations = 0
 
-# Check the (y + 1)th digit from the end
-if number[n - (y + 1)] != '1':
-    changes += 1
+# Check the last x digits of the number against the target pattern
+for i in range(x):
+    if number[n - x + i] != target[i]:
+        operations += 1
 
-# Check the last y digits
-for i in range(y):
-    if number[n - (i + 1)] != '0':
-        changes += 1
-
-print(changes)
+print(operations)

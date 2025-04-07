@@ -1,53 +1,55 @@
 import PyPDF2
-from typing import List
+import os
 
 class PDFHandler:
     """
     The class allows merging multiple PDF files into one and extracting text from PDFs using PyPDF2 library.
     """
 
-    def __init__(self, filepaths: List[str]):
+    def __init__(self, filepaths):
         """
-        Initializes PDFHandler with a list of file paths.
-        Creates a list of PdfReader objects for the provided file paths.
-        
-        :param filepaths: List of PDF file paths to be handled.
+        Takes a list of file paths (filepaths) as a parameter.
+        It creates a list named readers using PyPDF2, where each reader opens a file from the given paths.
         """
         self.filepaths = filepaths
-        self.readers = [PyPDF2.PdfReader(fp) for fp in filepaths]
+        self.readers = [self._open_pdf(fp) for fp in filepaths]
 
-    def merge_pdfs(self, output_filepath: str) -> str:
+    def _open_pdf(self, filepath):
         """
-        Merges multiple PDF files into one and saves it to disk.
-        
-        :param output_filepath: str, output file path to save the merged PDF
-        :return: str, message indicating the location of the saved merged PDF
+        Helper method to open a PDF file and return a PdfFileReader object.
+        :param filepath: str, path to the PDF file
+        :return: PdfFileReader object
         """
-        writer = PyPDF2.PdfWriter()
+        try:
+            return PyPDF2.PdfReader(filepath)
+        except Exception as e:
+            raise ValueError(f"Error opening {filepath}: {e}")
 
+    def merge_pdfs(self, output_filepath):
+        """
+        Merge PDF files in self.readers to one pdf and save it to disk.
+        :param output_filepath: str, output file path to save to
+        :return: str, confirmation message if successfully merged
+        """
+        pdf_writer = PyPDF2.PdfWriter()
         for reader in self.readers:
-            for page in reader.pages:
-                writer.add_page(page)
-
+            for page_num in range(len(reader.pages)):
+                pdf_writer.add_page(reader.pages[page_num])
+        
         with open(output_filepath, 'wb') as out_file:
-            writer.write(out_file)
-
+            pdf_writer.write(out_file)
+        
         return f"Merged PDFs saved at {output_filepath}"
 
-    def extract_text_from_pdfs(self) -> List[str]:
+    def extract_text_from_pdfs(self):
         """
-        Extracts text from each PDF file and returns a list of text content.
-        
-        :return: List of strings, each containing the text of one PDF file
+        Extract text from PDF files in self.readers.
+        :return: list of str, each element is the text of one PDF file
         """
         pdf_texts = []
-        
         for reader in self.readers:
-            text = ""
-            for page in reader.pages:
-                page_text = page.extract_text()
-                if page_text:  # Check if text extraction is successful
-                    text += page_text
+            text = ''
+            for page_num in range(len(reader.pages)):
+                text += reader.pages[page_num].extract_text() or ''
             pdf_texts.append(text)
-
         return pdf_texts

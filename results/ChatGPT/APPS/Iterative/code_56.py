@@ -1,12 +1,18 @@
 def f(x):
-    return x // 10 if x % 10 == 0 else x + 1
+    x += 1
+    while x % 10 == 0:
+        x //= 10
+    return x
 
 def reachable_count(n):
     reachable = set()
-    while n not in reachable:
-        reachable.add(n)
-        n = f(n)
+    current = n
+    
+    while current not in reachable:
+        reachable.add(current)
+        current = f(current)
+    
     return len(reachable)
 
-n = int(input())
+n = int(input().strip())
 print(reachable_count(n))

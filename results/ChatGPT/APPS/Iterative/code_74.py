@@ -1,43 +1,24 @@
-def min_cost_to_get_subsequences(n, k, s):
-    if k <= 0:
-        return 0  # No subsequences needed
-    
-    unique_chars = set(s)
-    max_subsequences = 0
-    costs = []
-    
-    # Count distinct characters and calculate costs for subsequences
-    for char in unique_chars:
-        count = s.count(char)
-        costs.append(count)  # Each character can contribute subsequences
-        max_subsequences += (1 << count) - 1  # 2^count - 1
-    
-    # If we can't form enough unique subsequences
-    if max_subsequences < k:
-        return -1
-    
-    # Sort costs in descending order to minimize total cost
-    costs.sort(reverse=True)
-    
-    total_cost = 0
-    needed = k
-    
-    # Calculate minimum cost to get k unique subsequences
-    for i in range(min(len(costs), needed)):
-        total_cost += costs[i]
-    
-    # If more unique subsequences are needed than we have distinct characters
-    if needed > len(costs):
-        total_cost += (needed - len(costs)) * n  # Remaining needed subsequences come from full length
-    
-    return total_cost
+from itertools import combinations
 
-# Read input
+def min_cost_to_get_k_subsequences(n, k, s):
+    unique_chars = set(s)
+    unique_count = len(unique_chars)
+
+    if k > (1 << unique_count) - 1:  # 2^unique_count - 1
+        return -1
+
+    costs = []
+    for length in range(1, n + 1):
+        for subseq in combinations(s, length):
+            subseq_str = ''.join(subseq)
+            if subseq_str not in costs:
+                costs.append(subseq_str)
+                if len(costs) == k:
+                    return sum(n - len(t) for t in costs)
+    
+    return -1
+
 n, k = map(int, input().split())
 s = input().strip()
-
-# Get result
-result = min_cost_to_get_subsequences(n, k, s)
-
-# Print result
+result = min_cost_to_get_k_subsequences(n, k, s)
 print(result)

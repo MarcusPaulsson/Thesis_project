@@ -1,12 +1,12 @@
 class IPAddress:
     """
-    This is a class to process IP Address, including validating, getting the octets, and obtaining the binary representation of a valid IP address.
+    This is a class to process IP Address, including validating, getting the octets and obtaining the binary representation of a valid IP address.
     """
 
     def __init__(self, ip_address):
         """
         Initialize the IP address to the specified address
-        :param ip_address: str
+        :param ip_address: string
         """
         self.ip_address = ip_address
 
@@ -14,14 +14,7 @@ class IPAddress:
         """
         Judge whether the IP address is valid, that is, whether the IP address is composed of four decimal digits separated by '.'. 
         Each digit is greater than or equal to 0 and less than or equal to 255.
-        
         :return: bool
-        >>> ipaddress = IPAddress("10.10.10.10")
-        >>> ipaddress.is_valid()
-        True
-        >>> ipaddress = IPAddress("256.100.50.25")
-        >>> ipaddress.is_valid()
-        False
         """
         octets = self.ip_address.split('.')
         if len(octets) != 4:
@@ -35,29 +28,15 @@ class IPAddress:
         """
         If the IP address is valid, the list of four decimal numbers separated by "." constituting the IP address is returned; 
         otherwise, an empty list is returned.
-        
         :return: list
-        >>> ipaddress = IPAddress("10.10.10.10")
-        >>> ipaddress.get_octets()
-        ['10', '10', '10', '10']
-        >>> ipaddress = IPAddress("256.100.50.25")
-        >>> ipaddress.get_octets()
-        []
         """
         return self.ip_address.split('.') if self.is_valid() else []
 
     def get_binary(self):
         """
         If the IP address is valid, return the binary form of the IP address; otherwise, return an empty string.
-        
-        :return: str
-        >>> ipaddress = IPAddress("10.10.10.10")
-        >>> ipaddress.get_binary()
-        '00001010.00001010.00001010.00001010'
-        >>> ipaddress = IPAddress("256.100.50.25")
-        >>> ipaddress.get_binary()
-        ''
+        :return: string
         """
         if self.is_valid():
-            return '.'.join(format(int(octet), '08b') for octet in self.get_octets())
+            return '.'.join(f"{int(octet):08b}" for octet in self.ip_address.split('.'))
         return ''

@@ -16,11 +16,9 @@ class ClassRegistrationSystem:
         """
         register a student to the system, add the student to the students list, if the student is already registered, return 0, else return 1
         """
-        for existing_student in self.students:
-            if existing_student['name'] == student['name']:
-                return 0
+        if student in self.students:
+            return 0
         self.students.append(student)
-        self.students_registration_classes[student['name']] = []
         return 1
 
     def register_class(self, student_name, class_name):
@@ -30,8 +28,9 @@ class ClassRegistrationSystem:
         :param class_name: str
         :return a list of class names that the student has registered
         """
-        if student_name in self.students_registration_classes:
-            self.students_registration_classes[student_name].append(class_name)
+        if student_name not in self.students_registration_classes:
+            self.students_registration_classes[student_name] = []
+        self.students_registration_classes[student_name].append(class_name)
         return self.students_registration_classes[student_name]
 
     def get_students_by_major(self, major):
@@ -52,14 +51,13 @@ class ClassRegistrationSystem:
     def get_most_popular_class_in_major(self, major):
         """
         get the class with the highest enrollment in the major.
-        :return  a string of the most popular class in this major
+        :return a string of the most popular class in this major
         """
         class_count = {}
         for student in self.students:
             if student['major'] == major:
-                for class_name in self.students_registration_classes[student['name']]:
-                    if class_name in class_count:
-                        class_count[class_name] += 1
-                    else:
-                        class_count[class_name] = 1
+                for class_name in self.students_registration_classes.get(student['name'], []):
+                    if class_name not in class_count:
+                        class_count[class_name] = 0
+                    class_count[class_name] += 1
         return max(class_count, key=class_count.get) if class_count else None

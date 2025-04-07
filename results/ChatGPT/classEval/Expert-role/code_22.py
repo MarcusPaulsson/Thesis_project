@@ -1,6 +1,7 @@
 class ClassRegistrationSystem:
     """
-    This is a class as a class registration system, allowing to register students, register them for classes, retrieve students by major, get a list of all majors, and determine the most popular class within a specific major.
+    This is a class as a class registration system, allowing to register students, register them for classes, 
+    retrieve students by major, get a list of all majors, and determine the most popular class within a specific major.
     """
 
     def __init__(self):
@@ -14,12 +15,12 @@ class ClassRegistrationSystem:
 
     def register_student(self, student):
         """
-        Register a student to the system, add the student to the students list, if the student is already registered, return 0, else return 1
+        Register a student to the system. Add the student to the students list. 
+        If the student is already registered, return 0; else return 1.
         """
         if any(s['name'] == student['name'] for s in self.students):
             return 0
         self.students.append(student)
-        self.students_registration_classes[student['name']] = []
         return 1
 
     def register_class(self, student_name, class_name):
@@ -29,14 +30,14 @@ class ClassRegistrationSystem:
         :param class_name: str
         :return a list of class names that the student has registered
         """
-        if student_name in self.students_registration_classes:
-            self.students_registration_classes[student_name].append(class_name)
-            return self.students_registration_classes[student_name]
-        return []
+        if student_name not in self.students_registration_classes:
+            self.students_registration_classes[student_name] = []
+        self.students_registration_classes[student_name].append(class_name)
+        return self.students_registration_classes[student_name]
 
     def get_students_by_major(self, major):
         """
-        Get all students in the major
+        Get all students in the major.
         :param major: str
         :return a list of student names
         """
@@ -44,7 +45,7 @@ class ClassRegistrationSystem:
 
     def get_all_major(self):
         """
-        Get all majors in the system
+        Get all majors in the system.
         :return a list of majors
         """
         return list(set(student['major'] for student in self.students))
@@ -57,7 +58,7 @@ class ClassRegistrationSystem:
         class_count = {}
         for student in self.students:
             if student['major'] == major:
-                for class_name in self.students_registration_classes[student['name']]:
+                for class_name in self.students_registration_classes.get(student['name'], []):
                     if class_name in class_count:
                         class_count[class_name] += 1
                     else:

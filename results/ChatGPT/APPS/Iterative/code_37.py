@@ -1,12 +1,13 @@
 def can_deal_exact_damage(a, b, c):
-    if a <= 0 or b <= 0:
-        return "No"
+    # Loop through the maximum number of shots from the first gun (Ebony)
     for i in range(c // a + 1):
-        if (c - i * a) % b == 0:
+        # Calculate the remaining damage needed after i shots from Ebony
+        remaining_damage = c - i * a
+        # Check if remaining damage can be achieved with shots from Ivory
+        if remaining_damage >= 0 and remaining_damage % b == 0:
             return "Yes"
     return "No"
 
-# Input
+# Input reading
 a, b, c = map(int, input().split())
-# Output
 print(can_deal_exact_damage(a, b, c))

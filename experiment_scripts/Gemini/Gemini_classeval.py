@@ -14,21 +14,18 @@ import config
 from extract_code_python import extract_and_save_python_code, save_results_to_json
 import prompt_technique_templates as prompt
 
-def run_task_with_gemini(task_prompt):
+def run_task_with_gemini_iter(task_prompt, system_prompt):
     """
-    Run a single task by passing the task prompt as the user's message
-    to the Gemini API.
+    Runs a single iteration of a task using the Gemini API.
     """
     client = genai.Client(api_key=config.GEMINI_API_KEY)
-
-    model = "gemini-2.0-flash" 
-    system_prompt = prompt.SYSTEM_PROMPT #or some other system prompt.
-    user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PROMPT
+    model = "gemini-2.0-flash"
+    user_prompt = system_prompt + " Use python to code. Give only the code.\n\n" + task_prompt
 
     contents = [
-    types.Content(
-        role="user",
-        parts=[types.Part.from_text(text=user_prompt)],
+        types.Content(
+            role="user",
+            parts=[types.Part.from_text(text=user_prompt)],
         ),
     ]
     generate_content_config = types.GenerateContentConfig(
@@ -45,9 +42,19 @@ def run_task_with_gemini(task_prompt):
         config=generate_content_config,
     )
 
-    # Extract and return the assistant's reply
     return response.text
 
+def process_task_with_iterations(task_prompt):
+    """Runs a single task through multiple iterations."""
+    print(f"Processing task with iterations...")
+    result_iter1 = run_task_with_gemini_iter(task_prompt, prompt.SYSTEM_PROMPT[0])
+    if not result_iter1:
+        return {"assistant_response": None, "error": "Iteration 1 failed"}
+    assistant_response_iter1 = result_iter1
+    result_iter2 = run_task_with_gemini_iter(assistant_response_iter1 + "\n" + task_prompt, prompt.SYSTEM_PROMPT[1])
+    if not result_iter2:
+        return {"assistant_response": None, "error": "Iteration 2 failed"}
+    return {"assistant_response": result_iter2, "error": None}
 
 def load_classEval_tasks(json_file_path):
     """Loads class evaluation tasks from a JSON file."""
@@ -63,29 +70,41 @@ def load_classEval_tasks(json_file_path):
         return None
 
 if __name__ == "__main__":
-    # Load tasks from the ClassEval CSV file
-    csv_file_path = os.path.join(main_dir, "data", "ClassEval_data.json")
-    tasks = load_classEval_tasks(csv_file_path)
+    # Load tasks from the ClassEval JSON file
+    classeval_file_path = os.path.join(main_dir, "data", "ClassEval_data.json")
+    tasks = load_classEval_tasks(classeval_file_path)
 
     if tasks is None:
-        sys.exit(1) 
+        sys.exit(1)
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 100
-
+    end_index = 1
+    run_iterative = True if prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" else False
     results = []
+
     for i in range(start_index, end_index):
         task_prompt = tasks[i]
         print(f"Processing task {i}...")
-        assistant_response = run_task_with_gemini(task_prompt)
-        results.append({"task_index": i, "assistant_response": assistant_response})
+        if run_iterative:
+            api_result = process_task_with_iterations(task_prompt)
+            if api_result and api_result.get("assistant_response"):
+                results.append({"task_index": i, "assistant_response": api_result["assistant_response"]})
+            elif api_result and api_result.get("error"):
+                print(f"Task {i} failed: {api_result['error']}")
+            else:
+                print(f"Task {i} encountered an unexpected issue during iterations.")
+        else:
+            assistant_response = run_task_with_gemini_iter(task_prompt, prompt.SYSTEM_PROMPT[0])
+            if assistant_response:
+                results.append({"task_index": i, "assistant_response": assistant_response})
+            else:
+                print(f"Task {i} failed during the first iteration.")
 
     # Save results to JSON and extract Python code
     results_dir = os.path.join(main_dir, "results", "Gemini", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    os.makedirs(results_dir, exist_ok=True)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
-    
-    
+
     save_results_to_json(results, json_file_path)
     extract_and_save_python_code(json_file_path, results_dir)
-

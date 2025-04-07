@@ -11,18 +11,11 @@ class FitnessTracker:
         self.weight = weight
         self.age = age
         self.sex = sex
-        self.BMI_std = {
-            "male": [20, 25],
-            "female": [19, 24]
-        }
 
     def get_BMI(self):
         """
         Calculate the BMI based on the height and weight.
-        :return: BMI, which is the weight divided by the square of height, float.
-        >>> fitnessTracker = FitnessTracker(1.8, 70, 20, "male")
-        >>> fitnessTracker.get_BMI()
-        21.604938271604937
+        :return: BMI, which is the weight divide by the square of height, float.
         """
         return self.weight / (self.height ** 2)
 
@@ -30,35 +23,32 @@ class FitnessTracker:
         """
         Judge the condition of the user based on the BMI standard.
         :return: 1 if the user is too fat, -1 if the user is too thin, 0 if the user is normal, int.
-        >>> fitnessTracker = FitnessTracker(1.8, 70, 20, "male")
-        >>> fitnessTracker.condition_judge()
-        0
         """
         bmi = self.get_BMI()
-        if self.sex in self.BMI_std:
-            standard = self.BMI_std[self.sex]
-            if bmi < standard[0]:
-                return -1  # too thin
-            elif bmi > standard[1]:
-                return 1  # too fat
+        if self.sex == "male":
+            if bmi < 20:
+                return -1
+            elif bmi > 25:
+                return 1
             else:
-                return 0  # normal
-        return None  # Invalid sex
+                return 0
+        elif self.sex == "female":
+            if bmi < 19:
+                return -1
+            elif bmi > 24:
+                return 1
+            else:
+                return 0
 
     def calculate_calorie_intake(self):
         """
         Calculate the calorie intake based on the user's condition and BMR (Basal Metabolic Rate).
         :return: calorie intake, float.
-        >>> fitnessTracker = FitnessTracker(1.8, 70, 20, "male")
-        >>> fitnessTracker.calculate_calorie_intake()
-        2106.0
         """
         if self.sex == "male":
-            bmr = 10 * self.weight + 6.25 * self.height * 100 - 5 * self.age + 5
-        elif self.sex == "female":
-            bmr = 10 * self.weight + 6.25 * self.height * 100 - 5 * self.age - 161
-        else:
-            return None  # Invalid sex
+            bmr = 10 * self.weight + 6.25 * self.height - 5 * self.age + 5
+        else:  # female
+            bmr = 10 * self.weight + 6.25 * self.height - 5 * self.age - 161
 
         condition = self.condition_judge()
         if condition == 1:  # too fat

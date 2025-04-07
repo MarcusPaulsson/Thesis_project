@@ -1,54 +1,62 @@
 from collections import deque, defaultdict
 
 def main():
-    import sys
-    input = sys.stdin.read
-    data = input().splitlines()
-
-    n, k = map(int, data[0].split())
-    main_courses = set(map(int, data[1].split()))
-
+    n, k = map(int, input().split())
+    main_courses = list(map(int, input().split()))
+    
+    # Adjacency list for the graph of courses
     dependencies = defaultdict(list)
-    indegree = [0] * (n + 1)
-
+    # In-degree count for topological sorting
+    in_degree = [0] * (n + 1)
+    
     for i in range(1, n + 1):
-        line = list(map(int, data[i + 1].split()))
-        t_i = line[0]
-        for dep in line[1:t_i + 1]:
+        data = list(map(int, input().split()))
+        t_i = data[0]
+        for dep in data[1:t_i + 1]:
             dependencies[dep].append(i)
-            indegree[i] += 1
+            in_degree[i] += 1
 
-    # Topological sort to find the order of courses
+    # Queue for courses with no dependencies (in-degree of 0)
     queue = deque()
+    
+    # Start with all courses that have no dependencies
     for i in range(1, n + 1):
-        if indegree[i] == 0:
+        if in_degree[i] == 0:
             queue.append(i)
-
+    
+    # List to maintain the order of completed courses
     order = []
+    passed_courses = set()
+    
     while queue:
         course = queue.popleft()
         order.append(course)
-        for next_course in dependencies[course]:
-            indegree[next_course] -= 1
-            if indegree[next_course] == 0:
-                queue.append(next_course)
+        passed_courses.add(course)
+        
+        for dependent_course in dependencies[course]:
+            in_degree[dependent_course] -= 1
+            if in_degree[dependent_course] == 0:
+                queue.append(dependent_course)
 
     # Check if we can complete all main courses
-    if not main_courses.issubset(set(order)):
+    if not all(course in passed_courses for course in main_courses):
         print(-1)
         return
 
-    # Determine the minimum courses to take
-    taken_courses = set()
-    result = []
-
+    # Collect all courses needed to pass
+    needed_courses = set(main_courses)
+    result_courses = []
+    
     for course in order:
-        if course in main_courses or any(dep not in taken_courses for dep in dependencies[course]):
-            result.append(course)
-            taken_courses.add(course)
-
-    print(len(result))
-    print(' '.join(map(str, result)))
+        result_courses.append(course)
+        if course in needed_courses:
+            needed_courses.remove(course)
+        if not needed_courses:
+            break
+    
+    # The result courses will be the ones passed until all main are completed
+    print(len(result_courses))
+    print(" ".join(map(str, result_courses)))
 
 if __name__ == "__main__":
     main()

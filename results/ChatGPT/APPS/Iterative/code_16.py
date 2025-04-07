@@ -1,28 +1,17 @@
-def is_regular_bracket_sequence_valid(cnt_1, cnt_2, cnt_3, cnt_4):
-    open_needed = cnt_1 + cnt_2  # Opening brackets from "((" and "()"
-    close_needed = cnt_2 + cnt_4  # Closing brackets from "() and "))"
+cnt1 = int(input())
+cnt2 = int(input())
+cnt3 = int(input())
+cnt4 = int(input())
 
-    # Check if closing brackets exceed opening brackets
-    if close_needed > open_needed:
-        return 0
-
-    # Check if unmatched open brackets exceed unmatched close brackets
-    if cnt_3 > open_needed:
-        return 0
-
-    return 1
-
-# Read input counts
-try:
-    cnt_1 = int(input("Enter count of '((': "))
-    cnt_2 = int(input("Enter count of '()': "))
-    cnt_3 = int(input("Enter count of ')(': "))
-    cnt_4 = int(input("Enter count of ')): ' "))
+# Regular bracket sequence conditions
+if cnt1 + cnt2 + cnt3 + cnt4 == 0:
+    print(1)
+else:
+    open_needed = cnt1 + cnt2
+    close_needed = cnt3 + cnt4
     
-    # Validate input
-    if any(count < 0 for count in (cnt_1, cnt_2, cnt_3, cnt_4)):
-        print("Counts must be non-negative.")
+    # Check if we can match the opening and closing brackets
+    if open_needed >= close_needed and (open_needed - close_needed) % 2 == 0:
+        print(1)
     else:
-        print(is_regular_bracket_sequence_valid(cnt_1, cnt_2, cnt_3, cnt_4))
-except ValueError:
-    print("Invalid input. Please enter integers.")
+        print(0)

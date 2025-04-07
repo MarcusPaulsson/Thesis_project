@@ -1,21 +1,16 @@
 n = int(input())
 q = list(map(int, input().split()))
 
-# Initialize the permutation array
+# Calculate the prefix sums to get the permutation
 p = [0] * n
-
-# Compute p_1 using the prefix sum of q
 for i in range(1, n):
     p[i] = p[i - 1] + q[i - 1]
 
-# Normalize the permutation to make it start from 1
-min_val = min(p)
-offset = 1 - min_val
+# Normalize the permutation to be between 1 and n
+min_p = min(p)
+p = [x - min_p + 1 for x in p]
 
-# Create the final permutation
-p = [x + offset for x in p]
-
-# Check if the permutation is valid
+# Check if p is a valid permutation
 if len(set(p)) == n and all(1 <= x <= n for x in p):
     print(" ".join(map(str, p)))
 else:

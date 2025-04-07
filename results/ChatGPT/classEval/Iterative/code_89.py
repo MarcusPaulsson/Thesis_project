@@ -2,26 +2,25 @@ import random
 
 class TwentyFourPointGame:
     """
-    This is a game of twenty-four points, which generates four numbers and checks whether the player's expression evaluates to 24.
+    This is a game of twenty-four points, which generates four numbers and checks whether the player's expression equals 24.
     """
 
     def __init__(self) -> None:
         self.nums = self._generate_cards()
 
-    def _generate_cards(self) -> list:
+    def _generate_cards(self):
         """
-        Generate four random numbers between 1 and 9 for the cards.
-        :return: list of integers, representing the player's cards
+        Generate random numbers between 1 and 9 for the cards.
         """
         return [random.randint(1, 9) for _ in range(4)]
 
-    def get_my_cards(self) -> list:
+    def get_my_cards(self):
         """
         Get a list of four random numbers between 1 and 9 representing the player's cards.
         :return: list of integers, representing the player's cards
         >>> game = TwentyFourPointGame()
-        >>> len(game.get_my_cards()) == 4
-        True
+        >>> game.get_my_cards()
+        [2, 3, 5, 7]  # Example output
         """
         return self.nums
 
@@ -33,7 +32,7 @@ class TwentyFourPointGame:
         >>> game = TwentyFourPointGame()
         >>> game.nums = [4, 3, 6, 6]
         >>> ans = "4*3+6+6"
-        >>> game.answer(ans)
+        >>> ret = game.answer(ans)
         True
         """
         return self.evaluate_expression(expression)
@@ -44,13 +43,18 @@ class TwentyFourPointGame:
         :param expression: string, mathematical expression
         :return: bool, True if the expression evaluates to 24, False otherwise
         >>> game = TwentyFourPointGame()
-        >>> game.nums = [4, 3, 6, 6]
+        >>> nums = [4, 3, 6, 6]
         >>> ans = "4*3+6+6"
-        >>> game.evaluate_expression(ans)
+        >>> ret = game.evaluate_expression(ans)
         True
         """
         try:
-            result = eval(expression)
-            return result == 24
+            # Check if the expression uses only the allowed numbers
+            allowed_numbers = set(map(str, self.nums))
+            if not all(char in allowed_numbers or char in "+-*/()" for char in expression if not char.isdigit()):
+                return False
+            
+            # Evaluate the expression and check if it equals 24
+            return eval(expression) == 24
         except (SyntaxError, NameError, ZeroDivisionError):
             return False

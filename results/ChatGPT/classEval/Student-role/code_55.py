@@ -1,6 +1,6 @@
 class Manacher:
     """
-    This is a class that implements a manacher algorithm to find the Longest palindromic substring in a given string.
+    This is a class that implements a Manacher algorithm to find the Longest palindromic substring in a given string.
     """
 
     def __init__(self, input_string) -> None:
@@ -9,19 +9,44 @@ class Manacher:
         :param input_string: The input_string to be searched, str.
         """
         self.input_string = input_string
-        self.processed_string = self.preprocess_string(input_string)
-        self.palindrome_lengths = [0] * len(self.processed_string)
-        self.longest_palindrome = ""
-        self.center = 0
-        self.right_boundary = 0
+        self.processed_string = self._preprocess(input_string)
+        self.palindrome_lengths = self._manacher_algorithm()
 
-    def preprocess_string(self, s):
+    def _preprocess(self, s: str) -> str:
         """
-        Preprocesses the input string to insert separators between characters.
-        :param s: The original string, str.
-        :return: The processed string with separators, str.
+        Preprocesses the input string to insert delimiters for Manacher's algorithm.
+        :param s: Input string, str.
+        :return: Processed string with delimiters, str.
         """
         return '|' + '|'.join(s) + '|'
+
+    def _manacher_algorithm(self) -> list:
+        """
+        Applies the Manacher algorithm to find the lengths of palindromes centered at each position.
+        :return: List of palindrome lengths, list of int.
+        """
+        n = len(self.processed_string)
+        lengths = [0] * n
+        center = right = 0
+
+        for i in range(n):
+            mirror = 2 * center - i
+
+            if i < right:
+                lengths[i] = min(right - i, lengths[mirror])
+
+            # Expand around center
+            a, b = i + (1 + lengths[i]), i - (1 + lengths[i])
+            while a < n and b >= 0 and self.processed_string[a] == self.processed_string[b]:
+                lengths[i] += 1
+                a += 1
+                b -= 1
+
+            # Update center and right boundary
+            if i + lengths[i] > right:
+                center, right = i, i + lengths[i]
+
+        return lengths
 
     def palindromic_length(self, center, diff, string):
         """
@@ -30,40 +55,80 @@ class Manacher:
         :param diff: The difference between the center and the current position, int.
         :param string: The string to be searched, str.
         :return: The length of the palindromic substring, int.
-        >>> manacher = Manacher('ababa')
-        >>> manacher.palindromic_length(2, 1, 'a|b|a|b|a')
-        2
         """
-        length = 0
-        while (center - length >= 0) and (center + length < len(string)) and (string[center - length] == string[center + length]):
-            length += 1
-        return length - 1
+        # Calculate the starting and ending positions in the processed string
+        start = center - diff
+        end = center + diff
+        if start < 0 or end >= len(self.processed_string):
+            return 0
+        # Check for palindrome
+        while start >= 0 and end < len(self.processed_string) and self.processed_string[start] == self.processed_string[end]:
+            start -= 1
+            end += 1
+        return (end - 1) - (start + 1)  # return length
 
     def palindromic_string(self):
         """
         Finds the longest palindromic substring in the given string.
         :return: The longest palindromic substring, str.
-        >>> manacher = Manacher('ababaxse')
-        >>> manacher.palindromic_string()
-        'ababa'
         """
-        for i in range(len(self.processed_string)):
-            mirror = 2 * self.center - i
-            if i < self.right_boundary:
-                self.palindrome_lengths[i] = min(self.right_boundary - i, self.palindrome_lengths[mirror])
+        max_length = max(self.palindrome_lengths)
+        center_index = self.palindrome_lengths.index(max_length)
+        start = (center_index - max_length) // 2  # Adjust for processed string
+        return self.input_string[start:start + max_length]
 
-            a, b = i + (1 + self.palindrome_lengths[i]), i - (1 + self.palindrome_lengths[i])
-            while a < len(self.processed_string) and b >= 0 and self.processed_string[a] == self.processed_string[b]:
-                self.palindrome_lengths[i] += 1
-                a += 1
-                b -= 1
+# Test cases
+import unittest
 
-            if i + self.palindrome_lengths[i] > self.right_boundary:
-                self.center = i
-                self.right_boundary = i + self.palindrome_lengths[i]
+class ManacherTestPalindromicLength(unittest.TestCase):
+    def test_palindromic_length(self):
+        manacher = Manacher('ababa')
+        self.assertEqual(manacher.palindromic_length(2, 1, 'a|b|a|b|a'), 2)
 
-            if self.palindrome_lengths[i] > len(self.longest_palindrome) // 2:
-                start = (i - self.palindrome_lengths[i]) // 2
-                self.longest_palindrome = self.input_string[start:start + self.palindrome_lengths[i]]
+    def test_palindromic_length_2(self):
+        manacher = Manacher('ababaxse')
+        self.assertEqual(manacher.palindromic_length(2, 1, 'a|b|a|b|a|x|s|e'), 2)
 
-        return self.longest_palindrome
+    def test_palindromic_length_3(self):
+        manacher = Manacher('ababax')
+        self.assertEqual(manacher.palindromic_length(2, 3, 'a|b|a|b|a|x'), 0)
+
+    def test_palindromic_length_4(self):
+        manacher = Manacher('ababax')
+        self.assertEqual(manacher.palindromic_length(9, 2, 'a|b|a|b|a|x'), 0)
+
+    def test_palindromic_length_5(self):
+        manacher = Manacher('ababax')
+        self.assertEqual(manacher.palindromic_length(4, 1, 'a|b|a|b|a|x'), 4)
+
+
+class ManacherTestPalindromicString(unittest.TestCase):
+    def test_palindromic_string(self):
+        manacher = Manacher('ababaxse')
+        self.assertEqual(manacher.palindromic_string(), 'ababa')
+
+    def test_palindromic_string_2(self):
+        manacher = Manacher('ababax')
+        self.assertEqual(manacher.palindromic_string(), 'ababa')
+
+    def test_palindromic_string_3(self):
+        manacher = Manacher('ababax')
+        self.assertEqual(manacher.palindromic_string(), 'ababa')
+
+    def test_palindromic_string_4(self):
+        manacher = Manacher('ababaxssss')
+        self.assertEqual(manacher.palindromic_string(), 'ababa')
+
+    def test_palindromic_string_5(self):
+        manacher = Manacher('abab')
+        self.assertEqual(manacher.palindromic_string(), 'aba')
+
+
+class ManacherTestMain(unittest.TestCase):
+    def test_main(self):
+        manacher = Manacher('ababa')
+        self.assertEqual(manacher.palindromic_length(2, 1, 'a|b|a|b|a'), 2)
+        self.assertEqual(manacher.palindromic_string(), 'ababa')
+
+if __name__ == '__main__':
+    unittest.main()

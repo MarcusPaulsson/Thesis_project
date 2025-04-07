@@ -23,18 +23,20 @@ class MinesweeperGame:
         :return: The minesweeper map, list.
         """
         board = [[0 for _ in range(self.n)] for _ in range(self.n)]
-        mines = 0
-        
-        while mines < self.k:
+        mines = set()
+
+        while len(mines) < self.k:
             x = random.randint(0, self.n - 1)
             y = random.randint(0, self.n - 1)
-            if board[x][y] != 'X':
-                board[x][y] = 'X'
-                mines += 1
-                for i in range(max(0, x - 1), min(self.n, x + 2)):
-                    for j in range(max(0, y - 1), min(self.n, y + 2)):
-                        if board[i][j] != 'X':
-                            board[i][j] += 1
+            mines.add((x, y))
+
+        for x, y in mines:
+            board[x][y] = 'X'  # Place mine
+            for i in range(max(0, x - 1), min(self.n, x + 2)):
+                for j in range(max(0, y - 1), min(self.n, y + 2)):
+                    if board[i][j] != 'X':
+                        board[i][j] += 1
+
         return board
 
     def generate_playerMap(self):
@@ -44,14 +46,14 @@ class MinesweeperGame:
         """
         return [['-' for _ in range(self.n)] for _ in range(self.n)]
 
-    def check_won(self, map):
+    def check_won(self, player_map):
         """
         Checks whether the player has won the game.
         :return: True if the player has won the game, False otherwise.
         """
         for i in range(self.n):
             for j in range(self.n):
-                if map[i][j] == '-' and self.minesweeper_map[i][j] != 'X':
+                if player_map[i][j] == '-' and self.minesweeper_map[i][j] != 'X':
                     return False
         return True
 
@@ -63,11 +65,10 @@ class MinesweeperGame:
         :return: True if the player has won the game, False otherwise, if the game still continues, return the player map, list.
         """
         if self.minesweeper_map[x][y] == 'X':
-            return "Game Over"
-        
-        self.player_map[x][y] = self.minesweeper_map[x][y]
-        
-        if self.check_won(self.player_map):
-            return True
-        
-        return self.player_map
+            return False  # Game over
+        else:
+            self.player_map[x][y] = self.minesweeper_map[x][y]
+            self.score += 1
+            if self.check_won(self.player_map):
+                return True
+            return self.player_map

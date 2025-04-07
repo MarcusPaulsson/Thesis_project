@@ -13,20 +13,22 @@ class NLPDataProcessor:
         """
         return ['a', 'an', 'the']
 
-    @staticmethod
-    def remove_stop_words(string_list, stop_word_list):
+    def remove_stop_words(self, string_list, stop_word_list):
         """
         Remove all the stop words from the list of strings.
         :param string_list: a list of strings
         :param stop_word_list: a list of stop words
         :return: a list of words without stop words
-        >>> NLPDataProcessor.remove_stop_words(['This is a test.'], NLPDataProcessor.construct_stop_word_list())
+        >>> NLPDataProcessor.process(['This is a test.'])
         [['This', 'is', 'test.']]
         """
-        return [[word for word in string.split() if word.lower() not in stop_word_list] for string in string_list]
+        filtered_words = []
+        for string in string_list:
+            words = string.split()
+            filtered_words.append([word for word in words if word.lower() not in stop_word_list])
+        return filtered_words
 
-    @staticmethod
-    def process(string_list):
+    def process(self, string_list):
         """
         Construct a stop word list including 'a', 'an', 'the', and remove all the stop words from the list of strings.
         :param string_list: a list of strings
@@ -34,5 +36,5 @@ class NLPDataProcessor:
         >>> NLPDataProcessor.process(['This is a test.'])
         [['This', 'is', 'test.']]
         """
-        stop_word_list = NLPDataProcessor.construct_stop_word_list()
-        return NLPDataProcessor.remove_stop_words(string_list, stop_word_list)
+        stop_word_list = self.construct_stop_word_list()
+        return self.remove_stop_words(string_list, stop_word_list)

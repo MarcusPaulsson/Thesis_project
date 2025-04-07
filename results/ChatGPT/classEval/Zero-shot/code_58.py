@@ -23,13 +23,13 @@ class MinesweeperGame:
         :return: The minesweeper map, list.
         """
         board = [[0 for _ in range(self.n)] for _ in range(self.n)]
-        mines_positions = random.sample(range(self.n * self.n), self.k)
-        
-        for pos in mines_positions:
-            x, y = divmod(pos, self.n)
+        mines = random.sample(range(self.n * self.n), self.k)
+        for mine in mines:
+            x = mine // self.n
+            y = mine % self.n
             board[x][y] = 'X'
-            for i in range(max(0, x-1), min(self.n, x+2)):
-                for j in range(max(0, y-1), min(self.n, y+2)):
+            for i in range(max(0, x - 1), min(self.n, x + 2)):
+                for j in range(max(0, y - 1), min(self.n, y + 2)):
                     if board[i][j] != 'X':
                         board[i][j] += 1
         return board
@@ -41,14 +41,14 @@ class MinesweeperGame:
         """
         return [['-' for _ in range(self.n)] for _ in range(self.n)]
 
-    def check_won(self):
+    def check_won(self, map):
         """
         Checks whether the player has won the game.
         :return: True if the player has won the game, False otherwise.
         """
         for i in range(self.n):
             for j in range(self.n):
-                if self.player_map[i][j] == '-' and self.minesweeper_map[i][j] != 'X':
+                if map[i][j] == '-' and self.minesweeper_map[i][j] != 'X':
                     return False
         return True
 
@@ -60,9 +60,9 @@ class MinesweeperGame:
         :return: True if the player has won the game, False otherwise, if the game still continues, return the player map, list.
         """
         if self.minesweeper_map[x][y] == 'X':
-            return "Game Over"
-        
+            return False  # Hit a mine
         self.player_map[x][y] = self.minesweeper_map[x][y]
-        if self.check_won():
+        self.score += 1
+        if self.check_won(self.player_map):
             return True
         return self.player_map

@@ -15,6 +15,9 @@ class ExcelProcessor:
         :param file_name:str, Excel file name to read
         :return:list of data, Data in Excel
         """
+        if not file_name:
+            return None
+        
         workbook = openpyxl.load_workbook(file_name)
         sheet = workbook.active
         data = []
@@ -29,35 +32,34 @@ class ExcelProcessor:
         :param file_name: str, Excel file name to write to
         :return: 0 or 1, 1 represents successful writing, 0 represents failed writing
         """
-        try:
-            workbook = openpyxl.Workbook()
-            sheet = workbook.active
-            for row in data:
-                sheet.append(row)
-            workbook.save(file_name)
-            return 1  # Success
-        except Exception:
-            return 0  # Failure
+        if not file_name:
+            return 0
+        
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+        for row in data:
+            sheet.append(row)
+        workbook.save(file_name)
+        return 1
 
-    def process_excel_data(self, N, file_name):
+    def process_excel_data(self, N, save_file_name):
         """
         Change the specified column in the Excel file to uppercase
-        :param N: int, The serial number of the column that want to change (1-indexed)
-        :param file_name: str, source file name
-        :return: (int, str), The former is the return value of write_excel, while the latter is the saved file name of the processed data
+        :param N: int, The serial number of the column that want to change
+        :param save_file_name: str, source file name
+        :return:(int, str), The former is the return value of write_excel, while the latter is the saved file name of the processed data
         """
-        data = self.read_excel(file_name)
+        data = self.read_excel(save_file_name)
+        if data is None or N < 0 or N >= len(data[0]):
+            return 0, ""
+
         processed_data = []
+        header = list(data[0]) + [data[0][N].upper()]
+        processed_data.append(tuple(header))
+        
+        for row in data[1:]:
+            processed_data.append(tuple(row) + (str(row[N]).upper(),))
 
-        for row in data:
-            if N <= len(row):
-                # Change the specified column to uppercase
-                new_row = list(row)
-                new_row[N - 1] = str(new_row[N - 1]).upper()
-                processed_data.append(new_row)
-            else:
-                processed_data.append(row)
-
-        output_file_name = f"processed_{file_name}"
+        output_file_name = "processed_" + save_file_name
         success = self.write_excel(processed_data, output_file_name)
         return success, output_file_name

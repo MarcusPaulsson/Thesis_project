@@ -1,21 +1,11 @@
 n = int(input())
 s = input().strip()
 
-# Initialize the minimum operations to n (typing all characters one by one)
-min_operations = n
+min_operations = n  # Start with the assumption that we will type all characters one by one
 
-# Try every possible split to find the best copy point
-for i in range(1, n):
-    # The prefix we are considering to copy
-    prefix = s[:i]
-    # The next part of the string after the prefix
-    remaining = s[i:]
-
-    # Check if the remaining string starts with the prefix
-    if remaining.startswith(prefix):
-        # Calculate the required operations
-        operations = i + 1 + (len(remaining) - len(prefix))
+for i in range(1, n // 2 + 1):  # Check up to half the length of the string
+    if s[:i] == s[i:2*i]:  # Check if we can copy the first i characters
+        operations = i + 1 + (n - 2 * i)  # i (initial characters) + 1 (copy operation) + remaining characters
         min_operations = min(min_operations, operations)
 
-# Output the minimum operations found
 print(min_operations)

@@ -1,19 +1,9 @@
-def minimum_traps(m, x):
-    def euler_totient(n):
-        result = n
-        p = 2
-        while p * p <= n:
-            if n % p == 0:
-                while n % p == 0:
-                    n //= p
-                result -= result // p
-            p += 1
-        if n > 1:
-            result -= result // n
-        return result
-    
-    return euler_totient(m)
+def min_traps(m, x):
+    # Since GCD(x, m) = 1, the x-mouse will visit all rooms except for room 0.
+    # Therefore, we need to set traps for all the remaining m-1 rooms.
+    return m - 1
 
-if __name__ == "__main__":
-    m, x = map(int, input("Enter values for m and x, separated by a space: ").split())
-    print(minimum_traps(m, x))
+# Input reading
+m, x = map(int, input().split())
+# Output the result
+print(min_traps(m, x))
