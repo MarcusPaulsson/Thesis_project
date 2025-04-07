@@ -15,9 +15,11 @@ class SplitSentence:
         >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
         ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        sentences = re.split(r'(?<!Mr)(?<!Mrs)(?<!Dr)[\.\?]\s', sentences_string)
-        return [s + sentences_string[sum(len(x) for x in sentences[:i]):sum(len(x) for x in sentences[:i])+len(s)]
-                for i, s in enumerate(sentences) if s]
+        sentences = re.split(r'(?<!Mr)(?<!A\.B\.C)(?<!Mrs)(?<!Dr)[\.\?]\s', sentences_string)
+        sentences = [s + m for s, m in zip(sentences[:-1], re.findall(r'(?<!Mr)(?<!A\.B\.C)(?<!Mrs)(?<!Dr)[\.\?]\s', sentences_string))]
+        sentences.append(sentences_string.split('.')[-1].split('?')[-1] if len(sentences)==0 else sentences[-1])
+        return sentences[:-1] if sentences[-1] == '' else sentences
+
 
     def count_words(self, sentence):
         """
@@ -28,7 +30,11 @@ class SplitSentence:
         2
         """
         words = sentence.split()
-        return len(words)
+        count = 0
+        for word in words:
+            if word.isalpha():
+                count += 1
+        return count
 
     def process_text_file(self, sentences_string):
         """
@@ -42,5 +48,6 @@ class SplitSentence:
         max_words = 0
         for sentence in sentences:
             word_count = self.count_words(sentence)
-            max_words = max(max_words, word_count)
+            if word_count > max_words:
+                max_words = word_count
         return max_words

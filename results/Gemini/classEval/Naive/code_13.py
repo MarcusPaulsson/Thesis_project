@@ -15,13 +15,6 @@ class BookManagement:
         :param title: str, the book title
         :param quantity: int, default value is 1.
         """
-        if not isinstance(title, str):
-            raise TypeError("Title must be a string.")
-        if not isinstance(quantity, int):
-            raise TypeError("Quantity must be an integer.")
-        if quantity <= 0:
-            raise ValueError("Quantity must be a positive integer.")
-
         if title in self.inventory:
             self.inventory[title] += quantity
         else:
@@ -34,23 +27,14 @@ class BookManagement:
         :param title: str, the book title
         :param quantity: int
         """
-        if not isinstance(title, str):
-            raise TypeError("Title must be a string.")
-        if not isinstance(quantity, int):
-            raise TypeError("Quantity must be an integer.")
-        if quantity <= 0:
-            raise ValueError("Quantity must be a positive integer.")
-
         if title not in self.inventory:
-            return False  # Book not found
-
+            raise Exception("Book not found in inventory")
         if self.inventory[title] < quantity:
-            return False  # Not enough books to remove
-
-        self.inventory[title] -= quantity
-        if self.inventory[title] == 0:
+            raise Exception("Not enough books to remove")
+        if self.inventory[title] == quantity:
             del self.inventory[title]
-        return True
+        else:
+            self.inventory[title] -= quantity
 
     def view_inventory(self):
         """
@@ -74,6 +58,7 @@ class BookManagement:
         >>> bookManagement.view_book_quantity("book3")
         0
         """
-        if not isinstance(title, str):
-            raise TypeError("Title must be a string.")
-        return self.inventory.get(title, 0)
+        if title in self.inventory:
+            return self.inventory[title]
+        else:
+            return 0

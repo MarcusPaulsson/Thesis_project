@@ -2,7 +2,7 @@ import random
 
 class TwentyFourPointGame:
     """
-    This is a game of twenty-four points, which provides to generate four numbers and check whether player's expression is equal to 24.
+    This ia a game of twenty-four points, which provides to generate four numbers and check whether player's expression is equal to 24.
     """
 
     def __init__(self) -> None:
@@ -39,9 +39,12 @@ class TwentyFourPointGame:
         >>> ret = game.answer(ans)
         True
         """
+        if not self.nums:
+            return [0,0,0,0]
+
         try:
-            return abs(eval(expression) - 24) < 1e-6  # Using a small tolerance for floating-point comparisons
-        except (SyntaxError, TypeError, NameError, ZeroDivisionError):
+            return self.evaluate_expression(expression)
+        except (SyntaxError, NameError, TypeError, ZeroDivisionError):
             return False
 
 
@@ -57,11 +60,7 @@ class TwentyFourPointGame:
         True
         """
         try:
-            return abs(eval(expression) - 24) < 1e-6  # Using a small tolerance for floating-point comparisons
-        except (SyntaxError, TypeError, NameError, ZeroDivisionError):
+            result = eval(expression)
+            return abs(result - 24) < 1e-6
+        except (SyntaxError, NameError, TypeError, ZeroDivisionError):
             return False
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()

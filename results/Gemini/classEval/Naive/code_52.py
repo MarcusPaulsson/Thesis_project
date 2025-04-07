@@ -31,20 +31,20 @@ class Lemmatization:
 
         """
         sentence = self.remove_punctuation(sentence)
-        tokens = word_tokenize(sentence)
+        words = word_tokenize(sentence)
         pos_tags = self.get_pos_tag(sentence)
         lemmatized_words = []
-        for token, pos_tag in zip(tokens, pos_tags):
+        for word, pos_tag in zip(words, pos_tags):
             if pos_tag.startswith('N'):
-                lemma = self.lemmatizer.lemmatize(token, pos='n')
+                lemma = self.lemmatizer.lemmatize(word, pos='n')
             elif pos_tag.startswith('V'):
-                lemma = self.lemmatizer.lemmatize(token, pos='v')
-            elif pos_tag.startswith('R'):
-                lemma = self.lemmatizer.lemmatize(token, pos='r')
+                lemma = self.lemmatizer.lemmatize(word, pos='v')
             elif pos_tag.startswith('J'):
-                lemma = self.lemmatizer.lemmatize(token, pos='a')
+                lemma = self.lemmatizer.lemmatize(word, pos='a')
+            elif pos_tag.startswith('R'):
+                lemma = self.lemmatizer.lemmatize(word, pos='r')
             else:
-                lemma = self.lemmatizer.lemmatize(token)
+                lemma = self.lemmatizer.lemmatize(word)
             lemmatized_words.append(lemma)
         return lemmatized_words
 
@@ -59,9 +59,10 @@ class Lemmatization:
 
         """
         sentence = self.remove_punctuation(sentence)
-        tokens = word_tokenize(sentence)
-        pos_tags = pos_tag(tokens)
-        return [tag for token, tag in pos_tags]
+        words = word_tokenize(sentence)
+        pos_tags = pos_tag(words)
+        pos_tags_list = [tag[1] for tag in pos_tags]
+        return pos_tags_list
 
     def remove_punctuation(self, sentence):
         """
@@ -73,4 +74,5 @@ class Lemmatization:
         'I am running in a race'
 
         """
-        return sentence.translate(str.maketrans('', '', string.punctuation))
+        sentence = sentence.translate(str.maketrans('', '', string.punctuation))
+        return sentence

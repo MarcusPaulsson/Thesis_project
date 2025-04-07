@@ -24,33 +24,39 @@ class NumberWordFormatter:
         >>> formatter.format(123456)
         "ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY"
         """
-        try:
-            num = int(x)
-        except ValueError:
-            return "Invalid input: Input must be a number."
-
-        if num == 0:
+        if x is None:
+            return ""
+        if isinstance(x, float):
+            integer_part = int(x)
+            decimal_part = round((x - integer_part) * 100)
+            integer_words = self.format(integer_part)
+            decimal_words = self.trans_two(str(decimal_part).zfill(2))
+            if integer_words == "ZERO ONLY":
+                return "ZERO AND CENTS " + decimal_words + " ONLY"
+            return integer_words.replace("ONLY", "") + " AND CENTS " + decimal_words + " ONLY"
+        if x == 0:
             return "ZERO ONLY"
-
-        num_str = str(num)
-        parts = []
-        num_len = len(num_str)
-        group_index = 0
-
-        while num_len > 0:
-            if num_len >= 3:
-                three_digits = num_str[num_len - 3:num_len]
-                num_len -= 3
+        s = str(int(x))
+        length = len(s)
+        result = []
+        i = length - 1
+        j = 0
+        while i >= 0:
+            temp = ""
+            if i >= 2:
+                temp = self.trans_three(s[i - 2:i + 1])
+                i -= 3
+            elif i == 1:
+                temp = self.trans_two(s[i - 1:i + 1])
+                i -= 2
             else:
-                three_digits = num_str[0:num_len]
-                num_len = 0
-
-            if int(three_digits) != 0:
-                parts.insert(0, self.trans_three(three_digits) + " " + self.NUMBER_MORE[group_index])
-            group_index += 1
-
-        result = " ".join(parts).strip()
-        return result + " ONLY"
+                temp = self.NUMBER[int(s[i])]
+                i -= 1
+            if temp != "":
+                result.append(temp + " " + self.parse_more(j))
+            j += 1
+        result.reverse()
+        return " ".join(result).strip() + " ONLY"
 
     def format_string(self, x):
         """
@@ -62,11 +68,10 @@ class NumberWordFormatter:
         "ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY"
         """
         try:
-            num = int(x)
+            num = float(x)
+            return self.format(num)
         except ValueError:
-            return "Invalid input: Input must be a number string."
-
-        return self.format(num)
+            return ""
 
     def trans_two(self, s):
         """
@@ -79,11 +84,10 @@ class NumberWordFormatter:
         """
         if len(s) != 2:
             return ""
-
-        if s[0] == '1':
-            return self.NUMBER_TEEN[int(s[1])]
-        elif s[0] == '0':
+        if s[0] == '0':
             return self.NUMBER[int(s[1])]
+        elif s[0] == '1':
+            return self.NUMBER_TEEN[int(s[1])]
         else:
             if s[1] == '0':
                 return self.NUMBER_TEN[int(s[0]) - 1]
@@ -101,18 +105,16 @@ class NumberWordFormatter:
         """
         if len(s) != 3:
             return ""
-
-        hundred = int(s[0])
-        rest = s[1:3]
-        result = ""
-
-        if hundred > 0:
-            result += self.NUMBER[hundred] + " HUNDRED"
-            if int(rest) > 0:
-                result += " AND "
-
-        result += self.trans_two(rest)
-        return result.strip()
+        result = []
+        if s[0] != '0':
+            result.append(self.NUMBER[int(s[0])])
+            result.append("HUNDRED")
+        two_digits = self.trans_two(s[1:])
+        if two_digits != "":
+            if len(result) > 0:
+                result.append("AND")
+            result.append(two_digits)
+        return " ".join(result).strip()
 
     def parse_more(self, i):
         """

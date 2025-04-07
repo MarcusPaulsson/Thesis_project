@@ -6,91 +6,59 @@ class BitStatusUtil:
     @staticmethod
     def add(states, stat):
         """
-        Add a status to the current status.
-
-        :param states: Current status, int.
-        :param stat: Status to be added, int.
-        :return: The status after adding the status, int.
-        :raises TypeError: if states or stat is not an integer.
-        :raises ValueError: if states or stat is negative.
-
-        >>> BitStatusUtil.add(2, 4)
+        Add a status to the current status,and check the parameters wheather they are legal.
+        :param states: Current status,int.
+        :param stat: Status to be added,int.
+        :return: The status after adding the status,int.
+        >>> bit_status_util = BitStatusUtil()
+        >>> bit_status_util.add(2,4)
         6
+
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("States and stat must be integers.")
-
-        if states < 0 or stat < 0:
-            raise ValueError("States and stat must be non-negative.")
-
         return states | stat
 
     @staticmethod
     def has(states, stat):
         """
-        Check if the current status contains the specified status.
-
-        :param states: Current status, int.
-        :param stat: Specified status, int.
-        :return: True if the current status contains the specified status, otherwise False, bool.
-        :raises TypeError: if states or stat is not an integer.
-        :raises ValueError: if states or stat is negative.
-
-        >>> BitStatusUtil.has(6, 2)
+        Check if the current status contains the specified status,and check the parameters wheather they are legal.
+        :param states: Current status,int.
+        :param stat: Specified status,int.
+        :return: True if the current status contains the specified status,otherwise False,bool.
+        >>> bit_status_util = BitStatusUtil()
+        >>> bit_status_util.has(6,2)
         True
-        """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("States and stat must be integers.")
 
-        if states < 0 or stat < 0:
-            raise ValueError("States and stat must be non-negative.")
+        """
         return (states & stat) == stat
 
     @staticmethod
     def remove(states, stat):
         """
-        Remove the specified status from the current status.
-
-        :param states: Current status, int.
-        :param stat: Specified status, int.
-        :return: The status after removing the specified status, int.
-        :raises TypeError: if states or stat is not an integer.
-        :raises ValueError: if states or stat is negative.
-
-        >>> BitStatusUtil.remove(6, 2)
+        Remove the specified status from the current status,and check the parameters wheather they are legal.
+        :param states: Current status,int.
+        :param stat: Specified status,int.
+        :return: The status after removing the specified status,int.
+        >>> bit_status_util = BitStatusUtil()
+        >>> bit_status_util.remove(6,2)
         4
-        """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("States and stat must be integers.")
 
-        if states < 0 or stat < 0:
-            raise ValueError("States and stat must be non-negative.")
-        return states & ~stat
+        """
+        return states & (~stat)
 
     @staticmethod
     def check(args):
         """
-        Check if the parameters are legal, args must be greater than or equal to 0 and must be even,
-        if not, raise ValueError.
-
-        :param args: Parameters to be checked, list.
-        :raises TypeError: if args is not a list.
-        :raises ValueError: if any element in args is not an integer or is negative or is odd.
+        Check if the parameters are legal, args must be greater than or equal to 0 and must be even,if not,raise ValueError.
+        :param args: Parameters to be checked,list.
         :return: None.
-
-        >>> BitStatusUtil.check([2, 4, 6])
-        >>> BitStatusUtil.check([2, 3, 4])
+        >>> bit_status_util = BitStatusUtil()
+        >>> bit_status_util.check([2,3,4])
         Traceback (most recent call last):
         ...
-        ValueError: 3 is not even
+        ValueError: 3 not even
         """
-        if not isinstance(args, list):
-            raise TypeError("Args must be a list.")
-
         for arg in args:
-            if not isinstance(arg, int):
-                raise ValueError(f"{arg} is not an integer")
             if arg < 0:
-                raise ValueError(f"{arg} is negative")
+                raise ValueError(f"{arg} less than 0")
             if arg % 2 != 0:
-                raise ValueError(f"{arg} is not even")
+                raise ValueError(f"{arg} not even")

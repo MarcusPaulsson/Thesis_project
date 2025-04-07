@@ -2,75 +2,54 @@ import time
 
 class Thermostat:
     """
-    Manages temperature control, including setting and retrieving the target temperature,
-    adjusting the mode, and simulating temperature operation.
+    The class manages temperature control, including setting and retrieving the target temperature, adjusting the mode, and simulating temperature operation.
     """
-
-    VALID_MODES = ['heat', 'cool']
 
     def __init__(self, current_temperature, target_temperature, mode):
         """
-        Initializes a Thermostat instance.
-
-        :param current_temperature: The current temperature (float).
-        :param target_temperature: The target temperature (float).
-        :param mode: The operating mode ('heat' or 'cool').
-        :raises ValueError: If the mode is invalid.
+        initialize instances of the Thermostat class, including the current temperature, target temperature, and operating mode.
+        :param current_temperature: float
+        :param target_temperature: float
+        :param mode: str, the work mode
         """
         self.current_temperature = current_temperature
         self.target_temperature = target_temperature
-        self.mode = self._validate_mode(mode)
-
-    def _validate_mode(self, mode):
-        """
-        Validates the operating mode.
-
-        :param mode: The operating mode (string).
-        :return: The validated mode.
-        :raises ValueError: If the mode is invalid.
-        """
-        if mode not in self.VALID_MODES:
-            raise ValueError(f"Invalid mode: {mode}.  Must be one of {self.VALID_MODES}")
-        return mode
+        self.mode = mode
 
     def get_target_temperature(self):
         """
-        Gets the target temperature.
-
-        :return: The target temperature (float).
+        Get the target temperature of an instance of the Thermostat class.
+        :return self.target_temperature: float
         """
         return self.target_temperature
 
     def set_target_temperature(self, temperature):
         """
-        Sets the target temperature.
-
-        :param temperature: The target temperature (float).
+        Set the target temperature
+        :param temperature: float, the target temperature
         """
         self.target_temperature = temperature
 
     def get_mode(self):
         """
-        Gets the current operating mode.
-
-        :return: The operating mode (string).
+        Get the current work mode
+        :return mode: str, working mode.
         """
         return self.mode
 
     def set_mode(self, mode):
         """
-        Sets the operating mode.
-
-        :param mode: The operating mode ('heat' or 'cool').
-        :raises ValueError: If the mode is invalid.
+        Set the current work mode
+        :param mode: str, working mode. only ['heat', 'cool']
         """
-        self.mode = self._validate_mode(mode)
+        if mode in ['heat', 'cool']:
+            self.mode = mode
+            return True
+        return False
 
     def auto_set_mode(self):
         """
-        Automatically sets the operating mode based on the current and target temperatures.
-        If the current temperature is lower than the target temperature, the mode is set to 'heat',
-        otherwise, it's set to 'cool'.
+        Automatically set the operating mode by comparing with the current temperature and target temperature. If the current temperature is lower than the target temperature, the operating mode is set to 'heat', otherwise it is set to 'cool'.
         """
         if self.current_temperature < self.target_temperature:
             self.mode = 'heat'
@@ -79,10 +58,9 @@ class Thermostat:
 
     def auto_check_conflict(self):
         """
-        Checks for conflicts between the operating mode and the temperature relationship.
-        If a conflict exists, the operating mode is adjusted automatically.
-
-        :return: True if there is no conflict, False otherwise.
+        Check if there is a conflict between the operating mode and the relationship between the current temperature and the target temperature.
+        If there is a conflict, the operating mode will be adjusted automatically.
+        :return: True if mode isn't conflict with the relationship between the current temperature and the target temperature, or False otherwise.
         """
         if self.mode == 'heat' and self.current_temperature >= self.target_temperature:
             self.mode = 'cool'
@@ -93,26 +71,23 @@ class Thermostat:
         else:
             return True
 
-    def simulate_operation(self, temperature_change_rate=1.0, check_interval=0.1):
+    def simulate_operation(self):
         """
-        Simulates the operation of the thermostat, adjusting the current temperature
-        until it reaches the target temperature.
-
-        :param temperature_change_rate: The amount the temperature changes per interval (default: 1.0).
-        :param check_interval: The time interval between temperature adjustments (default: 0.1).
-        :return: The time it took to complete the simulation (integer seconds).
+        simulate the operation of Thermostat. It will automatically start the auto_set_mode method to set the operating mode,
+        and then automatically adjust the current temperature according to the operating mode until the target temperature is reached.
+        :return time: int, the time it took to complete the simulation.
         """
-        start_time = time.time()
+        start_time = 0
         self.auto_set_mode()
-
-        while abs(self.current_temperature - self.target_temperature) > 0.1:
+        while abs(self.current_temperature - self.target_temperature) > 0.3:
             if self.mode == 'heat':
-                self.current_temperature += temperature_change_rate * check_interval
+                self.current_temperature += 1
             else:
-                self.current_temperature -= temperature_change_rate * check_interval
+                self.current_temperature -= 1
+            start_time += 1
+            if start_time > 100:
+                break
 
-            self.auto_check_conflict()
-            time.sleep(check_interval)
-
-        end_time = time.time()
-        return int(end_time - start_time)
+        # Ensure the final temperature is exactly the target temperature
+        self.current_temperature = self.target_temperature
+        return start_time

@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types
 import json
 import sys
-
+import time 
 main_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')) # access content in main folder
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) # access content from one step up in folders
 sys.path.append(main_dir)
@@ -21,7 +21,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
     client = genai.Client(api_key=config.GEMINI_API_KEY)
     model = "gemini-2.0-flash"
     user_prompt = system_prompt + " Use python to code. Give only the code.\n\n" + task_prompt
-
+  
     contents = [
         types.Content(
             role="user",
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 20
+    start_index = 60
     end_index = 100
     run_iterative = True if prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" else False
     results = []

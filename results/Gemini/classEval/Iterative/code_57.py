@@ -12,117 +12,110 @@ class MetricsCalculator2:
     @staticmethod
     def mrr(data):
         """
-        Compute the Mean Reciprocal Rank (MRR) of the input data.
-
-        Args:
-            data: A tuple or list of tuples. Each tuple contains:
-                - result: A list or numpy array of 1s and 0s, where 1 indicates a correct answer and 0 indicates a wrong answer.
-                - ground_truth_num: The total number of relevant items.
-
-        Returns:
-            A tuple containing:
-                - The mean MRR across all input tuples.
-                - A list of MRR values for each input tuple. Returns (0.0, []) if input data is invalid or empty.
+        compute the MRR of the input data. MRR is a widely used evaluation index. It is the mean of reciprocal rank.
+        :param data: the data must be a tuple, list 0,1,eg.([1,0,...],5).  In each tuple (actual result,ground truth num),ground truth num is the total ground num.
+         ([1,0,...],5),
+        or list of tuple eg. [([1,0,1,...],5),([1,0,...],6),([0,0,...],5)].
+        1 stands for a correct answer, 0 stands for a wrong answer.
+        :return: if input data is list, return the recall of this list. if the input data is list of list, return the
+        average recall on all list. The second return value is a list of precision for each input.
+        >>> MetricsCalculator2.mrr(([1, 0, 1, 0], 4))
+        >>> MetricsCalculator2.mrr([([1, 0, 1, 0], 4), ([0, 1, 0, 1], 4)])
+        1.0, [1.0]
+        0.75, [1.0, 0.5]
         """
-        if not data:
-            return 0.0, []
+        if not isinstance(data, (list, tuple)):
+            raise TypeError("Input data must be a list or tuple")
 
         if isinstance(data, tuple):
             data = [data]
 
-        if not isinstance(data, list):
-            print("Warning: Input data should be a tuple or a list of tuples.")
-            return 0.0, []
+        if not data:
+            return 0.0, [0.0]
 
-        rr_list = []
+        reciprocal_ranks = []
         for item in data:
             if not isinstance(item, tuple) or len(item) != 2:
-                print("Warning: Each item in the list should be a tuple of (result, ground_truth_num).")
-                return 0.0, []
+                raise ValueError("Each item in the list must be a tuple of (results, ground_truth_num)")
 
-            result, ground_truth_num = item
+            results, ground_truth_num = item
 
-            if not isinstance(result, (list, np.ndarray)):
-                print("Warning: Result should be a list or numpy array.")
-                return 0.0, []
+            if not isinstance(results, list):
+                raise TypeError("Results must be a list of 0s and 1s")
 
-            if not all(r in [0, 1] for r in result):
-                print("Warning: Result should contain only 0s and 1s.")
-                return 0.0, []
+            if not all(isinstance(r, int) and r in [0, 1] for r in results):
+                raise ValueError("Results must be a list of 0s and 1s")
 
             if not isinstance(ground_truth_num, int):
-                print("Warning: ground_truth_num should be an integer.")
-                return 0.0, []
+                raise TypeError("Ground truth number must be an integer")
 
-            rr = 0
-            for i, r in enumerate(result):
-                if r == 1:
-                    rr = 1 / (i + 1)
-                    break
-            rr_list.append(rr)
+            if any(results):
+                try:
+                    rank = results.index(1) + 1
+                    reciprocal_rank = 1.0 / rank
+                except ValueError:
+                    reciprocal_rank = 0.0
 
-        return np.mean(rr_list) if rr_list else 0.0, rr_list
+            else:
+                reciprocal_rank = 0.0
+
+            reciprocal_ranks.append(reciprocal_rank)
+
+        return np.mean(reciprocal_ranks), reciprocal_ranks
 
     @staticmethod
     def map(data):
         """
-        Compute the Mean Average Precision (MAP) of the input data.
-
-        Args:
-            data: A tuple or list of tuples. Each tuple contains:
-                - result: A list or numpy array of 1s and 0s, where 1 indicates a correct answer and 0 indicates a wrong answer.
-                - ground_truth_num: The total number of relevant items.
-
-        Returns:
-            A tuple containing:
-                - The mean MAP across all input tuples.
-                - A list of MAP values for each input tuple.
+        compute the MAP of the input data. MAP is a widely used evaluation index. It is the mean of AP (average precision).
+        :param data: the data must be a tuple, list 0,1,eg.([1,0,...],5).  In each tuple (actual result,ground truth num),ground truth num is the total ground num.
+         ([1,0,...],5),
+        or list of tuple eg. [([1,0,1,...],5),([1,0,...],6),([0,0,...],5)].
+        1 stands for a correct answer, 0 stands for a wrong answer.
+        :return: if input data is list, return the recall of this list. if the input data is list of list, return the
+        average recall on all list. The second return value is a list of precision for each input.
+        >>> MetricsCalculator2.map(([1, 0, 1, 0], 4))
+        >>> MetricsCalculator2.map([([1, 0, 1, 0], 4), ([0, 1, 0, 1], 4)])
+        0.41666666666666663, [0.41666666666666663]
+        0.3333333333333333, [0.41666666666666663, 0.25]
         """
-        if not data:
-            return 0.0, []
+        if not isinstance(data, (list, tuple)):
+            raise TypeError("Input data must be a list or tuple")
 
         if isinstance(data, tuple):
             data = [data]
 
-        if not isinstance(data, list):
-            print("Warning: Input data should be a tuple or a list of tuples.")
-            return (0.0, [])
+        if not data:
+            return 0.0, [0.0]
 
-        ap_list = []
+        average_precisions = []
         for item in data:
             if not isinstance(item, tuple) or len(item) != 2:
-                print("Warning: Each item in the list should be a tuple of (result, ground_truth_num).")
-                return (0.0, [])
+                raise ValueError("Each item in the list must be a tuple of (results, ground_truth_num)")
 
-            result, ground_truth_num = item
+            results, ground_truth_num = item
 
-            if not isinstance(result, (list, np.ndarray)):
-                print("Warning: Result should be a list or numpy array.")
-                return (0.0, [])
+            if not isinstance(results, list):
+                raise TypeError("Results must be a list of 0s and 1s")
 
-            if not all(r in [0, 1] for r in result):
-                print("Warning: Result should contain only 0s and 1s.")
-                return (0.0, [])
+            if not all(isinstance(r, int) and r in [0, 1] for r in results):
+                raise ValueError("Results must be a list of 0s and 1s")
 
             if not isinstance(ground_truth_num, int):
-                print("Warning: ground_truth_num should be an integer.")
-                return (0.0, [])
+                raise TypeError("Ground truth number must be an integer")
             
-            if ground_truth_num < 0:
-                print("Warning: ground_truth_num should be non-negative.")
-                return (0.0, [])
+            relevant_count = 0
+            precision_sum = 0.0
+            for i, result in enumerate(results):
+                if result == 1:
+                    relevant_count += 1
+                    precision_sum += float(relevant_count) / (i + 1)
 
-            precision_sum = 0
-            correct_count = 0
-            for i, r in enumerate(result):
-                if r == 1:
-                    correct_count += 1
-                    precision_sum += correct_count / (i + 1)
-
-            if ground_truth_num > 0:
-                ap = precision_sum / ground_truth_num
-            else:
+            if ground_truth_num == 0:
                 ap = 0.0
-            ap_list.append(ap)
+            elif relevant_count == 0:
+                ap = 0.0
+            else:
+                 ap = precision_sum / min(ground_truth_num, len(results))
+            average_precisions.append(ap)
 
-        return np.mean(ap_list) if ap_list else 0.0, ap_list
+        return np.mean(average_precisions), average_precisions

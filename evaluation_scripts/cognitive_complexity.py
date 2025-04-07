@@ -17,8 +17,8 @@ sys.path.append(upper_dir)
 
 # EVALUATING ALL RESULTS
 
-result_setting = "filtered_results" # "results"
-#result_setting = "results" # "filtered_results"
+#result_setting = "filtered_results" # "results"
+result_setting = "results" # "filtered_results"
 
 # folder_paths_gemini_cli_games = {
 #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
@@ -53,6 +53,15 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Naive"),
     "ChatGPT classEval Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Iterative"),
 }
+folder_paths_gemma_classEval = {
+    "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
+    "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
+    "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
+    "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),
+    "Gemma3 classEval Meta": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Meta"),
+    "Gemma3 classEval Naive": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Naive"),
+    "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
+}
 
 
 # APPS
@@ -74,12 +83,22 @@ folder_paths_gemini_APPS = {
     "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
     "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
 }
+folder_paths_gemma_APPS = {
+    "Gemma3 APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot"),
+    "Gemma3 APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot-CoT"),
+    "Gemma3 APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Expert-role"),
+    "Gemma3 APPS Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Student-role"),
+    "Gemma3 APPS Meta": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Meta"),
+    "Gemma3 APPS Naive": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Naive"),
+    "Gemma3 APPS Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Iterative"),
+}
 
 
 
 
 results_chatgpt = {}  # Store average and std dev for each folder
 results_gemini = {}
+results_gemma = {}
 
 def analyze_folders(folder_paths, results):
     for folder_name, folder_path in folder_paths.items():
@@ -124,12 +143,15 @@ def geometric_mean(data):
         product *= x
     return round(math.pow(product, 1 / len(data)), 2)
 
-#analyze_folders(folder_paths_gemini_cli_games, results_gemini)
-#analyze_folders(folder_paths_chatgpt_cli_games, results_chatgpt)
+# analyze_folders(folder_paths_gemini_cli_games, results_gemini)
+# analyze_folders(folder_paths_chatgpt_cli_games, results_chatgpt)
+
 analyze_folders(folder_paths_gemini_classEval, results_gemini)
 analyze_folders(folder_paths_chatgpt_classEval, results_chatgpt)
 analyze_folders(folder_paths_chatgpt_APPS, results_chatgpt)
 analyze_folders(folder_paths_gemini_APPS, results_gemini)
+analyze_folders(folder_paths_gemma_APPS, results_gemma)
+analyze_folders(folder_paths_gemma_classEval, results_gemma)
 
 print_std_dev = False  # Changed to True to print standard deviation
 
@@ -142,6 +164,12 @@ for folder, (avg_complexity, std_dev) in results_gemini.items():
         print(f"  {folder}: Average = {avg_complexity}")
 
 for folder, (avg_complexity, std_dev) in results_chatgpt.items():
+    if print_std_dev:
+        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
+    else:
+        print(f"  {folder}: Average = {avg_complexity}")
+
+for folder, (avg_complexity, std_dev) in results_gemma.items():
     if print_std_dev:
         print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
     else:

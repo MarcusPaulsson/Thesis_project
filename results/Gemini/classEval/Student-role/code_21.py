@@ -46,11 +46,11 @@ class Classroom:
         >>> classroom.is_free_at('9:00')
         False
         """
-        check_time_obj = datetime.strptime(check_time, '%H:%M').time()
+        check_time_dt = datetime.strptime(check_time, '%H:%M').time()
         for course in self.courses:
-            start_time_obj = datetime.strptime(course['start_time'], '%H:%M').time()
-            end_time_obj = datetime.strptime(course['end_time'], '%H:%M').time()
-            if start_time_obj <= check_time_obj <= end_time_obj:
+            start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
+            end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
+            if start_time_dt <= check_time_dt < end_time_dt:
                 return False
         return True
 
@@ -64,14 +64,14 @@ class Classroom:
         >>> classroom.check_course_conflict({'name': 'SE', 'start_time': '9:40', 'end_time': '10:40'})
         False
         """
-        new_start_time = datetime.strptime(new_course['start_time'], '%H:%M').time()
-        new_end_time = datetime.strptime(new_course['end_time'], '%H:%M').time()
+        new_start_time_dt = datetime.strptime(new_course['start_time'], '%H:%M').time()
+        new_end_time_dt = datetime.strptime(new_course['end_time'], '%H:%M').time()
 
         for course in self.courses:
-            existing_start_time = datetime.strptime(course['start_time'], '%H:%M').time()
-            existing_end_time = datetime.strptime(course['end_time'], '%H:%M').time()
+            start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
+            end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
 
-            if (new_start_time < existing_end_time and new_end_time > existing_start_time):
+            if not (new_end_time_dt <= start_time_dt or new_start_time_dt >= end_time_dt):
                 return False
 
         return True

@@ -1,7 +1,5 @@
 import logging
 import datetime
-import jwt
-
 
 class AccessGatewayFilter:
     """
@@ -10,7 +8,11 @@ class AccessGatewayFilter:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        logging.basicConfig(level=logging.INFO)
+        self.logger.setLevel(logging.INFO)
+        ch = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        self.logger.addHandler(ch)
 
     def filter(self, request):
         """
@@ -22,19 +24,32 @@ class AccessGatewayFilter:
         True
 
         """
-        if request.get('path') == '/login' and request.get('method') == 'POST':
+        if self.is_start_with(request.get('path')):
             return True
-        elif self.is_start_with(request.get('path')):
-            user = self.get_jwt_user(request)
-            if user:
-                self.set_current_user_info_and_log(user)
-                return True
-            else:
-                self.logger.warning("Invalid JWT token, request rejected.")
-                return False
-        else:
-            self.logger.info(f"Request to {request.get('path')} allowed without authentication.")
-            return True
+
+        auth_header = request.get('headers', {}).get('Authorization')
+        if auth_header:
+            user = auth_header.get('user')
+            jwt_token = auth_header.get('jwt')
+            if user and jwt_token:
+                jwt_user = self.get_jwt_user(request)
+                if jwt_user:
+                    level = user.get('level')
+                    if level is not None:
+                        if level > 3:
+                            return True
+                        elif level < 2:
+                            return None
+                        else:
+                            return False
+                    else:
+                        return True
+                else:
+                    return True  # Allow if JWT is invalid but present
+
+
+        return True
+
 
     def is_start_with(self, request_uri):
         """
@@ -47,10 +62,8 @@ class AccessGatewayFilter:
         True
 
         """
-        if request_uri and (request_uri.startswith('/api') or request_uri.startswith('/login')):
-            return True
-        else:
-            return False
+        return request_uri.startswith('/api') or request_uri.startswith('/login')
+
 
     def get_jwt_user(self, request):
         """
@@ -64,31 +77,15 @@ class AccessGatewayFilter:
         """
         auth_header = request.get('headers', {}).get('Authorization')
         if auth_header:
-            try:
-                user_data = auth_header.get('user')
-                jwt_token = auth_header.get('jwt')
-
-                # Verify JWT token (replace 'your-secret-key' with your actual secret key)
-                payload = jwt.decode(jwt_token, 'your-secret-key', algorithms=['HS256'])
-
-                if user_data and 'user' in user_data:
-                   return user_data
+            user = auth_header.get('user')
+            jwt_token = auth_header.get('jwt')
+            if user and jwt_token:
+                expected_jwt = user['name'] + str(datetime.date.today())
+                if jwt_token == expected_jwt:
+                    return {'user': user}
                 else:
-                    self.logger.warning("User data missing from JWT.")
-                    return user_data
-
-            except jwt.ExpiredSignatureError:
-                self.logger.warning("JWT token has expired.")
-                return None
-            except jwt.InvalidTokenError:
-                self.logger.warning("Invalid JWT token.")
-                return None
-            except Exception as e:
-                self.logger.error(f"Error decoding JWT: {e}")
-                return None
-        else:
-            self.logger.warning("Authorization header missing.")
-            return None
+                    return None
+        return None
 
     def set_current_user_info_and_log(self, user):
         """
@@ -100,8 +97,4 @@ class AccessGatewayFilter:
         >>> filter.set_current_user_info_and_log(user)
 
         """
-        self.logger.info(f"Access granted for user: {user}")
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
+        self.logger.info(f"Access granted to user: {user}")

@@ -5,98 +5,113 @@ class MetricsCalculator:
 
     def __init__(self):
         """
-        Initialize the counts for true positives, false positives, false negatives, and true negatives.
+        Initialize the number of all four samples to 0
         """
         self.true_positives = 0
         self.false_positives = 0
         self.false_negatives = 0
         self.true_negatives = 0
 
+
     def update(self, predicted_labels, true_labels):
         """
-        Update the counts of true positives, false positives, false negatives, and true negatives
-        based on the predicted and true labels.
-
-        :param predicted_labels: list, predicted results (0 or 1)
-        :param true_labels: list, true labels (0 or 1)
-        :raises ValueError: if the lengths of predicted_labels and true_labels are not equal.
+        Update the number of all four samples(true_positives, false_positives, false_negatives, true_negatives)
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
+        :return: None, change the number of corresponding samples
         """
         if len(predicted_labels) != len(true_labels):
-            raise ValueError("The lengths of predicted_labels and true_labels must be equal.")
-
-        for predicted, true in zip(predicted_labels, true_labels):
-            if predicted not in (0, 1) or true not in (0, 1):
-                raise ValueError("predicted_labels and true_labels must contain only 0 or 1")
-            if predicted == 1 and true == 1:
+            raise ValueError("predicted_labels and true_labels must have the same length")
+        for predicted_label, true_label in zip(predicted_labels, true_labels):
+            if predicted_label == 1 and true_label == 1:
                 self.true_positives += 1
-            elif predicted == 1 and true == 0:
+            elif predicted_label == 1 and true_label == 0:
                 self.false_positives += 1
-            elif predicted == 0 and true == 1:
+            elif predicted_label == 0 and true_label == 1:
                 self.false_negatives += 1
-            else:  # predicted == 0 and true == 0
+            elif predicted_label == 0 and true_label == 0:
                 self.true_negatives += 1
 
-    def _calculate_precision(self):
+
+    def precision(self, predicted_labels, true_labels):
         """
-        Calculate precision based on the stored counts.
-        :return: float, precision
+        Calculate precision
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
+        :return: float
         """
-        tp = self.true_positives
-        fp = self.false_positives
+        tp = 0
+        fp = 0
+
+        if len(predicted_labels) != len(true_labels):
+            raise ValueError("predicted_labels and true_labels must have the same length")
+
+        for predicted_label, true_label in zip(predicted_labels, true_labels):
+            if predicted_label == 1 and true_label == 1:
+                tp += 1
+            elif predicted_label == 1 and true_label == 0:
+                fp += 1
+
         if tp + fp == 0:
             return 0.0
         return tp / (tp + fp)
 
-    def _calculate_recall(self):
+
+    def recall(self, predicted_labels, true_labels):
         """
-        Calculate recall based on the stored counts.
-        :return: float, recall
+        Calculate recall
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
+        :return: float
         """
-        tp = self.true_positives
-        fn = self.false_negatives
+        tp = 0
+        fn = 0
+
+        if len(predicted_labels) != len(true_labels):
+            raise ValueError("predicted_labels and true_labels must have the same length")
+
+        for predicted_label, true_label in zip(predicted_labels, true_labels):
+            if predicted_label == 1 and true_label == 1:
+                tp += 1
+            elif predicted_label == 0 and true_label == 1:
+                fn += 1
+
         if tp + fn == 0:
             return 0.0
         return tp / (tp + fn)
 
-    def _calculate_accuracy(self):
+
+    def f1_score(self, predicted_labels, true_labels):
         """
-        Calculate accuracy based on the stored counts.
-        :return: float, accuracy
+        Calculate f1 score, which is the harmonic mean of precision and recall
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
+        :return: float
         """
-        correct = self.true_positives + self.true_negatives
-        total = self.true_positives + self.false_positives + self.false_negatives + self.true_negatives
+        precision = self.precision(predicted_labels, true_labels)
+        recall = self.recall(predicted_labels, true_labels)
+        if precision + recall == 0:
+            return 0.0
+        return 2 * (precision * recall) / (precision + recall)
+
+
+    def accuracy(self, predicted_labels, true_labels):
+        """
+        Calculate accuracy
+        :param predicted_labels: list, predicted results
+        :param true_labels: list, true labels
+        :return: float
+        """
+        correct = 0
+        total = len(predicted_labels)
+
+        if len(predicted_labels) != len(true_labels):
+            raise ValueError("predicted_labels and true_labels must have the same length")
+
         if total == 0:
             return 0.0
+
+        for predicted_label, true_label in zip(predicted_labels, true_labels):
+            if predicted_label == true_label:
+                correct += 1
         return correct / total
-
-    def precision(self):
-        """
-        Calculate precision using the accumulated counts.
-        :return: float, precision
-        """
-        return self._calculate_precision()
-
-    def recall(self):
-        """
-        Calculate recall using the accumulated counts.
-        :return: float, recall
-        """
-        return self._calculate_recall()
-
-    def f1_score(self):
-        """
-        Calculate F1 score, the harmonic mean of precision and recall, using the accumulated counts.
-        :return: float, F1 score
-        """
-        precision_val = self._calculate_precision()
-        recall_val = self._calculate_recall()
-        if precision_val + recall_val == 0:
-            return 0.0
-        return 2 * (precision_val * recall_val) / (precision_val + recall_val)
-
-    def accuracy(self):
-        """
-        Calculate accuracy using the accumulated counts.
-        :return: float, accuracy
-        """
-        return self._calculate_accuracy()

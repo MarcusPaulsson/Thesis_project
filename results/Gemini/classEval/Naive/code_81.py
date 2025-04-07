@@ -1,5 +1,4 @@
 import math
-from collections import Counter
 
 class Statistics3:
     """
@@ -12,17 +11,19 @@ class Statistics3:
         calculates the median of the given list.
         :param data: the given list, list.
         :return: the median of the given list, float.
+        >>> statistics3 = Statistics3()
+        >>> statistics3.median([1, 2, 3, 4])
+        2.5
+
         """
-        sorted_data = sorted(data)
-        n = len(sorted_data)
+        data.sort()
+        n = len(data)
         if n % 2 == 0:
-            # Even number of elements, median is the average of the middle two
-            mid1 = sorted_data[n // 2 - 1]
-            mid2 = sorted_data[n // 2]
+            mid1 = data[n // 2 - 1]
+            mid2 = data[n // 2]
             median = (mid1 + mid2) / 2
         else:
-            # Odd number of elements, median is the middle element
-            median = sorted_data[n // 2]
+            median = data[n // 2]
         return median
 
     @staticmethod
@@ -31,11 +32,61 @@ class Statistics3:
         calculates the mode of the given list.
         :param data: the given list, list.
         :return: the mode of the given list, list.
+        >>> statistics3 = Statistics3()
+        >>> statistics3.mode([1, 2, 3, 3])
+        [3]
+
         """
-        counts = Counter(data)
-        max_count = max(counts.values())
-        modes = [key for key, value in counts.items() if value == max_count]
+        counts = {}
+        for item in data:
+            if item in counts:
+                counts[item] += 1
+            else:
+                counts[item] = 1
+
+        max_count = 0
+        modes = []
+        for item, count in counts.items():
+            if count > max_count:
+                modes = [item]
+                max_count = count
+            elif count == max_count:
+                modes.append(item)
+
         return modes
+
+    @staticmethod
+    def correlation(x, y):
+        """
+        calculates the correlation of the given list.
+        :param x: the given list, list.
+        :param y: the given list, list.
+        :return: the correlation of the given list, float.
+        >>> statistics3 = Statistics3()
+        >>> statistics3.correlation([1, 2, 3], [4, 5, 6])
+        1.0
+
+        """
+        if len(x) != len(y):
+            return None
+
+        n = len(x)
+        if n <= 1:
+            return None
+
+        mean_x = sum(x) / n
+        mean_y = sum(y) / n
+
+        numerator = sum([(x[i] - mean_x) * (y[i] - mean_y) for i in range(n)])
+        denominator_x = sum([(x[i] - mean_x) ** 2 for i in range(n)])
+        denominator_y = sum([(y[i] - mean_y) ** 2 for i in range(n)])
+
+        if denominator_x == 0 or denominator_y == 0:
+            return None
+        
+        denominator = math.sqrt(denominator_x) * math.sqrt(denominator_y)
+
+        return numerator / denominator
 
     @staticmethod
     def mean(data):
@@ -43,10 +94,48 @@ class Statistics3:
         calculates the mean of the given list.
         :param data: the given list, list.
         :return: the mean of the given list, float.
+        >>> statistics3 = Statistics3()
+        >>> statistics3.mean([1, 2, 3])
+        2.0
+
         """
         if not data:
-            return 0.0
+            return None
         return sum(data) / len(data)
+
+    @staticmethod
+    def correlation_matrix(data):
+        """
+        calculates the correlation matrix of the given list.
+        :param data: the given list, list.
+        :return: the correlation matrix of the given list, list.
+        >>> statistics3 = Statistics3()
+        >>> statistics3.correlation_matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
+
+        """
+        num_variables = len(data)
+        matrix = []
+        for i in range(num_variables):
+            row = []
+            for j in range(len(data[0])):
+                row.append(None)
+            matrix.append(row)
+        
+        for i in range(num_variables):
+            for j in range(num_variables):
+                if i != j and num_variables > 1:
+                    correlation_value = Statistics3.correlation(data[i], data[j])
+                    if correlation_value is not None:
+                        matrix[i] = [correlation_value for _ in range(len(data[0]))]
+                        break
+                elif i == j and num_variables > 1:
+                    matrix[i] = [1.0 for _ in range(len(data[0]))]
+                    break
+                else:
+                   matrix[i] = [None for _ in range(len(data[0]))]
+                   break
+        return matrix
 
     @staticmethod
     def standard_deviation(data):
@@ -54,16 +143,17 @@ class Statistics3:
         calculates the standard deviation of the given list.
         :param data: the given list, list.
         :return: the standard deviation of the given list, float.
+        >>> statistics3 = Statistics3()
+        >>> statistics3.standard_deviation([1, 2, 3])
+        1.0
+
         """
-        if not data:
-            return 0.0
-
         n = len(data)
-        if n < 2:
+        if n == 0:
             return 0.0
 
-        mean = Statistics3.mean(data)
-        variance = sum([(x - mean) ** 2 for x in data]) / (n - 1)
+        mean = sum(data) / n
+        variance = sum([(x - mean) ** 2 for x in data]) / n
         return math.sqrt(variance)
 
     @staticmethod
@@ -72,55 +162,20 @@ class Statistics3:
         calculates the z-score of the given list.
         :param data: the given list, list.
         :return: the z-score of the given list, list.
-        """
-        if not data:
-            return []
+        >>> statistics3 = Statistics3()
+        >>> statistics3.z_score([1, 2, 3, 4])
+        [-1.161895003862225, -0.3872983346207417, 0.3872983346207417, 1.161895003862225]
 
-        mean = Statistics3.mean(data)
+        """
+        n = len(data)
+        if n <= 1:
+            return None
+
+        mean = sum(data) / n
         std_dev = Statistics3.standard_deviation(data)
 
         if std_dev == 0:
-            return [0.0] * len(data)
-
-        return [(x - mean) / std_dev for x in data]
-    
-    @staticmethod
-    def correlation(x, y):
-        """
-        calculates the correlation of the given list.
-        :param x: the given list, list.
-        :param y: the given list, list.
-        :return: the correlation of the given list, float.
-        """
-        if not x or not y or len(x) != len(y):
             return None
 
-        n = len(x)
-        mean_x = Statistics3.mean(x)
-        mean_y = Statistics3.mean(y)
-
-        numerator = sum([(x[i] - mean_x) * (y[i] - mean_y) for i in range(n)])
-        denominator = Statistics3.standard_deviation(x) * Statistics3.standard_deviation(y) * (n - 1)
-
-        if denominator == 0:
-            return 0.0  # Handle the case where standard deviations are zero
-
-        return numerator / denominator
-
-    @staticmethod
-    def correlation_matrix(data):
-        """
-        calculates the correlation matrix of the given list.
-        :param data: the given list, list.
-        :return: the correlation matrix of the given list, list.
-        """
-        if not data:
-            return []
-
-        num_variables = len(data)
-        correlation_matrix = [[0.0] * num_variables for _ in range(num_variables)]
-
-        for i in range(num_variables):
-            for j in range(num_variables):
-                correlation_matrix[i][j] = Statistics3.correlation(data[i], data[j])
-        return correlation_matrix
+        z_scores = [(x - mean) / std_dev for x in data]
+        return z_scores

@@ -14,6 +14,7 @@ class PersonRequest:
         self.sex = self._validate_sex(sex)
         self.phoneNumber = self._validate_phoneNumber(phoneNumber)
 
+
     def _validate_name(self, name: str) -> str:
         """
         Validate the name and return it. If name is empty or exceeds 33 characters in length, set to None.
@@ -30,8 +31,7 @@ class PersonRequest:
         :param sex: str, the sex to validate
         :return: str, the validated sex or None if invalid
         """
-        valid_sexes = ["Man", "Woman", "UGM"]
-        if sex not in valid_sexes:
+        if sex not in ("Man", "Woman", "UGM"):
             return None
         return sex
 

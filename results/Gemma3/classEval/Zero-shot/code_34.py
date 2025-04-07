@@ -26,7 +26,8 @@ class DocFileHandler:
             for paragraph in doc.paragraphs:
                 full_text.append(paragraph.text)
             return '\n'.join(full_text)
-        except FileNotFoundError:
+        except Exception as e:
+            print(f"Error reading text from {self.file_path}: {e}")
             return ""
 
     def write_text(self, content, font_size=12, alignment='left'):
@@ -45,7 +46,8 @@ class DocFileHandler:
                 run.font.size = Pt(font_size)
             doc.save(self.file_path)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error writing text to {self.file_path}: {e}")
             return False
 
     def add_heading(self, heading, level=1):
@@ -60,7 +62,8 @@ class DocFileHandler:
             doc.add_heading(heading, level=level)
             doc.save(self.file_path)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error adding heading to {self.file_path}: {e}")
             return False
 
     def add_table(self, data):
@@ -73,12 +76,12 @@ class DocFileHandler:
             doc = Document(self.file_path)
             table = doc.add_table(rows=1, cols=len(data[0]))
             for i, row_data in enumerate(data):
-                row_cells = table.add_row().cells
                 for j, cell_data in enumerate(row_data):
-                    row_cells[j].text = str(cell_data)
+                    table.cell(i, j).text = str(cell_data)
             doc.save(self.file_path)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error adding table to {self.file_path}: {e}")
             return False
 
     def _get_alignment_value(self, alignment):

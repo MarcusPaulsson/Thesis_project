@@ -3,6 +3,7 @@ class Words2Numbers:
     The class provides a text-to-number conversion utility, allowing conversion of written numbers (in words) to their numerical representation.
     """
 
+
     def __init__(self):
         """
         Initialize the word lists and dictionaries required for conversion
@@ -27,28 +28,37 @@ class Words2Numbers:
         self.ordinal_words = {'first': 1, 'second': 2, 'third': 3, 'fifth': 5, 'eighth': 8, 'ninth': 9, 'twelfth': 12}
         self.ordinal_endings = [('ieth', 'y'), ('th', '')]
 
+
     def text2int(self, textnum):
         """
         Convert the word string to the corresponding integer string
         :param textnum: string, the word string to be converted
         :return: string, the final converted integer string
-
         >>> w2n = Words2Numbers()
         >>> w2n.text2int("thirty-two")
         "32"
         """
         textnum = textnum.replace('-', ' ')
         current = result = 0
-        tokens = textnum.split()
-        for word in tokens:
-            if word not in self.numwords:
-                return "Invalid input"  # Or raise an exception
-
-            scale, increment = self.numwords[word]
-            current = current * scale + increment
-            if scale > 100:
-                result += current
-                current = 0
+        for word in textnum.split():
+            if word in self.numwords:
+                scale, increment = self.numwords[word]
+                current = current * scale + increment
+                if scale > 100:
+                    result += current
+                    current = 0
+            elif word in self.ordinal_words:
+                result = self.ordinal_words[word]
+            else:
+                for ending, replacement in self.ordinal_endings:
+                    if word.endswith(ending):
+                        word = word[:-len(ending)] + replacement
+                        if word in self.numwords:
+                            scale, increment = self.numwords[word]
+                            current = current * scale + increment
+                            result = current
+                            current = 0
+                        break
         return str(result + current)
 
     def is_valid_input(self, textnum):
@@ -56,14 +66,26 @@ class Words2Numbers:
         Check if the input text contains only valid words that can be converted into numbers.
         :param textnum: The input text containing words representing numbers.
         :return: True if input is valid, False otherwise.
-
         >>> w2n = Words2Numbers()
         >>> w2n.is_valid_input("thirty-two")
         False
         """
         textnum = textnum.replace('-', ' ')
-        tokens = textnum.split()
-        for word in tokens:
-            if word not in self.numwords:
+        valid_words = set(self.numwords.keys()) | set(self.ordinal_words.keys())
+        for ending, replacement in self.ordinal_endings:
+            valid_words |= {word + ending for word in self.numwords.keys()}
+
+        for word in textnum.split():
+            found = False
+            if word in valid_words:
+                found = True
+            else:
+                for ending, replacement in self.ordinal_endings:
+                    if word.endswith(ending):
+                        base_word = word[:-len(ending)] + replacement
+                        if base_word in self.numwords:
+                            found = True
+                            break
+            if not found:
                 return False
         return True

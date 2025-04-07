@@ -65,6 +65,11 @@ class HRManagementSystem:
 
         """
         if employee_id in self.employees:
+            for key, value in employee_info.items():
+                if key in self.employees[employee_id]:
+                    self.employees[employee_id][key] = value
+                else:
+                    return False
             self.employees[employee_id].update(employee_info)
             return True
         else:

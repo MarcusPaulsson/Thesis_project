@@ -52,7 +52,11 @@ class MusicPlayer:
         """
         if self.current_song:
             return self.current_song
-        return False
+        elif self.playlist and not self.current_song:
+            self.current_song = self.playlist[0]
+            return self.current_song
+        else:
+            return None
 
     def stop(self):
         """
@@ -68,7 +72,8 @@ class MusicPlayer:
         if self.current_song:
             self.current_song = None
             return True
-        return False
+        else:
+            return False
 
     def switch_song(self):
         """
@@ -85,15 +90,14 @@ class MusicPlayer:
             return False
 
         if not self.current_song:
-            self.current_song = self.playlist[0]
-            return True
-
-        current_index = self.playlist.index(self.current_song)
-        if current_index == len(self.playlist) - 1:
             return False
 
-        self.current_song = self.playlist[current_index + 1]
-        return True
+        current_index = self.playlist.index(self.current_song)
+        if current_index < len(self.playlist) - 1:
+            self.current_song = self.playlist[current_index + 1]
+            return True
+        else:
+            return False
 
     def previous_song(self):
         """
@@ -108,16 +112,15 @@ class MusicPlayer:
         """
         if not self.playlist:
             return False
-
         if not self.current_song:
             return False
 
         current_index = self.playlist.index(self.current_song)
-        if current_index == 0:
+        if current_index > 0:
+            self.current_song = self.playlist[current_index - 1]
+            return True
+        else:
             return False
-
-        self.current_song = self.playlist[current_index - 1]
-        return True
 
     def set_volume(self, volume):
         """
@@ -132,8 +135,8 @@ class MusicPlayer:
         """
         if 0 <= volume <= 100:
             self.volume = volume
-            return True
-        return False
+        else:
+            return False
 
     def shuffle(self):
         """
@@ -145,8 +148,8 @@ class MusicPlayer:
         True
 
         """
-        if not self.playlist:
+        if self.playlist:
+            random.shuffle(self.playlist)
+            return True
+        else:
             return False
-
-        random.shuffle(self.playlist)
-        return True

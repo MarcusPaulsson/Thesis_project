@@ -38,8 +38,10 @@ class BoyerMooreSearch:
 
         """
         for i in range(self.patLen):
-            if currentPos + i >= self.textLen or self.pattern[i] != self.text[currentPos + i]:
-                return i
+            if currentPos + i >= self.textLen:
+                return currentPos + i
+            if self.pattern[i] != self.text[currentPos + i]:
+                return currentPos + i
         return -1
 
     def bad_character_heuristic(self):
@@ -52,6 +54,9 @@ class BoyerMooreSearch:
 
         """
         occurrences = []
+        if self.patLen == 0:
+            return list(range(self.textLen + 1))
+
         i = 0
         while i <= self.textLen - self.patLen:
             mismatch_pos = self.mismatch_in_text(i)
@@ -59,10 +64,12 @@ class BoyerMooreSearch:
                 occurrences.append(i)
                 i += 1
             else:
-                char = self.text[i + mismatch_pos]
-                rightmost_occurrence = self.match_in_pattern(char)
-                if rightmost_occurrence == -1 or rightmost_occurrence >= mismatch_pos:
-                    i += mismatch_pos + 1
+                char = self.text[mismatch_pos]
+                match_pos = self.match_in_pattern(char)
+                if match_pos == -1:
+                    i = mismatch_pos + 1
                 else:
-                    i += mismatch_pos - rightmost_occurrence
+                    i = mismatch_pos - match_pos
+                    if i < 0:
+                        i = 1
         return occurrences

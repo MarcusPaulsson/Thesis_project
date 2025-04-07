@@ -33,30 +33,36 @@ class ArgumentParser:
         {'arg1': 'value1', 'arg2': 'value2', 'option1': True, 'option2': True}
         """
         args = command_string.split()
-        i = 1  # Skip the script name
+        i = 0
         while i < len(args):
             arg = args[i]
             if arg.startswith("--"):
-                if "=" in arg:
-                    key, value = arg[2:].split("=", 1)
-                    self.arguments[key] = value
+                arg_name = arg[2:]
+                if "=" in arg_name:
+                    arg_name, arg_value = arg_name.split("=")
+                    self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
                 else:
-                    self.arguments[arg[2:]] = True
-                    
+                    if i + 1 < len(args) and not args[i+1].startswith("-"):
+                        i += 1
+                        arg_value = args[i]
+                        self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
+                    else:
+                        self.arguments[arg_name] = True
             elif arg.startswith("-"):
+                arg_name = arg[1:]
                 if i + 1 < len(args) and not args[i+1].startswith("-"):
-                   
-                    self.arguments[arg[1:]] = args[i+1]
                     i += 1
+                    arg_value = args[i]
+                    self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
                 else:
-                    self.arguments[arg[1:]] = True
+                    self.arguments[arg_name] = True
             i += 1
 
-        for key, value in self.arguments.items():
-            if key in self.types:
-                self.arguments[key] = self._convert_type(key, value)
+        missing_args = set()
+        for required_arg in self.required:
+            if required_arg not in self.arguments:
+                missing_args.add(required_arg)
 
-        missing_args = self.required - set(self.arguments.keys())
         if missing_args:
             return False, missing_args
         else:
@@ -72,7 +78,10 @@ class ArgumentParser:
         >>> parser.get_argument('arg2')
         'value2'
         """
-        return self.arguments.get(key)
+        if key in self.arguments:
+            return self.arguments[key]
+        else:
+            return None
 
     def add_argument(self, arg, required=False, arg_type=str):
         """
@@ -103,23 +112,18 @@ class ArgumentParser:
         >>> parser._convert_type('arg1', '21')
         21
         """
-        arg_type = self.types.get(arg)
-        if arg_type == 'int':
+        if arg in self.types:
+            arg_type = self.types[arg]
             try:
-                return int(value)
+                if arg_type == int:
+                    return int(value)
+                elif arg_type == float:
+                    return float(value)
+                elif arg_type == bool:
+                    return True
+                else:
+                    return value
             except ValueError:
-                return value
-        elif arg_type == 'float':
-            try:
-                return float(value)
-            except ValueError:
-                return value
-        elif arg_type == 'bool':
-            if value.lower() == 'true':
-                return True
-            elif value.lower() == 'false':
-                return False
-            else:
                 return value
         else:
             return value

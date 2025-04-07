@@ -43,17 +43,15 @@ class EncryptionUtils:
 
         """
         ciphertext = ""
-        key = self.key
-        key_length = len(key)
+        key_len = len(self.key)
         for i, char in enumerate(plaintext):
+            key_char = self.key[i % key_len]
+            key_shift = ord(key_char.lower()) - ord('a')
+
             if 'a' <= char <= 'z':
-                key_char = key[i % key_length]
-                shift = ord(key_char) - ord('a')
-                shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))
+                shifted_char = chr(((ord(char) - ord('a') + key_shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
-                key_char = key[i % key_length]
-                shift = ord(key_char.lower()) - ord('a')
-                shifted_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))
+                shifted_char = chr(((ord(char) - ord('A') + key_shift) % 26) + ord('A'))
             else:
                 shifted_char = char
             ciphertext += shifted_char
@@ -72,23 +70,27 @@ class EncryptionUtils:
         if rails <= 1:
             return plain_text
 
-        rail_matrix = [['' for _ in range(len(plain_text))] for _ in range(rails)]
-        row, direction = 0, 1
+        rail = [['\n' for i in range(len(plain_text))]
+                for j in range(rails)]
 
-        for col in range(len(plain_text)):
-            rail_matrix[row][col] = plain_text[col]
+        dir_down = False
+        row, col = 0, 0
 
-            row += direction
+        for i in range(len(plain_text)):
+            if (row == 0) or (row == rails - 1):
+                dir_down = not dir_down
 
-            if row == rails - 1:
-                direction = -1
-            elif row == 0:
-                direction = 1
+            rail[row][col] = plain_text[i]
+            col += 1
 
-        ciphertext = ""
-        for rail in rail_matrix:
-            ciphertext += "".join(rail)
+            if dir_down:
+                row += 1
+            else:
+                row -= 1
 
-        ciphertext = ciphertext.replace("","") # Remove empty strings
-
-        return ciphertext
+        result = []
+        for i in range(rails):
+            for j in range(len(plain_text)):
+                if rail[i][j] != '\n':
+                    result.append(rail[i][j])
+        return "".join(result)

@@ -7,9 +7,9 @@ class TicTacToe:
         """
         Initialize a 3x3 game board with all empty spaces and current symble player, default is 'X'.
         """
-        self.N = N
-        self.board = [[' ' for _ in range(self.N)] for _ in range(self.N)]
+        self.board = [[' ' for _ in range(N)] for _ in range(N)]
         self.current_player = 'X'
+        self.N = N
 
     def make_move(self, row, col):
         """
@@ -23,12 +23,11 @@ class TicTacToe:
         >>> ttt.current_player
         'O'
         """
-        if self.board[row][col] == ' ':
-            self.board[row][col] = self.current_player
-            self.current_player = 'O' if self.current_player == 'X' else 'X'
-            return True
-        else:
+        if row < 0 or row >= self.N or col < 0 or col >= self.N or self.board[row][col] != ' ':
             return False
+        self.board[row][col] = self.current_player
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
+        return True
 
     def check_winner(self):
         """
@@ -42,20 +41,20 @@ class TicTacToe:
         """
         # Check rows
         for row in range(self.N):
-            if self.board[row][0] != ' ' and all(self.board[row][col] == self.board[row][0] for col in range(self.N)):
+            if self.board[row][0] != ' ' and all(self.board[row][0] == self.board[row][col] for col in range(self.N)):
                 return self.board[row][0]
 
         # Check columns
         for col in range(self.N):
-            if self.board[0][col] != ' ' and all(self.board[row][col] == self.board[0][col] for row in range(self.N)):
+            if self.board[0][col] != ' ' and all(self.board[0][col] == self.board[row][col] for row in range(self.N)):
                 return self.board[0][col]
 
         # Check diagonals
-        if self.board[0][0] != ' ' and all(self.board[i][i] == self.board[0][0] for i in range(self.N)):
+        if self.board[0][0] != ' ' and all(self.board[0][0] == self.board[i][i] for i in range(self.N)):
             return self.board[0][0]
 
-        if self.board[0][self.N-1] != ' ' and all(self.board[i][self.N-1-i] == self.board[0][self.N-1] for i in range(self.N)):
-            return self.board[0][self.N-1]
+        if self.board[0][self.N - 1] != ' ' and all(self.board[0][self.N - 1] == self.board[i][self.N - 1 - i] for i in range(self.N)):
+            return self.board[0][self.N - 1]
 
         return None
 
@@ -66,24 +65,4 @@ class TicTacToe:
         >>> ttt.is_board_full()
         False
         """
-        for row in range(self.N):
-            for col in range(self.N):
-                if self.board[row][col] == ' ':
-                    return False
-        return True
-
-
-if __name__ == '__main__':
-    ttt = TicTacToe()
-    moves = [(1, 0), (2, 0), (1, 1), (2, 1), (1, 2)]
-    for move in moves:
-        ttt.make_move(move[0], move[1])
-    print(ttt.check_winner())
-
-    ttt = TicTacToe()
-    print(ttt.is_board_full())
-
-    ttt = TicTacToe()
-    print(ttt.current_player)
-    ttt.make_move(1, 1)
-    print(ttt.current_player)
+        return all(self.board[row][col] != ' ' for row in range(self.N) for col in range(self.N))

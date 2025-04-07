@@ -27,16 +27,14 @@ class BookManagement:
         :param title: str, the book title
         :param quantity: int
         """
-        if title in self.inventory:
-            if self.inventory[title] >= quantity:
-                self.inventory[title] -= quantity
-                if self.inventory[title] == 0:
-                    del self.inventory[title]
-            else:
-                return False
+        if title not in self.inventory:
+            raise Exception("Book not found in inventory")
+        if self.inventory[title] < quantity:
+            raise Exception("Not enough books to remove")
+        if self.inventory[title] == quantity:
+            del self.inventory[title]
         else:
-            return False
-        return True
+            self.inventory[title] -= quantity
 
     def view_inventory(self):
         """

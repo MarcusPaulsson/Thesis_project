@@ -50,7 +50,7 @@ class Classroom:
         for course in self.courses:
             start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
             end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
-            if start_time_dt <= check_time_dt <= end_time_dt:
+            if start_time_dt <= check_time_dt < end_time_dt:
                 return False
         return True
 
@@ -71,7 +71,6 @@ class Classroom:
             existing_start_time = datetime.strptime(course['start_time'], '%H:%M').time()
             existing_end_time = datetime.strptime(course['end_time'], '%H:%M').time()
 
-            if (new_start_time < existing_end_time) and (new_end_time > existing_start_time):
+            if not (new_end_time <= existing_start_time or new_start_time >= existing_end_time):
                 return False
-
         return True

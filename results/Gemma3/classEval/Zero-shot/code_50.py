@@ -48,15 +48,19 @@ class JSONProcessor:
         """
         if not os.path.exists(file_path):
             return 0
+
         try:
             with open(file_path, 'r') as f:
                 data = json.load(f)
-            if remove_key in data:
-                del data[remove_key]
-                with open(file_path, 'w') as f:
-                    json.dump(data, f)
-                return 1
-            else:
-                return 0
         except:
+            return -1
+
+        if remove_key not in data:
             return 0
+
+        del data[remove_key]
+
+        if self.write_json(data, file_path) == 1:
+            return 1
+        else:
+            return -1

@@ -16,7 +16,7 @@ class DataStatistics:
         """
         if not data:
             return 0.00
-        return float(f'{sum(data) / len(data):.2f}')
+        return round(sum(data) / len(data), 2)
 
     def median(self, data):
         """
@@ -27,15 +27,16 @@ class DataStatistics:
         >>> ds.median([2, 5, 1, 3, 4])
         3.00
         """
-        if not data:
-            return 0.00
-        data = sorted(data)
+        data.sort()
         n = len(data)
         if n % 2 == 0:
             median = (data[n // 2 - 1] + data[n // 2]) / 2
+            if isinstance(median, float):
+                return round(median, 2)
+            else:
+                return median
         else:
-            median = data[n // 2]
-        return float(f'{median:.2f}')
+            return data[n // 2]
 
     def mode(self, data):
         """
@@ -46,10 +47,8 @@ class DataStatistics:
         >>> ds.mode([2, 2, 3, 3, 4])
         [2, 3]
         """
-        if not data:
-            return []
         count = Counter(data)
         max_count = max(count.values())
-        mode = [key for key, value in count.items() if value == max_count]
-        mode.sort()
-        return mode
+        modes = [k for k, v in count.items() if v == max_count]
+        modes.sort()
+        return modes

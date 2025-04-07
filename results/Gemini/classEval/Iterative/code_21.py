@@ -1,138 +1,75 @@
-from datetime import datetime, time
+from datetime import datetime
 
 class Classroom:
     """
-    Represents a classroom with scheduling functionalities.
+    This is a class representing a classroom, capable of adding and removing courses, checking availability at a given time, and detecting conflicts when scheduling new courses.
     """
 
-    def __init__(self, classroom_id: int):
+    def __init__(self, id):
         """
-        Initializes a Classroom object.
-
-        Args:
-            classroom_id: The unique identifier for the classroom.
+        Initialize the classroom management system.
+        :param id: int, the id of classroom
         """
-        if not isinstance(classroom_id, int):
-            raise TypeError("classroom_id must be an integer.")
-        if classroom_id <= 0:
-            raise ValueError("classroom_id must be a positive integer.")
+        self.id = id
+        self.courses = []
 
-        self.id = classroom_id
-        self.courses = []  # List of courses, each a dictionary
-
-    def add_course(self, course: dict):
+    def add_course(self, course):
         """
-        Adds a course to the classroom schedule.
-
-        Args:
-            course: A dictionary containing course information, including 'name', 'start_time', and 'end_time'.
-                'start_time' and 'end_time' should be strings in 'HH:MM' format.
-
-        Raises:
-            TypeError: If course is not a dictionary or if start/end times are not strings.
-            ValueError: If start/end times are not in the correct format or if the course already exists.
+        Add course to self.courses list if the course wasn't in it.
+        :param course: dict, information of the course, including 'start_time', 'end_time' and 'name'
         """
-        if not isinstance(course, dict):
-            raise TypeError("course must be a dictionary.")
-        if not all(key in course for key in ('name', 'start_time', 'end_time')):
-            raise ValueError("course dictionary must contain 'name', 'start_time', and 'end_time' keys.")
-        if not isinstance(course['start_time'], str) or not isinstance(course['end_time'], str):
-            raise TypeError("start_time and end_time must be strings.")
-
-        try:
-            datetime.strptime(course['start_time'], '%H:%M').time()
-            datetime.strptime(course['end_time'], '%H:%M').time()
-        except ValueError:
-            raise ValueError("start_time and end_time must be in 'HH:MM' format.")
-
-        if course in self.courses:
-             raise ValueError("Course already exists in the classroom schedule.")
-
-        self.courses.append(course)
-
-    def remove_course(self, course: dict):
-        """
-        Removes a course from the classroom schedule.
-
-        Args:
-            course: A dictionary representing the course to remove. Must match an existing course exactly.
-
-        Raises:
-            TypeError: If course is not a dictionary.
-            ValueError: If the course does not exist in the classroom schedule.
-        """
-        if not isinstance(course, dict):
-            raise TypeError("course must be a dictionary.")
-
         if course not in self.courses:
-            raise ValueError("Course not found in the classroom schedule.")
+            self.courses.append(course)
 
-        self.courses.remove(course)
-
-    def is_free_at(self, check_time: str) -> bool:
+    def remove_course(self, course):
         """
-        Checks if the classroom is free at a given time.
-
-        Args:
-            check_time: A string representing the time to check in 'HH:MM' format.
-
-        Returns:
-            True if the classroom is free at the given time, False otherwise.
-
-        Raises:
-            TypeError: If check_time is not a string.
-            ValueError: If check_time is not in the correct format.
+        Remove course from self.courses list if the course was in it.
+        :param course: dict, information of the course, including 'start_time', 'end_time' and 'name'
         """
-        if not isinstance(check_time, str):
-            raise TypeError("check_time must be a string.")
+        if course in self.courses:
+            self.courses.remove(course)
 
+    def is_free_at(self, check_time):
+        """
+        change the time format as '%H:%M' and check the time is free or not in the classroom.
+        :param check_time: str, the time need to be checked
+        :return: True if the check_time does not conflict with every course time, or False otherwise.
+        """
         try:
-            check_time_obj = datetime.strptime(check_time, '%H:%M').time()
+            check_time_dt = datetime.strptime(check_time, '%H:%M').time()
         except ValueError:
-            raise ValueError("check_time must be in 'HH:MM' format.")
+            return True  # Or raise an exception, depending on desired behavior
 
         for course in self.courses:
-            start_time_obj = datetime.strptime(course['start_time'], '%H:%M').time()
-            end_time_obj = datetime.strptime(course['end_time'], '%H:%M').time()
+            try:
+                start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
+                end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
+            except (ValueError, KeyError):
+                continue  # Skip this course if time format is invalid
 
-            if start_time_obj <= check_time_obj < end_time_obj:
-                return False  # Classroom is occupied
+            if start_time_dt <= check_time_dt < end_time_dt:
+                return False
+        return True
 
-        return True  # Classroom is free
-
-    def check_course_conflict(self, new_course: dict) -> bool:
+    def check_course_conflict(self, new_course):
         """
-        Checks if a new course conflicts with any existing courses in the classroom.
-
-        Args:
-            new_course: A dictionary representing the new course to check for conflicts. Must contain 'start_time' and 'end_time'.
-
-        Returns:
-            True if the new course does not conflict with any existing courses, False otherwise.
-
-        Raises:
-            TypeError: If new_course is not a dictionary or if start/end times are not strings.
-            ValueError: If start/end times are not in the correct format.
+        Before adding a new course, check if the new course time conflicts with any other course.
+        :param new_course: dict, information of the course, including 'start_time', 'end_time' and 'name'
+        :return: False if the new course time conflicts(including two courses have the same boundary time) with other courses, or True otherwise.
         """
-        if not isinstance(new_course, dict):
-            raise TypeError("new_course must be a dictionary.")
-        if not all(key in new_course for key in ('start_time', 'end_time')):
-            raise ValueError("new_course dictionary must contain 'start_time' and 'end_time' keys.")
-
-        if not isinstance(new_course['start_time'], str) or not isinstance(new_course['end_time'], str):
-            raise TypeError("start_time and end_time must be strings.")
-
         try:
-            new_start_time_obj = datetime.strptime(new_course['start_time'], '%H:%M').time()
-            new_end_time_obj = datetime.strptime(new_course['end_time'], '%H:%M').time()
-        except ValueError:
-            raise ValueError("start_time and end_time must be in 'HH:MM' format.")
+            new_start_time_dt = datetime.strptime(new_course['start_time'], '%H:%M').time()
+            new_end_time_dt = datetime.strptime(new_course['end_time'], '%H:%M').time()
+        except (ValueError, KeyError):
+            return True  # Or handle the error as appropriate
 
         for course in self.courses:
-            start_time_obj = datetime.strptime(course['start_time'], '%H:%M').time()
-            end_time_obj = datetime.strptime(course['end_time'], '%H:%M').time()
+            try:
+                start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
+                end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
+            except (ValueError, KeyError):
+                continue  # Skip this course if time format is invalid
 
-            if not (new_end_time_obj <= start_time_obj or new_start_time_obj >= end_time_obj):
-                return False  # Conflict detected
-
-        return True  # No conflict
+            if not (new_end_time_dt <= start_time_dt or new_start_time_dt >= end_time_dt):
+                return False
+        return True

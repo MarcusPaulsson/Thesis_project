@@ -1,70 +1,68 @@
 import re
 from collections import Counter
-from typing import List, Dict
 
 class NLPDataProcessor2:
     """
-    The class processes NLP data by extracting words from a list of strings,
-    calculating the frequency of each word, and returning the top N most frequent words.
+    The class processes NLP data by extracting words from a list of strings, calculating the frequency of each word, and returning the top 5 most frequent words.
     """
 
-    def __init__(self, top_n: int = 5):
+
+    def process_data(self, string_list):
         """
-        Initializes the NLPDataProcessor2 with the desired number of top words to return.
-
-        :param top_n: The number of top frequent words to return. Defaults to 5.
-        """
-        self.top_n = top_n
-
-    def process_data(self, string_list: List[str]) -> List[List[str]]:
-        """
-        Cleans and tokenizes a list of strings.
-
-        Keeps only English letters and spaces in the string, then converts the string
-        to lower case, and then splits the string into a list of words.
-
-        :param string_list: A list of strings.
-        :return: A list of lists of words.
+        keep only English letters and spaces in the string, then convert the string to lower case, and then split the string into a list of words.
+        :param string_list: a list of strings
+        :return: words_list: a list of words lists
+        >>> NLPDataProcessor.process_data(['This is a test.'])
+        [['this', 'is', 'a', 'test']]
         """
         words_list = []
         for string in string_list:
-            cleaned_string = re.sub(r'[^a-zA-Z\s]', '', string)
-            cleaned_string = cleaned_string.lower()
-            words = cleaned_string.split()
+            string = re.sub(r'[^a-zA-Z\s]', '', string)
+            string = string.lower()
+            words = string.split()
             words_list.append(words)
         return words_list
 
-    def calculate_word_frequency(self, words_list: List[List[str]]) -> Dict[str, int]:
+    def calculate_word_frequency(self, words_list):
         """
-        Calculates the word frequency of each word in the list of word lists.
-
-        :param words_list: A list of lists of words.
-        :return: A dictionary of word frequencies, where the key is the word and the value is its frequency.
+        Calculate the word frequency of each word in the list of words list, and sort the word frequency dictionary by value in descending order.
+        :param words_list: a list of words lists
+        :return: top 5 word frequency dictionary, a dictionary of word frequency, key is word, value is frequency
+        >>> NLPDataProcessor.calculate_word_frequency([['this', 'is', 'a', 'test'], ['this', 'is', 'another', 'test']])
+        {'this': 2, 'is': 2, 'test': 2, 'a': 1, 'another': 1}
         """
         word_counts = Counter()
         for words in words_list:
             word_counts.update(words)
-        return dict(word_counts)
 
-    def get_top_n_words(self, word_frequency: Dict[str, int]) -> Dict[str, int]:
+        # Sort the word frequency dictionary by value in descending order
+        sorted_word_counts = dict(sorted(word_counts.items(), key=lambda item: item[1], reverse=True))
+        top_5_word_counts = {}
+        count = 0
+        # for word, frequency in sorted_word_counts.items():
+        #   if count < 5:
+        #     top_5_word_counts[word] = frequency
+        #     count += 1
+        # return top_5_word_counts
+        if not words_list:
+            return {}
+        
+        all_words = []
+        for sublist in words_list:
+            all_words.extend(sublist)
+        
+        word_counts = Counter(all_words)
+        
+        return dict(word_counts.most_common(5))
+
+    def process(self, string_list):
         """
-        Returns the top N most frequent words from a word frequency dictionary.
-
-        :param word_frequency: A dictionary of word frequencies.
-        :return: A dictionary containing the top N most frequent words and their frequencies.
-        """
-        sorted_words = sorted(word_frequency.items(), key=lambda item: item[1], reverse=True)
-        return dict(sorted_words[:self.top_n])
-
-    def process(self, string_list: List[str]) -> Dict[str, int]:
-        """
-        Processes a list of strings to extract, clean, and count word frequencies,
-        then returns the top N most frequent words.
-
-        :param string_list: A list of strings to process.
-        :return: A dictionary containing the top N most frequent words and their frequencies.
+        keep only English letters and spaces in the string, then convert the string to lower case, and then split the string into a list of words. Calculate the word frequency of each word in the list of words list, and sort the word frequency dictionary by value in descending order.
+        :param string_list: a list of strings
+        :return: top 5 word frequency dictionary, a dictionary of word frequency, key is word, value is frequency
+        >>> NLPDataProcessor.process(['This is a test.', 'This is another test.'])
+        {'this': 2, 'is': 2, 'test': 2, 'a': 1, 'another': 1}
         """
         words_list = self.process_data(string_list)
         word_frequency = self.calculate_word_frequency(words_list)
-        top_words = self.get_top_n_words(word_frequency)
-        return top_words
+        return word_frequency

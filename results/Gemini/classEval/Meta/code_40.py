@@ -44,15 +44,13 @@ class FitnessTracker:
                 return -1
             else:
                 return 0
-        elif self.sex == "female":
+        else:
             if bmi > self.BMI_std[1]["female"][1]:
                 return 1
             elif bmi < self.BMI_std[1]["female"][0]:
                 return -1
             else:
                 return 0
-        else:
-            return 0
 
     def calculate_calorie_intake(self):
         """
@@ -70,8 +68,9 @@ class FitnessTracker:
 
         condition = self.condition_judge()
         if condition == 1:
-            return BMR * 1.2
+            calorie_intake = BMR * 1.2
         elif condition == -1:
-            return BMR * 1.6
+            calorie_intake = BMR * 1.6
         else:
-            return BMR * 1.4
+            calorie_intake = BMR * 1.4
+        return calorie_intake

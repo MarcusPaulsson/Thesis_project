@@ -21,18 +21,25 @@ class DataStatistics4:
         if n != len(data2):
             raise ValueError("Data sets must have the same length")
 
-        mean1 = sum(data1) / n
-        mean2 = sum(data2) / n
+        sum_x = sum(data1)
+        sum_y = sum(data2)
+        sum_x_squared = sum(x ** 2 for x in data1)
+        sum_y_squared = sum(y ** 2 for y in data2)
+        sum_xy = sum(data1[i] * data2[i] for i in range(n))
 
-        numerator = sum((x - mean1) * (y - mean2) for x, y in zip(data1, data2))
-        denominator1 = sum((x - mean1) ** 2 for x in data1)
-        denominator2 = sum((y - mean2) ** 2 for y in data2)
+        numerator = n * sum_xy - sum_x * sum_y
+        denominator_x = n * sum_x_squared - sum_x ** 2
+        denominator_y = n * sum_y_squared - sum_y ** 2
 
-        if denominator1 == 0 or denominator2 == 0:
-            return 0.0  # Handle the case where standard deviation is zero
+        if denominator_x <= 0 or denominator_y <= 0:
+            return 0.0
 
-        correlation = numerator / math.sqrt(denominator1 * denominator2)
-        return correlation
+        denominator = math.sqrt(denominator_x * denominator_y)
+
+        if denominator == 0:
+            return 0.0
+
+        return numerator / denominator
 
     @staticmethod
     def skewness(data):
@@ -46,16 +53,16 @@ class DataStatistics4:
         """
         n = len(data)
         if n < 3:
-            return 0.0  # Skewness not meaningful for small datasets
+            return 0.0
 
         mean = sum(data) / n
         variance = sum((x - mean) ** 2 for x in data) / (n - 1)
         std_dev = math.sqrt(variance)
 
         if std_dev == 0:
-            return 0.0  # Handle the case where standard deviation is zero
+            return 0.0
 
-        skewness = sum((x - mean) ** 3 for x in data) / ((n - 1) * (n - 2) * std_dev ** 3) * n
+        skewness = sum((x - mean) ** 3 for x in data) / ((n - 1) * std_dev ** 3)
         return skewness
 
     @staticmethod
@@ -70,16 +77,15 @@ class DataStatistics4:
         """
         n = len(data)
         if n < 4:
-            return 0.0  # Kurtosis not meaningful for small datasets
+            return float('NaN')
 
         mean = sum(data) / n
         variance = sum((x - mean) ** 2 for x in data) / (n - 1)
         std_dev = math.sqrt(variance)
-
         if std_dev == 0:
-            return 0.0  # Handle the case where standard deviation is zero
+            return float('NaN')
 
-        kurtosis = sum((x - mean) ** 4 for x in data) / ((n - 1) * (n - 2) * (n - 3) * std_dev ** 4) * n * (n + 1) - 3
+        kurtosis = sum((x - mean) ** 4 for x in data) / ((n - 1) * std_dev ** 4) - 3
         return kurtosis
 
     @staticmethod
@@ -98,6 +104,5 @@ class DataStatistics4:
         for x in data:
             exponent = -((x - mu) ** 2) / (2 * sigma ** 2)
             coefficient = 1 / (sigma * math.sqrt(2 * math.pi))
-            pdf = coefficient * math.exp(exponent)
-            pdf_values.append(pdf)
+            pdf_values.append(coefficient * math.exp(exponent))
         return pdf_values

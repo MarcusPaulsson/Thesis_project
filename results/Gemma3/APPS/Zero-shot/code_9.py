@@ -17,7 +17,8 @@ def solve():
                 
                 # Check if sofa i is to the left of sofa index
                 if (x1_other < x1 and 
-                    ((y1_other <= y1 and y1 <= y2_other) or (y1_other <= y2 and y2 <= y2_other))):
+                    ((y1_other >= y1 and y1_other <= y2) or (y2_other >= y1 and y2_other <= y2) or
+                     (y1 >= y1_other and y1 <= y2_other) or (y2 >= y1_other and y2 <= y2_other))):
                     count += 1
         return count
     
@@ -29,8 +30,9 @@ def solve():
                 x1_other, y1_other, x2_other, y2_other = sofas[i]
                 
                 # Check if sofa i is to the right of sofa index
-                if (x2_other > x2 and 
-                    ((y1_other <= y1 and y1 <= y2_other) or (y1_other <= y2 and y2 <= y2_other))):
+                if (x1_other > x2 and 
+                    ((y1_other >= y1 and y1_other <= y2) or (y2_other >= y1 and y2_other <= y2) or
+                     (y1 >= y1_other and y1 <= y2_other) or (y2 >= y1_other and y2 <= y2_other))):
                     count += 1
         return count
     
@@ -43,7 +45,8 @@ def solve():
                 
                 # Check if sofa i is to the top of sofa index
                 if (y1_other < y1 and 
-                    ((x1_other <= x1 and x1 <= x2_other) or (x1_other <= x2 and x2 <= x2_other))):
+                    ((x1_other >= x1 and x1_other <= x2) or (x2_other >= x1 and x2_other <= x2) or
+                     (x1 >= x1_other and x1 <= x2_other) or (x2 >= x1_other and x2 <= x2_other))):
                     count += 1
         return count
     
@@ -55,8 +58,9 @@ def solve():
                 x1_other, y1_other, x2_other, y2_other = sofas[i]
                 
                 # Check if sofa i is to the bottom of sofa index
-                if (y2_other > y2 and 
-                    ((x1_other <= x1 and x1 <= x2_other) or (x1_other <= x2 and x2 <= x2_other))):
+                if (y1_other > y2 and 
+                    ((x1_other >= x1 and x1_other <= x2) or (x2_other >= x1 and x2_other <= x2) or
+                     (x1 >= x1_other and x1 <= x2_other) or (x2 >= x1_other and x2 <= x2_other))):
                     count += 1
         return count
     

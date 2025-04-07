@@ -19,23 +19,23 @@ user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PRO
 
 
 # Zero-shot prompting
-''''''
+'''
 PROMPT_TECHNIQUE_SETTING = "Zero-shot" # placeholder for storing content to correct result directory
 
 SYSTEM_PROMPT="",
 HEAD_PROMPT = ""
 TAIL_PROMPT=" Give only the code, no test cases."
-
+'''
 
 # Zero-shot Chain of thougths
 '''
+
 PROMPT_TECHNIQUE_SETTING = "Zero-shot-CoT" 
 
 SYSTEM_PROMPT="Solve the following task step by step."
 HEAD_PROMPT = ""
-TAIL_PROMPT="Give only the code."
+TAIL_PROMPT="Give only the code, no test cases."
 '''
-
 
 # Role prompting (Expert)
 '''
@@ -43,7 +43,7 @@ PROMPT_TECHNIQUE_SETTING = "Expert-role"
 
 SYSTEM_PROMPT="You are an expert software developer, skilled in producing clean and well-structured code."
 HEAD_PROMPT = ""
-TAIL_PROMPT="Give only the code."
+TAIL_PROMPT="Give only the code, no test cases."
 '''
 
 
@@ -53,7 +53,7 @@ PROMPT_TECHNIQUE_SETTING = "Student-role"
 
 SYSTEM_PROMPT="You are a university student studying computer science, with basic knowledge in software enginnering."
 HEAD_PROMPT = ""
-TAIL_PROMPT="Give only the code."
+TAIL_PROMPT="Give only the code, no test cases."
 '''
 
 # Meta prompting
@@ -66,7 +66,7 @@ SYSTEM_PROMPT="""- For the following coding task, solve it in the following step
 3. Refine the previous steps.
 4. Give a code solution that solves the task."""
 HEAD_PROMPT = ""
-TAIL_PROMPT="Give only the code."
+TAIL_PROMPT="Give only the code, no test cases."
 '''
 
 # Naive Prompting
@@ -75,14 +75,13 @@ PROMPT_TECHNIQUE_SETTING = "Naive"
 
 SYSTEM_PROMPT="Generate code that is clean, easy to read with low complexity, and uphold high software quality standards."
 HEAD_PROMPT = ""
-TAIL_PROMPT="Give only the code."
+TAIL_PROMPT="Give only the code, no test cases."
 '''
 
 # Iterative refinement prompting
-'''
+''''''
 PROMPT_TECHNIQUE_SETTING = "Iterative" 
 
 SYSTEM_PROMPT="","Read the task description again and refine the provided code to be better and fix potential problems"
 HEAD_PROMPT = ""
-TAIL_PROMPT="Give only the code."
-'''
+TAIL_PROMPT="Give only the code, no test cases."

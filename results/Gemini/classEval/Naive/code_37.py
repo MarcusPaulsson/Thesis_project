@@ -16,12 +16,17 @@ class EncryptionUtils:
         :param plaintext: The plaintext to encrypt, str.
         :param shift: The number of characters to shift each character in the plaintext, int.
         :return: The ciphertext, str.
+        >>> e = EncryptionUtils("key")
+        >>> e.caesar_cipher("abc", 1)
+        'bcd'
+
         """
         ciphertext = ""
         for char in plaintext:
-            if char.isalpha():
-                start = ord('a') if char.islower() else ord('A')
-                shifted_char = chr((ord(char) - start + shift) % 26 + start)
+            if 'a' <= char <= 'z':
+                shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))
+            elif 'A' <= char <= 'Z':
+                shifted_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))
             else:
                 shifted_char = char
             ciphertext += shifted_char
@@ -32,16 +37,20 @@ class EncryptionUtils:
         Encrypts the plaintext using the Vigenere cipher.
         :param plaintext: The plaintext to encrypt, str.
         :return: The ciphertext, str.
+        >>> e = EncryptionUtils("key")
+        >>> e.vigenere_cipher("abc")
+        'kfa'
+
         """
         ciphertext = ""
-        key = self.key
-        key_length = len(key)
+        key_length = len(self.key)
         for i, char in enumerate(plaintext):
-            if char.isalpha():
-                start = ord('a') if char.islower() else ord('A')
-                key_char = key[i % key_length]
-                key_shift = ord(key_char.lower()) - ord('a')
-                shifted_char = chr((ord(char) - start + key_shift) % 26 + start)
+            key_char = self.key[i % key_length]
+            shift = ord(key_char) - ord('a')
+            if 'a' <= char <= 'z':
+                shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))
+            elif 'A' <= char <= 'Z':
+                shifted_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))
             else:
                 shifted_char = char
             ciphertext += shifted_char
@@ -50,27 +59,32 @@ class EncryptionUtils:
     def rail_fence_cipher(self, plain_text, rails):
         """
         Encrypts the plaintext using the Rail Fence cipher.
-        :param plain_text: The plaintext to encrypt, str.
-        :param rails: The number of rails to use for encryption, int.
+        :param plaintext: The plaintext to encrypt, str.
         :return: The ciphertext, str.
+        >>> e = EncryptionUtils("key")
+        >>> e.rail_fence_cipher("abc", 2)
+        'acb'
+
         """
         if rails <= 1:
             return plain_text
 
-        rail = [["\n" for _ in range(len(plain_text))]
-                for _ in range(rails)]
+        rail = [["\n" for i in range(len(plain_text))]
+                for j in range(rails)]
 
-        down = False
+        # to find the direction
+        dir_down = False
         row, col = 0, 0
 
         for i in range(len(plain_text)):
-            if row == 0 or row == rails - 1:
-                down = not down
+
+            if (row == 0) or (row == rails - 1):
+                dir_down = not dir_down
 
             rail[row][col] = plain_text[i]
             col += 1
 
-            if down:
+            if dir_down:
                 row += 1
             else:
                 row -= 1
@@ -80,4 +94,4 @@ class EncryptionUtils:
             for j in range(len(plain_text)):
                 if rail[i][j] != '\n':
                     result.append(rail[i][j])
-        return "".join(result)
+        return ("").join(result)

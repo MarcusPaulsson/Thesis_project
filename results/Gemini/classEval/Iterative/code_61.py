@@ -2,7 +2,7 @@ import random
 
 class MusicPlayer:
     """
-    A class representing a music player.
+    This is a class as a music player that provides to play, stop, add songs, remove songs, set volume, shuffle, and switch to the next or previous song.
     """
 
     def __init__(self):
@@ -12,63 +12,55 @@ class MusicPlayer:
         self.playlist = []
         self.current_song = None
         self.volume = 50
-        self.is_playing = False
+        self.current_song_index = -1
 
     def add_song(self, song):
         """
         Adds a song to the playlist.
-        :param song: The song to add to the playlist (string).
+        :param song: The song to add to the playlist, str.
         """
-        if isinstance(song, str):
-            self.playlist.append(song)
-        else:
-            raise TypeError("Song must be a string.")
+        self.playlist.append(song)
 
     def remove_song(self, song):
         """
         Removes a song from the playlist.
-        :param song: The song to remove from the playlist (string).
+        :param song: The song to remove from the playlist, str.
         """
-        try:
+        if song in self.playlist:
             self.playlist.remove(song)
             if self.current_song == song:
-                self.stop()
-        except ValueError:
-            print(f"Song '{song}' not found in playlist.")
+                self.current_song = None
+                self.current_song_index = -1
+            else:
+                try:
+                    self.current_song_index = self.playlist.index(self.current_song)
+                except ValueError:
+                    self.current_song = None
+                    self.current_song_index = -1
 
-    def play(self, song=None):
+    def play(self):
         """
-        Plays a specific song or resumes the current song.
-        :param song: The song to play (string, optional). If None, resumes the current song.
-        :return: True if playback started, False otherwise.
+        Plays the current song in the playlist.
+        :return: The current song in the playlist, or False if there is no current song.
         """
-        if song:
-            if song in self.playlist:
-                self.current_song = song
-                self.is_playing = True
-                return True
-            else:
-                print(f"Song '{song}' not found in playlist.")
-                return False
-        elif self.current_song:
-            self.is_playing = True
-            return True
-        else:
-            if self.playlist:
+        if self.current_song:
+            return self.current_song
+        elif self.playlist:
+            if self.current_song is None and self.current_song_index == -1:
                 self.current_song = self.playlist[0]
-                self.is_playing = True
-                return True
-            else:
-                print("Playlist is empty.")
+                self.current_song_index = 0
                 return False
+        else:
+            return None
 
     def stop(self):
         """
-        Stops the current song.
-        :return: True if the song was stopped, False otherwise.
+        Stops the current song in the playlist.
+        :return: True if the current song was stopped, False if there was no current song.
         """
-        if self.is_playing:
-            self.is_playing = False
+        if self.current_song:
+            self.current_song = None
+            self.current_song_index = -1
             return True
         else:
             return False
@@ -76,87 +68,79 @@ class MusicPlayer:
     def switch_song(self):
         """
         Switches to the next song in the playlist.
-        :return: True if a song was switched to, False otherwise.
+        :return: True if the next song was switched to, False if there was no next song.
         """
         if not self.playlist:
-            print("Playlist is empty.")
             return False
 
-        if not self.current_song:
-            return self.play()
+        if self.current_song is None and self.playlist:
+           return False
+        if self.current_song_index == -1 and self.current_song is None and self.playlist:
+            return False
 
-        try:
-            current_index = self.playlist.index(self.current_song)
-            next_index = (current_index + 1) % len(self.playlist)
-            self.current_song = self.playlist[next_index]
-            self.is_playing = True
+        if self.current_song_index == -1 and self.current_song is not None:
+            try:
+                self.current_song_index = self.playlist.index(self.current_song)
+            except ValueError:
+                return False
+
+        if self.current_song_index < len(self.playlist) - 1:
+            self.current_song_index += 1
+            self.current_song = self.playlist[self.current_song_index]
             return True
-        except ValueError:  # Should not happen if current_song is managed correctly
-            return self.play()
+        else:
+            return False
 
     def previous_song(self):
         """
         Switches to the previous song in the playlist.
-        :return: True if a song was switched to, False otherwise.
+        :return: True if the previous song was switched to, False if there was no previous song.
         """
         if not self.playlist:
-            print("Playlist is empty.")
             return False
 
-        if not self.current_song:
-            return self.play()
+        if self.current_song is None and self.playlist:
+           return False
+        if self.current_song_index == -1 and self.current_song is None and self.playlist:
+            return False
 
-        try:
-            current_index = self.playlist.index(self.current_song)
-            previous_index = (current_index - 1) % len(self.playlist)
-            self.current_song = self.playlist[previous_index]
-            self.is_playing = True
+        if self.current_song_index == -1 and self.current_song is not None:
+            try:
+                self.current_song_index = self.playlist.index(self.current_song)
+            except ValueError:
+                return False
+
+        if self.current_song_index > 0:
+            self.current_song_index -= 1
+            self.current_song = self.playlist[self.current_song_index]
             return True
-        except ValueError:  # Should not happen if current_song is managed correctly
-            return self.play()
+        else:
+            return False
 
     def set_volume(self, volume):
         """
-        Sets the volume of the music player.
-        :param volume: The volume to set (integer between 0 and 100).
-        :return: True if the volume was set, False otherwise.
+        Sets the volume of the music player,ifthe volume is between 0 and 100 is valid.
+        :param volume: The volume to set the music player to,int.
+        :return: True if the volume was set, False if the volume was invalid.
         """
-        if isinstance(volume, int) and 0 <= volume <= 100:
+        if 0 <= volume <= 100:
             self.volume = volume
-            return True
+            return None
         else:
-            print("Invalid volume. Volume must be an integer between 0 and 100.")
             return False
 
     def shuffle(self):
         """
         Shuffles the playlist.
-        :return: True if the playlist was shuffled, False otherwise.
+        :return: True if the playlist was shuffled, False if the playlist was empty.
         """
         if self.playlist:
             random.shuffle(self.playlist)
+            try:
+                self.current_song_index = self.playlist.index(self.current_song)
+            except ValueError:
+                self.current_song = None
+                self.current_song_index = -1
             return True
         else:
-            print("Playlist is empty.")
             return False
-
-    def get_current_song(self):
-        """
-        Returns the currently playing song.
-        :return: The current song (string) or None if no song is playing.
-        """
-        return self.current_song
-
-    def get_playlist(self):
-        """
-        Returns a copy of the current playlist.
-        :return: A list of strings representing the playlist.
-        """
-        return self.playlist[:] # Return a copy to prevent external modification
-
-    def is_currently_playing(self):
-        """
-        Returns the playing status
-        :return: boolean
-        """
-        return self.is_playing

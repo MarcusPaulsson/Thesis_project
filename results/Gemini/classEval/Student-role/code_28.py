@@ -23,20 +23,17 @@ class DatabaseProcessor:
         :param key2: str, the name of the second column in the table.
         >>> db.create_table('user', 'name', 'age')
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            cursor.execute(f'''
-                CREATE TABLE IF NOT EXISTS {table_name} (
-                    id INTEGER PRIMARY KEY,
-                    {key1} TEXT,
-                    {key2} INTEGER
-                )
-            ''')
-            conn.commit()
-            conn.close()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        cursor.execute(f'''
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                {key1} TEXT,
+                {key2} INTEGER
+            )
+        ''')
+        conn.commit()
+        conn.close()
 
 
     def insert_into_database(self, table_name, data):
@@ -49,22 +46,17 @@ class DatabaseProcessor:
                 {'name': 'Alice', 'age': 30}
             ])
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            for row in data:
-                key1_value = row.get(list(row.keys())[0])
-                key2_value = row.get(list(row.keys())[1])
-                cursor.execute(f'''
-                    INSERT INTO {table_name} ({list(row.keys())[0]}, {list(row.keys())[1]})
-                    VALUES (?, ?)
-                ''', (key1_value, key2_value))
-            conn.commit()
-            conn.close()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-        except IndexError:
-            print("Error: Data dictionaries must have at least two keys.")
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        for row in data:
+            keys = ', '.join(row.keys())
+            values = ', '.join(['?'] * len(row))
+            cursor.execute(f'''
+                INSERT INTO {table_name} ({keys})
+                VALUES ({values})
+            ''', tuple(row.values()))
+        conn.commit()
+        conn.close()
 
 
     def search_database(self, table_name, name):
@@ -77,17 +69,17 @@ class DatabaseProcessor:
         >>> db.search_database('user', 'John')
         [(1, 'John', 25)]
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            cursor.execute(f'''
-                SELECT * FROM {table_name} WHERE {list(pd.read_sql_query(f"PRAGMA table_info({table_name});", conn)['name'])[1]} = ?
-            ''', (name,))
-            results = cursor.fetchall()
-            conn.close()
-            return results
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        cursor.execute(f'''
+            SELECT * FROM {table_name}
+            WHERE name = ?
+        ''', (name,))
+        result = cursor.fetchall()
+        conn.close()
+        if result:
+            return result
+        else:
             return None
 
 
@@ -98,13 +90,11 @@ class DatabaseProcessor:
         :param name: str, the name to match for deletion.
         >>> db.delete_from_database('user', 'John')
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            cursor.execute(f'''
-                DELETE FROM {table_name} WHERE {list(pd.read_sql_query(f"PRAGMA table_info({table_name});", conn)['name'])[1]} = ?
-            ''', (name,))
-            conn.commit()
-            conn.close()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        cursor.execute(f'''
+            DELETE FROM {table_name}
+            WHERE name = ?
+        ''', (name,))
+        conn.commit()
+        conn.close()

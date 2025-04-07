@@ -11,13 +11,7 @@ class PDFHandler:
         It creates a list named readers using PyPDF2, where each reader opens a file from the given paths.
         """
         self.filepaths = filepaths
-        self.readers = []
-        for fp in filepaths:
-            try:
-                self.readers.append(PyPDF2.PdfFileReader(fp))
-            except FileNotFoundError:
-                print(f"File not found: {fp}")
-
+        self.readers = [PyPDF2.PdfFileReader(open(fp, 'rb')) for fp in filepaths]
 
     def merge_pdfs(self, output_filepath):
         """
@@ -29,14 +23,12 @@ class PDFHandler:
         >>> handler.merge_pdfs('out.pdf')
         Merged PDFs saved at out.pdf
         """
-        pdf_writer = PyPDF2.PdfFileWriter()
+        merger = PyPDF2.PdfFileMerger()
         for reader in self.readers:
-            for page_num in range(reader.getNumPages()):
-                page = reader.getPage(page_num)
-                pdf_writer.addPage(page)
+            merger.append(reader)
 
-        with open(output_filepath, 'wb') as output_pdf:
-            pdf_writer.write(output_pdf)
+        with open(output_filepath, "wb") as output_file:
+            merger.write(output_file)
         return f"Merged PDFs saved at {output_filepath}"
 
     def extract_text_from_pdfs(self):

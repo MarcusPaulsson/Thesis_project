@@ -2,85 +2,54 @@ import urllib.parse
 
 class UrlPath:
     """
-    A utility for encapsulating and manipulating URL paths.
+    The  class is a utility for encapsulating and manipulating the path component of a URL, including adding nodes, parsing path strings, and building path strings with optional encoding.
     """
 
     def __init__(self):
         """
-        Initializes the UrlPath with an empty list of segments.
+        Initializes the UrlPath object with an empty list of segments and a flag indicating the presence of an end tag.
         """
         self.segments = []
+        self.with_end_tag = False
 
     def add(self, segment):
         """
-        Adds a segment to the path.
-
-        Args:
-            segment (str): The segment to add.  Should not contain '/'.
+        Adds a segment to the list of segments in the UrlPath.
+        :param segment: str, the segment to add.
         """
-        if not isinstance(segment, str):
-            raise TypeError("Segment must be a string.")
-
-        if '/' in segment:
-            raise ValueError("Segment should not contain '/'.")
-
         self.segments.append(segment)
 
-    def parse(self, path, charset='utf-8'):
+    def parse(self, path, charset):
         """
-        Parses a URL path string into segments.
-
-        Args:
-            path (str): The URL path to parse.
-            charset (str): The character encoding of the path. Defaults to 'utf-8'.
+        Parses a given path string and populates the list of segments in the UrlPath.
+        :param path: str, the path string to parse.
+        :param charset: str, the character encoding of the path string.
         """
-        if not isinstance(path, str):
-            raise TypeError("Path must be a string.")
-
-        if not isinstance(charset, str):
-            raise TypeError("Charset must be a string.")
-
-        path = self._fix_path(path)
-        if path:
-            self.segments = path.split('/')
+        fixed_path = self.fix_path(path)
+        if fixed_path:
+            self.segments = fixed_path.split('/')
         else:
             self.segments = []
 
+        self.with_end_tag = path.endswith('/') if path else False
+
 
     @staticmethod
-    def _fix_path(path):
+    def fix_path(path):
         """
-        Removes leading and trailing slashes from a path.
-
-        Args:
-            path (str): The path to fix.
-
-        Returns:
-            str: The fixed path.
+        Fixes the given path string by removing leading and trailing slashes.
+        :param path: str, the path string to fix.
+        :return: str, the fixed path string.
         """
-        if not isinstance(path, str):
-            raise TypeError("Path must be a string.")
+        if not path:
+            return ""
 
-        return path.strip('/')
+        start = 0
+        end = len(path)
 
-    def __str__(self):
-        """
-        Returns the path as a string.
+        while start < end and path[start] == '/':
+            start += 1
+        while end > start and path[end-1] == '/':
+            end -= 1
 
-        Returns:
-            str: The concatenated path segments, separated by '/'.
-        """
-        return '/'.join(self.segments)
-
-    def get_encoded_path(self, charset='utf-8'):
-        """
-        Returns the encoded path string.
-
-        Args:
-            charset (str): The character encoding to use. Defaults to 'utf-8'.
-
-        Returns:
-            str: The encoded path string.
-        """
-        encoded_segments = [urllib.parse.quote(segment, encoding=charset) for segment in self.segments]
-        return '/'.join(encoded_segments)
+        return path[start:end]

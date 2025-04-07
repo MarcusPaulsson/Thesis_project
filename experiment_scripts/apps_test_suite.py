@@ -26,14 +26,26 @@ chatGPT_meta_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'A
 chatGPT_naive_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Naive'))
 chatGPT_iterative_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Iterative'))
 
-# WizardCoder
-wizardCoder_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'WizardCoder', 'APPS', 'Zero-shot'))
-
-# Qwen
-qwen_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Qwen', 'APPS', 'Zero-shot'))
-
 # Gemma
 gemma_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Zero-shot'))
+gemma_zero_shot_CoT_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Zero-shot-CoT'))
+gemma_student_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Student-role'))
+gemma_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Expert-role'))
+gemma_meta_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Meta'))
+gemma_naive_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Naive'))
+gemma_iterative_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Iterative'))
+
+# WizardCoder
+#wizardCoder_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'WizardCoder', 'APPS', 'Zero-shot'))
+
+# Qwen
+#qwen_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Qwen', 'APPS', 'Zero-shot'))
+
+
+
+
+
+
 # Define a list of folder paths and their corresponding names
 folder_paths = {
 
@@ -54,12 +66,12 @@ folder_paths = {
     # "ChatGPT Iterative": chatGPT_iterative_apps_folder,
 
     "Gemma3 Zero-shot": gemma_zero_shot_apps_folder,
-    # "Gemma3 Zero-shot-CoT": gemma_zero_shot_CoT_apps_folder,
-    # "Gemma3 Student-role": gemma_student_role_apps_folder,
-    # "Gemma3 Expert-role": gemma_expert_role_apps_folder,
-    # "Gemma3 Meta": gemma_meta_apps_folder,
-    # "Gemma3 Naive": gemma_naive_apps_folder,
-    # "Gemma3 Iterative": gemma_iterative_apps_folder,
+    "Gemma3 Zero-shot-CoT": gemma_zero_shot_CoT_apps_folder,
+    "Gemma3 Student-role": gemma_student_role_apps_folder,
+    "Gemma3 Expert-role": gemma_expert_role_apps_folder,
+    "Gemma3 Meta": gemma_meta_apps_folder,
+    "Gemma3 Naive": gemma_naive_apps_folder,
+    "Gemma3 Iterative": gemma_iterative_apps_folder,
 
 }
 

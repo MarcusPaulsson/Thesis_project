@@ -1,63 +1,46 @@
 class Manacher:
     """
-    Finds the Longest Palindromic Substring in a given string using the Manacher's algorithm.
+    This class implements the Manacher's algorithm to find the longest palindromic substring in a given string.
     """
 
-    def __init__(self, input_string: str) -> None:
+    def __init__(self, input_string):
         """
         Initializes the Manacher class with the given input_string.
-
-        Args:
-            input_string: The input string to be searched.
+        :param input_string: The input_string to be searched, str.
         """
         self.input_string = input_string
 
-    def _preprocess_string(self) -> str:
+    def palindromic_length(self, center, string):
         """
-        Preprocesses the input string by inserting '|' between characters and at the beginning and end.
-
-        Returns:
-            The preprocessed string.
+        Calculates the length of the palindromic substring centered at the given center.
+        :param center: The center of the palindromic substring, int.
+        :param string: The processed string with '|' inserted, str.
+        :return: The length of the palindromic substring radius, int.
         """
-        return '^' + '|'.join(list(self.input_string)) + '$'
+        length = 0
+        left = center - 1
+        right = center + 1
 
-    def find_longest_palindrome(self) -> str:
+        while left >= 0 and right < len(string) and string[left] == string[right]:
+            length += 1
+            left -= 1
+            right += 1
+
+        return length
+
+    def palindromic_string(self):
         """
-        Finds the longest palindromic substring in the given string using Manacher's algorithm.
-
-        Returns:
-            The longest palindromic substring. Returns an empty string if the input string is empty.
+        Finds the longest palindromic substring in the given string.
+        :return: The longest palindromic substring, str.
         """
-
-        if not self.input_string:
-            return ""
-
-        processed_string = self._preprocess_string()
-        n = len(processed_string)
-        palindrome_radii = [0] * n  # Length of palindrome centered at each index
-        center = 0  # Center of the rightmost palindrome found so far
-        right_boundary = 0  # Right boundary of the rightmost palindrome found so far
+        processed_string = '#' + '#'.join(self.input_string) + '#'
         max_length = 0
         center_index = 0
 
-        for i in range(1, n - 1):
-            mirror = 2 * center - i  # Mirror index of i with respect to center
-
-            if i < right_boundary:
-                palindrome_radii[i] = min(right_boundary - i, palindrome_radii[mirror])
-
-            # Attempt to expand palindrome centered at i
-            while processed_string[i + (1 + palindrome_radii[i])] == processed_string[i - (1 + palindrome_radii[i])]:
-                palindrome_radii[i] += 1
-
-            # If palindrome centered at i expands past right_boundary, adjust center and right_boundary
-            if i + palindrome_radii[i] > right_boundary:
-                center = i
-                right_boundary = i + palindrome_radii[i]
-
-            # Update maximum palindrome length and its center
-            if palindrome_radii[i] > max_length:
-                max_length = palindrome_radii[i]
+        for i in range(len(processed_string)):
+            current_length = self.palindromic_length(i, processed_string)
+            if current_length > max_length:
+                max_length = current_length
                 center_index = i
 
         start = (center_index - max_length) // 2

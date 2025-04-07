@@ -22,16 +22,9 @@ class ZipFileProcessor:
         >>> file = zfp.read_zip_file()
         """
         try:
-            zip_file = zipfile.ZipFile(self.file_name, 'r')
-            return zip_file
-        except FileNotFoundError:
-            print(f"Error: File '{self.file_name}' not found.")
-            return None
-        except zipfile.BadZipFile:
-            print(f"Error: '{self.file_name}' is not a valid zip file.")
-            return None
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            file = zipfile.ZipFile(self.file_name, 'r')
+            return file
+        except:
             return None
 
     def extract_all(self, output_path):
@@ -43,17 +36,11 @@ class ZipFileProcessor:
         >>> zfp.extract_all("result/aaa")
         """
         try:
-            with zipfile.ZipFile(self.file_name, 'r') as zip_file:
-                zip_file.extractall(output_path)
+            with zipfile.ZipFile(self.file_name, 'r') as zip_ref:
+                os.makedirs(output_path, exist_ok=True)
+                zip_ref.extractall(output_path)
             return True
-        except FileNotFoundError:
-            print(f"Error: Zip file '{self.file_name}' not found.")
-            return False
-        except zipfile.BadZipFile:
-            print(f"Error: '{self.file_name}' is not a valid zip file.")
-            return False
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+        except:
             return False
 
     def extract_file(self, file_name, output_path):
@@ -66,21 +53,11 @@ class ZipFileProcessor:
         >>> zfp.extract_file("bbb.txt", "result/aaa")
         """
         try:
-            with zipfile.ZipFile(self.file_name, 'r') as zip_file:
-                try:
-                    zip_file.extract(file_name, output_path)
-                    return True
-                except KeyError:
-                    print(f"Error: File '{file_name}' not found in the zip archive.")
-                    return False
-        except FileNotFoundError:
-            print(f"Error: Zip file '{self.file_name}' not found.")
-            return False
-        except zipfile.BadZipFile:
-            print(f"Error: '{self.file_name}' is not a valid zip file.")
-            return False
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            with zipfile.ZipFile(self.file_name, 'r') as zip_ref:
+                os.makedirs(output_path, exist_ok=True)
+                zip_ref.extract(file_name, output_path)
+            return True
+        except:
             return False
 
     def create_zip_file(self, files, output_file_name):
@@ -93,13 +70,10 @@ class ZipFileProcessor:
         >>> zfp.create_zip_file(["bbb.txt", "ccc,txt", "ddd.txt"], "output/bcd")
         """
         try:
-            with zipfile.ZipFile(output_file_name + ".zip", 'w') as zip_file:
+            with zipfile.ZipFile(output_file_name, 'w') as zip_ref:
                 for file in files:
                     if os.path.exists(file):
-                        zip_file.write(file)
-                    else:
-                        print(f"Warning: File '{file}' not found and will be skipped.")
-                return True
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+                        zip_ref.write(file, os.path.basename(file))
+            return True
+        except:
             return False

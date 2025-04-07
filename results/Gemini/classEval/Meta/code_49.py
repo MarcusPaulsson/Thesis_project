@@ -78,7 +78,7 @@ class JobMarketplace:
         """
         result = []
         for job in self.job_listings:
-            if criteria in ' '.join(job['requirements']):
+            if criteria in job['requirements']:
                 result.append(job)
         return result
 
@@ -102,10 +102,10 @@ class JobMarketplace:
 
     def matches_requirements(self, resume, requirements):
         """
-        This function is used to check if the candidate meets the requirements of the position.
+        This function is used to determine whether the candidate meets the requirements.
         :param resume: The resume information,dict.
         :param requirements: The requirements of the position,list.
-        :return: True if the candidate meets the requirements,False otherwise.
+        :return: Whether the candidate meets the requirements,bool.
         """
         for requirement in requirements:
             if requirement not in resume['skills']:

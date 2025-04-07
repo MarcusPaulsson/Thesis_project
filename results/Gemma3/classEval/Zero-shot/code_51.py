@@ -51,7 +51,8 @@ class KappaCalculator:
         p_j = [sum(testData[i][j] for i in range(N)) / (N * n) for j in range(k)]
         P = sum([x * x for x in p_j])
         P_i = [sum(testData[i][j] for j in range(k)) / n for i in range(N)]
-        P_bar = sum([x * x for x in P_i]) / N
-        Pe = P
-        kappa = (P_bar - Pe) / (1 - Pe)
+        P_bar = sum(P_i) / N
+        Pe = P_bar * P_bar
+        P_e = sum([x * x for x in P_i]) / N
+        kappa = (P_e - Pe) / (1 - Pe)
         return kappa

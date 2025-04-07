@@ -43,7 +43,7 @@ class BitStatusUtil:
         4
 
         """
-        return states & ~stat
+        return states & (~stat)
 
     @staticmethod
     def check(args):

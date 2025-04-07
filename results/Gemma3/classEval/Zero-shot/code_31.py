@@ -19,18 +19,19 @@ class DataStatistics4:
         """
         n = len(data1)
         if n != len(data2):
-            return 0.0
+            raise ValueError("Data sets must have the same length")
+
         sum_x = sum(data1)
         sum_y = sum(data2)
-        sum_x2 = sum([x**2 for x in data1])
-        sum_y2 = sum([y**2 for y in data2])
-        sum_xy = sum([x * y for x, y in zip(data1, data2)])
+        sum_x_squared = sum(x**2 for x in data1)
+        sum_y_squared = sum(y**2 for y in data2)
+        sum_xy = sum(x * y for x, y in zip(data1, data2))
 
         numerator = n * sum_xy - sum_x * sum_y
-        denominator = math.sqrt((n * sum_x2 - sum_x**2) * (n * sum_y2 - sum_y**2))
+        denominator = math.sqrt((n * sum_x_squared - sum_x**2) * (n * sum_y_squared - sum_y**2))
 
         if denominator == 0:
-            return 0.0
+            return 0  # Handle the case where the denominator is zero to avoid division by zero
         else:
             return numerator / denominator
 
@@ -46,12 +47,15 @@ class DataStatistics4:
         """
         n = len(data)
         if n < 3:
-            return 0.0
+            return 0  # Skewness is not meaningful for less than 3 data points
+
         mean = sum(data) / n
-        std_dev = math.sqrt(sum([(x - mean)**2 for x in data]) / (n - 1))
+        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / (n - 1))
+
         if std_dev == 0:
-            return 0.0
-        skewness = sum([(x - mean)**3 for x in data]) / ((n - 1) * std_dev**3)
+            return 0  # Handle the case where the standard deviation is zero
+
+        skewness = sum(((x - mean) / std_dev)**3 for x in data) / n
         return skewness
 
     @staticmethod
@@ -66,12 +70,15 @@ class DataStatistics4:
         """
         n = len(data)
         if n < 4:
-            return float('nan')
+            return float('nan')  # Kurtosis is not meaningful for less than 4 data points
+
         mean = sum(data) / n
-        std_dev = math.sqrt(sum([(x - mean)**2 for x in data]) / (n - 1))
+        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / (n - 1))
+
         if std_dev == 0:
-            return float('nan')
-        kurtosis = (sum([(x - mean)**4 for x in data]) / ((n - 1) * std_dev**4)) - 3
+            return float('nan')  # Handle the case where the standard deviation is zero
+
+        kurtosis = (sum(((x - mean) / std_dev)**4 for x in data) / n) - 3
         return kurtosis
 
     @staticmethod

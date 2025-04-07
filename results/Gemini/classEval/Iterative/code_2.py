@@ -1,12 +1,20 @@
 class ArgumentParser:
     """
-    A class for parsing command line arguments into a dictionary.
+    This is a class for parsing command line arguments to a dictionary.
     """
 
     def __init__(self):
         """
-        Initializes the ArgumentParser with empty dictionaries for arguments and types,
-        and an empty set for required arguments.
+        Initialize the fields.
+        self.arguments is a dict that stores the args in a command line
+        self.requried is a set that stores the required arguments
+        self.types is a dict that stores type of every arguments.
+        >>> parser.arguments
+        {'key1': 'value1', 'option1': True}
+        >>> parser.required
+        {'arg1'}
+        >>> parser.types
+        {'arg1': 'type1'}
         """
         self.arguments = {}
         self.required = set()
@@ -14,66 +22,76 @@ class ArgumentParser:
 
     def parse_arguments(self, command_string):
         """
-        Parses a command line argument string.
-
-        Args:
-            command_string: The command line argument string (e.g., "python script.py --arg1=value1 -arg2 value2 --option1 -option2").
-
-        Returns:
-            A tuple: (True, None) if parsing succeeds, or (False, missing_args) if parsing fails,
-            where missing_args is a set of missing required argument names.
+        Parses the given command line argument string and invoke _convert_type to stores the parsed result in specific type in the arguments dictionary.
+        Checks for missing required arguments, if any, and returns False with the missing argument names, otherwise returns True.
+        :param command_string: str, command line argument string, formatted like "python script.py --arg1=value1 -arg2 value2 --option1 -option2"
+        :return tuple: (True, None) if parsing is successful, (False, missing_args) if parsing fails,
+            where missing_args is a set of the missing argument names which are str.
+        >>> parser.parse_arguments("python script.py --arg1=value1 -arg2 value2 --option1 -option2")
+        (True, None)
+        >>> parser.arguments
+        {'arg1': 'value1', 'arg2': 'value2', 'option1': True, 'option2': True}
         """
         args = command_string.split()
-        i = 0
+        i = 1
         while i < len(args):
             arg = args[i]
-            if arg.startswith('--'):
-                arg_name = arg[2:]
-                if '=' in arg_name:
-                    arg_name, arg_value = arg_name.split('=', 1)  # Split only once
+            if arg.startswith("--"):
+                arg_name = arg[2:].split("=", 1)[0]
+                if "=" in arg:
+                    arg_value = arg[2:].split("=", 1)[1]
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
-                elif i + 1 < len(args) and not args[i + 1].startswith('-'):
-                    i += 1
-                    self.arguments[arg_name] = self._convert_type(arg_name, args[i])
                 else:
                     self.arguments[arg_name] = True
-            elif arg.startswith('-'):
+            elif arg.startswith("-"):
                 arg_name = arg[1:]
-                if i + 1 < len(args) and not args[i + 1].startswith('-'):
+                if i + 1 < len(args) and not args[i + 1].startswith("-"):
+                    arg_value = args[i + 1]
+                    self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
                     i += 1
-                    self.arguments[arg_name] = self._convert_type(arg_name, args[i])
                 else:
                     self.arguments[arg_name] = True
             i += 1
 
-        missing_args = self.required - set(self.arguments.keys())
+        missing_args = set()
+        for req_arg in self.required:
+            if req_arg not in self.arguments:
+                missing_args.add(req_arg)
 
         if missing_args:
             return False, missing_args
         else:
             return True, None
 
-    def get_argument(self, key, default=None):
+    def get_argument(self, key):
         """
-        Retrieves the value of the specified argument.
-
-        Args:
-            key: The argument name.
-            default: The default value to return if the argument is not found (default: None).
-
-        Returns:
-            The value of the argument or the default value if the argument is not found.
+        Retrieves the value of the specified argument from the arguments dictionary and returns it.
+        :param key: str, argument name
+        :return: The value of the argument, or None if the argument does not exist.
+        >>> parser.arguments
+        {'arg1': 'value1', 'arg2': 'value2', 'option1': True, 'option2': True}
+        >>> parser.get_argument('arg2')
+        'value2'
         """
-        return self.arguments.get(key, default)
+        if key in self.arguments:
+            return self.arguments[key]
+        else:
+            return None
 
     def add_argument(self, arg, required=False, arg_type=str):
         """
-        Adds an argument definition.
-
-        Args:
-            arg: The argument name.
-            required: Whether the argument is required (default: False).
-            arg_type: The argument type (default: str).
+        Adds an argument to self.types and self.required.
+        Check if it is a required argument and store the argument type.
+        If the argument is set as required, it wull be added to the required set.
+        The argument type and name are stored in the types dictionary as key-value pairs.
+        :param arg: str, argument name
+        :param required: bool, whether the argument is required, default is False
+        :param arg_type:str, Argument type, default is str
+        >>> parser.add_argument('arg1', True, 'int')
+        >>> parser.required
+        {'arg1'}
+        >>> parser.types
+        {'arg1': 'int'}
         """
         self.types[arg] = arg_type
         if required:
@@ -81,32 +99,26 @@ class ArgumentParser:
 
     def _convert_type(self, arg, value):
         """
-        Converts a value to the specified type for an argument.
-
-        Args:
-            arg: The argument name.
-            value: The value to convert.
-
-        Returns:
-            The converted value, or the original value if no conversion is possible.
+        Try to convert the type of input value by searching in self.types.
+        :param value: str, the input value in command line
+        :return: return corresponding value in self.types if convert successfully, or the input value oherwise
+        >>> parser.types
+        {'arg1': int}
+        >>> parser._convert_type('arg1', '21')
+        21
         """
-        arg_type = self.types.get(arg)
-        if arg_type:
+        if arg in self.types:
+            arg_type = self.types[arg]
             try:
-                if arg_type == int or arg_type == 'int':
+                if arg_type == int:
                     return int(value)
-                elif arg_type == float or arg_type == 'float':
+                elif arg_type == float:
                     return float(value)
-                elif arg_type == bool or arg_type == 'bool':
-                    value = value.lower()
-                    if value == 'true':
-                        return True
-                    elif value == 'false':
-                        return False
-                    else:
-                        return value  # Or raise an exception for invalid boolean values
+                elif arg_type == bool:
+                    return value.lower() == 'true' or value.lower() == ''
                 else:
-                    return str(value) # Explicitly convert to string for consistency
+                    return value
             except ValueError:
                 return value
-        return value
+        else:
+            return value

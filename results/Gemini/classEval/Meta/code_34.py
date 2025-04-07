@@ -1,8 +1,6 @@
 from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.enum.table import WD_ALIGN_VERTICAL
-from docx.enum.table import WD_TABLE_ALIGNMENT
 
 
 class DocFileHandler:
@@ -24,10 +22,10 @@ class DocFileHandler:
         """
         try:
             document = Document(self.file_path)
-            full_text = []
+            text = ""
             for paragraph in document.paragraphs:
-                full_text.append(paragraph.text)
-            return '\n'.join(full_text)
+                text += paragraph.text + "\n"
+            return text.rstrip("\n")
         except Exception as e:
             print(f"Error reading document: {e}")
             return None
@@ -43,12 +41,15 @@ class DocFileHandler:
         try:
             document = Document()
             paragraph = document.add_paragraph(content)
-            paragraph_format = paragraph.paragraph_format
-            paragraph_format.alignment = self._get_alignment_value(alignment)
-
+            
+            # Set font size
             for run in paragraph.runs:
                 run.font.size = Pt(font_size)
 
+            # Set alignment
+            alignment_value = self._get_alignment_value(alignment)
+            paragraph.alignment = alignment_value
+            
             document.save(self.file_path)
             return True
         except Exception as e:
@@ -63,7 +64,7 @@ class DocFileHandler:
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path) if self.file_path else Document()
+            document = Document(self.file_path)
             document.add_heading(heading, level=level)
             document.save(self.file_path)
             return True
@@ -78,26 +79,13 @@ class DocFileHandler:
         :return: bool, True if the table is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path) if self.file_path else Document()
-            if not data or not isinstance(data, list) or not all(isinstance(row, list) for row in data):
-                print("Invalid data format for the table.")
-                return False
+            document = Document(self.file_path)
+            table = document.add_table(rows=0, cols=len(data[0]) if data else 0)
 
-            table = document.add_table(rows=1, cols=len(data[0]) if data else 0)
-            table.style = 'Table Grid'
-            table.alignment = WD_TABLE_ALIGNMENT.CENTER
-
-            # Populate header row
-            header_cells = table.rows[0].cells
-            for i, header_text in enumerate(data[0]):
-                header_cells[i].text = str(header_text)  # Convert to string
-
-            # Populate data rows
-            for row_data in data[1:]:
+            for row_data in data:
                 row_cells = table.add_row().cells
-                for i, cell_data in enumerate(row_data):
-                    row_cells[i].text = str(cell_data)  # Convert to string
-                    row_cells[i].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+                for i, item in enumerate(row_data):
+                    row_cells[i].text = str(item)
 
             document.save(self.file_path)
             return True
@@ -112,9 +100,11 @@ class DocFileHandler:
         :return: int, the alignment value.
         """
         alignment = alignment.lower()
-        if alignment == 'center':
+        if alignment == 'left':
+            return WD_PARAGRAPH_ALIGNMENT.LEFT
+        elif alignment == 'center':
             return WD_PARAGRAPH_ALIGNMENT.CENTER
         elif alignment == 'right':
             return WD_PARAGRAPH_ALIGNMENT.RIGHT
         else:
-            return WD_PARAGRAPH_ALIGNMENT.LEFT
+            return WD_PARAGRAPH_ALIGNMENT.LEFT  # Default to left alignment

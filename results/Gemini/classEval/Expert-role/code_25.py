@@ -17,35 +17,57 @@ class CookiesUtil:
         """
         Gets the cookies from the specified response,and save it to cookies_file.
         :param reponse: The response to get cookies from, dict.
+        >>> cookies_util = CookiesUtil('cookies.json')
+        >>> cookies_util.get_cookies({'cookies': {'key1': 'value1', 'key2': 'value2'}})
+        >>> cookies_util.cookies
+        {'key1': 'value1', 'key2': 'value2'}
+
         """
         if 'cookies' in reponse:
             self.cookies = reponse['cookies']
-            self._save_cookies()
+        else:
+            self.cookies = {}
 
     def load_cookies(self):
         """
         Loads the cookies from the cookies_file to the cookies data.
         :return: The cookies data, dict.
+        >>> cookies_util = CookiesUtil('cookies.json')
+        >>> cookies_util.load_cookies()
+        {'key1': 'value1', 'key2': 'value2'}
+
         """
         try:
             with open(self.cookies_file, 'r') as f:
                 self.cookies = json.load(f)
-            return self.cookies
         except FileNotFoundError:
             self.cookies = {}
-            return self.cookies
         except json.JSONDecodeError:
             self.cookies = {}
-            return self.cookies
+        return self.cookies
 
     def _save_cookies(self):
         """
         Saves the cookies to the cookies_file, and returns True if successful, False otherwise.
         :return: True if successful, False otherwise.
+        >>> cookies_util = CookiesUtil('cookies.json')
+        >>> cookies_util.cookies = {'key1': 'value1', 'key2': 'value2'}
+        >>> cookies_util._save_cookies()
+        True
+
         """
-        try:
-            with open(self.cookies_file, 'w') as f:
-                json.dump(self.cookies, f)
-            return True
-        except Exception:
-            return False
+        if self.cookies_file:
+            try:
+                with open(self.cookies_file, 'w') as f:
+                    json.dump(self.cookies, f)
+                return True
+            except:
+                return False
+        return False
+
+    def set_cookies(self, request):
+        """
+        Sets the cookies to the specified request.
+        :param request: The request to set cookies to, dict.
+        """
+        request['cookies'] = "cookies=" + str(self.cookies)

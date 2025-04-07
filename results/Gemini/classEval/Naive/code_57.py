@@ -24,21 +24,40 @@ class MetricsCalculator2:
         1.0, [1.0]
         0.75, [1.0, 0.5]
         """
-        if not isinstance(data, list):
+        if not isinstance(data, list) and not isinstance(data, tuple):
+            raise TypeError("Input data must be a list or tuple.")
+
+        if isinstance(data, tuple):
             data = [data]
+
+        if not data:
+            return 0.0, [0.0]
 
         reciprocal_ranks = []
         for item in data:
+            if not isinstance(item, tuple) or len(item) != 2:
+                raise ValueError("Each item in the list must be a tuple of (list, int).")
+
             results, ground_truth_num = item
+            if not isinstance(results, list):
+                raise TypeError("The first element of each tuple must be a list.")
+            if not isinstance(ground_truth_num, int):
+                raise TypeError("The second element of each tuple must be an integer.")
+
             try:
                 first_relevant_rank = results.index(1) + 1
-                reciprocal_rank = 1.0 / first_relevant_rank
             except ValueError:
-                reciprocal_rank = 0.0
-            reciprocal_ranks.append(reciprocal_rank)
+                first_relevant_rank = 0
 
-        mrr_value = np.mean(reciprocal_ranks)
-        return mrr_value, reciprocal_ranks
+            if first_relevant_rank > 0:
+                reciprocal_ranks.append(1.0 / first_relevant_rank)
+            else:
+                reciprocal_ranks.append(0.0)
+
+        if reciprocal_ranks:
+            return np.mean(reciprocal_ranks), reciprocal_ranks
+        else:
+            return 0.0, [0.0]
 
     @staticmethod
     def map(data):
@@ -55,12 +74,26 @@ class MetricsCalculator2:
         0.41666666666666663, [0.41666666666666663]
         0.3333333333333333, [0.41666666666666663, 0.25]
         """
-        if not isinstance(data, list):
+        if not isinstance(data, list) and not isinstance(data, tuple):
+            raise TypeError("Input data must be a list or tuple.")
+
+        if isinstance(data, tuple):
             data = [data]
+
+        if not data:
+            return 0.0, [0.0]
 
         average_precisions = []
         for item in data:
+            if not isinstance(item, tuple) or len(item) != 2:
+                raise ValueError("Each item in the list must be a tuple of (list, int).")
+
             results, ground_truth_num = item
+            if not isinstance(results, list):
+                raise TypeError("The first element of each tuple must be a list.")
+            if not isinstance(ground_truth_num, int):
+                raise TypeError("The second element of each tuple must be an integer.")
+
             relevant_count = 0
             precision_sum = 0.0
             for i, result in enumerate(results):
@@ -72,7 +105,10 @@ class MetricsCalculator2:
                 average_precision = precision_sum / ground_truth_num
             else:
                 average_precision = 0.0
+
             average_precisions.append(average_precision)
 
-        map_value = np.mean(average_precisions)
-        return map_value, average_precisions
+        if average_precisions:
+            return np.mean(average_precisions), average_precisions
+        else:
+            return 0.0, [0.0]

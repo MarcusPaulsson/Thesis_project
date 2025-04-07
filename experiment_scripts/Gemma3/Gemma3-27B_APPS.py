@@ -44,8 +44,6 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
             contents=contents,
             config=generate_content_config,
         )
-        print(f"Prompt Tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Candidates Tokens: {response.usage_metadata.candidates_token_count}")
         print(f"Total Tokens: {response.usage_metadata.total_token_count}")
         return {"response": response.text, "error": None}
     except Exception as e:
@@ -54,7 +52,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
 
 def process_task_with_iterations(task_prompt):
     """Runs a single task through multiple iterations."""
-    print(f"Processing task with iterations...")
+    
     result_iter1 = run_task_with_gemini_iter(task_prompt, prompt.SYSTEM_PROMPT[0])
     if result_iter1["error"]:
         return {"assistant_response": None, "error": f"Iteration 1 failed: {result_iter1['error']}"}
@@ -77,20 +75,21 @@ def extract_apps_tasks(json_file_path):
                     data = json.loads(line)
                     if "question" in data and "input_output" in data:
                         current_task = data["question"]
-                        extra_prompt = " Here is the test cases the code shall pass: " 
+                        extra_prompt = "\n Here is some more test cases the code shall pass: " 
                         test_cases =  data["input_output"]
-                        
                         temp = json.loads(test_cases)
                         max_numb_test = 5
                         list_of_input = temp["inputs"][:max_numb_test]
                         list_of_outputs = temp["outputs"][:max_numb_test]
                         test_string = "inputs:\n"
+                        test_string = extra_prompt + test_string
                         for i in range(len(list_of_input)):
                             test_string += list_of_input[i]
                         test_string += "  Outputs:\n"
                         for i in range(len(list_of_input)):
                             test_string += list_of_outputs[i]
                         tasks.append(current_task + test_string)
+                  
                     elif "question" in data:
                         tasks.append(data["question"])
                 except json.JSONDecodeError:
@@ -135,9 +134,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 10
-    end_index = 100  # Adjust to the number of tasks you want to run in parallel
-    max_workers = 4  # Adjust the number of parallel calls you want to make
+    start_index = 0
+    end_index = 5 # Adjust to the number of tasks you want to run in parallel
+    max_workers = 5  # Adjust the number of parallel calls you want to make
     run_iterative = True if prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)

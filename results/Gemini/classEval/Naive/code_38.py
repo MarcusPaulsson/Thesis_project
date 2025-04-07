@@ -19,14 +19,18 @@ class ExcelProcessor:
             workbook = openpyxl.load_workbook(file_name)
             sheet = workbook.active
             data = []
-            for row in sheet.iter_rows(values_only=True):
-                data.append(row)
+            for row in sheet.iter_rows():
+                row_data = tuple(cell.value for cell in row)
+                data.append(row_data)
             return data
         except FileNotFoundError:
-            print(f"Error: File '{file_name}' not found.")
+            print(f"File not found: {file_name}")
+            return None
+        except openpyxl.utils.exceptions.InvalidFileException:
+            print(f"Invalid Excel file: {file_name}")
             return None
         except Exception as e:
-            print(f"An error occurred while reading the Excel file: {e}")
+            print(f"An error occurred: {e}")
             return None
 
     def write_excel(self, data, file_name):
@@ -35,61 +39,54 @@ class ExcelProcessor:
         :param data: list, Data to be written
         :param file_name: str, Excel file name to write to
         :return: 0 or 1, 1 represents successful writing, 0 represents failed writing
+        >>> processor = ExcelProcessor()
+        >>> new_data = [
+        >>>     ('Name', 'Age', 'Country'),
+        >>>     ('John', 25, 'USA'),
+        >>>     ('Alice', 30, 'Canada'),
+        >>>     ('Bob', 35, 'Australia'),
+        >>>     ('Julia', 28, 'Germany')
+        >>> ]
+        >>> data = processor.write_excel(new_data, 'test_data.xlsx')
         """
         try:
             workbook = openpyxl.Workbook()
             sheet = workbook.active
-
             for row_data in data:
                 sheet.append(row_data)
-
             workbook.save(file_name)
             return 1
         except Exception as e:
-            print(f"An error occurred while writing to the Excel file: {e}")
+            print(f"An error occurred: {e}")
             return 0
 
-    def process_excel_data(self, N, file_name):
+    def process_excel_data(self, N, save_file_name):
         """
         Change the specified column in the Excel file to uppercase
         :param N: int, The serial number of the column that want to change
-        :param file_name: str, source file name
+        :param save_file_name: str, source file name
         :return:(int, str), The former is the return value of write_excel, while the latter is the saved file name of the processed data
+        >>> processor = ExcelProcessor()
+        >>> success, output_file = processor.process_excel_data(1, 'test_data.xlsx')
         """
         try:
-            data = self.read_excel(file_name)
+            data = self.read_excel(save_file_name)
             if data is None:
                 return 0, None
 
-            processed_data = []
+            new_data = []
             for row in data:
-                new_row = list(row)  # Convert tuple to list to allow modification
-                if len(new_row) > N - 1:
-                    if new_row[N - 1] is not None and isinstance(new_row[N - 1], str):
-                        new_row[N - 1] = new_row[N - 1].upper()
-                processed_data.append(tuple(new_row))  # Convert back to tuple
+                new_row = list(row)
+                if 0 <= N < len(new_row):
+                    new_row.append(str(new_row[N]).upper())
+                else:
+                    return 0, None
+                new_data.append(tuple(new_row))
 
-            save_file_name = f"processed_{file_name}"
-            success = self.write_excel(processed_data, save_file_name)
-            return success, save_file_name
+            output_file_name = "processed_" + save_file_name
+            write_result = self.write_excel(new_data, output_file_name)
+            return write_result, output_file_name
+
         except Exception as e:
-            print(f"An error occurred during processing: {e}")
+            print(f"An error occurred: {e}")
             return 0, None
-
-if __name__ == '__main__':
-    processor = ExcelProcessor()
-
-    # Example usage of write_excel
-    new_data = [
-        ('Name', 'Age', 'Country'),
-        ('John', 25, 'USA'),
-        ('Alice', 30, 'Canada'),
-        ('Bob', 35, 'Australia'),
-        ('Julia', 28, 'Germany')
-    ]
-    write_success = processor.write_excel(new_data, 'test_data.xlsx')
-    print(f"Write Excel successful: {write_success}")
-
-    # Example usage of process_excel_data
-    success, output_file = processor.process_excel_data(1, 'test_data.xlsx')
-    print(f"Process Excel successful: {success}, Output file: {output_file}")

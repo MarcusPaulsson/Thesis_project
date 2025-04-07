@@ -1,3 +1,6 @@
+from urllib.parse import urlparse, parse_qs
+
+
 class URLHandler:
     """
     The class supports to handle URLs, including extracting the scheme, host, path, query parameters, and fragment.
@@ -18,10 +21,10 @@ class URLHandler:
         "https"
         """
         try:
-            return self.url.split("://")[0]
+            parsed_url = urlparse(self.url)
+            return parsed_url.scheme if parsed_url.scheme else None
         except:
             return None
-
 
     def get_host(self):
         """
@@ -32,18 +35,10 @@ class URLHandler:
         "www.baidu.com"
         """
         try:
-            url_parts = self.url.split("://")
-            if len(url_parts) > 1:
-                host_and_path = url_parts[1]
-            else:
-                host_and_path = url_parts[0]
-
-            host = host_and_path.split("/")[0]
-
-            return host
+            parsed_url = urlparse(self.url)
+            return parsed_url.netloc if parsed_url.netloc else None
         except:
             return None
-
 
     def get_path(self):
         """
@@ -54,18 +49,20 @@ class URLHandler:
         "/s?wd=aaa&rsv_spt=1#page"
         """
         try:
-            url_parts = self.url.split("://")
-            if len(url_parts) > 1:
-                host_and_path = url_parts[1]
-            else:
-                return None
+            parsed_url = urlparse(self.url)
+            path = parsed_url.path
+            query = parsed_url.query
+            fragment = parsed_url.fragment
 
-            path = "/" + "/".join(host_and_path.split("/")[1:])
+            if query:
+                path += "?" + query
 
-            return path
+            if fragment:
+                path += "#" + fragment
+
+            return path if path else None
         except:
             return None
-
 
     def get_query_params(self):
         """
@@ -76,22 +73,14 @@ class URLHandler:
         {"wd": "aaa", "rsv_spt": "1"}
         """
         try:
-            path = self.get_path()
-            if path is None:
-                return {}
-
-            query_string = path.split("?")[1] if "?" in path else ""
-            fragment = query_string.split("#")[0] if "#" in query_string else query_string
-
-            params = {}
-            for pair in fragment.split("&"):
-                if "=" in pair:
-                    key, value = pair.split("=")
-                    params[key] = value
-            return params
+            parsed_url = urlparse(self.url)
+            query_params = parse_qs(parsed_url.query)
+            result = {}
+            for key, value in query_params.items():
+                result[key] = value[0]
+            return result if result else {}
         except:
-            return {}
-
+            return None
 
     def get_fragment(self):
         """
@@ -102,9 +91,7 @@ class URLHandler:
         "page"
         """
         try:
-            if "#" in self.url:
-                return self.url.split("#")[1]
-            else:
-                return None
+            parsed_url = urlparse(self.url)
+            return parsed_url.fragment if parsed_url.fragment else None
         except:
             return None

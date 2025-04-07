@@ -27,10 +27,11 @@ class BookManagementDB:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 author TEXT NOT NULL,
-                available INTEGER NOT NULL DEFAULT 1
+                available INTEGER NOT NULL
             )
         """)
         self.connection.commit()
+    
 
     def add_book(self, title, author):
         """
@@ -42,7 +43,7 @@ class BookManagementDB:
         >>> book_db.create_table()
         >>> book_db.add_book('book1', 'author')
         """
-        self.cursor.execute("INSERT INTO books (title, author, available) VALUES (?, ?, 1)", (title, author))
+        self.cursor.execute("INSERT INTO books (title, author, available) VALUES (?, ?, ?)", (title, author, 1))
         self.connection.commit()
 
     def remove_book(self, book_id):

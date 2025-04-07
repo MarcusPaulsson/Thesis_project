@@ -5,99 +5,36 @@ class TriCalculator:
     The class allows to calculate trigonometric values, including cosine, sine, and tangent, using Taylor series approximations.
     """
 
-    def __init__(self, tolerance=1e-15):
-        """
-        Initializes the TriCalculator with a specified tolerance for Taylor series approximations.
 
-        :param tolerance: float, the acceptable error for the Taylor series calculation. Defaults to 1e-15.
-        """
-        self.tolerance = tolerance
+    def __init__(self):
+        pass
 
     def cos(self, x):
         """
-        Calculate the cosine value of the x-degree angle using Taylor series approximation.
-
-        :param x: float, angle in degrees
-        :return: float, cosine of the angle
+        Calculate the cos value of the x-degree angle
+        :param x:float
+        :return:float
+        >>> tricalculator = TriCalculator()
+        >>> tricalculator.cos(60)
+        0.5
         """
-        return self.taylor_cos(x, tolerance=self.tolerance)
+        return self.taylor(x, 50)
 
     def factorial(self, a):
         """
-        Calculate the factorial of a non-negative integer a.
-
-        :param a: int, non-negative integer
-        :return: int, factorial of a
-        :raises ValueError: if a is negative
+        Calculate the factorial of a
+        :param a: int
+        :return: int
+        >>> tricalculator.factorial(5)
+        120
         """
-        if a < 0:
-            raise ValueError("Factorial is not defined for negative numbers.")
         if a == 0:
             return 1
-        result = 1
-        for i in range(1, a + 1):
-            result *= i
-        return result
-
-    def taylor_cos(self, x, n_terms=50, tolerance=1e-15):
-        """
-        Calculate the cosine of x (in degrees) using the Taylor series expansion.
-
-        :param x: float, angle in degrees
-        :param n_terms: int, maximum number of terms to use in the Taylor series. Defaults to 50.
-        :param tolerance: float, acceptable error for the Taylor series calculation. Defaults to 1e-15.
-        :return: float, cosine of x calculated using the Taylor series
-        """
-        x_radians = x * pi / 180.0
-        result = 0.0
-        term = 1.0
-        i = 0
-        while fabs(term) > tolerance and i < n_terms:
-            result += term
-            i += 2
-            term *= - (x_radians ** 2) / (i * (i - 1))
-        return result
-
-    def sin(self, x):
-        """
-        Calculate the sine value of the x-degree angle using Taylor series approximation.
-
-        :param x: float, angle in degrees
-        :return: float, sine of the angle
-        """
-        return self.taylor_sin(x, tolerance=self.tolerance)
-
-    def taylor_sin(self, x, n_terms=50, tolerance=1e-15):
-        """
-        Calculate the sine of x (in degrees) using the Taylor series expansion.
-
-        :param x: float, angle in degrees
-        :param n_terms: int, maximum number of terms to use in the Taylor series. Defaults to 50.
-        :param tolerance: float, acceptable error for the Taylor series calculation. Defaults to 1e-15.
-        :return: float, sine of x calculated using the Taylor series
-        """
-        x_radians = x * pi / 180.0
-        result = 0.0
-        term = x_radians
-        i = 1
-        while fabs(term) > tolerance and i < n_terms:
-            result += term
-            i += 2
-            term *= - (x_radians ** 2) / (i * (i - 1))
-        return result
-
-    def tan(self, x):
-        """
-        Calculate the tangent value of the x-degree angle.
-
-        :param x: float, angle in degrees
-        :return: float, tangent of the angle
-        :raises ZeroDivisionError: if cos(x) is close to zero.
-        """
-        cos_x = self.cos(x)
-        if fabs(cos_x) < self.tolerance:
-            raise ZeroDivisionError("Tangent is undefined at this angle (cosine is zero).")
-        return self.sin(x) / cos_x
+        else:
+            result = 1
+            for i in range(1, a + 1):
+                result *= i
+            return result
 
     def taylor(self, x, n):
         """
@@ -105,5 +42,42 @@ class TriCalculator:
         :param x: int
         :param n: int
         :return: float
+        >>> tricalculator.taylor(60, 50)
+        0.5000000000000001
         """
-        return self.taylor_cos(x, n_terms=n)
+        x = x / 180 * pi
+        cos_val = 0
+        for i in range(n):
+            numerator = (-1) ** i * x ** (2 * i)
+            denominator = self.factorial(2 * i)
+            cos_val += numerator / denominator
+        return cos_val
+
+    def sin(self, x):
+        """
+        Calculate the sin value of the x-degree angle
+        :param x: float
+        :return: float
+        >>> tricalculator.sin(30)
+        0.5
+        """
+        x = x / 180 * pi
+        sin_val = 0
+        for i in range(50):
+            numerator = (-1) ** i * x ** (2 * i + 1)
+            denominator = self.factorial(2 * i + 1)
+            sin_val += numerator / denominator
+        return sin_val
+
+
+    def tan(self, x):
+        """
+        Calculate the tan value of the x-degree angle
+        :param x: float
+        :return: float
+        >>> tricalculator.tan(45)
+        1.0
+        """
+        if x % 180 == 90:
+            return False
+        return self.sin(x) / self.cos(x)

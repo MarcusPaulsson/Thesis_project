@@ -19,11 +19,8 @@ class ExcelProcessor:
             workbook = openpyxl.load_workbook(file_name)
             sheet = workbook.active
             data = []
-            for row in sheet.iter_rows():
-                row_data = []
-                for cell in row:
-                    row_data.append(cell.value)
-                data.append(row_data)
+            for row in sheet.iter_rows(values_only=True):
+                data.append(tuple(row))
             return data
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
@@ -49,10 +46,12 @@ class ExcelProcessor:
         >>> data = processor.write_excel(new_data, 'test_data.xlsx')
         """
         try:
+            if not file_name:
+                return 0
             workbook = openpyxl.Workbook()
             sheet = workbook.active
-            for row_data in data:
-                sheet.append(row_data)
+            for row in data:
+                sheet.append(row)
             workbook.save(file_name)
             return 1
         except Exception as e:
@@ -71,17 +70,16 @@ class ExcelProcessor:
         try:
             data = self.read_excel(save_file_name)
             if data is None:
-                return 0, None
+                return 0
 
             new_data = []
             for row in data:
-                new_row = []
-                for i, cell in enumerate(row):
-                    if i == N - 1 and isinstance(cell, str):
-                        new_row.append(cell.upper())
-                    else:
-                        new_row.append(cell)
-                new_data.append(new_row)
+                row_list = list(row)
+                if 0 <= N < len(row_list):
+                    row_list.append(str(row_list[N]).upper())
+                else:
+                    return 0
+                new_data.append(tuple(row_list))
 
             output_file_name = "processed_" + save_file_name
             write_result = self.write_excel(new_data, output_file_name)
@@ -89,21 +87,3 @@ class ExcelProcessor:
         except Exception as e:
             print(f"An error occurred: {e}")
             return 0, None
-
-
-if __name__ == '__main__':
-    processor = ExcelProcessor()
-    # Example usage for write_excel
-    new_data = [
-        ('Name', 'Age', 'Country'),
-        ('John', 25, 'USA'),
-        ('Alice', 30, 'Canada'),
-        ('Bob', 35, 'Australia'),
-        ('Julia', 28, 'Germany')
-    ]
-    write_result = processor.write_excel(new_data, 'test_data.xlsx')
-    print(f"Write result: {write_result}")
-
-    # Example usage for process_excel_data
-    success, output_file = processor.process_excel_data(1, 'test_data.xlsx')
-    print(f"Process result: {success}, Output file: {output_file}")

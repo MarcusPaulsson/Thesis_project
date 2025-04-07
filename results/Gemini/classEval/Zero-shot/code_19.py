@@ -23,28 +23,16 @@ class ChandrasekharSieve:
         if self.n <= 1:
             return []
 
-        # Create a boolean array "is_prime[0..n]" and initialize
-        # all entries it as true. A value in is_prime[i] will
-        # finally be false if i is Not a prime, else true.
-        is_prime = [True] * (self.n + 1)
-        is_prime[0] = is_prime[1] = False
+        sieve = [True] * (self.n + 1)
+        sieve[0] = sieve[1] = False
 
-        p = 2
-        while (p * p <= self.n):
+        for i in range(2, int(self.n**0.5) + 1):
+            if sieve[i]:
+                for j in range(i*i, self.n + 1, i):
+                    sieve[j] = False
 
-            # If is_prime[p] is not changed, then it is a prime
-            if (is_prime[p] == True):
-
-                # Update all multiples of p
-                for i in range(p * p, self.n + 1, p):
-                    is_prime[i] = False
-            p += 1
-
-        # Print all prime numbers
-        primes = []
-        for p in range(2, self.n + 1):
-            if is_prime[p]:
-                primes.append(p)
+        primes = [i for i in range(2, self.n + 1) if sieve[i]]
+        self.primes = primes
         return primes
 
     def get_primes(self):

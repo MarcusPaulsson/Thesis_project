@@ -3,6 +3,7 @@ class Order:
     The class manages restaurant orders by allowing the addition of dishes, calculation of the total cost, and checkout.
     """
 
+
     def __init__(self):
         """
         Initialize the order management system
@@ -17,6 +18,7 @@ class Order:
         self.selected_dishes = []
         self.sales = {}
 
+
     def add_dish(self, dish):
         """
         Check the self.menu and add into self.selected_dish if the dish count is valid.
@@ -28,15 +30,22 @@ class Order:
         >>> order.add_dish({"dish": "dish1", "price": 10, "count": 3})
         True
         """
+        if not dish:
+            return True
+        dish_name = dish.get("dish")
+        dish_count = dish.get("count")
+        if not dish_name:
+            return True
+
         for item in self.menu:
-            if item["dish"] == dish["dish"]:
-                if item["count"] >= dish["count"]:
-                    item["count"] -= dish["count"]
-                    self.selected_dishes.append(dish)
+            if item["dish"] == dish_name:
+                if item["count"] >= dish_count:
+                    item["count"] -= dish_count
+                    self.selected_dishes.append({"dish": dish_name, "count": dish_count, "price": item["price"]})
                     return True
                 else:
                     return False
-        return False
+        return True
 
     def calculate_total(self):
         """
@@ -52,8 +61,11 @@ class Order:
         """
         total = 0.0
         for dish in self.selected_dishes:
-            sale = self.sales.get(dish["dish"], 1.0)
-            total += dish["count"] * dish["price"] * sale
+            dish_name = dish["dish"]
+            dish_count = dish["count"]
+            dish_price = dish["price"]
+            sales = self.sales.get(dish_name, 1)
+            total += dish_count * dish_price * sales
         return total
 
     def checkout(self):
@@ -72,4 +84,12 @@ class Order:
         if not self.selected_dishes:
             return False
         else:
-            return self.calculate_total()
+            total = self.calculate_total()
+            for dish in self.selected_dishes:
+                dish_name = dish["dish"]
+                dish_count = dish["count"]
+                for item in self.menu:
+                    if item["dish"] == dish_name:
+                        break
+            self.selected_dishes = []
+            return total

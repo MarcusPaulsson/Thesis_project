@@ -19,29 +19,29 @@ class NumericEntityUnescaper:
         result = ""
         i = 0
         while i < len(string):
-            if string[i] == '&' and i + 1 < len(string) and string[i+1] == '#':
+            if string[i:i+2] == "&#":
                 j = i + 2
                 is_hex = False
-                if j < len(string) and string[j] == 'x':
+                if j < len(string) and string[j:j+1].lower() == "x":
                     is_hex = True
                     j += 1
 
-                end = j
-                while end < len(string) and string[end].isalnum():
-                    end += 1
+                num_str = ""
+                while j < len(string) and string[j] != ";":
+                    num_str += string[j]
+                    j += 1
 
-                if end < len(string) and string[end] == ';':
+                if j < len(string) and string[j] == ";":
                     try:
                         if is_hex:
-                            char_code = int(string[j:end], 16)
+                            num = int(num_str, 16)
                         else:
-                            char_code = int(string[j:end])
-
-                        result += chr(char_code)
-                        i = end + 1
+                            num = int(num_str)
+                        result += chr(num)
+                        i = j + 1
                     except ValueError:
-                        result += string[i]
-                        i += 1
+                        result += string[i:j+1]
+                        i = j + 1
                 else:
                     result += string[i]
                     i += 1
@@ -49,7 +49,6 @@ class NumericEntityUnescaper:
                 result += string[i]
                 i += 1
         return result
-
 
     @staticmethod
     def is_hex_char(char):
@@ -61,4 +60,6 @@ class NumericEntityUnescaper:
         True
 
         """
-        return char.isdigit() or 'a' <= char <= 'f' or 'A' <= char <= 'F'
+        if '0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F':
+            return True
+        return False

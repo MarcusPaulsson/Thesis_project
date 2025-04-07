@@ -22,10 +22,13 @@ class ZipFileProcessor:
         """
         try:
             if self.file_name:
-                return zipfile.ZipFile(self.file_name, 'r')
+                zip_file = zipfile.ZipFile(self.file_name, 'r')
+                return zip_file
             else:
                 return None
         except FileNotFoundError:
+            return None
+        except zipfile.BadZipFile:
             return None
 
     def extract_all(self, output_path):
@@ -37,13 +40,13 @@ class ZipFileProcessor:
         >>> zfp.extract_all("result/aaa")
         """
         try:
-            if self.file_name:
-                with zipfile.ZipFile(self.file_name, 'r') as zip_ref:
-                    zip_ref.extractall(output_path)
+            zip_file = self.read_zip_file()
+            if zip_file:
+                zip_file.extractall(output_path)
                 return True
             else:
                 return False
-        except FileNotFoundError:
+        except Exception:
             return False
 
     def extract_file(self, file_name, output_path):
@@ -56,15 +59,13 @@ class ZipFileProcessor:
         >>> zfp.extract_file("bbb.txt", "result/aaa")
         """
         try:
-            if self.file_name:
-                with zipfile.ZipFile(self.file_name, 'r') as zip_ref:
-                    zip_ref.extract(file_name, output_path)
+            zip_file = self.read_zip_file()
+            if zip_file:
+                zip_file.extract(file_name, output_path)
                 return True
             else:
                 return False
-        except FileNotFoundError:
-            return False
-        except KeyError:
+        except Exception:
             return False
 
     def create_zip_file(self, files, output_file_name):
@@ -77,9 +78,9 @@ class ZipFileProcessor:
         >>> zfp.create_zip_file(["bbb.txt", "ccc,txt", "ddd.txt"], "output/bcd")
         """
         try:
-            with zipfile.ZipFile(output_file_name, 'w') as zip_ref:
+            with zipfile.ZipFile(output_file_name, 'w') as zip_file:
                 for file in files:
-                    zip_ref.write(file)
+                    zip_file.write(file)
             return True
-        except FileNotFoundError:
+        except Exception:
             return False

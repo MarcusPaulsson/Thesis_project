@@ -33,31 +33,35 @@ class ArgumentParser:
         {'arg1': 'value1', 'arg2': 'value2', 'option1': True, 'option2': True}
         """
         args = command_string.split()
-        i = 0
+        i = 1
         while i < len(args):
-            if args[i].startswith("--"):
-                arg_name = args[i][2:]
-                if "=" in arg_name:
-                    arg_name, arg_value = arg_name.split("=", 1)
-                    self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
-                else:
-                    if i + 1 < len(args) and not args[i+1].startswith("-"):
-                        arg_value = args[i+1]
-                        self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
-                        i += 1
-                    else:
-                        self.arguments[arg_name] = True
-            elif args[i].startswith("-"):
-                arg_name = args[i][1:]
-                if i + 1 < len(args) and not args[i+1].startswith("-"):
-                    arg_value = args[i+1]
+            arg = args[i]
+            if arg.startswith("--"):
+                arg_name = arg[2:].split("=")[0]
+                if "=" in arg:
+                    arg_value = arg[2:].split("=")[1]
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
                     i += 1
                 else:
                     self.arguments[arg_name] = True
-            i += 1
+                    i += 1
+            elif arg.startswith("-"):
+                arg_name = arg[1:]
+                if i + 1 < len(args) and not args[i + 1].startswith("-"):
+                    arg_value = args[i + 1]
+                    self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
+                    i += 2
+                else:
+                    self.arguments[arg_name] = True
+                    i += 1
+            else:
+                i += 1
 
-        missing_args = self.required - set(self.arguments.keys())
+        missing_args = set()
+        for req_arg in self.required:
+            if req_arg not in self.arguments:
+                missing_args.add(req_arg)
+
         if missing_args:
             return False, missing_args
         else:
@@ -93,9 +97,9 @@ class ArgumentParser:
         >>> parser.types
         {'arg1': 'int'}
         """
+        self.types[arg] = arg_type
         if required:
             self.required.add(arg)
-        self.types[arg] = arg_type
 
     def _convert_type(self, arg, value):
         """
@@ -109,24 +113,16 @@ class ArgumentParser:
         """
         if arg in self.types:
             arg_type = self.types[arg]
-            if arg_type == int:
-                try:
+            try:
+                if arg_type is int:
                     return int(value)
-                except ValueError:
-                    return value
-            elif arg_type == float:
-                try:
+                elif arg_type is float:
                     return float(value)
-                except ValueError:
-                    return value
-            elif arg_type == bool:
-                if value.lower() == 'true':
+                elif arg_type is bool:
                     return True
-                elif value.lower() == 'false':
-                    return False
                 else:
                     return value
-            else:
+            except ValueError:
                 return value
         else:
             return value

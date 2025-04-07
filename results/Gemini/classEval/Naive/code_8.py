@@ -15,7 +15,7 @@ class BankAccount:
         If amount is negative, raise a ValueError("Invalid amount").
         :param amount: int
         """
-        if amount <= 0:
+        if amount < 0:
             raise ValueError("Invalid amount")
         self.balance += amount
         return self.balance
@@ -27,7 +27,7 @@ class BankAccount:
         If the withdrawal amount is greater than the account balance, raise a ValueError("Insufficient balance.").
         :param amount: int
         """
-        if amount <= 0:
+        if amount < 0:
             raise ValueError("Invalid amount")
         if amount > self.balance:
             raise ValueError("Insufficient balance.")
@@ -51,7 +51,7 @@ class BankAccount:
         >>> account1.transfer(account2, 300)
         account1.balance = 700 account2.balance = 300
         """
-        if amount <= 0:
+        if amount < 0:
             raise ValueError("Invalid amount")
         if amount > self.balance:
             raise ValueError("Insufficient balance.")

@@ -1,5 +1,5 @@
 import socket
-import netifaces
+import ipaddress
 
 
 class IpUtil:
@@ -20,9 +20,9 @@ class IpUtil:
 
         """
         try:
-            socket.inet_pton(socket.AF_INET, ip_address)
+            ipaddress.IPv4Address(ip_address)
             return True
-        except socket.error:
+        except ipaddress.AddressValueError:
             return False
 
     @staticmethod
@@ -38,9 +38,9 @@ class IpUtil:
 
         """
         try:
-            socket.inet_pton(socket.AF_INET6, ip_address)
+            ipaddress.IPv6Address(ip_address)
             return True
-        except socket.error:
+        except ipaddress.AddressValueError:
             return False
 
     @staticmethod
@@ -58,14 +58,3 @@ class IpUtil:
             return socket.gethostbyaddr(ip_address)[0]
         except socket.herror:
             return None
-        except socket.gaierror:
-            return None
-
-
-if __name__ == '__main__':
-    print(IpUtil.is_valid_ipv4('192.168.0.123'))
-    print(IpUtil.is_valid_ipv4('256.0.0.0'))
-    print(IpUtil.is_valid_ipv6('2001:0db8:85a3:0000:0000:8a2e:0370:7334'))
-    print(IpUtil.is_valid_ipv6('2001:0db8:85a3:::8a2e:0370:7334'))
-    print(IpUtil.get_hostname('110.242.68.3'))
-    print(IpUtil.get_hostname('10.0.0.1'))

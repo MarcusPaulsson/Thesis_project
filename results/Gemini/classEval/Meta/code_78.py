@@ -15,8 +15,15 @@ class SplitSentence:
         >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
         ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        sentences = re.split(r'(?<!Mr)(?<!Mrs)(?<!Dr)[\.\?]\s', sentences_string)
-        return [s + sentences_string[sum(len(x) for x in sentences[:i]):sum(len(x) for x in sentences[:i+1]) + len(sentences[i])] for i, s in enumerate(sentences) if s]
+        sentences = re.split(r'(?<!Mr)(?<!Mrs)(?<!Ms)(?<!Dr)(?<!A\.B\.C)(?<!A\.B)(?<!A)(?<!B)(?<!C)(?<!D)(?<!E)(?<!F)(?<!G)(?<!H)(?<!I)(?<!J)(?<!K)(?<!L)(?<!M)(?<!N)(?<!O)(?<!P)(?<!Q)(?<!R)(?<!S)(?<!T)(?<!U)(?<!V)(?<!W)(?<!X)(?<!Y)(?<!Z)(?<![A-Z][a-z])([.][\s]|[\?][\s])', sentences_string)
+        sentences = [s.strip() for s in sentences if s.strip()]
+        result = []
+        for i in range(0, len(sentences), 2):
+            if i + 1 < len(sentences):
+                result.append(sentences[i] + sentences[i + 1])
+            else:
+                result.append(sentences[i])
+        return result
 
     def count_words(self, sentence):
         """
@@ -27,7 +34,11 @@ class SplitSentence:
         2
         """
         words = sentence.split()
-        return len(words)
+        count = 0
+        for word in words:
+            if re.match(r'^[a-zA-Z]+$', word):
+                count += 1
+        return count
 
     def process_text_file(self, sentences_string):
         """

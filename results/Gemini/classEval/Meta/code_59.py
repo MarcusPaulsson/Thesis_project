@@ -32,20 +32,11 @@ class MovieBookingSystem:
             [0., 0., 0.],
             [0., 0., 0.]])}]
         """
-        start_time_obj = datetime.strptime(start_time, '%H:%M').time()
-        end_time_obj = datetime.strptime(end_time, '%H:%M').time()
-
-        # Combine time objects with a default date
-        start_datetime = datetime.combine(datetime.min, start_time_obj)
-        end_datetime = datetime.combine(datetime.min, end_time_obj)
-
-        self.movies.append({
-            'name': name,
-            'price': price,
-            'start_time': start_datetime,
-            'end_time': end_datetime,
-            'seats': np.zeros((n, n))
-        })
+        start_time_dt = datetime.strptime(start_time, '%H:%M')
+        end_time_dt = datetime.strptime(end_time, '%H:%M')
+        seats = np.zeros((n, n))
+        movie = {'name': name, 'price': price, 'start_time': start_time_dt, 'end_time': end_time_dt, 'seats': seats}
+        self.movies.append(movie)
 
     def book_ticket(self, name, seats_to_book):
         """
@@ -65,23 +56,14 @@ class MovieBookingSystem:
         for movie in self.movies:
             if movie['name'] == name:
                 seats = movie['seats']
-                rows, cols = seats.shape
-                booking_possible = True
-                for row, col in seats_to_book:
-                    if 0 <= row < rows and 0 <= col < cols:
-                        if seats[row, col] == 1:
-                            booking_possible = False
-                            break
-                    else:
-                        booking_possible = False
-                        break
-
-                if booking_possible:
-                    for row, col in seats_to_book:
-                        seats[row, col] = 1
-                    return 'Booking success.'
-                else:
-                    return 'Booking failed.'
+                for seat in seats_to_book:
+                    row, col = seat
+                    if seats[row][col] == 1:
+                        return 'Booking failed.'
+                for seat in seats_to_book:
+                    row, col = seat
+                    seats[row][col] = 1
+                return 'Booking success.'
         return 'Movie not found.'
 
     def available_movies(self, start_time, end_time):
@@ -94,14 +76,10 @@ class MovieBookingSystem:
         >>> system.available_movies('12:00', '22:00')
         ['Batman']
         """
-        available_movies_list = []
-        start_time_obj = datetime.strptime(start_time, '%H:%M').time()
-        end_time_obj = datetime.strptime(end_time, '%H:%M').time()
-
-        start_datetime = datetime.combine(datetime.min, start_time_obj)
-        end_datetime = datetime.combine(datetime.min, end_time_obj)
-
+        available_movies = []
+        start_time_dt = datetime.strptime(start_time, '%H:%M')
+        end_time_dt = datetime.strptime(end_time, '%H:%M')
         for movie in self.movies:
-            if movie['start_time'] <= end_datetime and movie['end_time'] >= start_datetime:
-                available_movies_list.append(movie['name'])
-        return available_movies_list
+            if movie['start_time'].time() <= end_time_dt.time() and movie['end_time'].time() >= start_time_dt.time():
+                available_movies.append(movie['name'])
+        return available_movies

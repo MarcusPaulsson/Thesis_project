@@ -2,73 +2,65 @@ import re
 
 class RegexUtils:
     """
-    Provides utility functions for working with regular expressions, including matching,
-    finding all occurrences, splitting, and substituting text.  Also includes methods for
-    validating phone numbers and extracting email addresses.
+    The class provides to match, find all occurrences, split, and substitute text using regular expressions. It also includes predefined patterns, validating phone numbers and extracting email addresses.
     """
 
     def match(self, pattern, text):
         """
-        Checks if the beginning of the text matches the regular expression.
-
-        Args:
-            pattern (str): The regular expression pattern.
-            text (str): The text to match against.
-
-        Returns:
-            bool: True if the text matches the pattern, False otherwise.
+        Check if the text matches the regular expression
+        :param pattern: string, Regular expression pattern
+        :param text: string, Text to match
+        :return: True or False, representing whether the text matches the regular expression or not
         """
         if not isinstance(pattern, str):
             raise TypeError("Pattern must be a string.")
         if not isinstance(text, str):
             raise TypeError("Text must be a string.")
-        return bool(re.match(pattern, text))
+        try:
+            return bool(re.match(pattern, text))
+        except re.error as e:
+            raise ValueError(f"Invalid regex pattern: {e}")
+
 
     def findall(self, pattern, text):
         """
-        Finds all non-overlapping matches of the regular expression in the text.
-
-        Args:
-            pattern (str): The regular expression pattern.
-            text (str): The text to search within.
-
-        Returns:
-            list: A list of strings containing all matching substrings.  Returns an empty list if no matches are found.
+        Find all matching substrings and return a list of all matching substrings
+        :param pattern: string, Regular expression pattern
+        :param text: string, Text to match
+        :return: list of string, List of all matching substrings
         """
         if not isinstance(pattern, str):
             raise TypeError("Pattern must be a string.")
         if not isinstance(text, str):
             raise TypeError("Text must be a string.")
-        return re.findall(pattern, text)
+        try:
+            return re.findall(pattern, text)
+        except re.error as e:
+            raise ValueError(f"Invalid regex pattern: {e}")
 
     def split(self, pattern, text):
         """
-        Splits the text into a list of substrings based on the occurrences of the regular expression pattern.
-
-        Args:
-            pattern (str): The regular expression pattern to split on.
-            text (str): The text to split.
-
-        Returns:
-            list: A list of strings representing the substrings after splitting.
+        Split text based on regular expression patterns and return a list of substrings
+        :param pattern: string, Regular expression pattern
+        :param text: string, Text to be split
+        :return: list of string, List of substrings after splitting
         """
         if not isinstance(pattern, str):
             raise TypeError("Pattern must be a string.")
         if not isinstance(text, str):
             raise TypeError("Text must be a string.")
-        return re.split(pattern, text)
+        try:
+            return re.split(pattern, text)
+        except re.error as e:
+            raise ValueError(f"Invalid regex pattern: {e}")
 
     def sub(self, pattern, replacement, text):
         """
-        Replaces all occurrences of the regular expression pattern in the text with the given replacement string.
-
-        Args:
-            pattern (str): The regular expression pattern to replace.
-            replacement (str): The string to replace the matched patterns with.
-            text (str): The text to perform the substitution on.
-
-        Returns:
-            str: The text after the substitutions have been made.
+        Replace the substring matched by a regular expression with the specified string
+        :param pattern: string, Regular expression pattern
+        :param replacement: Text to replace with
+        :param text: string, Text to be replaced
+        :return: string, Text after replacement
         """
         if not isinstance(pattern, str):
             raise TypeError("Pattern must be a string.")
@@ -76,80 +68,62 @@ class RegexUtils:
             raise TypeError("Replacement must be a string.")
         if not isinstance(text, str):
             raise TypeError("Text must be a string.")
-        return re.sub(pattern, replacement, text)
+        try:
+            return re.sub(pattern, replacement, text)
+        except re.error as e:
+            raise ValueError(f"Invalid regex pattern: {e}")
 
     def generate_email_pattern(self):
         """
-        Generates a regular expression pattern for matching email addresses.
-
-        Returns:
-            str: A regular expression pattern that matches email addresses.
+        Generate regular expression patterns that match email addresses
+        :return: string, regular expression patterns that match email addresses
         """
         return r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 
     def generate_phone_number_pattern(self):
         """
-        Generates a regular expression pattern for matching phone numbers in the format XXX-XXX-XXXX.
-
-        Returns:
-            str: A regular expression pattern that matches phone numbers.
+        Generate regular expression patterns that match phone numbers
+        :return: string, regular expression patterns that match phone numbers
         """
         return r'\b\d{3}-\d{3}-\d{4}\b'
 
     def generate_split_sentences_pattern(self):
         """
-        Generates a regular expression pattern for splitting sentences based on sentence-ending punctuation.
-
-        Returns:
-            str: A regular expression pattern that matches the whitespace after sentence-ending punctuation.
+        Generate regular expression patterns that match the middle characters of two sentences
+        :return: string, regular expression patterns that match the middle characters of two sentences
         """
         return r'[.!?][\s]{1,2}(?=[A-Z])'
 
     def split_sentences(self, text):
         """
-        Splits the text into a list of sentences.
-
-        Args:
-            text (str): The text to split into sentences.
-
-        Returns:
-            list: A list of strings, where each string is a sentence.
+        Split the text into a list of sentences without Punctuation except the last sentence
+        :param text: Text to be split
+        :return: Split Text List
         """
         if not isinstance(text, str):
             raise TypeError("Text must be a string.")
-
         pattern = self.generate_split_sentences_pattern()
         sentences = re.split(pattern, text)
-        return [s.strip() for s in sentences if s.strip()]  # Remove leading/trailing whitespace and empty sentences
+        return sentences
 
     def validate_phone_number(self, phone_number):
         """
-        Validates a phone number against the predefined phone number pattern.
-
-        Args:
-            phone_number (str): The phone number to validate.
-
-        Returns:
-            bool: True if the phone number is valid, False otherwise.
+        Verify if the phone number is valid
+        :param phone_number: Phone number to be verified
+        :return: True or False, indicating whether the phone number is valid
         """
         if not isinstance(phone_number, str):
             raise TypeError("Phone number must be a string.")
-
         pattern = self.generate_phone_number_pattern()
         return bool(re.match(pattern, phone_number))
 
     def extract_email(self, text):
         """
-        Extracts all email addresses from the given text.
-
-        Args:
-            text (str): The text to extract email addresses from.
-
-        Returns:
-            list: A list of strings, where each string is an email address found in the text.
+        Extract all email addresses from the text
+        :param text: string, input text
+        :return: list of string, All extracted email addresses
         """
         if not isinstance(text, str):
             raise TypeError("Text must be a string.")
-
         pattern = self.generate_email_pattern()
         return re.findall(pattern, text)

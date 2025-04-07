@@ -31,13 +31,11 @@ class BinaryDataProcessor:
 
         """
         length = len(self.binary_string)
-        num_zeroes = self.binary_string.count('0')
-        num_ones = self.binary_string.count('1')
-
-        percentage_zeroes = num_zeroes / length if length > 0 else 0
-        percentage_ones = num_ones / length if length > 0 else 0
-
-        return {'Zeroes': percentage_zeroes, 'Ones': percentage_ones, 'Bit length': length}
+        if length == 0:
+            return {'Zeroes': 0.0, 'Ones': 0.0, 'Bit length': 0}
+        zeroes = self.binary_string.count('0') / length
+        ones = self.binary_string.count('1') / length
+        return {'Zeroes': zeroes, 'Ones': ones, 'Bit length': length}
 
     def convert_to_ascii(self):
         """
@@ -49,10 +47,9 @@ class BinaryDataProcessor:
         """
         ascii_string = ''
         for i in range(0, len(self.binary_string), 8):
-            binary_byte = self.binary_string[i:i + 8]
-            if len(binary_byte) == 8:
-                decimal_value = int(binary_byte, 2)
-                ascii_string += chr(decimal_value)
+            binary_chunk = self.binary_string[i:i + 8]
+            if len(binary_chunk) == 8:
+                ascii_string += chr(int(binary_chunk, 2))
         return ascii_string
 
     def convert_to_utf8(self):
@@ -63,10 +60,9 @@ class BinaryDataProcessor:
         'hello'
 
         """
-        utf8_string = ''
+        ascii_string = ''
         for i in range(0, len(self.binary_string), 8):
-            binary_byte = self.binary_string[i:i + 8]
-            if len(binary_byte) == 8:
-                decimal_value = int(binary_byte, 2)
-                utf8_string += chr(decimal_value)
-        return utf8_string
+            binary_chunk = self.binary_string[i:i + 8]
+            if len(binary_chunk) == 8:
+                ascii_string += chr(int(binary_chunk, 2))
+        return ascii_string

@@ -25,21 +25,23 @@ class WeatherSystem:
 
         """
         if self.city in weather_list:
-            self.weather = weather_list[self.city]['weather']
-            self.temperature = weather_list[self.city]['temperature']
-            temp_unit = weather_list[self.city]['temperature units']
+            city_data = weather_list[self.city]
+            temperature = city_data['temperature']
+            weather = city_data['weather']
+            temp_units_in_list = city_data['temperature units']
 
-            if temp_unit != tmp_units:
-                if tmp_units == 'celsius':
-                    if temp_unit == 'fahrenheit':
-                        self.temperature = self.fahrenheit_to_celsius()
-                elif tmp_units == 'fahrenheit':
-                    if temp_unit == 'celsius':
-                        self.temperature = self.celsius_to_fahrenheit()
-
-            return (self.temperature, self.weather)
+            if tmp_units == 'fahrenheit' and temp_units_in_list == 'celsius':
+                self.temperature = temperature
+                temperature = self.celsius_to_fahrenheit()
+                return (temperature, weather)
+            elif tmp_units == 'celsius' and temp_units_in_list == 'fahrenheit':
+                self.temperature = temperature
+                temperature = self.fahrenheit_to_celsius()
+                return (temperature, weather)
+            else:
+                return (temperature, weather)
         else:
-            return None
+            return False
 
     def set_city(self, city):
         """
@@ -64,7 +66,7 @@ class WeatherSystem:
         80.6
 
         """
-        return (self.temperature * 9/5) + 32
+        return self.temperature * 9/5 + 32
 
     def fahrenheit_to_celsius(self):
         """

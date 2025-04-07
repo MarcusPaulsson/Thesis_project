@@ -21,35 +21,37 @@ class TimeUtils:
         >>> timeutils.get_current_time()
         "19:19:22"
         """
-        return self.datetime.strftime('%H:%M:%S')
+        return self.datetime.strftime("%H:%M:%S")
 
     def get_current_date(self):
         """
         Return the current date in the format of "%Y-%m-%d"
         :return: string
+        >>> timeutils = TimeUtils()
         >>> timeutils.get_current_date()
         "2023-06-14"
         """
-        return self.datetime.strftime('%Y-%m-%d')
+        return self.datetime.strftime("%Y-%m-%d")
 
     def add_seconds(self, seconds):
         """
         Add the specified number of seconds to the current time
         :param seconds: int, number of seconds to add
         :return: string, time after adding the specified number of seconds in the format '%H:%M:%S'
+        >>> timeutils = TimeUtils()
         >>> timeutils.add_seconds(600)
         "19:29:22"
         """
-        new_datetime = self.datetime + datetime.timedelta(seconds=seconds)
-        return new_datetime.strftime('%H:%M:%S')
+        return (self.datetime + datetime.timedelta(seconds=seconds)).strftime("%H:%M:%S")
 
     def string_to_datetime(self, string):
         """
         Convert the time string to a datetime instance
         :param string: string, string before converting format
         :return: datetime instance
+        >>> timeutils = TimeUtils()
         >>> timeutils.string_to_datetime("2001-7-18 1:1:1")
-        2001-07-18 01:01:01
+        datetime.datetime(2001, 7, 18, 1, 1, 1)
         """
         return datetime.datetime.strptime(string, "%Y-%m-%d %H:%M:%S")
 
@@ -58,6 +60,7 @@ class TimeUtils:
         Convert a datetime instance to a string
         :param datetime: the datetime instance to convert
         :return: string, converted time string
+        >>> timeutils = TimeUtils()
         >>> timeutils.datetime_to_string(timeutils.datetime)
         "2023-06-14 19:30:03"
         """
@@ -67,14 +70,13 @@ class TimeUtils:
         """
         Calculate how many minutes have passed between two times, and round the results to the nearest
         :return: int, the number of minutes between two times, rounded off
+        >>> timeutils = TimeUtils()
         >>> timeutils.get_minutes("2001-7-18 1:1:1", "2001-7-18 2:1:1")
         60
         """
         time1 = datetime.datetime.strptime(string_time1, "%Y-%m-%d %H:%M:%S")
         time2 = datetime.datetime.strptime(string_time2, "%Y-%m-%d %H:%M:%S")
-        difference = time2 - time1
-        minutes = round(difference.total_seconds() / 60)
-        return minutes
+        return round((time2 - time1).total_seconds() / 60)
 
     def get_format_time(self, year, month, day, hour, minute, second):
         """
@@ -86,8 +88,8 @@ class TimeUtils:
         :param minute: int
         :param second: int
         :return: formatted time string
+        >>> timeutils = TimeUtils()
         >>> timeutils.get_format_time(2001, 7, 18, 1, 1, 1)
         "2001-07-18 01:01:01"
         """
-        dt = datetime.datetime(year, month, day, hour, minute, second)
-        return dt.strftime("%Y-%m-%d %H:%M:%S")
+        return "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(year, month, day, hour, minute, second)

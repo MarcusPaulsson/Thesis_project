@@ -19,3 +19,4 @@ tempfolder
 *.csv
 *.txt
 *.db
+*.log

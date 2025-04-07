@@ -1,56 +1,50 @@
 from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from docx.enum.style import WD_STYLE_TYPE
 
 
 class DocFileHandler:
     """
-    Handles Word documents, providing functionalities for reading, writing, and modifying content.
+    This is a class that handles Word documents and provides functionalities for reading, writing, and modifying the content of Word documents.
     """
 
-    def __init__(self, file_path=None):
+    def __init__(self, file_path):
         """
-        Initializes the DocFileHandler object with an optional file path.
-        If no file_path is provided, a new document will be created.
-        :param file_path: str, the path to the Word document file (optional).
+        Initializes the DocFileHandler object with the specified file path.
+        :param file_path: str, the path to the Word document file.
         """
         self.file_path = file_path
-        if file_path:
-            try:
-                self.document = Document(file_path)
-            except Exception as e:
-                print(f"Error opening document: {e}. Creating a new document.")
-                self.document = Document()
-        else:
-            self.document = Document()
 
     def read_text(self):
         """
-        Reads the content of the Word document and returns it as a string.
-        :return: str, the content of the document, or None if an error occurs.
+        Reads the content of a Word document and returns it as a string.
+        :return: str, the content of the Word document.
         """
         try:
-            text = "\n".join(paragraph.text for paragraph in self.document.paragraphs)
-            return text
+            document = Document(self.file_path)
+            full_text = []
+            for paragraph in document.paragraphs:
+                full_text.append(paragraph.text)
+            return '\n'.join(full_text)
         except Exception as e:
             print(f"Error reading document: {e}")
-            return None
+            return ""
 
     def write_text(self, content, font_size=12, alignment='left'):
         """
-        Writes the specified content to the Word document.  Creates a new paragraph.
+        Writes the specified content to a Word document, overwriting existing content.
         :param content: str, the text content to write.
         :param font_size: int, optional, the font size of the text (default is 12).
         :param alignment: str, optional, the alignment of the text ('left', 'center', or 'right'; default is 'left').
         :return: bool, True if the write operation is successful, False otherwise.
         """
         try:
-            paragraph = self.document.add_paragraph()
-            paragraph.paragraph_format.alignment = self._get_alignment_value(alignment)
-            run = paragraph.add_run(content)
-            run.font.size = Pt(font_size)
-            self.document.save(self.file_path)
+            document = Document()
+            paragraph = document.add_paragraph(content)
+            paragraph.alignment = self._get_alignment_value(alignment)
+            for run in paragraph.runs:
+                run.font.size = Pt(font_size)
+            document.save(self.file_path)
             return True
         except Exception as e:
             print(f"Error writing to document: {e}")
@@ -64,8 +58,9 @@ class DocFileHandler:
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            self.document.add_heading(heading, level=level)
-            self.document.save(self.file_path)
+            document = Document(self.file_path)
+            document.add_heading(heading, level=level)
+            document.save(self.file_path)
             return True
         except Exception as e:
             print(f"Error adding heading: {e}")
@@ -74,26 +69,26 @@ class DocFileHandler:
     def add_table(self, data):
         """
         Adds a table to the Word document with the specified data.
-        :param data: list of lists, the data to populate the table.  Must be rectangular.
+        :param data: list of lists, the data to populate the table.
         :return: bool, True if the table is successfully added, False otherwise.
         """
         try:
-            if not data or not data[0]:
-                print("No data provided or empty table structure.")
-                return False
+            document = Document(self.file_path)
+            table = document.add_table(rows=1, cols=len(data[0]) if data else 0)
+            table.style = 'Table Grid'
 
-            table = self.document.add_table(rows=0, cols=len(data[0]))
+            # Add header row
+            heading_cells = table.rows[0].cells
+            for i, heading in enumerate(data[0]):
+                heading_cells[i].text = str(heading)
 
-            for row_data in data:
+            # Add data rows
+            for row_data in data[1:]:
                 row_cells = table.add_row().cells
-                if len(row_data) != len(data[0]):
-                    print("Warning: Row with incorrect number of columns. Skipping.")
-                    continue  # Skip rows with incorrect column counts
-
                 for i, item in enumerate(row_data):
                     row_cells[i].text = str(item)
 
-            self.document.save(self.file_path)
+            document.save(self.file_path)
             return True
         except Exception as e:
             print(f"Error adding table: {e}")
@@ -103,40 +98,12 @@ class DocFileHandler:
         """
         Returns the alignment value corresponding to the given alignment string.
         :param alignment: str, the alignment string ('left', 'center', or 'right').
-        :return: int, the alignment value.  Defaults to LEFT.
+        :return: int, the alignment value.
         """
         alignment = alignment.lower()
-        if alignment == 'left':
-            return WD_PARAGRAPH_ALIGNMENT.LEFT
-        elif alignment == 'center':
+        if alignment == 'center':
             return WD_PARAGRAPH_ALIGNMENT.CENTER
         elif alignment == 'right':
             return WD_PARAGRAPH_ALIGNMENT.RIGHT
         else:
-            print(f"Invalid alignment value: {alignment}. Defaulting to left.")
-            return WD_PARAGRAPH_ALIGNMENT.LEFT  # Default to left alignment
-
-    def save(self, file_path=None):
-        """Saves the document.  If file_path is None, saves to the original file path.
-           If no original file path was set, raises a ValueError.
-        """
-        if file_path:
-            self.file_path = file_path
-        if not self.file_path:
-            raise ValueError("No file path specified for saving.")
-        try:
-            self.document.save(self.file_path)
-            return True
-        except Exception as e:
-            print(f"Error saving document: {e}")
-            return False
-
-    def add_page_break(self):
-        """Adds a page break to the document."""
-        try:
-            self.document.add_page_break()
-            self.document.save(self.file_path)
-            return True
-        except Exception as e:
-            print(f"Error adding page break: {e}")
-            return False
+            return WD_PARAGRAPH_ALIGNMENT.LEFT

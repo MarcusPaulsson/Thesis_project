@@ -47,7 +47,7 @@ class CalendarUtil:
         [{'date': datetime.datetime(2023, 1, 1, 0, 0), 'start_time': datetime.datetime(2023, 1, 1, 0, 0), 'end_time': datetime.datetime(2023, 1, 1, 1, 0), 'description': 'New Year'}]
 
         """
-        return [event for event in self.events if event['date'] == date]
+        return [event for event in self.events if event['date'].date() == date.date()]
 
     def is_available(self, start_time, end_time):
         """
@@ -77,7 +77,7 @@ class CalendarUtil:
         [(datetime.datetime(2023, 1, 1, 23, 0), datetime.datetime(2023, 1, 2, 0, 0))]
 
         """
-        events_on_date = [event for event in self.events if event['date'] == date]
+        events_on_date = [event for event in self.events if event['date'].date() == date.date()]
         events_on_date.sort(key=lambda x: x['start_time'])
         available_slots = []
         start = datetime(date.year, date.month, date.day, 0, 0)

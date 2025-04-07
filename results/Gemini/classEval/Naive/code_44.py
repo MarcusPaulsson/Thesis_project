@@ -54,16 +54,31 @@ class HtmlUtil:
         -CODE-
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        text = ''
-        for element in soup.body:
-            if element.name == 'pre':
-                text += self.CODE_MARK + '\n'
-            elif element and element.name is None:
-                text += str(element).strip() + '\n'
-            elif element and element.text:
-                text += element.text.strip() + '\n'
+        codes = soup.find_all('pre')
+        for code in codes:
+            code.extract()
 
-        return self.__format_line_feed(text).strip()
+        text = soup.get_text()
+        text = text.replace('<li>', '[-]').replace('</li>', '.')
+        text = '\n'.join(line.strip() for line in text.splitlines())
+        text = HtmlUtil.__format_line_feed(text)
+        text = text.strip()
+
+        code_marks = [self.CODE_MARK] * len(codes)
+        result = []
+        text_lines = text.splitlines()
+        code_index = 0
+
+        for line in text_lines:
+            result.append(line)
+            if code_index < len(codes):
+                result.append(code_marks[code_index])
+                code_index += 1
+
+        if code_index < len(codes):
+            result.extend(code_marks[code_index:])
+
+        return '\n'.join(result)
 
     def extract_code_from_html_text(self, html_text):
         """
@@ -84,10 +99,12 @@ class HtmlUtil:
         ["print('Hello, world!')", 'for i in range(5):\n                print(i)']
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        code_list = []
-        for code in soup.find_all('code'):
-            code_list.append(code.text)
-
-        for pre in soup.find_all('pre'):
-            code_list.append(pre.text)
-        return code_list
+        code_blocks = soup.find_all('pre')
+        codes = []
+        for block in code_blocks:
+            code_element = block.find('code')
+            if code_element:
+                codes.append(code_element.text)
+            else:
+                codes.append(block.text)
+        return codes

@@ -70,7 +70,6 @@ class RPGCharacter:
         >>> player_1.level_up()
         (2, 120, 15, 8)
         """
-         
         if self.level < 100:
             self.level += 1
             self.hp += 20

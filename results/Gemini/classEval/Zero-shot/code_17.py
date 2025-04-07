@@ -34,7 +34,8 @@ class CalendarUtil:
         []
 
         """
-        self.events = [e for e in self.events if e != event]
+        if event in self.events:
+            self.events.remove(event)
 
     def get_events(self, date):
         """
@@ -81,25 +82,24 @@ class CalendarUtil:
 
         """
         available_slots = []
+        start_of_day = datetime.combine(date.date(), datetime.min.time())
+        end_of_day = datetime.combine(date.date(), datetime.max.time())
+        current_time = start_of_day
+
         events_on_date = self.get_events(date)
+        events_on_date.sort(key=lambda event: event['start_time'])
+
         if not events_on_date:
-            available_slots.append((datetime.combine(date.date(), datetime.min.time()), datetime.combine(date.date() + timedelta(days=1), datetime.min.time())))
-        else:
-            events_on_date = sorted(events_on_date, key=lambda x: x['start_time'])
+            available_slots.append((start_of_day, end_of_day + timedelta(minutes=1)))
+            return available_slots
             
-            # Check availability before the first event
-            if events_on_date[0]['start_time'].time() != datetime.min.time():
-                available_slots.append((datetime.combine(date.date(), datetime.min.time()), events_on_date[0]['start_time']))
+        for event in events_on_date:
+            if current_time < event['start_time']:
+                available_slots.append((current_time, event['start_time']))
+            current_time = event['end_time']
+        if current_time < end_of_day:
+            available_slots.append((current_time, end_of_day + timedelta(minutes=1)))
 
-            # Check availability between events
-            for i in range(len(events_on_date) - 1):
-                if events_on_date[i]['end_time'] < events_on_date[i+1]['start_time']:
-                    available_slots.append((events_on_date[i]['end_time'], events_on_date[i+1]['start_time']))
-
-            # Check availability after the last event
-            if events_on_date[-1]['end_time'].time() != datetime.min.time():
-                available_slots.append((events_on_date[-1]['end_time'], datetime.combine(date.date() + timedelta(days=1), datetime.min.time())))
-            
         return available_slots
 
     def get_upcoming_events(self, num_events):
@@ -114,4 +114,12 @@ class CalendarUtil:
         [{'date': datetime.datetime(2023, 1, 1, 0, 0), 'start_time': datetime.datetime(2023, 1, 1, 0, 0), 'end_time': datetime.datetime(2023, 1, 1, 23, 0), 'description': 'New Year'}, {'date': datetime.datetime(2023, 1, 2, 0, 0), 'end_time': datetime.datetime(2023, 1, 2, 1, 0), 'description': 'New Year 2'}]
 
         """
-        return self.events[:num_events]
+        upcoming_events = []
+        now = datetime.now()
+        sorted_events = sorted(self.events, key=lambda event: event['date'])
+        
+        for event in sorted_events:
+            if event['date'] >= now:
+                upcoming_events.append(event)
+
+        return upcoming_events[:num_events]

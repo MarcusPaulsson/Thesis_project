@@ -7,8 +7,6 @@ class AvgPartition:
         """
         Initialize the class with the given list and the number of partitions, and check if the number of partitions is greater than 0.
         """
-        if limit <= 0:
-            raise ValueError("The number of partitions must be greater than 0.")
         self.lst = lst
         self.limit = limit
 
@@ -21,9 +19,9 @@ class AvgPartition:
         (2, 0)
 
         """
-        block_size = len(self.lst) // self.limit
+        size = len(self.lst) // self.limit
         remainder = len(self.lst) % self.limit
-        return block_size, remainder
+        return (size, remainder)
 
     def get(self, index):
         """
@@ -35,24 +33,7 @@ class AvgPartition:
         [1, 2]
 
         """
-        if not 0 <= index < self.limit:
-            raise IndexError("Index out of range.")
-
-        block_size, remainder = self.setNum()
-        start = index * block_size
-        end = start + block_size
-
-        # Distribute the remainder across the initial blocks
-        if index < remainder:
-            start += index
-            end += index + 1
-        else:
-            start += remainder
-            end += remainder
-
+        size, remainder = self.setNum()
+        start = index * size + min(index, remainder)
+        end = (index + 1) * size + min(index + 1, remainder)
         return self.lst[start:end]
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()

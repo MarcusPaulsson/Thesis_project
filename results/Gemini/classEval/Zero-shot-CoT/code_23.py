@@ -42,9 +42,14 @@ class CombinationCalculator:
         >>> CombinationCalculator.count_all(4)
         15
         """
-        if n > 62:
+        if n < 0 or n > 63:
+            return False
+        if n == 0:
+            return 0
+        result = (1 << n) - 1
+        if result > (2**63 - 1):
             return float("inf")
-        return (1 << n) - 1
+        return result
 
     def select(self, m: int) -> List[List[str]]:
         """
@@ -56,10 +61,7 @@ class CombinationCalculator:
         [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D']]
 
         """
-        if m < 0 or m > len(self.datas):
-            return []
-
-        result: List[List[str]] = []
+        result = []
         self._select(0, [None] * m, 0, result)
         return result
 
@@ -72,7 +74,7 @@ class CombinationCalculator:
         [['A'], ['B'], ['C'], ['D'], ['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D'], ['A', 'B', 'C'], ['A', 'B', 'D'], ['A', 'C', 'D'], ['B', 'C', 'D'], ['A', 'B', 'C', 'D']]
 
         """
-        result: List[List[str]] = []
+        result = []
         for i in range(1, len(self.datas) + 1):
             result.extend(self.select(i))
         return result
@@ -93,7 +95,13 @@ class CombinationCalculator:
 
         """
         if resultIndex == len(resultList):
-            result.append(resultList[:])
+            combination = []
+            for item in resultList:
+                if item is not None:
+                    combination.append(item)
+            if combination:
+                result.append(combination.copy())
+
             return
 
         for i in range(dataIndex, len(self.datas)):

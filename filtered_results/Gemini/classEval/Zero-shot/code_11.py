@@ -43,7 +43,7 @@ class BitStatusUtil:
         4
 
         """
-        return states & ~stat
+        return states & (~stat)
 
     @staticmethod
     def check(args):
@@ -58,5 +58,7 @@ class BitStatusUtil:
         ValueError: 3 not even
         """
         for arg in args:
+            if arg < 0:
+                raise ValueError(f"{arg} less than 0")
             if arg % 2 != 0:
                 raise ValueError(f"{arg} not even")

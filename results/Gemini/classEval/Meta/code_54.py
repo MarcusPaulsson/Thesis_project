@@ -30,15 +30,14 @@ class MahjongConnect:
                     ['a', 'b', 'c', 'a'],
                     ['a', 'b', 'c', 'a']]
         """
-        rows, cols = self.BOARD_SIZE
-        num_icons = len(self.ICONS)
-        board = []
-        icons = (self.ICONS * (rows * cols // len(self.ICONS) // 2 + 1) * 2)[:rows * cols]
+        num_icons = self.BOARD_SIZE[0] * self.BOARD_SIZE[1] // 2
+        icons = random.choices(self.ICONS, k=num_icons) * 2
         random.shuffle(icons)
-        for i in range(rows):
+        board = []
+        for i in range(self.BOARD_SIZE[0]):
             row = []
-            for j in range(cols):
-                row.append(icons[i * cols + j])
+            for j in range(self.BOARD_SIZE[1]):
+                row.append(icons[i * self.BOARD_SIZE[1] + j])
             board.append(row)
         return board
 
@@ -56,23 +55,20 @@ class MahjongConnect:
         >>> mc.is_valid_move((0, 0), (1, 0))
         True
         """
-        x1, y1 = pos1
-        x2, y2 = pos2
-        rows, cols = self.BOARD_SIZE
-
-        if not (0 <= x1 < rows and 0 <= y1 < cols and 0 <= x2 < rows and 0 <= y2 < cols):
+        if not (0 <= pos1[0] < self.BOARD_SIZE[0] and 0 <= pos1[1] < self.BOARD_SIZE[1] and
+                0 <= pos2[0] < self.BOARD_SIZE[0] and 0 <= pos2[1] < self.BOARD_SIZE[1]):
             return False
 
         if pos1 == pos2:
             return False
 
-        if self.board[x1][y1] != self.board[x2][y2]:
+        if self.board[pos1[0]][pos1[1]] == ' ' or self.board[pos2[0]][pos2[1]] == ' ':
             return False
 
-        if self.has_path(pos1, pos2):
-            return True
+        if self.board[pos1[0]][pos1[1]] != self.board[pos2[0]][pos2[1]]:
+            return False
 
-        return False
+        return self.has_path(pos1, pos2)
 
 
     def has_path(self, pos1, pos2):
@@ -89,72 +85,69 @@ class MahjongConnect:
         >>> mc.is_valid_move((0, 0), (1, 0))
         True
         """
-        x1, y1 = pos1
-        x2, y2 = pos2
-        rows, cols = self.BOARD_SIZE
-
-        def is_valid(x, y):
-            return 0 <= x < rows and 0 <= y < cols
-
-        def check_path(p1, p2):
-            x1, y1 = p1
-            x2, y2 = p2
-            if x1 == x2:
-                for y in range(min(y1, y2) + 1, max(y1, y2)):
-                    if self.board[x1][y] != ' ':
-                        return False
-                return True
-            if y1 == y2:
-                for x in range(min(x1, x2) + 1, max(x1, x2)):
-                    if self.board[x][y1] != ' ':
-                        return False
-                return True
-            return False
-
-        # Direct connection
-        if check_path(pos1, pos2):
+        if pos1 == pos2:
             return True
 
-        # One turn
-        for i in range(rows):
-            if check_path(pos1, (i, y1)) and check_path((i, y1), pos2) and self.board[i][y1] == ' ':
-                return True
-        for j in range(cols):
-            if check_path(pos1, (x1, j)) and check_path((x1, j), pos2) and self.board[x1][j] == ' ':
-                return True
+        def is_valid(x, y):
+            return 0 <= x < self.BOARD_SIZE[0] and 0 <= y < self.BOARD_SIZE[1]
 
-        # Two turns
-        for i in range(rows):
-            for j in range(cols):
-                if self.board[i][j] == ' ':
-                    if check_path(pos1, (i, j)) and check_path((i, j), pos2):
-                        # Path 1 to (i,j)
-                        path1_valid = True
-                        if pos1[0] == (i,j)[0]:
-                            for k in range(min(pos1[1], (i,j)[1]) + 1, max(pos1[1], (i,j)[1])):
-                                if self.board[pos1[0]][k] != ' ':
-                                    path1_valid = False
-                                    break
-                        else:
-                            for k in range(min(pos1[0], (i,j)[0]) + 1, max(pos1[0], (i,j)[0])):
-                                if self.board[k][pos1[1]] != ' ':
-                                    path1_valid = False
-                                    break
-                        #Path 2 (i,j) to pos2
-                        path2_valid = True
-                        if pos2[0] == (i,j)[0]:
-                            for k in range(min(pos2[1], (i,j)[1]) + 1, max(pos2[1], (i,j)[1])):
-                                if self.board[pos2[0]][k] != ' ':
-                                    path2_valid = False
-                                    break
-                        else:
-                            for k in range(min(pos2[0], (i,j)[0]) + 1, max(pos2[0], (i,j)[0])):
-                                if self.board[k][pos2[1]] != ' ':
-                                    path2_valid = False
-                                    break
-                        if path1_valid and path2_valid:
-                            return True
-        return False
+        def find_path(p1, p2):
+            x1, y1 = p1
+            x2, y2 = p2
+            q = [(x1, y1, 0, [])]  # x, y, turns, path
+            visited = set()
+            visited.add((x1, y1))
+
+            while q:
+                x, y, turns, path = q.pop(0)
+
+                if (x, y) == (x2, y2):
+                    return True
+
+                # Move horizontally
+                for ny in range(self.BOARD_SIZE[1]):
+                    if ny == y:
+                        continue
+                    valid = True
+                    if ny < y:
+                        for i in range(ny, y):
+                            if i != ny and self.board[x][i] != ' ':
+                                valid = False
+                                break
+                    else:
+                        for i in range(y + 1, ny + 1):
+                            if i != ny and self.board[x][i] != ' ':
+                                valid = False
+                                break
+                    if valid:
+                        if (x, ny) not in visited:
+                            visited.add((x, ny))
+                            q.append((x, ny, turns + 1, path + [(x, ny)]))
+
+                # Move vertically
+                for nx in range(self.BOARD_SIZE[0]):
+                    if nx == x:
+                        continue
+                    valid = True
+                    if nx < x:
+                        for i in range(nx, x):
+                            if i != nx and self.board[i][y] != ' ':
+                                valid = False
+                                break
+                    else:
+                        for i in range(x + 1, nx + 1):
+                            if i != nx and self.board[i][y] != ' ':
+                                valid = False
+                                break
+                    if valid:
+                        if (nx, y) not in visited:
+                            visited.add((nx, y))
+                            q.append((nx, y, turns + 1, path + [(nx, y)]))
+
+            return False
+
+        return find_path(pos1, pos2)
+
 
     def remove_icons(self, pos1, pos2):
         """
@@ -173,10 +166,8 @@ class MahjongConnect:
                     ['a', 'b', 'c', 'a'],
                     ['a', 'b', 'c', 'a']]
         """
-        x1, y1 = pos1
-        x2, y2 = pos2
-        self.board[x1][y1] = ' '
-        self.board[x2][y2] = ' '
+        self.board[pos1[0]][pos1[1]] = ' '
+        self.board[pos2[0]][pos2[1]] = ' '
 
 
     def is_game_over(self):

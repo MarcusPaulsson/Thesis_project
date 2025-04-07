@@ -22,10 +22,13 @@ class Manacher:
         2
 
         """
-        if (center - diff >= 0 and center + diff < len(string) and string[center - diff] == string[center + diff]):
-            return 1 + self.palindromic_length(center, diff + 1, string)
+        if center - diff < 0 or center + diff >= len(string):
+            return diff - 1
+
+        if string[center - diff] == string[center + diff]:
+            return self.palindromic_length(center, diff + 1, string)
         else:
-            return 0
+            return diff - 1
 
     def palindromic_string(self):
         """
@@ -36,33 +39,16 @@ class Manacher:
         'ababa'
 
         """
-        modified_string = '|'.join('$' + self.input_string + '#')
-        length = len(modified_string)
-        palindrome_radii = [0] * length
-        center = 0
-        right_boundary = 0
+        formatted_string = '|'.join(list(self.input_string))
+        formatted_string = '|' + formatted_string + '|'
+        max_length = 0
+        center_index = 0
+        for i in range(len(formatted_string)):
+            current_length = self.palindromic_length(i, 1, formatted_string)
+            if current_length > max_length:
+                max_length = current_length
+                center_index = i
 
-        for i in range(1, length - 1):
-            mirror = 2 * center - i
-
-            if right_boundary > i:
-                palindrome_radii[i] = min(right_boundary - i, palindrome_radii[mirror])
-
-            # Attempt to expand palindrome centered at i
-            while modified_string[i + (1 + palindrome_radii[i])] == modified_string[i - (1 + palindrome_radii[i])]:
-                palindrome_radii[i] += 1
-
-            # If palindrome centered at i expands past right_boundary,
-            # adjust center based on expanded palindrome.
-            if i + palindrome_radii[i] > right_boundary:
-                center = i
-                right_boundary = i + palindrome_radii[i]
-
-        # Find the maximum element in palindrome_radii
-        max_len = max(palindrome_radii)
-
-        # Find the center index of the longest palindrome
-        center_index = palindrome_radii.index(max_len)
-
-        start = (center_index - max_len) // 2
-        return self.input_string[start:start + max_len]
+        start = (center_index - max_length) // 2
+        end = start + max_length
+        return self.input_string[start:end]

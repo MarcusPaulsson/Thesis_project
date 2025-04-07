@@ -22,11 +22,13 @@ class Manacher:
         2
 
         """
-        if (center - diff < 0) or (center + diff >= len(string)):
+        if center - diff < 0 or center + diff >= len(string):
             return 0
+
         if string[center - diff] == string[center + diff]:
-            return 1 + self.palindromic_length(center, diff + 1, string)
-        return 0
+            return self.palindromic_length(center, diff + 2, string) + 1
+        else:
+            return 0
 
     def palindromic_string(self):
         """
@@ -37,16 +39,29 @@ class Manacher:
         'ababa'
 
         """
-        modified_string = '|'.join(list(self.input_string))
-        modified_string = '|' + modified_string + '|'
-        max_length = 0
-        center_index = 0
-        for i in range(len(modified_string)):
-            length = self.palindromic_length(i, 1, modified_string)
-            if length > max_length:
-                max_length = length
-                center_index = i
-        start = center_index - max_length
-        end = center_index + max_length
-        longest_palindrome = modified_string[start:end + 1].replace('|', '')
-        return longest_palindrome
+        s = '#'.join('^{}$'.format(self.input_string))
+        n = len(s)
+        p = [0] * n
+        center = 0
+        right = 0
+        max_len = 0
+        max_center = 0
+
+        for i in range(1, n - 1):
+            if i < right:
+                mirror = 2 * center - i
+                p[i] = min(right - i, p[mirror])
+
+            while s[i + (1 + p[i])] == s[i - (1 + p[i])]:
+                p[i] += 1
+
+            if i + p[i] > right:
+                center = i
+                right = i + p[i]
+
+            if p[i] > max_len:
+                max_len = p[i]
+                max_center = i
+
+        start = (max_center - max_len) // 2
+        return self.input_string[start: start + max_len]

@@ -27,12 +27,6 @@ class ArrangementCalculator:
         if m is None or n == m:
             return ArrangementCalculator.factorial(n)
         else:
-            if not (isinstance(n, int) and isinstance(m, int)):
-                raise TypeError("Inputs must be integers.")
-            if n < 0 or m < 0:
-                raise ValueError("Inputs must be non-negative.")
-            if m > n:
-                return 0
             return ArrangementCalculator.factorial(n) // ArrangementCalculator.factorial(n - m)
 
     @staticmethod
@@ -45,14 +39,9 @@ class ArrangementCalculator:
         64
 
         """
-        if not isinstance(n, int):
-            raise TypeError("Input must be an integer.")
-        if n < 0:
-            raise ValueError("Input must be non-negative.")
-
         total_arrangements = 0
         for i in range(1, n + 1):
-            total_arrangements += ArrangementCalculator.count(n, i)
+            total_arrangements += ArrangementCalculator.factorial(n) // ArrangementCalculator.factorial(n - i)
         return total_arrangements
 
 
@@ -69,16 +58,7 @@ class ArrangementCalculator:
         """
         if m is None:
             m = len(self.datas)
-        if not isinstance(m, int):
-            raise TypeError("Input must be an integer.")
-        if m < 0:
-            raise ValueError("Input must be non-negative.")
-        if m > len(self.datas):
-            return []
-
-        arrangements = list(itertools.permutations(self.datas, m))
-        return [list(arrangement) for arrangement in arrangements]
-
+        return list(itertools.permutations(self.datas, m))
 
     def select_all(self):
         """
@@ -91,8 +71,9 @@ class ArrangementCalculator:
         """
         all_arrangements = []
         for i in range(1, len(self.datas) + 1):
-            arrangements = list(itertools.permutations(self.datas, i))
-            all_arrangements.extend([list(arrangement) for arrangement in arrangements])
+            permutations = list(itertools.permutations(self.datas, i))
+            for perm in permutations:
+                all_arrangements.append(list(perm))
         return all_arrangements
 
 
@@ -106,11 +87,6 @@ class ArrangementCalculator:
         24
 
         """
-        if not isinstance(n, int):
-            raise TypeError("Input must be an integer.")
-        if n < 0:
-            raise ValueError("Input must be non-negative.")
-
         if n == 0:
             return 1
         else:

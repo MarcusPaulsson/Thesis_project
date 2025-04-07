@@ -1,125 +1,101 @@
 class JobMarketplace:
     """
-    A class to manage job postings and resumes.
+    This is a class that provides functionalities to publish positions, remove positions, submit resumes, withdraw resumes, search for positions, and obtain candidate information.
     """
 
     def __init__(self):
-        """
-        Initializes the JobMarketplace with empty job listings and resumes.
-        """
         self.job_listings = []
         self.resumes = []
 
     def post_job(self, job_title, company, requirements):
         """
-        Publishes a new job posting.
+        This function is used to publish positions,and add the position information to the job_listings list.
+        :param job_title: The title of the position,str.
+        :param company: The company of the position,str.
+        :param requirements: The requirements of the position,list.
+        :return: None
+        >>> jobMarketplace = JobMarketplace()
+        >>> jobMarketplace.post_job("Software Engineer", "ABC Company", ['requirement1', 'requirement2'])
+        >>> jobMarketplace.job_listings
+        [{'job_title': 'Software Engineer', 'company': 'ABC Company', 'requirements': ['requirement1', 'requirement2']}]
 
-        Args:
-            job_title (str): The title of the job.
-            company (str): The name of the company.
-            requirements (list): A list of required skills or qualifications.
-
-        Returns:
-            None
         """
-        if not all(isinstance(arg, str) for arg in [job_title, company]) or not isinstance(requirements, list):
-            raise TypeError("Invalid input types. job_title and company must be strings, requirements must be a list.")
-
-        job = {'job_title': job_title, 'company': company, 'requirements': requirements}
-        self.job_listings.append(job)
+        self.job_listings.append({'job_title': job_title, 'company': company, 'requirements': requirements})
 
     def remove_job(self, job):
         """
-        Removes a job posting from the marketplace.
+        This function is used to remove positions,and remove the position information from the job_listings list.
+        :param job: The position information to be removed,dict.
+        :return: None
+        >>> jobMarketplace = JobMarketplace()
+        >>> jobMarketplace.job_listings = [{"job_title": "Software Engineer", "company": "ABC Company", "requirements": ['requirement1', 'requirement2']}]
+        >>> jobMarketplace.remove_job(jobMarketplace.job_listings[0])
+        >>> jobMarketplace.job_listings
+        []
 
-        Args:
-            job (dict): The job posting to remove.
-
-        Returns:
-            None
-
-        Raises:
-            ValueError: If the job is not found in the job listings.
         """
-        if not isinstance(job, dict):
-            raise TypeError("job must be a dictionary.")
-
-        try:
+        if job in self.job_listings:
             self.job_listings.remove(job)
-        except ValueError:
-            raise ValueError("Job not found in job listings.")
 
     def submit_resume(self, name, skills, experience):
         """
-        Submits a resume to the marketplace.
+        This function is used to submit resumes,and add the resume information to the resumes list.
+        :param name: The name of the resume,str.
+        :param skills: The skills of the resume,list.
+        :param experience: The experience of the resume,str.
+        :return: None
+        >>> jobMarketplace = JobMarketplace()
+        >>> jobMarketplace.submit_resume("Tom", ['skill1', 'skill2'], "experience")
+        >>> jobMarketplace.resumes
+        [{'name': 'Tom', 'skills': ['skill1', 'skill2'], 'experience': 'experience'}]
 
-        Args:
-            name (str): The name of the applicant.
-            skills (list): A list of skills the applicant possesses.
-            experience (str): A brief description of the applicant's experience.
-
-        Returns:
-            None
         """
-        if not all(isinstance(arg, str) for arg in [name, experience]) or not isinstance(skills, list):
-            raise TypeError("Invalid input types. name and experience must be strings, skills must be a list.")
-
-        resume = {'name': name, 'skills': skills, 'experience': experience}
-        self.resumes.append(resume)
+        self.resumes.append({'name': name, 'skills': skills, 'experience': experience})
 
     def withdraw_resume(self, resume):
         """
-        Withdraws a resume from the marketplace.
+        This function is used to withdraw resumes,and remove the resume information from the resumes list.
+        :param resume: The resume information to be removed,dict.
+        :return: None
+        >>> jobMarketplace = JobMarketplace()
+        >>> jobMarketplace.resumes = [{"name": "Tom", "skills": ['skill1', 'skill2'], "experience": "experience"}]
+        >>> jobMarketplace.withdraw_resume(jobMarketplace.resumes[0])
+        >>> jobMarketplace.resumes
+        []
 
-        Args:
-            resume (dict): The resume to withdraw.
-
-        Returns:
-            None
-
-        Raises:
-            ValueError: If the resume is not found in the resumes list.
         """
-        if not isinstance(resume, dict):
-            raise TypeError("resume must be a dictionary.")
-
-        try:
+        if resume in self.resumes:
             self.resumes.remove(resume)
-        except ValueError:
-            raise ValueError("Resume not found in resumes.")
 
     def search_jobs(self, criteria):
         """
-        Searches for job postings that match the given criteria.
+        This function is used to search for positions,and return the position information that meets the requirements.
+        :param criteria: The requirements of the position,str.
+        :return: The position information that meets the requirements,list.
+        >>> jobMarketplace = JobMarketplace()
+        >>> jobMarketplace.job_listings = [{"job_title": "Software Engineer", "company": "ABC Company", "requirements": ['skill1', 'skill2']}]
+        >>> jobMarketplace.search_jobs("skill1")
+        [{'job_title': 'Software Engineer', 'company': 'ABC Company', 'requirements': ['skill1', 'skill2']}]
 
-        Args:
-            criteria (str): The search criteria (e.g., a skill or keyword).
-
-        Returns:
-            list: A list of job postings that match the criteria.
         """
-        if not isinstance(criteria, str):
-            raise TypeError("criteria must be a string.")
-
-        results = []
+        result = []
         for job in self.job_listings:
-            if any(criteria.lower() in req.lower() for req in job['requirements']):
-                results.append(job)
-        return results
+            if criteria in job['requirements']:
+                result.append(job)
+        return result
 
     def get_job_applicants(self, job):
         """
-        Finds applicants whose skills match the requirements of a given job.
+        This function is used to obtain candidate information,and return the candidate information that meets the requirements by calling the matches_requirements function.
+        :param job: The position information,dict.
+        :return: The candidate information that meets the requirements,list.
+        >>> jobMarketplace = JobMarketplace()
+        >>> jobMarketplace.resumes = [{"name": "Tom", "skills": ['skill1', 'skill2'], "experience": "experience"}]
+        >>> jobMarketplace.job_listings = [{"job_title": "Software Engineer", "company": "ABC Company", "requirements": ['skill1', 'skill2']}]
+        >>> jobMarketplace.get_job_applicants(jobMarketplace.job_listings[0])
+        [{'name': 'Tom', 'skills': ['skill1', 'skill2'], 'experience': 'experience'}]
 
-        Args:
-            job (dict): The job posting to find applicants for.
-
-        Returns:
-            list: A list of resumes that match the job requirements.
         """
-        if not isinstance(job, dict):
-            raise TypeError("job must be a dictionary.")
-
         applicants = []
         for resume in self.resumes:
             if self.matches_requirements(resume, job['requirements']):
@@ -128,19 +104,9 @@ class JobMarketplace:
 
     def matches_requirements(self, resume, requirements):
         """
-        Checks if a resume matches the given job requirements.
-
-        Args:
-            resume (dict): The resume to check.
-            requirements (list): A list of required skills.
-
-        Returns:
-            bool: True if the resume meets all requirements, False otherwise.
+        This function is used to determine whether the candidate information meets the requirements.
+        :param resume: The resume information,dict.
+        :param requirements: The requirements of the position,list.
+        :return: Whether the candidate information meets the requirements,bool.
         """
-        if not isinstance(resume, dict) or not isinstance(requirements, list):
-            raise TypeError("resume must be a dictionary and requirements must be a list.")
-
-        for requirement in requirements:
-            if requirement.lower() not in [skill.lower() for skill in resume['skills']]:
-                return False
-        return True
+        return all(req in resume['skills'] for req in requirements)

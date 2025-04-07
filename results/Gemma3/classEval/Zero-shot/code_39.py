@@ -1,6 +1,7 @@
 from collections import deque
 from decimal import Decimal
 
+
 class ExpressionCalculator:
     """
     This is a class in Python that can perform calculations with basic arithmetic operations, including addition, subtraction, multiplication, division, and modulo.
@@ -70,8 +71,6 @@ class ExpressionCalculator:
                 while self.postfix_stack and self.postfix_stack[-1] != '(' and self.compare(token, self.postfix_stack[-1]):
                     self.postfix_stack.append(self.postfix_stack.pop())
                 self.postfix_stack.append(token)
-        while self.postfix_stack:
-            self.postfix_stack.append(self.postfix_stack.pop())
 
     @staticmethod
     def is_operator(c):
@@ -97,9 +96,9 @@ class ExpressionCalculator:
         True
 
         """
-        index_cur = self.operat_priority[self.get_operator_index(cur)]
-        index_peek = self.operat_priority[self.get_operator_index(peek)]
-        return index_cur >= index_peek
+        cur_index = self.operat_priority[self.get_operator_index(cur)]
+        peek_index = self.operat_priority[self.get_operator_index(peek)]
+        return cur_index >= peek_index
 
     def get_operator_index(self, operator):
         operators = ['+', '-', '*', '/', '%']
@@ -145,6 +144,13 @@ class ExpressionCalculator:
         "2+3*4"
 
         """
-        expression = expression.replace(" ", "")
-        expression = expression.replace("~", "-")
-        return expression
+        expression = expression.replace('(', '~(').replace(')', ')~')
+        expression = expression.replace('-', '~')
+        expression = expression.replace('~-', '~')
+        expression = expression.replace('~+', '+')
+        expression = expression.replace('~*', '*')
+        expression = expression.replace('~/', '/')
+        expression = expression.replace('~%', '%')
+        expression = expression.replace('~(', '(')
+        expression = expression.replace(')~', ')')
+        return expression.replace(' ', '')

@@ -32,17 +32,17 @@ class Lemmatization:
         """
         sentence = self.remove_punctuation(sentence)
         tokens = word_tokenize(sentence)
-        pos_tags = self.get_pos_tag(sentence)
+        pos_tags = pos_tag(tokens)
         lemmatized_words = []
-        for i, token in enumerate(tokens):
-            if pos_tags[i].startswith('V'):
+        for token, pos_tag in zip(tokens, pos_tags):
+            if pos_tag.startswith('V'):
                 lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='v'))
-            elif pos_tags[i].startswith('N'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='n'))
-            elif pos_tags[i].startswith('R'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='r'))
-            elif pos_tags[i].startswith('J'):
+            elif pos_tag.startswith('J'):
                 lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='a'))
+            elif pos_tag.startswith('R'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='r'))
+            elif pos_tag.startswith('N'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='n'))
             else:
                 lemmatized_words.append(self.lemmatizer.lemmatize(token))
         return lemmatized_words
@@ -60,7 +60,7 @@ class Lemmatization:
         sentence = self.remove_punctuation(sentence)
         tokens = word_tokenize(sentence)
         pos_tags = pos_tag(tokens)
-        return [tag[1] for tag in pos_tags]
+        return [tag for token, tag in pos_tags]
 
     def remove_punctuation(self, sentence):
         """

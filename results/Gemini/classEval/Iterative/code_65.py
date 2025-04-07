@@ -1,151 +1,126 @@
 class NumberWordFormatter:
     """
-    Converts numbers into their corresponding English word representation.
-    Handles integer parts, and incorporates appropriate connectors and units.
+    This is a class that provides to convert numbers into their corresponding English word representation, including handling the conversion of both the integer and decimal parts, and incorporating appropriate connectors and units.
     """
 
     def __init__(self):
-        """Initialize NumberWordFormatter object."""
+        """
+        Initialize NumberWordFormatter object.
+        """
         self.NUMBER = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"]
         self.NUMBER_TEEN = ["TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN",
-                            "EIGHTEEN", "NINETEEN"]
+                            "EIGHTEEN",
+                            "NINETEEN"]
         self.NUMBER_TEN = ["TEN", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"]
-        self.NUMBER_MORE = ["", "THOUSAND", "MILLION", "BILLION"]  # Up to billions
-        self.AND = "AND"
-        self.ONLY = "ONLY"
-        self.HUNDRED = "HUNDRED"
-        self.ZERO = "ZERO"
+        self.NUMBER_MORE = ["", "THOUSAND", "MILLION", "BILLION"]
+        self.NUMBER_SUFFIX = ["k", "w", "", "m", "", "", "b", "", "", "t", "", "", "p", "", "", "e"]
 
     def format(self, x):
         """
-        Converts a number into words format.
-
-        Args:
-            x: int or float, the number to be converted into words format.  Only integer part is considered.
-
-        Returns:
-            str, the number in words format. Returns "Invalid input" if input is not an integer or float.
-
-        Examples:
-            >>> formatter = NumberWordFormatter()
-            >>> formatter.format(123456)
-            'ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY'
-            >>> formatter.format(0)
-            'ZERO ONLY'
-            >>> formatter.format(1234567890)
-            'ONE BILLION TWO HUNDRED AND THIRTY FOUR MILLION FIVE HUNDRED AND SIXTY SEVEN THOUSAND EIGHT HUNDRED AND NINETY ONLY'
+        Converts a number into words format
+        :param x: int or float, the number to be converted into words format
+        :return: str, the number in words format
+        >>> formatter = NumberWordFormatter()
+        >>> formatter.format(123456)
+        "ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY"
         """
-        if not isinstance(x, (int, float)):
-            return "Invalid input"
+        if x is None:
+            return ""
 
-        x = int(x)  # Consider only the integer part
+        if isinstance(x, float):
+            integer_part = int(x)
+            decimal_part = int(round((x - integer_part) * 100))
+            integer_words = self.format(integer_part)
+            decimal_words = self.trans_two(str(decimal_part).zfill(2))
+            if integer_words == "ZERO ONLY":
+                return "ZERO AND CENTS " + decimal_words + " ONLY"
+            return integer_words.replace("ONLY", "").strip() + " AND CENTS " + decimal_words + " ONLY"
 
         if x == 0:
-            return f"{self.ZERO} {self.ONLY}"
+            return "ZERO ONLY"
 
-        if x < 0:
-            return "Invalid input: Cannot convert negative numbers"
-
-        result = []
-        i = 0
-        while x > 0:
-            n = x % 1000
-            if n != 0:
-                words = self._trans_three(n)
-                if i > 0:  # Add magnitude only if the chunk is not zero
-                    words += f" {self.NUMBER_MORE[i]}"
-                result.append(words)
-            x //= 1000
-            i += 1
-
-        result.reverse()
-        return " ".join(result).strip() + f" {self.ONLY}"
+        s = str(int(x))
+        n = len(s)
+        res = []
+        for i in range(n // 3, -1, -1):
+            part = s[max(0, n - 3 * (i + 1)): n - 3 * i]
+            if part:
+                words = self.trans_three(part)
+                if words:
+                    res.append(words + " " + self.parse_more(i))
+        return " ".join(res).strip() + " ONLY"
 
     def format_string(self, x):
         """
-        Converts a string representation of a number into words format.
-
-        Args:
-            x: str, the string representation of a number
-
-        Returns:
-            str, the number in words format. Returns "Invalid input" if the string does not represent a valid integer.
-
-        Examples:
-            >>> formatter = NumberWordFormatter()
-            >>> formatter.format_string("123456")
-            'ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY'
-            >>> formatter.format_string("abc")
-            'Invalid input: Not a valid number string'
+        Converts a string representation of a number into words format
+        :param x: str, the string representation of a number
+        :return: str, the number in words format
+        >>> formatter = NumberWordFormatter()
+        >>> formatter.format_string("123456")
+        "ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY"
         """
         try:
-            num = int(x)
+            num = float(x)
             return self.format(num)
         except ValueError:
-            return "Invalid input: Not a valid number string"
+            return ""
 
-    def _trans_two(self, n):
+    def trans_two(self, s):
         """
-        Converts a two-digit number (0-99) into words.  Private helper function.
-
-        Args:
-            n: int, the two-digit number
-
-        Returns:
-            str, the number in words format
-
-        Examples:
-            >>> formatter = NumberWordFormatter()
-            >>> formatter._trans_two(23)
-            'TWENTY THREE'
-            >>> formatter._trans_two(9)
-            'NINE'
-            >>> formatter._trans_two(10)
-            'TEN'
-            >>> formatter._trans_two(19)
-            'NINETEEN'
+        Converts a two-digit number into words format
+        :param s: str, the two-digit number
+        :return: str, the number in words format
+        >>> formatter = NumberWordFormatter()
+        >>> formatter.trans_two("23")
+        "TWENTY THREE"
         """
-        if n < 10:
-            return self.NUMBER[n]
-        elif 10 <= n <= 19:
-            return self.NUMBER_TEEN[n - 10]
-        else:
-            tens = n // 10
-            ones = n % 10
-            if ones == 0:
-                return self.NUMBER_TEN[tens - 1]
+        if len(s) != 2:
+            return ""
+
+        if s[0] == '0':
+            if s[1] == '0':
+                return ""
             else:
-                return f"{self.NUMBER_TEN[tens - 1]} {self.NUMBER[ones]}"
+                return self.NUMBER[int(s[1])]
 
-    def _trans_three(self, n):
+        if s[0] == '1':
+            return self.NUMBER_TEEN[int(s[1])]
+        else:
+            if s[1] == '0':
+                return self.NUMBER_TEN[int(s[0]) - 1]
+            else:
+                return self.NUMBER_TEN[int(s[0]) - 1] + " " + self.NUMBER[int(s[1])]
+
+    def trans_three(self, s):
         """
-        Converts a three-digit number (0-999) into words. Private helper function.
-
-        Args:
-            n: int, the three-digit number
-
-        Returns:
-            str, the number in words format
-
-        Examples:
-            >>> formatter = NumberWordFormatter()
-            >>> formatter._trans_three(123)
-            'ONE HUNDRED AND TWENTY THREE'
-            >>> formatter._trans_three(100)
-            'ONE HUNDRED'
-            >>> formatter._trans_three(5)
-            'FIVE'
+        Converts a three-digit number into words format
+        :param s: str, the three-digit number
+        :return: str, the number in words format
+        >>> formatter = NumberWordFormatter()
+        >>> formatter.trans_three("123")
+        "ONE HUNDRED AND TWENTY THREE"
         """
-        hundreds = n // 100
-        remainder = n % 100
+        if len(s) != 3:
+            return ""
 
-        words = []
-        if hundreds > 0:
-            words.append(f"{self.NUMBER[hundreds]} {self.HUNDRED}")
+        res = []
+        if s[0] != '0':
+            res.append(self.NUMBER[int(s[0])] + " HUNDRED")
+        two = self.trans_two(s[1:])
+        if two:
+            if res:
+                res.append("AND " + two)
+            else:
+                res.append(two)
+        return " ".join(res)
 
-        if remainder > 0:
-            if hundreds > 0:
-                words.append(self.AND)
-            words.append(self._trans_two(remainder))
-
-        return " ".join(words)
+    def parse_more(self, i):
+        """
+        Parses the thousand/million/billion suffix based on the index
+        :param i: int, the index representing the magnitude (thousand, million, billion)
+        :return: str, the corresponding suffix for the magnitude
+        >>> formatter = NumberWordFormatter()
+        >>> formatter.parse_more(1)
+        "THOUSAND"
+        """
+        return self.NUMBER_MORE[i]

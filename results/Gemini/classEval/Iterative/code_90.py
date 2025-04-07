@@ -10,7 +10,7 @@ class URLHandler:
         """
         Initialize URLHandler's URL
         """
-        self.url = urlparse(url)
+        self.url = url
 
     def get_scheme(self):
         """
@@ -20,7 +20,11 @@ class URLHandler:
         >>> urlhandler.get_scheme()
         "https"
         """
-        return self.url.scheme
+        try:
+            parsed_url = urlparse(self.url)
+            return parsed_url.scheme or None
+        except Exception:
+            return None
 
     def get_host(self):
         """
@@ -30,7 +34,11 @@ class URLHandler:
         >>> urlhandler.get_host()
         "www.baidu.com"
         """
-        return self.url.netloc
+        try:
+            parsed_url = urlparse(self.url)
+            return parsed_url.netloc or None
+        except Exception:
+            return None
 
     def get_path(self):
         """
@@ -38,9 +46,23 @@ class URLHandler:
         :return: string, If successful, return the address of the resource of the URL
         >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
         >>> urlhandler.get_path()
-        "/s"
+        "/s?wd=aaa&rsv_spt=1#page"
         """
-        return self.url.path
+        try:
+            parsed_url = urlparse(self.url)
+            path = parsed_url.path
+            query = parsed_url.query
+            fragment = parsed_url.fragment
+
+            full_path = path
+            if query:
+                full_path += '?' + query
+            if fragment:
+                full_path += '#' + fragment
+
+            return full_path or None
+        except Exception:
+            return None
 
     def get_query_params(self):
         """
@@ -48,9 +70,24 @@ class URLHandler:
         :return: dict, If successful, return the request parameters of the URL
         >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
         >>> urlhandler.get_query_params()
-        {'wd': ['aaa'], 'rsv_spt': ['1']}
+        {"wd": "aaa", "rsv_spt": "1"}
         """
-        return parse_qs(self.url.query)
+        try:
+            parsed_url = urlparse(self.url)
+            query_params = parse_qs(parsed_url.query)
+
+            if not query_params and parsed_url.query:
+                return {}
+
+            if query_params:
+                result = {}
+                for key, value in query_params.items():
+                    result[key] = value[0]
+                return result
+            else:
+                return None
+        except Exception:
+            return None
 
     def get_fragment(self):
         """
@@ -60,4 +97,8 @@ class URLHandler:
         >>> urlhandler.get_fragment()
         "page"
         """
-        return self.url.fragment
+        try:
+            parsed_url = urlparse(self.url)
+            return parsed_url.fragment or None
+        except Exception:
+            return None

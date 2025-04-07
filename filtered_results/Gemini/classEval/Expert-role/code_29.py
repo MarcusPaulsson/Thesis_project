@@ -35,7 +35,7 @@ class DataStatistics:
             median = (sorted_data[n // 2 - 1] + sorted_data[n // 2]) / 2
         else:
             median = sorted_data[n // 2]
-        return round(float(median), 2)
+        return round(median, 2) if isinstance(median, float) else median
 
     def mode(self, data):
         """

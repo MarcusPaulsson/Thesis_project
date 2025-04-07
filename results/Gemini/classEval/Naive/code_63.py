@@ -17,9 +17,12 @@ class NLPDataProcessor2:
         """
         words_list = []
         for string in string_list:
-            cleaned_string = re.sub(r'[^a-zA-Z\s]', '', string)
-            lower_string = cleaned_string.lower()
-            words = lower_string.split()
+            # Keep only English letters and spaces
+            string = re.sub(r'[^a-zA-Z\s]', '', string)
+            # Convert to lower case
+            string = string.lower()
+            # Split into words
+            words = string.split()
             words_list.append(words)
         return words_list
 
@@ -45,6 +48,4 @@ class NLPDataProcessor2:
         {'this': 2, 'is': 2, 'test': 2, 'a': 1, 'another': 1}
         """
         words_list = self.process_data(string_list)
-        word_frequency = self.calculate_word_frequency(words_list)
-        sorted_word_frequency = dict(Counter(word_frequency).most_common(5))
-        return sorted_word_frequency
+        return self.calculate_word_frequency(words_list)

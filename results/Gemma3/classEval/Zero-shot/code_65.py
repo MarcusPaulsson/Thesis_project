@@ -33,7 +33,7 @@ class NumberWordFormatter:
         elif x == 0:
             return "ZERO ONLY"
         else:
-            return self.convert(x) + " ONLY"
+            return self.convert_number(x) + " ONLY"
 
     def format_string(self, x):
         """
@@ -98,29 +98,31 @@ class NumberWordFormatter:
         """
         return self.NUMBER_MORE[i]
 
-    def convert(self, num):
+    def convert_number(self, num):
         """
         Converts a number into words format
         :param num: int, the number to be converted into words format
         :return: str, the number in words format
         """
-        s = str(num)
-        n = len(s)
-        res = ""
-        for i in range(n):
-            if i == n - 1:
-                if n == 1:
-                    res += self.NUMBER[int(s[i])]
-                elif n == 2:
-                    res += self.trans_two(s[i:])
-                elif n == 3:
-                    res += self.trans_three(s[i:])
-            elif (n - i) % 3 == 1:
-                res += self.NUMBER[int(s[i])] + " HUNDRED "
-            elif (n - i) % 3 == 2:
-                res += self.trans_two(s[i:i + 2]) + " "
-            elif (n - i) % 3 == 0 and i != n - 1:
-                res += self.trans_three(s[i:i + 3]) + " "
-                if i + 3 < n:
-                    res += self.parse_more((n - i - 3) // 3) + " "
-        return res.strip()
+        num_str = str(num)
+        length = len(num_str)
+        result = []
+        for i in range(length):
+            digit = int(num_str[i])
+            if digit != 0:
+                result.append(self.NUMBER[digit])
+        if length == 1:
+            return " ".join(result)
+        elif length == 2:
+            return self.trans_two(num_str)
+        elif length == 3:
+            return self.trans_three(num_str)
+        else:
+            parts = []
+            for i in range(length - 1, -1, -3):
+                start = max(0, i - 2)
+                part = num_str[start:i + 1]
+                if part:
+                    parts.insert(0, self.trans_three(part))
+            result = " ".join(parts)
+            return result

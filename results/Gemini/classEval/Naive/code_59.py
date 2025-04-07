@@ -3,105 +3,87 @@ import numpy as np
 
 class MovieBookingSystem:
     """
-    A class representing a movie booking system.
+    this is a class as movie booking system, which allows to add movies, book tickets and check the available movies within a given time range. 
     """
 
     def __init__(self):
         """
-        Initializes the MovieBookingSystem with an empty list of movies.
+        Initialize movies contains the information about movies
+        >>> system.movies
+        [{'name': 'Batman', 'price': 49.9, 'start_time': datetime.datetime(1900, 1, 1, 17, 5), 'end_time': datetime.datetime(1900, 1, 1, 19, 25),
+        'seats': array([[0., 0., 0.],
+            [0., 0., 0.],
+            [0., 0., 0.]])}]
         """
         self.movies = []
 
-    def add_movie(self, name, price, start_time_str, end_time_str, n):
+    def add_movie(self, name, price, start_time, end_time, n):
         """
-        Adds a new movie to the system.
-
-        Args:
-            name (str): The name of the movie.
-            price (float): The price of a ticket for the movie.
-            start_time_str (str): The start time of the movie in HH:MM format.
-            end_time_str (str): The end time of the movie in HH:MM format.
-            n (int): The size of the square seating arrangement (n x n).
+        Add a new movie into self.movies
+        :param name: str, movie name
+        :param price: float, price for one ticket
+        :param start_time: str
+        :param end_time: str
+        :param n: int, the size of seats(n*n)
+        >>> system.add_movie('Batman', 49.9, '17:05', '19:25', 3)
+        >>> system.movies
+        [{'name': 'Batman', 'price': 49.9, 'start_time': datetime.datetime(1900, 1, 1, 17, 5), 'end_time': datetime.datetime(1900, 1, 1, 19, 25),
+        'seats': array([[0., 0., 0.],
+            [0., 0., 0.],
+            [0., 0., 0.]])}]
         """
-        try:
-            start_time = datetime.strptime(start_time_str, '%H:%M').time()
-            end_time = datetime.strptime(end_time_str, '%H:%M').time()
-
-            # Convert time objects to datetime objects for comparison
-            now = datetime.now()
-            start_datetime = datetime.combine(now.date(), start_time)
-            end_datetime = datetime.combine(now.date(), end_time)
-
-            seats = np.zeros((n, n))
-            self.movies.append({
-                'name': name,
-                'price': price,
-                'start_time': start_datetime,
-                'end_time': end_datetime,
-                'seats': seats
-            })
-        except ValueError:
-            print("Invalid time format.  Please use HH:MM format.")
-            return
+        start_time_dt = datetime.strptime(start_time, '%H:%M')
+        end_time_dt = datetime.strptime(end_time, '%H:%M')
+        seats = np.zeros((n, n))
+        movie = {'name': name, 'price': price, 'start_time': start_time_dt, 'end_time': end_time_dt, 'seats': seats}
+        self.movies.append(movie)
 
     def book_ticket(self, name, seats_to_book):
         """
-        Books tickets for a movie, marking the seats as occupied.
-
-        Args:
-            name (str): The name of the movie to book tickets for.
-            seats_to_book (list of tuples): A list of tuples, where each tuple
-                represents a seat to book in the format (row, column).
-
-        Returns:
-            str: A message indicating the booking status.
-                "Movie not found." if the movie is not found.
-                "Booking success." if the booking is successful.
-                "Booking failed." if the booking fails (e.g., seats are already taken).
+        Book tickets for a movie. Change the seats value in self.movies if book successfully.
+        :param name: str, movie name
+        :param seats_to_book: list of tuples, representing seats to book [(row1, col1), (row2, col2), ...]
+        :return: str, booking status message. "Movie not found." for no such movie.
+                "Booking success." for successfully booking, or "Booking failed." otherwise
+        >>> system.add_movie('Batman', 49.9, '17:05', '19:25', 3)
+        >>> system.book_ticket('Batman', [(0, 0), (0, 1)])
+        'Booking success.'
+        >>> system.book_ticket('Batman', [(0, 0)])
+        'Booking failed.'
+        >>> system.book_ticket('batman', [(0, 0)])
+        'Movie not found.'
         """
+        movie = next((movie for movie in self.movies if movie['name'] == name), None)
+        if movie is None:
+            return "Movie not found."
+        
+        seats = movie['seats']
+        
+        for row, col in seats_to_book:
+            if seats[row][col] == 1:
+                return "Booking failed."
+        
+        for row, col in seats_to_book:
+            seats[row][col] = 1
+        
+        return "Booking success."
+
+    def available_movies(self, start_time, end_time):
+        """
+        Get a list of available movies within the specified time range
+        :param start_time: str, start time in HH:MM format
+        :param end_time: str, end time in HH:MM format
+        :return: list of str, names of available movies
+        >>> system.add_movie('Batman', 49.9, '17:05', '19:25', 3)
+        >>> system.available_movies('12:00', '22:00')
+        ['Batman']
+        """
+        available_movies_list = []
+        start_time_dt = datetime.strptime(start_time, '%H:%M')
+        end_time_dt = datetime.strptime(end_time, '%H:%M')
+        
         for movie in self.movies:
-            if movie['name'] == name:
-                seats = movie['seats']
-                for row, col in seats_to_book:
-                    if not (0 <= row < seats.shape[0] and 0 <= col < seats.shape[1]):
-                        return "Booking failed. Invalid seat selection."
-
-                for row, col in seats_to_book:
-                    if seats[row, col] == 1:
-                        return "Booking failed. Seat already taken."
-
-                for row, col in seats_to_book:
-                    seats[row, col] = 1
-                return "Booking success."
-        return "Movie not found."
-
-    def available_movies(self, start_time_str, end_time_str):
-        """
-        Returns a list of movies that are playing within the specified time range.
-
-        Args:
-            start_time_str (str): The start time of the range in HH:MM format.
-            end_time_str (str): The end time of the range in HH:MM format.
-
-        Returns:
-            list of str: A list of movie names that are playing within the specified time range.
-        """
-        try:
-            start_time = datetime.strptime(start_time_str, '%H:%M').time()
-            end_time = datetime.strptime(end_time_str, '%H:%M').time()
-
-             # Convert time objects to datetime objects for comparison
-            now = datetime.now()
-            start_datetime = datetime.combine(now.date(), start_time)
-            end_datetime = datetime.combine(now.date(), end_time)
-
-
-            available_movie_names = []
-            for movie in self.movies:
-                if movie['start_time'] <= end_datetime and movie['end_time'] >= start_datetime:
-                    available_movie_names.append(movie['name'])
-            return available_movie_names
-
-        except ValueError:
-            print("Invalid time format. Please use HH:MM format.")
-            return []
+            if movie['start_time'] <= end_time_dt and movie['end_time'] >= start_time_dt:
+                available_movies_list.append(movie['name'])
+        
+        return available_movies_list

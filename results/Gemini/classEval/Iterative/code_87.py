@@ -1,203 +1,89 @@
 import datetime
+import time
 
 class TimeUtils:
     """
-    A utility class for time-related operations.
+    This is a time util class, including getting the current time and date, adding seconds to a datetime, converting between strings and datetime objects, calculating the time difference in minutes, and formatting a datetime object.
     """
 
-    DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-    DEFAULT_TIME_FORMAT = "%H:%M:%S"
-    DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 
-    def __init__(self, now=None):
+    def __init__(self):
         """
-        Initializes the TimeUtils object.
-
-        Args:
-            now (datetime, optional):  A datetime object to use as the current time.
-                Defaults to None, which uses datetime.datetime.now().  Useful for testing.
+        Get the current datetime
         """
-        self.now = now if now else datetime.datetime.now()
+        self.datetime = datetime.datetime.now()
 
-
-    def get_current_time(self, fmt=None):
+    def get_current_time(self):
         """
-        Returns the current time in the specified format.  If no format is specified,
-        uses DEFAULT_TIME_FORMAT.
-
-        Args:
-            fmt (str, optional): The format string for the time. Defaults to None.
-
-        Returns:
-            str: The current time as a string.
-
-        Examples:
-            >>> timeutils = TimeUtils(datetime.datetime(2023, 1, 1, 10, 30, 0))
-            >>> timeutils.get_current_time()
-            '10:30:00'
-            >>> timeutils.get_current_time("%I:%M %p")
-            '10:30 AM'
+        Return the current time in the format of '%H:%M:%S'
+        :return: string
+        >>> timeutils = TimeUtils()
+        >>> timeutils.get_current_time()
+        "19:19:22"
         """
-        fmt = fmt or self.DEFAULT_TIME_FORMAT
-        return self.now.strftime(fmt)
+        return self.datetime.strftime("%H:%M:%S")
 
-
-    def get_current_date(self, fmt=None):
+    def get_current_date(self):
         """
-        Returns the current date in the specified format.  If no format is specified,
-        uses DEFAULT_DATE_FORMAT.
-
-        Args:
-            fmt (str, optional): The format string for the date. Defaults to None.
-
-        Returns:
-            str: The current date as a string.
-
-        Examples:
-            >>> timeutils = TimeUtils(datetime.datetime(2023, 1, 1, 10, 30, 0))
-            >>> timeutils.get_current_date()
-            '2023-01-01'
-            >>> timeutils.get_current_date("%m/%d/%Y")
-            '01/01/2023'
+        Return the current date in the format of "%Y-%m-%d"
+        :return: string
+        >>> timeutils.get_current_date()
+        "2023-06-14"
         """
-        fmt = fmt or self.DEFAULT_DATE_FORMAT
-        return self.now.strftime(fmt)
+        return self.datetime.strftime("%Y-%m-%d")
 
-
-    def add_seconds(self, seconds, fmt=None):
+    def add_seconds(self, seconds):
         """
-        Adds the specified number of seconds to the current time and returns the
-        result as a string in the specified format.  If no format is specified,
-        uses DEFAULT_TIME_FORMAT.
-
-        Args:
-            seconds (int): The number of seconds to add.
-            fmt (str, optional): The format string for the time. Defaults to None.
-
-        Returns:
-            str: The time after adding the seconds, as a string.
-
-        Examples:
-            >>> timeutils = TimeUtils(datetime.datetime(2023, 1, 1, 10, 30, 0))
-            >>> timeutils.add_seconds(600)
-            '10:40:00'
-            >>> timeutils.add_seconds(600, "%I:%M %p")
-            '10:40 AM'
+        Add the specified number of seconds to the current time
+        :param seconds: int, number of seconds to add
+        :return: string, time after adding the specified number of seconds in the format '%H:%M:%S'
+        >>> timeutils.add_seconds(600)
+        "19:29:22"
         """
-        fmt = fmt or self.DEFAULT_TIME_FORMAT
-        new_datetime = self.now + datetime.timedelta(seconds=seconds)
-        return new_datetime.strftime(fmt)
+        return (self.datetime + datetime.timedelta(seconds=seconds)).strftime("%H:%M:%S")
 
-
-    def string_to_datetime(self, string, fmt=None):
+    def string_to_datetime(self, string):
         """
-        Converts a time string to a datetime object.  If no format is specified,
-        uses DEFAULT_DATETIME_FORMAT.
-
-        Args:
-            string (str): The time string to convert.
-            fmt (str, optional): The format string for the time. Defaults to None.
-
-        Returns:
-            datetime: A datetime object representing the time string.
-
-        Raises:
-            ValueError: If the string does not match the format.
-
-        Examples:
-            >>> timeutils = TimeUtils()
-            >>> timeutils.string_to_datetime("2023-01-01 10:30:00")
-            datetime.datetime(2023, 1, 1, 10, 30, 0)
-            >>> timeutils.string_to_datetime("01/01/2023 10:30:00", "%m/%d/%Y %H:%M:%S")
-            datetime.datetime(2023, 1, 1, 10, 30, 0)
+        Convert the time string to a datetime instance
+        :param string: string, string before converting format
+        :return: datetime instance
+        >>> timeutils.string_to_datetime("2001-7-18 1:1:1")
+        2001-07-18 01:01:01
         """
-        fmt = fmt or self.DEFAULT_DATETIME_FORMAT
-        return datetime.datetime.strptime(string, fmt)
+        return datetime.datetime.strptime(string, "%Y-%m-%d %H:%M:%S")
 
-
-    def datetime_to_string(self, dt_obj, fmt=None):
+    def datetime_to_string(self, datetime_obj):
         """
-        Converts a datetime object to a string.  If no format is specified,
-        uses DEFAULT_DATETIME_FORMAT.
-
-        Args:
-            dt_obj (datetime): The datetime object to convert.
-            fmt (str, optional): The format string for the time. Defaults to None.
-
-        Returns:
-            str: The datetime object as a string.
-
-        Examples:
-            >>> timeutils = TimeUtils()
-            >>> dt = datetime.datetime(2023, 1, 1, 10, 30, 0)
-            >>> timeutils.datetime_to_string(dt)
-            '2023-01-01 10:30:00'
-            >>> timeutils.datetime_to_string(dt, "%m/%d/%Y %H:%M:%S")
-            '01/01/2023 10:30:00'
+        Convert a datetime instance to a string
+        :param datetime: the datetime instance to convert
+        :return: string, converted time string
+        >>> timeutils.datetime_to_string(timeutils.datetime)
+        "2023-06-14 19:30:03"
         """
-        fmt = fmt or self.DEFAULT_DATETIME_FORMAT
-        return dt_obj.strftime(fmt)
+        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
 
-
-    def get_minutes_difference(self, string_time1, string_time2, fmt=None):
+    def get_minutes(self, string_time1, string_time2):
         """
-        Calculates the difference in minutes between two times represented as strings.
-        Rounds the result to the nearest minute.  If no format is specified, uses
-        DEFAULT_DATETIME_FORMAT.
-
-        Args:
-            string_time1 (str): The first time string.
-            string_time2 (str): The second time string.
-            fmt (str, optional): The format string for the times. Defaults to None.
-
-        Returns:
-            int: The difference in minutes between the two times, rounded to the nearest minute.
-
-        Raises:
-            ValueError: If either time string does not match the format.
-
-        Examples:
-            >>> timeutils = TimeUtils()
-            >>> timeutils.get_minutes_difference("2023-01-01 01:01:01", "2023-01-01 02:01:01")
-            60
-            >>> timeutils.get_minutes_difference("01/01/2023 01:01:01", "01/01/2023 02:01:01", "%m/%d/%Y %H:%M:%S")
-            60
+        Calculate how many minutes have passed between two times, and round the results to the nearest
+        :return: int, the number of minutes between two times, rounded off
+        >>> timeutils.get_minutes("2001-7-18 1:1:1", "2001-7-18 2:1:1")
+        60
         """
-        fmt = fmt or self.DEFAULT_DATETIME_FORMAT
-        time1 = datetime.datetime.strptime(string_time1, fmt)
-        time2 = datetime.datetime.strptime(string_time2, fmt)
-        difference = time2 - time1
-        minutes = round(difference.total_seconds() / 60)
-        return minutes
+        time1 = datetime.datetime.strptime(string_time1, "%Y-%m-%d %H:%M:%S")
+        time2 = datetime.datetime.strptime(string_time2, "%Y-%m-%d %H:%M:%S")
+        return round((time2 - time1).total_seconds() / 60)
 
-
-    def get_formatted_time(self, year, month, day, hour, minute, second, fmt=None):
+    def get_format_time(self, year, month, day, hour, minute, second):
         """
-        Creates a datetime object from the given components and returns it as a
-        formatted string.  If no format is specified, uses DEFAULT_DATETIME_FORMAT.
-
-        Args:
-            year (int): The year.
-            month (int): The month.
-            day (int): The day.
-            hour (int): The hour.
-            minute (int): The minute.
-            second (int): The second.
-            fmt (str, optional): The format string for the time. Defaults to None.
-
-        Returns:
-            str: The formatted time string.
-
-        Raises:
-            ValueError: If the date components are invalid.
-
-        Examples:
-            >>> timeutils = TimeUtils()
-            >>> timeutils.get_formatted_time(2023, 1, 1, 10, 30, 0)
-            '2023-01-01 10:30:00'
-            >>> timeutils.get_formatted_time(2023, 1, 1, 10, 30, 0, "%m/%d/%Y %H:%M:%S")
-            '01/01/2023 10:30:00'
+        get format time
+        :param year: int
+        :param month: int
+        :param day: int
+        :param hour: int
+        :param minute: int
+        :param second: int
+        :return: formatted time string
+        >>> timeutils.get_format_time(2001, 7, 18, 1, 1, 1)
+        "2001-07-18 01:01:01"
         """
-        fmt = fmt or self.DEFAULT_DATETIME_FORMAT
-        dt = datetime.datetime(year, month, day, hour, minute, second)
-        return dt.strftime(fmt)
+        return datetime.datetime(year, month, day, hour, minute, second).strftime("%Y-%m-%d %H:%M:%S")

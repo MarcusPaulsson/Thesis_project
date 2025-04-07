@@ -1,88 +1,68 @@
 class BinaryDataProcessor:
     """
-    This class processes binary data, offering functionalities like cleaning non-binary characters,
-    calculating binary string information, and converting to strings using different encodings.
+    This is a class used to process binary data, which includes functions such as clearing non 0 or 1 characters, counting binary string information, and converting to corresponding strings based on different encoding methods.
     """
 
     def __init__(self, binary_string):
         """
-        Initializes the class with a binary string and cleans it, removing non 0 or 1 characters.
-
-        Args:
-            binary_string (str): The binary string to process.
+        Initialize the class with a binary string and clean it by removing all non 0 or 1 characters.
         """
         self.binary_string = binary_string
         self.clean_non_binary_chars()
 
     def clean_non_binary_chars(self):
         """
-        Cleans the binary string by removing any characters that are not 0 or 1.
+        Clean the binary string by removing all non 0 or 1 characters.
+        >>> bdp = BinaryDataProcessor("01101000daf3e4r01100101011011000110110001101111")
+        >>> bdp.clean_non_binary_chars()
+        >>> bdp.binary_string
+        '0110100001100101011011000110110001101111'
+
         """
-        self.binary_string = ''.join(char for char in self.binary_string if char in '01')
+        cleaned_string = ''.join(char for char in self.binary_string if char in '01')
+        self.binary_string = cleaned_string
 
     def calculate_binary_info(self):
         """
-        Calculates and returns information about the binary string,
-        including the percentage of 0s and 1s, and the total length.
+        Calculate the binary string information, including the percentage of 0 and 1, and the total length of the binary string.
+        >>> bdp = BinaryDataProcessor("0110100001100101011011000110110001101111")
+        >>> bdp.calculate_binary_info()
+        {'Zeroes': 0.475, 'Ones': 0.525, 'Bit length': 40}
 
-        Returns:
-            dict: A dictionary containing the percentages of '0' and '1', and the bit length.
-                  Returns {'Zeroes': 0, 'Ones': 0, 'Bit length': 0} if the string is empty.
         """
-        total_length = len(self.binary_string)
-        if total_length == 0:
+        bit_length = len(self.binary_string)
+        if bit_length == 0:
             return {'Zeroes': 0, 'Ones': 0, 'Bit length': 0}
-
-        zeroes = self.binary_string.count('0')
-        ones = self.binary_string.count('1')
-
-        zeroes_percentage = zeroes / total_length
-        ones_percentage = ones / total_length
-
-        return {'Zeroes': zeroes_percentage, 'Ones': ones_percentage, 'Bit length': total_length}
+        zeroes = self.binary_string.count('0') / bit_length
+        ones = self.binary_string.count('1') / bit_length
+        return {'Zeroes': zeroes, 'Ones': ones, 'Bit length': bit_length}
 
     def convert_to_ascii(self):
         """
-        Converts the binary string to an ASCII string. Each 8-bit chunk is converted to its
-        corresponding ASCII character.  If the binary string length is not a multiple of 8,
-        the remaining bits are ignored.
+        Convert the binary string to ascii string.
+        >>> bdp = BinaryDataProcessor("0110100001100101011011000110110001101111")
+        >>> bdp.convert_to_ascii()
+        'hello'
 
-        Returns:
-            str: The resulting ASCII string. Returns an empty string if the binary string is empty
-                 or if no complete 8-bit chunks are available.
         """
-        return self._convert_to_string(encoding='ascii')
+        ascii_string = ''
+        for i in range(0, len(self.binary_string), 8):
+            binary_octet = self.binary_string[i:i + 8]
+            if len(binary_octet) == 8:
+                ascii_string += chr(int(binary_octet, 2))
+        return ascii_string
 
     def convert_to_utf8(self):
         """
-        Converts the binary string to a UTF-8 string. Each 8-bit chunk is converted to its
-        corresponding UTF-8 character. If the binary string length is not a multiple of 8,
-        the remaining bits are ignored.
+        Convert the binary string to utf-8 string.
+        >>> bdp = BinaryDataProcessor("0110100001100101011011000110110001101111")
+        >>> bdp.convert_to_utf8()
+        'hello'
 
-        Returns:
-            str: The resulting UTF-8 string. Returns an empty string if the binary string is empty
-                 or if no complete 8-bit chunks are available.
         """
-        return self._convert_to_string(encoding='utf-8')
-
-    def _convert_to_string(self, encoding='utf-8'):
-        """
-        Helper function to convert the binary string to a string using the specified encoding.
-
-        Args:
-            encoding (str): The encoding to use ('ascii' or 'utf-8').  Defaults to 'utf-8'.
-
-        Returns:
-            str: The resulting string.
-        """
-        result_string = ""
+        utf8_string = ''
         for i in range(0, len(self.binary_string), 8):
-            binary_chunk = self.binary_string[i:i + 8]
-            if len(binary_chunk) == 8:
-                try:
-                    decimal_value = int(binary_chunk, 2)
-                    result_string += chr(decimal_value)
-                except ValueError:
-                    # Handle cases where the decimal value is outside the valid range for chr()
-                    return "" # Or raise an exception, depending on desired behavior
-        return result_string
+            binary_octet = self.binary_string[i:i + 8]
+            if len(binary_octet) == 8:
+                utf8_string += chr(int(binary_octet, 2))
+        return utf8_string

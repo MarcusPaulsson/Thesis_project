@@ -12,20 +12,28 @@ sys.path.append(upper_dir)
 # Define folder paths in a dictionary
 folder_paths = {
     "Gemini Zero-shot": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot')),
-    "Gemini Zero-shot-CoT": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot-CoT')),
-    "Gemini Student-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Student-role')),
-    "Gemini Expert-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Expert-role')),
-    "Gemini Meta": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Meta')),
-    "Gemini Naive": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Naive')),
-    "Gemini Iterative": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Iterative')),
+    # "Gemini Zero-shot-CoT": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot-CoT')),
+    # "Gemini Student-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Student-role')),
+    # "Gemini Expert-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Expert-role')),
+    # "Gemini Meta": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Meta')),
+    # "Gemini Naive": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Naive')),
+    # "Gemini Iterative": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Iterative')),
 
-    "ChatGPT Zero-shot": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Zero-shot')),
-    "ChatGPT Zero-shot-CoT": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Zero-shot-CoT')),
-    "ChatGPT Student-role": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Student-role')),
-    "ChatGPT Expert-role": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Expert-role')),
-    "ChatGPT Meta": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Meta')),
-    "ChatGPT Naive": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Naive')),
-    "ChatGPT Iterative": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Iterative')),
+    # "ChatGPT Zero-shot": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Zero-shot')),
+    # "ChatGPT Zero-shot-CoT": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Zero-shot-CoT')),
+    # "ChatGPT Student-role": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Student-role')),
+    # "ChatGPT Expert-role": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Expert-role')),
+    # "ChatGPT Meta": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Meta')),
+    # "ChatGPT Naive": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Naive')),
+    # "ChatGPT Iterative": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Iterative')),
+
+    # "Gemma3 Zero-shot": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Zero-shot')),
+    # "Gemma3 Zero-shot-CoT": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Zero-shot-CoT')),
+    # "Gemma3 Student-role": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Student-role')),
+    # "Gemma3 Expert-role": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Expert-role')),
+    # "Gemma3 Meta":  os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Meta')),
+    # "Gemma3 Naive": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Naive')),
+    # "Gemma3 Iterative": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Iterative')),
 }
 
 test_data_path = os.path.abspath(os.path.join('data', 'ClassEval_data.json'))
@@ -43,29 +51,22 @@ def load_classEval_tests(test_data_path):
         print(f"Error: JSON file '{test_data_path}' not found.")
         return None
 
-def extract_and_save_passed_code(passed_code_ids, base_output_dir):
+def extract_and_save_passed_code(passed_code_ids):
     """Extracts and saves passed code snippets to a 'filtered_results' subdirectory."""
-    output_dir = os.path.join(base_output_dir, 'filtered_results')
-    os.makedirs(output_dir, exist_ok=True)
+    dir = os.path.abspath(os.path.join(upper_dir,'filtered_results')) # Flush previous folder for storing and make a new fresh.
+    os.makedirs(dir, exist_ok=True)
 
     for passed_index in passed_code_ids:
-        for folder_name, folder_path in folder_paths.items():
-            parts = folder_path.split(os.sep)  # Split the path into its components
-            if 'results' in parts:
-                try:
-                    results_index = parts.index('results')
-                    filtered_parts = parts[:results_index] + ['filtered_results'] + parts[results_index + 1:]
-                    filtered_folder_path = os.path.join(*filtered_parts)
-                    filename_to_copy = f"code_{passed_index}.py"
-                    source_file_path = os.path.join(folder_path, filename_to_copy)
-                    destination_file_path = os.path.join(output_dir, filtered_folder_path.split('filtered_results')[-1].lstrip(os.sep), filename_to_copy)
-                    os.makedirs(os.path.dirname(destination_file_path), exist_ok=True)
-                    if os.path.exists(source_file_path):
-                        shutil.copy2(source_file_path, destination_file_path) # copy with metadata
-                    else:
-                        print(f"Warning: Source file '{source_file_path}' not found.")
-                except ValueError:
-                    continue # 'results' not in path
+        for i in folder_paths:
+            parts = folder_paths[i].split(os.sep)  # Split the path into its components
+            if parts[-4] == 'results':
+                parts[-4] = 'filtered_results'
+                filtered_folder_path = os.path.join(*parts[-4:])
+                filename_to_copy = f"code_{passed_index}.py"
+                source_file_path = os.path.join(folder_paths[i], filename_to_copy)
+                destination_file_path = os.path.join(filtered_folder_path, filename_to_copy)
+                os.makedirs(filtered_folder_path, exist_ok=True)
+                shutil.copy2(source_file_path, destination_file_path) # copy with metadata
 
 @contextmanager
 def create_and_cleanup_tempdir():
@@ -77,7 +78,7 @@ def create_and_cleanup_tempdir():
         shutil.rmtree(temp_dir)
 
 def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
-    """Runs the tests on the generated code snippets in the specified folder within the temp directory."""
+    """Runs the tests on the generated code snippets using named temporary files."""
     if tasks is None:
         return {"passed": 0, "total": 0, "passed_ids": []}
 
@@ -92,10 +93,10 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
                 with open(file_path, 'r') as f:
                     generated_code = f.read()
 
-                temp_test_file_path = os.path.join(temp_dir, f"temp_test_{i}.py")
-                with open(temp_test_file_path, 'w') as temp_file:
+                with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".py", dir=temp_dir) as tmp_file:
+                    temp_test_file_path = tmp_file.name
                     combined_code = generated_code + "\n\n" + task
-                    temp_file.write(combined_code + "\nif __name__ == '__main__':\n    import unittest\n    unittest.main()")
+                    tmp_file.write(combined_code + "\nif __name__ == '__main__':\n    import unittest\n    unittest.main()")
 
                 print(f"\n--- Running Test {i + 1} of {total_tests} ---")
                 process = subprocess.run(["python", temp_test_file_path], capture_output=True, text=True, timeout=3)
@@ -113,6 +114,10 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
                 print(f"Error: Python interpreter or file not found.")
             except Exception as e:
                 print(f"Error running test {i + 1}: {type(e).__name__} - {e}")
+            finally:
+                # Ensure the temporary file is deleted
+                if os.path.exists(temp_test_file_path):
+                    os.remove(temp_test_file_path)
         else:
             print(f"Warning: File '{file_path}' not found for test {i + 1}.")
 
@@ -121,6 +126,8 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
     print(f"Passed tests: {passed_tests}")
     print(f"Failed tests: {total_tests - passed_tests}")
     return {"passed": passed_tests, "total": total_tests, "passed_ids": passed_ids}
+
+   
 
 tasks = load_classEval_tests(test_data_path)
 save_passed = True
@@ -160,6 +167,6 @@ if tasks:
         print(f"\nPassed in all folders: {common_passed_code}")
 
         if save_passed:
-            extract_and_save_passed_code(common_passed_code, temp_base_dir)
+            extract_and_save_passed_code(common_passed_code)
 
     print("\nTemporary directory and its contents have been removed.")

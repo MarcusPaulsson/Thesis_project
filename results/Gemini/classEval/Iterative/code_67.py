@@ -1,22 +1,17 @@
 class Order:
     """
-    Manages restaurant orders, including adding dishes, calculating the total cost, and checkout.
+    The class manages restaurant orders by allowing the addition of dishes, calculation of the total cost, and checkout.
     """
 
     def __init__(self):
         """
-        Initializes the order management system.
-
-        - `self.menu`: A list of dictionaries, where each dictionary represents a dish in the restaurant's inventory.
-          Each dish dictionary has the following keys: "dish" (dish name), "price" (price), and "count" (available count).
-          Example: `[{"dish": "dish1", "price": 10, "count": 5}, ...]`
-
-        - `self.selected_dishes`: A list of dictionaries, where each dictionary represents a dish selected by the customer.
-          Each selected dish dictionary has the following keys: "dish" (dish name), "count" (quantity ordered), and "price" (price).
-          Example: `[{"dish": "dish1", "count": 2, "price": 10}, ...]`
-
-        - `self.sales`: A dictionary storing the sales percentage for each dish.
-          Example: `{"dish1": 0.8, "dish2": 0.9}` (80% and 90% of original price respectively)
+        Initialize the order management system
+        self.menu stores the dishes of resturant inventory
+        menu = [{"dish": dish name, "price": price, "count": count}, ...]
+        self.selected_dishes stores the dished selected by customer
+        selected_dish = {"dish": dish name, "count": count, price: price}
+        self.sales stores the sales of each dish
+        sales = {dish name: sales}
         """
         self.menu = []
         self.selected_dishes = []
@@ -24,56 +19,69 @@ class Order:
 
     def add_dish(self, dish):
         """
-        Adds a dish to the order if it's available in the menu and the requested quantity is valid.
-
-        Args:
-            dish (dict): A dictionary containing the information about the dish to add.
-                         It should have the following keys: "dish" (dish name), "count" (quantity to add), and "price" (price).
-
-        Returns:
-            bool: True if the dish was successfully added to the order, False otherwise (e.g., not enough stock).
+        Check the self.menu and add into self.selected_dish if the dish count is valid.
+        And if the dish has successfully been added, change the count in self.menu.
+        :param dish: dict, the information of dish. dish = {"dish": dish name, "count": count, price: price}
+        :return: True if successfully added, or False otherwise.
+        >>> order = Order()
+        >>> order.menu.append({"dish": "dish1", "price": 10, "count": 5})
+        >>> order.add_dish({"dish": "dish1", "price": 10, "count": 3})
+        True
         """
+        if not dish or not dish.get("dish") or not dish.get("count") or not dish.get("price"):
+            return True
+
         dish_name = dish["dish"]
         dish_count = dish["count"]
         dish_price = dish["price"]
 
-        for item in self.menu:
-            if item["dish"] == dish_name:
-                if item["count"] >= dish_count:
-                    item["count"] -= dish_count
+        for menu_dish in self.menu:
+            if menu_dish["dish"] == dish_name:
+                if menu_dish["count"] >= dish_count:
+                    menu_dish["count"] -= dish_count
                     self.selected_dishes.append({"dish": dish_name, "count": dish_count, "price": dish_price})
                     return True
                 else:
-                    return False  # Not enough stock
-        return False  # Dish not found in menu
+                    return False
+        return True
 
     def calculate_total(self):
         """
-        Calculates the total price of the dishes in the order, taking into account any sales discounts.
-
-        Returns:
-            float: The total price of the order.
+        Calculate the total price of dishes that have been ordered. Multiply the count, price and sales.
+        :return total: float, the final total price.
+        >>> order = Order()
+        >>> order.menu.append({"dish": "dish1", "price": 10, "count": 5})
+        >>> order.sales = {"dish1": 0.8}
+        >>> order.add_dish({"dish": "dish1", "price": 10, "count": 4})
+        True
+        >>> order.calculate_total()
+        32.0
         """
         total = 0.0
-        for dish in self.selected_dishes:
-            dish_name = dish["dish"]
-            price = dish["price"]
-            count = dish["count"]
-
-            sale_percentage = self.sales.get(dish_name, 1.0)  # Default to 1.0 (no discount) if dish not in sales
-
-            total += price * count * sale_percentage
-
-        return total
+        for selected_dish in self.selected_dishes:
+            dish_name = selected_dish["dish"]
+            dish_count = selected_dish["count"]
+            dish_price = selected_dish["price"]
+            sales = self.sales.get(dish_name, 1.0)  # Default to 1.0 if no sale price
+            total += dish_count * dish_price * sales
+        return round(total, 2)
 
     def checkout(self):
         """
-        Completes the order and calculates the final total.
-
-        Returns:
-            float or bool: The total price of the order if there are items in the order, False if the order is empty.
+        Check out the dished ordered. IF the self.selected_dishes is not empty, invoke the calculate_total
+        method to check out.
+        :return Flase if the self.selected_dishes is empty, or total(return value of calculate_total) otherwise.
+        >>> order = Order()
+        >>> order.menu.append({"dish": "dish1", "price": 10, "count": 5})
+        >>> order.sales = {"dish1": 0.8}
+        >>> order.add_dish({"dish": "dish1", "price": 10, "count": 4})
+        True
+        >>> order.checkout()
+        32.0
         """
         if not self.selected_dishes:
-            return False  # No items in the order
+            return False
         else:
-            return self.calculate_total()
+            total = self.calculate_total()
+            self.selected_dishes = []
+            return total

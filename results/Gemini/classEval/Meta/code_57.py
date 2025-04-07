@@ -24,16 +24,30 @@ class MetricsCalculator2:
         1.0, [1.0]
         0.75, [1.0, 0.5]
         """
+        if not isinstance(data, list) and not isinstance(data, tuple):
+            raise TypeError("Input data must be a list or tuple.")
+
         if isinstance(data, tuple):
             data = [data]
 
+        if not data:
+            return 0.0, [0.0]
+
         reciprocal_ranks = []
         for item in data:
+            if not isinstance(item, tuple) or len(item) != 2:
+                raise ValueError("Each item in the list must be a tuple of (list, int).")
+
             results, ground_truth_num = item
-            rr = 0
+            if not isinstance(results, list):
+                raise TypeError("The first element of the tuple must be a list.")
+            if not isinstance(ground_truth_num, int):
+                raise TypeError("The second element of the tuple must be an integer.")
+
+            rr = 0.0
             for i, result in enumerate(results):
                 if result == 1:
-                    rr = 1 / (i + 1)
+                    rr = 1.0 / (i + 1)
                     break
             reciprocal_ranks.append(rr)
 
@@ -54,24 +68,36 @@ class MetricsCalculator2:
         0.41666666666666663, [0.41666666666666663]
         0.3333333333333333, [0.41666666666666663, 0.25]
         """
+        if not isinstance(data, list) and not isinstance(data, tuple):
+            raise TypeError("Input data must be a list or tuple.")
+
         if isinstance(data, tuple):
             data = [data]
 
+        if not data:
+            return 0.0, [0.0]
+
         average_precisions = []
         for item in data:
+            if not isinstance(item, tuple) or len(item) != 2:
+                raise ValueError("Each item in the list must be a tuple of (list, int).")
+
             results, ground_truth_num = item
-            relevant_count = 0
-            precision_sum = 0
-            for i, result in enumerate(results):
-                if result == 1:
-                    relevant_count += 1
-                    precision_sum += relevant_count / (i + 1)
+            if not isinstance(results, list):
+                raise TypeError("The first element of the tuple must be a list.")
+            if not isinstance(ground_truth_num, int):
+                raise TypeError("The second element of the tuple must be an integer.")
 
-            if ground_truth_num > 0:
-                ap = precision_sum / ground_truth_num
+            if ground_truth_num == 0:
+                ap = 0.0
             else:
-                ap = 0
-
+                cumulative_precision = 0.0
+                relevant_count = 0
+                for i, result in enumerate(results):
+                    if result == 1:
+                        relevant_count += 1
+                        cumulative_precision += relevant_count / (i + 1)
+                ap = cumulative_precision / ground_truth_num if ground_truth_num > 0 else 0.0
             average_precisions.append(ap)
 
         return np.mean(average_precisions), average_precisions

@@ -29,10 +29,14 @@ class CurrencyConverter:
         10.0
         """
         if from_currency not in self.rates or to_currency not in self.rates:
-            return None
+            return False
 
-        usd_amount = amount / self.rates[from_currency]
-        converted_amount = usd_amount * self.rates[to_currency]
+        from_rate = self.rates[from_currency]
+        to_rate = self.rates[to_currency]
+
+        usd_amount = amount / from_rate * self.rates['USD']
+        converted_amount = usd_amount * to_rate / self.rates['USD']
+
         return converted_amount
 
 

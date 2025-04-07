@@ -9,57 +9,67 @@ class DataStatistics2:
         """
         Initialize Data List
         :param data:list
-        Raises:
-            TypeError: if data is not a list or numpy array.
-            ValueError: if data is empty.
         """
-        if not isinstance(data, (list, np.ndarray)):
-            raise TypeError("Data must be a list or numpy array.")
-        if not data:
-            raise ValueError("Data cannot be empty.")
-
         self.data = np.array(data)
 
     def get_sum(self):
         """
         Calculate the sum of data
-        :return: float
+        :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_sum()
+        10
         """
         return float(np.sum(self.data))
 
     def get_min(self):
         """
         Calculate the minimum value in the data
-        :return: float
+        :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_min()
+        1
         """
         return float(np.min(self.data))
 
     def get_max(self):
         """
         Calculate the maximum value in the data
-        :return: float
+        :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_max()
+        4
         """
         return float(np.max(self.data))
 
     def get_variance(self):
         """
-        Calculate variance
-        :return: float
+        Calculate variance, accurate to two digits after the Decimal separator
+        :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_variance()
+        1.25
         """
-        return float(np.var(self.data))
+        return float(round(np.var(self.data), 2))
 
     def get_std_deviation(self):
         """
-        Calculate standard deviation
-        :return: float
+        Calculate standard deviation, accurate to two digits after the Decimal separator
+        :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_std_deviation()
+        1.12
         """
-        return float(np.std(self.data))
+        return float(round(np.std(self.data), 2))
 
     def get_correlation(self):
         """
-        Calculate correlation.  Returns 1.0 if the data has only one element.
-        :return: float
+        Calculate correlation
+        :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_correlation()
+        1.0
         """
         if len(self.data) <= 1:
             return 1.0
-        return float(np.corrcoef(self.data, self.data)[0, 1])
+        return float(round(np.corrcoef(self.data)[0, 0], 2))

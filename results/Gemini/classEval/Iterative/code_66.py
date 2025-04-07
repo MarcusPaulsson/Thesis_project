@@ -1,50 +1,66 @@
-import re
-
 class NumericEntityUnescaper:
     """
-    Replaces numeric character references (HTML entities) in a string with their corresponding Unicode characters.
+    This is a class that provides functionality to replace numeric entities with their corresponding characters in a given string.
     """
+
+    def __init__(self):
+        pass
 
     def replace(self, string):
         """
         Replaces numeric character references (HTML entities) in the input string with their corresponding Unicode characters.
+        :param string: str, the input string containing numeric character references.
+        :return: str, the input string with numeric character references replaced with their corresponding Unicode characters.
+        >>> unescaper = NumericEntityUnescaper()
+        >>> unescaper.replace("&#65;&#66;&#67;")
+        'ABC'
 
-        Args:
-            string: The input string containing numeric character references.
-
-        Returns:
-            The input string with numeric character references replaced with their corresponding Unicode characters.
         """
-
-        def replace_entity(match):
-            entity = match.group(1)
-            try:
-                if entity.startswith('x'):
-                    cp = int(entity[1:], 16)
+        result = ""
+        i = 0
+        while i < len(string):
+            if string[i:i+2] == "&#":
+                start = i + 2
+                is_hex = False
+                if start < len(string) and string[start:start+1].lower() == 'x':
+                    is_hex = True
+                    start += 1
+                
+                end = string.find(";", start)
+                if end != -1:
+                    entity = string[start:end]
+                    try:
+                        if is_hex:
+                            char_code = int(entity, 16)
+                        else:
+                            char_code = int(entity)
+                        result += chr(char_code)
+                        i = end + 1
+                    except ValueError:
+                        result += string[i:end+1]
+                        i = end + 1
+                    except OverflowError:
+                        result += string[i:end+1]
+                        i = end + 1
                 else:
-                    cp = int(entity, 10)
-
-                # Check for valid Unicode code points
-                if 0 <= cp <= 0x10FFFF:
-                    return chr(cp)
-                else:
-                    return match.group(0)  # Return original entity if invalid
-
-            except ValueError:
-                return match.group(0)  # Return original entity if conversion fails
-
-        return re.sub(r"&#(x?[0-9a-fA-F]+);", replace_entity, string)
+                    result += string[i:]
+                    i = len(string)
+            else:
+                result += string[i]
+                i += 1
+        return result
 
 
     @staticmethod
     def is_hex_char(char):
         """
-        Checks if a character is a hexadecimal digit.
+        Determines whether a given character is a hexadecimal digit.
+        :param char: str, the character to check.
+        :return: bool, True if the character is a hexadecimal digit, False otherwise.
+        >>> NumericEntityUnescaper.is_hex_char('a')
+        True
 
-        Args:
-            char: The character to check.
-
-        Returns:
-            True if the character is a hexadecimal digit, False otherwise.
         """
-        return '0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F'
+        if '0' <= char <= '9' or 'a' <= char.lower() <= 'f':
+            return True
+        return False

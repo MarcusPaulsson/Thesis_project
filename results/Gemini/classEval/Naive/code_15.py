@@ -9,10 +9,8 @@ class BoyerMooreSearch:
         :param text: The text to be searched, str.
         :param pattern: The pattern to be searched for, str.
         """
-        self.text = text
-        self.pattern = pattern
-        self.textLen = len(text)
-        self.patLen = len(pattern)
+        self.text, self.pattern = text, pattern
+        self.textLen, self.patLen = len(text), len(pattern)
 
     def match_in_pattern(self, char):
         """
@@ -39,9 +37,14 @@ class BoyerMooreSearch:
         2
 
         """
+        if not self.pattern:
+            return -1
+
         for i in range(self.patLen):
-            if currentPos + i >= self.textLen or self.pattern[i] != self.text[currentPos + i]:
-                return i
+            if currentPos + i >= self.textLen:
+                return currentPos + i
+            if self.pattern[i] != self.text[currentPos + i]:
+                return currentPos + i
         return -1
 
     def bad_character_heuristic(self):
@@ -53,21 +56,25 @@ class BoyerMooreSearch:
         [0, 3]
 
         """
-        occurrences = []
+        positions = []
+        if not self.pattern:
+            return list(range(self.textLen + 1))
+
         i = 0
         while i <= self.textLen - self.patLen:
             mismatch_pos = self.mismatch_in_text(i)
             if mismatch_pos == -1:
-                occurrences.append(i)
-                i += 1  # Move past the found pattern
+                positions.append(i)
+                i += 1
             else:
-                char = self.text[i + mismatch_pos]
-                rightmost_occurrence = self.match_in_pattern(char)
-                if rightmost_occurrence == -1:
-                    i += mismatch_pos + 1
+                if mismatch_pos >= self.textLen:
+                    break
+                bad_char = self.text[mismatch_pos]
+                r = self.match_in_pattern(bad_char)
+                if r == -1:
+                    i = mismatch_pos + 1 - i
                 else:
-                    shift = mismatch_pos - rightmost_occurrence
-                    if shift <= 0:
-                        shift = 1
-                    i += shift
-        return occurrences
+                    i = mismatch_pos - r
+                    if i < 0:
+                        i = mismatch_pos + 1
+        return positions

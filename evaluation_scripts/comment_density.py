@@ -74,7 +74,7 @@ upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # Ad
 
 
 result_setting = "results" # "filtered_results"
-result_setting = "filtered_results" # "results"
+#result_setting = "filtered_results" # "results"
 
 # folder_paths_gemini_cli_games = {
 #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
@@ -90,6 +90,8 @@ result_setting = "filtered_results" # "results"
 #     "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
 # }
 
+
+# ClassEval
 folder_paths_gemini_classEval = {
     "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
     "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
@@ -109,7 +111,17 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Naive": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Naive'),
     "ChatGPT classEval Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Iterative'),
 }
+folder_paths_gemma_classEval = {
+    "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
+    "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
+    "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
+    "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),
+    "Gemma3 classEval Meta": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Meta"),
+    "Gemma3 classEval Naive": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Naive"),
+    "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
+}
 
+# APPS
 folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot"),
     "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot-CoT"),
@@ -119,7 +131,6 @@ folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
     "ChatGPT APPS Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'APPS', 'Iterative'),
 }
-
 folder_paths_gemini_APPS = {
     "Gemini APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot"),
     "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
@@ -129,16 +140,30 @@ folder_paths_gemini_APPS = {
     "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
     "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
 }
+folder_paths_gemma_APPS = {
+    "Gemma3 APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot"),
+    "Gemma3 APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot-CoT"),
+    "Gemma3 APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Expert-role"),
+    "Gemma3 APPS Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Student-role"),
+    "Gemma3 APPS Meta": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Meta"),
+    "Gemma3 APPS Naive": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Naive"),
+    "Gemma3 APPS Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Iterative"),
+}
 
 # Analyze folders and count comment density
-results_gemini={}  
-results_chatgpt ={} 
 # results_gemini = analyze_folders_and_count_comment_density(folder_paths_gemini_cli_games)
 # results_chatgpt = analyze_folders_and_count_comment_density(folder_paths_chatgpt_cli_games)
-results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_classEval))
+
+results_gemini={}  
+results_chatgpt ={} 
+
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_classEval))
+results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_classEval))
+results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemma_classEval))
+
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_APPS))
 results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_APPS))
+results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemma_APPS))
 
 print("\nComment Density per Folder:")
 for folder, (avg_density, std_dev_density) in results_gemini.items():

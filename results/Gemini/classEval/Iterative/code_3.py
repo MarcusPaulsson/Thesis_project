@@ -1,5 +1,4 @@
 import itertools
-import math
 
 class ArrangementCalculator:
     """
@@ -11,8 +10,6 @@ class ArrangementCalculator:
         Initializes the ArrangementCalculator object with a list of datas.
         :param datas: List, the data elements to be used for arrangements.
         """
-        if not isinstance(datas, list):
-            raise TypeError("Datas must be a list.")
         self.datas = datas
 
     @staticmethod
@@ -23,22 +20,16 @@ class ArrangementCalculator:
         :param n: int, the total number of items.
         :param m: int, the number of items to be chosen (default=None).
         :return: int, the count of arrangements.
-        :raises ValueError: if n or m are not non-negative integers, or if m > n.
         >>> ArrangementCalculator.count(5, 3)
         60
-        """
-        if not isinstance(n, int) or n < 0:
-            raise ValueError("n must be a non-negative integer.")
-        if m is not None:
-            if not isinstance(m, int) or m < 0:
-                raise ValueError("m must be a non-negative integer.")
-            if m > n:
-                raise ValueError("m cannot be greater than n.")
 
+        """
         if m is None or n == m:
-            return math.factorial(n)
+            return ArrangementCalculator.factorial(n)
+        elif m > n:
+            return 0
         else:
-            return math.factorial(n) // math.factorial(n - m)
+            return ArrangementCalculator.factorial(n) // ArrangementCalculator.factorial(n - m)
 
     @staticmethod
     def count_all(n):
@@ -46,17 +37,15 @@ class ArrangementCalculator:
         Counts the total number of all possible arrangements by choosing at least 1 item and at most n items from n items.
         :param n: int, the total number of items.
         :return: int, the count of all arrangements.
-        :raises ValueError: if n is not a non-negative integer.
         >>> ArrangementCalculator.count_all(4)
         64
-        """
-        if not isinstance(n, int) or n < 0:
-            raise ValueError("n must be a non-negative integer.")
 
-        total_arrangements = 0
+        """
+        total = 0
         for i in range(1, n + 1):
-            total_arrangements += ArrangementCalculator.count(n, i)
-        return total_arrangements
+            total += ArrangementCalculator.count(n, i)
+        return total
+
 
     def select(self, m=None):
         """
@@ -64,20 +53,15 @@ class ArrangementCalculator:
         If m is not provided, selects all items.
         :param m: int, the number of items to be chosen (default=None).
         :return: List, a list of arrangements.
-        :raises ValueError: if m is not None and is not a non-negative integer, or if m is greater than the number of datas.
         >>> ac = ArrangementCalculator([1, 2, 3, 4])
         >>> ac.select(2)
-        [(1, 2), (1, 3), (1, 4), (2, 1), (2, 3), (2, 4), (3, 1), (3, 2), (3, 4), (4, 1), (4, 2), (4, 3)]
+        [[1, 2], [1, 3], [1, 4], [2, 1], [2, 3], [2, 4], [3, 1], [3, 2], [3, 4], [4, 1], [4, 2], [4, 3]]
+
         """
         if m is None:
             m = len(self.datas)
-        else:
-            if not isinstance(m, int) or m < 0:
-                raise ValueError("m must be a non-negative integer.")
-            if m > len(self.datas):
-                raise ValueError("m cannot be greater than the number of datas.")
-
         return list(itertools.permutations(self.datas, m))
+
 
     def select_all(self):
         """
@@ -85,12 +69,16 @@ class ArrangementCalculator:
         :return: List, a list of all arrangements.
         >>> ac = ArrangementCalculator([1, 2, 3])
         >>> ac.select_all()
-        [(1,), (2,), (3,), (1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2), (1, 2, 3), (1, 3, 2), (2, 1, 3), (2, 3, 1), (3, 1, 2), (3, 2, 1)]
+        [[1], [2], [3], [1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2], [1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+
         """
-        all_arrangements = []
+        arrangements = []
         for i in range(1, len(self.datas) + 1):
-            all_arrangements.extend(itertools.permutations(self.datas, i))
-        return list(all_arrangements)
+            perms = list(itertools.permutations(self.datas, i))
+            for perm in perms:
+                arrangements.append(list(perm))
+        return arrangements
+
 
     @staticmethod
     def factorial(n):
@@ -98,11 +86,16 @@ class ArrangementCalculator:
         Calculates the factorial of a given number.
         :param n: int, the number to calculate the factorial.
         :return: int, the factorial of the given number.
-        :raises ValueError: if n is not a non-negative integer.
         >>> ArrangementCalculator.factorial(4)
         24
-        """
-        if not isinstance(n, int) or n < 0:
-            raise ValueError("n must be a non-negative integer.")
 
-        return math.factorial(n)
+        """
+        if n == 0:
+            return 1
+        elif n < 0:
+            return 0
+        else:
+            result = 1
+            for i in range(1, n + 1):
+                result *= i
+            return result

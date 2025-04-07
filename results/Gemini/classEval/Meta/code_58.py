@@ -27,22 +27,20 @@ class MinesweeperGame:
 
         """
         minesweeper_map = [[0 for _ in range(self.n)] for _ in range(self.n)]
-        mines_placed = 0
-        while mines_placed < self.k:
-            x = random.randint(0, self.n - 1)
-            y = random.randint(0, self.n - 1)
-            if minesweeper_map[x][y] == 0:
-                minesweeper_map[x][y] = 'X'
-                mines_placed += 1
+        mines = random.sample(range(self.n * self.n), self.k)
+        for mine in mines:
+            x = mine // self.n
+            y = mine % self.n
+            minesweeper_map[x][y] = 'X'
 
         for i in range(self.n):
             for j in range(self.n):
                 if minesweeper_map[i][j] == 'X':
                     continue
                 count = 0
-                for row in range(max(0, i - 1), min(self.n, i + 2)):
-                    for col in range(max(0, j - 1), min(self.n, j + 2)):
-                        if minesweeper_map[row][col] == 'X':
+                for x in range(max(0, i - 1), min(self.n, i + 2)):
+                    for y in range(max(0, j - 1), min(self.n, j + 2)):
+                        if minesweeper_map[x][y] == 'X':
                             count += 1
                 minesweeper_map[i][j] = count
         return minesweeper_map
@@ -74,12 +72,12 @@ class MinesweeperGame:
         for i in range(self.n):
             for j in range(self.n):
                 if map[i][j] != '-':
-                    revealed_count+=1
-        
-        if revealed_count == self.n*self.n - self.k:
+                    revealed_count += 1
+
+        if revealed_count == self.n * self.n - self.k:
             return True
-        
-        return False
+        else:
+            return False
 
     def sweep(self, x, y):
         """
@@ -98,4 +96,8 @@ class MinesweeperGame:
             return False
         else:
             self.player_map[x][y] = self.minesweeper_map[x][y]
-            return self.player_map
+            self.score += 1
+            if self.check_won(self.player_map):
+                return True
+            else:
+                return self.player_map

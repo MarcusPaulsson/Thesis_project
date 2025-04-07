@@ -42,9 +42,11 @@ class CombinationCalculator:
         >>> CombinationCalculator.count_all(4)
         15
         """
-        if n > 62:
-          return float("inf")
-        return (1 << n) - 1
+        if n < 0 or n > 63:
+            return False
+        if n == 63:
+            return float("inf")
+        return (1 << n) - 1 if n > 0 else 0
 
     def select(self, m: int) -> List[List[str]]:
         """
@@ -56,7 +58,7 @@ class CombinationCalculator:
         [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D']]
 
         """
-        if m > len(self.datas):
+        if m < 0 or m > len(self.datas):
             return []
 
         result = []
@@ -93,13 +95,9 @@ class CombinationCalculator:
 
         """
         if resultIndex == len(resultList):
-            combination = resultList[:]
-            result.append(combination)
+            result.append(resultList[:])
             return
 
-        if dataIndex >= len(self.datas):
-            return
-
-        resultList[resultIndex] = self.datas[dataIndex]
-        self._select(dataIndex + 1, resultList, resultIndex + 1, result)
-        self._select(dataIndex + 1, resultList, resultIndex, result)
+        for i in range(dataIndex, len(self.datas)):
+            resultList[resultIndex] = self.datas[i]
+            self._select(i + 1, resultList, resultIndex + 1, result)

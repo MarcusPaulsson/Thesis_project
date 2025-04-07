@@ -1,6 +1,4 @@
 import PyPDF2
-import os
-from reportlab.pdfgen import canvas
 
 class PDFHandler:
     """
@@ -25,11 +23,14 @@ class PDFHandler:
         >>> handler.merge_pdfs('out.pdf')
         Merged PDFs saved at out.pdf
         """
-        merger = PyPDF2.PdfFileMerger()
+        pdf_writer = PyPDF2.PdfFileWriter()
         for reader in self.readers:
-            merger.append(reader)
-        merger.write(output_filepath)
-        merger.close()
+            for page in reader.pages:
+                pdf_writer.addPage(page)
+
+        with open(output_filepath, 'wb') as output_file:
+            pdf_writer.write(output_file)
+
         return f"Merged PDFs saved at {output_filepath}"
 
     def extract_text_from_pdfs(self):
@@ -43,8 +44,7 @@ class PDFHandler:
         pdf_texts = []
         for reader in self.readers:
             text = ""
-            for page_num in range(reader.numPages):
-                page = reader.getPage(page_num)
+            for page in reader.pages:
                 text += page.extract_text() + "\n"
             pdf_texts.append(text)
         return pdf_texts

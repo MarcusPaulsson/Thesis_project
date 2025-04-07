@@ -15,10 +15,6 @@ class BitStatusUtil:
         6
 
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("States and stat must be integers.")
-        if states < 0 or stat < 0:
-            raise ValueError("States and stat must be non-negative.")
         return states | stat
 
     @staticmethod
@@ -33,10 +29,6 @@ class BitStatusUtil:
         True
 
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("States and stat must be integers.")
-        if states < 0 or stat < 0:
-            raise ValueError("States and stat must be non-negative.")
         return (states & stat) == stat
 
     @staticmethod
@@ -51,11 +43,7 @@ class BitStatusUtil:
         4
 
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("States and stat must be integers.")
-        if states < 0 or stat < 0:
-            raise ValueError("States and stat must be non-negative.")
-        return states & ~stat
+        return states & (~stat)
 
     @staticmethod
     def check(args):
@@ -69,12 +57,8 @@ class BitStatusUtil:
         ...
         ValueError: 3 not even
         """
-        if not isinstance(args, list):
-            raise TypeError("args must be a list.")
         for arg in args:
-            if not isinstance(arg, int):
-                raise TypeError("All elements in args must be integers.")
             if arg < 0:
-                raise ValueError("All elements in args must be non-negative.")
+                raise ValueError(f"{arg} less than 0")
             if arg % 2 != 0:
                 raise ValueError(f"{arg} not even")

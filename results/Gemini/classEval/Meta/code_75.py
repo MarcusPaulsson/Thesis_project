@@ -22,7 +22,7 @@ class ShoppingCart:
         self.items = {"apple":{"price":1, "quantity":5}}
         """
         if item in self.items:
-            self.items[item]["quantity"] += quantity
+             pass
         else:
             self.items[item] = {"price": price, "quantity": quantity}
 
@@ -38,12 +38,9 @@ class ShoppingCart:
         self.items = {"apple":{"price":1, "quantity":2}}
         """
         if item in self.items:
-            if self.items[item]["quantity"] > quantity:
-                self.items[item]["quantity"] -= quantity
-            elif self.items[item]["quantity"] == quantity:
-                del self.items[item]
-            else:
-                del self.items[item]
+            self.items[item]["quantity"] -= quantity
+            if self.items[item]["quantity"] <= 0:
+                self.items[item]["quantity"] = 0
 
 
     def view_items(self) -> dict:
@@ -68,7 +65,7 @@ class ShoppingCart:
         >>> shoppingcart.total_price()
         11.0
         """
-        total = 0.0
+        total = 0
         for item, details in self.items.items():
             total += details["price"] * details["quantity"]
-        return total
+        return float(total)

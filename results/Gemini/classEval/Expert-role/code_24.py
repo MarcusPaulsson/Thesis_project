@@ -3,6 +3,7 @@ class ComplexCalculator:
     This is a class that implements addition, subtraction, multiplication, and division operations for complex numbers.
     """
 
+
     def __init__(self):
         pass
 

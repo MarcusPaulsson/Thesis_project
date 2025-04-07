@@ -29,11 +29,11 @@ class CurrencyConverter:
         10.0
         """
         if from_currency not in self.rates or to_currency not in self.rates:
-            return None
+            return False
 
         usd_amount = amount / self.rates[from_currency]
         converted_amount = usd_amount * self.rates[to_currency]
-        return round(converted_amount, 2)
+        return converted_amount
 
 
     def get_supported_currencies(self):
@@ -59,9 +59,8 @@ class CurrencyConverter:
         """
         if currency in self.rates:
             return False
-        else:
-            self.rates[currency] = rate
-            return None
+        self.rates[currency] = rate
+        return None
 
 
     def update_currency_rate(self, currency, new_rate):
@@ -76,6 +75,5 @@ class CurrencyConverter:
         """
         if currency not in self.rates:
             return False
-        else:
-            self.rates[currency] = new_rate
-            return None
+        self.rates[currency] = new_rate
+        return None

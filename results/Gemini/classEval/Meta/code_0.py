@@ -1,6 +1,5 @@
 import logging
 import datetime
-import jwt
 
 class AccessGatewayFilter:
     """
@@ -10,19 +9,17 @@ class AccessGatewayFilter:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
-        # create console handler and set level to info
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
 
-        # create formatter
+        # Create a handler that writes log messages to a file
+        fh = logging.FileHandler('access_gateway.log')
+        fh.setLevel(logging.INFO)
+
+        # Create a formatter and set the formatter for the handler
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
 
-        # add formatter to ch
-        ch.setFormatter(formatter)
-
-        # add ch to logger
-        self.logger.addHandler(ch)
-
+        # Add the handler to the logger
+        self.logger.addHandler(fh)
 
     def filter(self, request):
         """
@@ -34,16 +31,29 @@ class AccessGatewayFilter:
         True
 
         """
-        if request['path'] == '/login' and request['method'] == 'POST':
-            return True
         if self.is_start_with(request['path']):
-            user = self.get_jwt_user(request)
-            if user:
-                self.set_current_user_info_and_log(user)
-                return True
+            return True
+
+        if 'headers' in request and 'Authorization' in request['headers']:
+            auth_data = request['headers']['Authorization']
+            user = auth_data.get('user')
+            jwt_token = auth_data.get('jwt')
+
+            if user and jwt_token:
+                jwt_user = self.get_jwt_user(request)
+                if jwt_user:
+                    if user['level'] == 1:
+                        return None
+                    elif user['level'] >= 3:
+                        return True
+                    else:
+                        return True
+                else:
+                    return False
             else:
-                return False
-        return True
+                return True
+        else:
+            return True
 
 
     def is_start_with(self, request_uri):
@@ -70,18 +80,21 @@ class AccessGatewayFilter:
         {'user': {'name': 'user1'}
 
         """
-        auth_header = request.get('headers', {}).get('Authorization')
-        if auth_header:
-            try:
-                # Assuming the token is a simple string representation of the user
-                # This is a placeholder, in reality, you'd verify the JWT signature
-                # and decode the payload.
-                # decoded_token = jwt.decode(auth_header['jwt'], 'secret', algorithms=["HS256"])
-                return auth_header['user']
-            except Exception as e:
-                self.logger.error(f"Error decoding JWT: {e}")
+        if 'headers' in request and 'Authorization' in request['headers']:
+            auth_data = request['headers']['Authorization']
+            user = auth_data.get('user')
+            jwt_token = auth_data.get('jwt')
+
+            if user and jwt_token:
+                expected_jwt = user['name'] + str(datetime.date.today())
+                if jwt_token == expected_jwt:
+                    return user
+                else:
+                    return None
+            else:
                 return None
-        return None
+        else:
+            return None
 
     def set_current_user_info_and_log(self, user):
         """
@@ -93,4 +106,4 @@ class AccessGatewayFilter:
         >>> filter.set_current_user_info_and_log(user)
 
         """
-        self.logger.info(f"User {user.get('name', 'Unknown')} from {user.get('address', 'Unknown')} accessed the gateway.")
+        self.logger.info(f"User access: {user}")

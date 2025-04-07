@@ -1,4 +1,4 @@
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageChops
 
 class ImageProcessor:
     """
@@ -19,12 +19,7 @@ class ImageProcessor:
         >>> processor.image
         <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=3072x4096 at 0x194F2412A48>
         """
-        try:
-            self.image = Image.open(image_path)
-        except FileNotFoundError:
-            print(f"Error: Image file not found at {image_path}")
-        except Exception as e:
-            print(f"Error: Could not open image. {e}")
+        self.image = Image.open(image_path)
 
     def save_image(self, save_path):
         """
@@ -34,12 +29,7 @@ class ImageProcessor:
         >>> processor.save_image('test2.jpg')
         """
         if self.image:
-            try:
-                self.image.save(save_path)
-            except Exception as e:
-                print(f"Error: Could not save image. {e}")
-        else:
-            print("Error: No image loaded.")
+            self.image.save(save_path)
 
     def resize_image(self, width, height):
         """
@@ -54,12 +44,7 @@ class ImageProcessor:
         300
         """
         if self.image:
-            try:
-                self.image = self.image.resize((width, height))
-            except Exception as e:
-                print(f"Error: Could not resize image. {e}")
-        else:
-            print("Error: No image loaded.")
+            self.image = self.image.resize((width, height))
 
     def rotate_image(self, degrees):
         """
@@ -69,12 +54,7 @@ class ImageProcessor:
         >>> processor.resize_image(90)
         """
         if self.image:
-            try:
-                self.image = self.image.rotate(degrees)
-            except Exception as e:
-                print(f"Error: Could not rotate image. {e}")
-        else:
-            print("Error: No image loaded.")
+            self.image = self.image.rotate(-degrees)
 
     def adjust_brightness(self, factor):
         """
@@ -84,19 +64,5 @@ class ImageProcessor:
         >>> processor.adjust_brightness(0.5)
         """
         if self.image:
-            try:
-                enhancer = ImageEnhance.Brightness(self.image)
-                self.image = enhancer.enhance(factor)
-            except Exception as e:
-                print(f"Error: Could not adjust brightness. {e}")
-        else:
-            print("Error: No image loaded.")
-
-if __name__ == '__main__':
-    processor = ImageProcessor()
-    processor.load_image('test.jpg')  # Replace 'test.jpg' with an actual image path
-    if processor.image:
-        processor.resize_image(300, 300)
-        processor.rotate_image(90)
-        processor.adjust_brightness(0.5)
-        processor.save_image('test_processed.jpg')  # Replace 'test_processed.jpg' with desired save path
+            enhancer = ImageEnhance.Brightness(self.image)
+            self.image = enhancer.enhance(factor)

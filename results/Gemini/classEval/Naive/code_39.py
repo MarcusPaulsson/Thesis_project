@@ -1,6 +1,5 @@
-import decimal
 from collections import deque
-
+import decimal
 
 class ExpressionCalculator:
     """
@@ -24,57 +23,60 @@ class ExpressionCalculator:
         14.0
 
         """
-        tokens = expression.split()
+        expression = self.transform(expression)
+        self.prepare(expression)
         stack = []
-        for token in tokens:
-            if token.isdigit():
-                stack.append(float(token))
-            elif token in {'+', '-', '*', '/', '%'}:
-                if len(stack) < 2:
-                    return "Invalid expression"
+        while self.postfix_stack:
+            token = self.postfix_stack.popleft()
+            if self.is_operator(token):
                 second_value = stack.pop()
                 first_value = stack.pop()
-                try:
-                    result = self._calculate(first_value, second_value, token)
-                    stack.append(result)
-                except ZeroDivisionError:
-                    return "Division by zero error"
+                result = self._calculate(first_value, second_value, token)
+                stack.append(result)
             else:
-                return "Invalid expression"
+                stack.append(token)
+        return float(stack[0])
 
-        if len(stack) == 1:
-            return stack[0]
-        else:
-            return "Invalid expression"
 
     def prepare(self, expression):
         """
         Prepare the infix expression for conversion to postfix notation
         :param expression: string, the infix expression to be prepared
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.prepare("2+3*4")
-
-        expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
-        expression = self.transform(expression)
+        self.postfix_stack = deque()
         op_stack = []
-        output = []
-        for char in expression:
-            if char.isdigit():
-                output.append(char)
-            elif self.is_operator(char):
-                while op_stack and self.is_operator(op_stack[-1]) and self.compare(char, op_stack[-1]):
-                    output.append(op_stack.pop())
-                op_stack.append(char)
-            elif char == '(':
-                op_stack.append(char)
-            elif char == ')':
+        expression = self.transform(expression)
+        i = 0
+        while i < len(expression):
+            if expression[i].isdigit():
+                j = i
+                while j < len(expression) and expression[j].isdigit():
+                    j += 1
+                self.postfix_stack.append(expression[i:j])
+                i = j
+            elif expression[i] == '(':
+                op_stack.append(expression[i])
+                i += 1
+            elif expression[i] == ')':
                 while op_stack and op_stack[-1] != '(':
-                    output.append(op_stack.pop())
-                op_stack.pop()  # Remove the '('
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.pop()
+                i += 1
+            elif self.is_operator(expression[i]):
+                while op_stack and op_stack[-1] != '(' and self.compare(expression[i], op_stack[-1]):
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.append(expression[i])
+                i += 1
+            elif expression[i] == '~':
+                self.postfix_stack.append('0')
+                op_stack.append('-')
+                i += 1
+            else:
+                i += 1
+
         while op_stack:
-            output.append(op_stack.pop())
-        self.postfix_stack = deque(output)
+            self.postfix_stack.append(op_stack.pop())
+
 
     @staticmethod
     def is_operator(c):
@@ -89,6 +91,7 @@ class ExpressionCalculator:
         """
         return c in {'+', '-', '*', '/', '%'}
 
+
     def compare(self, cur, peek):
         """
         Compare the precedence of two operators
@@ -100,8 +103,9 @@ class ExpressionCalculator:
         True
 
         """
-        priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
-        return priority.get(cur, 0) <= priority.get(peek, 0)
+        op_dict = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
+        return op_dict.get(cur, 0) <= op_dict.get(peek, 0)
+
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -116,8 +120,8 @@ class ExpressionCalculator:
         5.0
 
         """
-        first_value = float(first_value)
-        second_value = float(second_value)
+        first_value = decimal.Decimal(first_value)
+        second_value = decimal.Decimal(second_value)
         if current_op == '+':
             return first_value + second_value
         elif current_op == '-':
@@ -125,13 +129,12 @@ class ExpressionCalculator:
         elif current_op == '*':
             return first_value * second_value
         elif current_op == '/':
-            if second_value == 0:
-                raise ZeroDivisionError("Division by zero")
             return first_value / second_value
         elif current_op == '%':
             return first_value % second_value
         else:
-            return 0.0
+            raise ValueError("Invalid operator")
+
 
     @staticmethod
     def transform(expression):
@@ -144,4 +147,8 @@ class ExpressionCalculator:
         "2+3*4"
 
         """
-        return expression.replace(" ", "")
+        expression = expression.replace(" ", "")
+        expression = expression.replace("(-", "(~")
+        expression = expression.replace("~(", "0-(")
+        expression = expression.replace("~", "0-")
+        return expression

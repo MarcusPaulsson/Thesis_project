@@ -22,10 +22,8 @@ class DocFileHandler:
         """
         try:
             document = Document(self.file_path)
-            full_text = []
-            for paragraph in document.paragraphs:
-                full_text.append(paragraph.text)
-            return '\n'.join(full_text)
+            text = '\n'.join([paragraph.text for paragraph in document.paragraphs])
+            return text
         except Exception as e:
             print(f"Error reading document: {e}")
             return None
@@ -41,15 +39,15 @@ class DocFileHandler:
         try:
             document = Document()
             paragraph = document.add_paragraph(content)
-
+            
             # Set font size
             for run in paragraph.runs:
                 run.font.size = Pt(font_size)
-
+            
             # Set alignment
             alignment_value = self._get_alignment_value(alignment)
             paragraph.alignment = alignment_value
-
+            
             document.save(self.file_path)
             return True
         except Exception as e:
@@ -64,14 +62,7 @@ class DocFileHandler:
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path)  # Open existing document
-        except FileNotFoundError:
-            document = Document()  # Create a new document if it doesn't exist
-        except Exception as e:
-            print(f"Error opening/creating document: {e}")
-            return False
-
-        try:
+            document = Document(self.file_path)
             document.add_heading(heading, level=level)
             document.save(self.file_path)
             return True
@@ -86,22 +77,14 @@ class DocFileHandler:
         :return: bool, True if the table is successfully added, False otherwise.
         """
         try:
-            try:
-                document = Document(self.file_path)  # Open existing document
-            except FileNotFoundError:
-                document = Document()  # Create a new document if it doesn't exist
-            except Exception as e:
-                print(f"Error opening/creating document: {e}")
-                return False
-
+            document = Document(self.file_path)
             table = document.add_table(rows=0, cols=len(data[0]) if data else 0)
-
-            # Add header row
-            for item in data:
+            
+            for row_data in data:
                 row_cells = table.add_row().cells
-                for i, text in enumerate(item):
-                    row_cells[i].text = str(text)
-
+                for i, item in enumerate(row_data):
+                    row_cells[i].text = str(item)
+            
             document.save(self.file_path)
             return True
         except Exception as e:

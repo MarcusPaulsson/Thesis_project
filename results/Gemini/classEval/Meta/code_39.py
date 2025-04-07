@@ -1,4 +1,3 @@
-import re
 from collections import deque
 import decimal
 
@@ -14,7 +13,6 @@ class ExpressionCalculator:
         """
         self.postfix_stack = deque()
         self.operat_priority = [0, 3, 2, 1, -1, 1, 0, 2]
-        self.operator_map = {'+': 1, '-': 1, '*': 2, '/': 2, '(': -1, ')': -1, '#': 0, '%': 2}
 
     def calculate(self, expression):
         """
@@ -26,11 +24,12 @@ class ExpressionCalculator:
         14.0
 
         """
-        postfix_expression = self.prepare(expression)
-
+        expression = self.transform(expression)
+        self.prepare(expression)
         stack = []
-        for token in postfix_expression:
-            if token.isdigit() or (isinstance(token, str) and token.replace('.', '', 1).isdigit()):
+        while self.postfix_stack:
+            token = self.postfix_stack.popleft()
+            if not self.is_operator(token):
                 stack.append(token)
             else:
                 second_value = stack.pop()
@@ -48,29 +47,27 @@ class ExpressionCalculator:
 
         expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
-        expression = self.transform(expression)
-        expression = re.findall(r"(\d+\.?\d*|\+|-|\*|/|\(|\)|%)", expression)
-
+        self.postfix_stack = deque()
         op_stack = []
-        output = []
-
-        for token in expression:
-            if token.isdigit() or (isinstance(token, str) and token.replace('.', '', 1).isdigit()):
-                output.append(token)
-            elif token == '(':
-                op_stack.append(token)
-            elif token == ')':
+        expression = self.transform(expression)
+        i = 0
+        while i < len(expression):
+            c = expression[i]
+            if c.isdigit():
+                self.postfix_stack.append(c)
+            elif c == '(':
+                op_stack.append(c)
+            elif c == ')':
                 while op_stack and op_stack[-1] != '(':
-                    output.append(op_stack.pop())
-                op_stack.pop()  # Remove the '('
-            else:
-                while op_stack and op_stack[-1] != '(' and self.compare(token, op_stack[-1]):
-                    output.append(op_stack.pop())
-                op_stack.append(token)
-
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.pop()
+            elif self.is_operator(c):
+                while op_stack and op_stack[-1] != '(' and self.compare(c, op_stack[-1]):
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.append(c)
+            i += 1
         while op_stack:
-            output.append(op_stack.pop())
-        return output
+            self.postfix_stack.append(op_stack.pop())
 
     @staticmethod
     def is_operator(c):
@@ -96,7 +93,8 @@ class ExpressionCalculator:
         True
 
         """
-        return self.operator_map.get(cur, 0) <= self.operator_map.get(peek, 0)
+        priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
+        return priority[peek] >= priority[cur]
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -113,7 +111,6 @@ class ExpressionCalculator:
         """
         first_value = decimal.Decimal(first_value)
         second_value = decimal.Decimal(second_value)
-
         if current_op == '+':
             return first_value + second_value
         elif current_op == '-':
@@ -125,7 +122,7 @@ class ExpressionCalculator:
         elif current_op == '%':
             return first_value % second_value
         else:
-            raise ValueError("Invalid operator: {}".format(current_op))
+            raise ValueError("Invalid operator")
 
     @staticmethod
     def transform(expression):
@@ -139,4 +136,8 @@ class ExpressionCalculator:
 
         """
         expression = expression.replace(" ", "")
+        expression = expression.replace("(-", "(~")
+        expression = expression.replace("-", "~")
+        expression = expression.replace("~(", "0-(")
+        expression = expression.replace("~", "-")
         return expression

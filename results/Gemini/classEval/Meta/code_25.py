@@ -25,7 +25,6 @@ class CookiesUtil:
         """
         if 'cookies' in reponse:
             self.cookies = reponse['cookies']
-            self._save_cookies()
 
     def load_cookies(self):
         """
@@ -39,13 +38,14 @@ class CookiesUtil:
         try:
             with open(self.cookies_file, 'r') as f:
                 self.cookies = json.load(f)
-            return self.cookies
         except FileNotFoundError:
             self.cookies = {}
-            return self.cookies
         except json.JSONDecodeError:
             self.cookies = {}
-            return self.cookies
+        
+        if self.cookies and 'cookies' in self.cookies:
+            return self.cookies['cookies']
+        return self.cookies if self.cookies else {}
 
     def _save_cookies(self):
         """
@@ -57,9 +57,19 @@ class CookiesUtil:
         True
 
         """
+        if not self.cookies_file:
+            return False
+
         try:
             with open(self.cookies_file, 'w') as f:
                 json.dump(self.cookies, f)
             return True
-        except Exception:
+        except:
             return False
+    
+    def set_cookies(self, request):
+        """
+        Sets the cookies to the specified request.
+        :param request: The request to set cookies to, dict.
+        """
+        request['cookies'] = f"cookies={self.cookies}"

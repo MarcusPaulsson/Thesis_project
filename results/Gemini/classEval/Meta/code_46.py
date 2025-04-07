@@ -19,15 +19,23 @@ class Interpolation:
         [1.5, 2.5]
 
         """
+        if not x or not y or not x_interp:
+            return []
+
         y_interp = []
         for x_i in x_interp:
+            if x_i <= x[0]:
+                y_interp.append(y[0] + (x_i - x[0]) * (y[1] - y[0]) / (x[1] - x[0]) if len(x) > 1 else y[0])
+                continue
+            if x_i >= x[-1]:
+                y_interp.append(y[-2] + (x_i - x[-2]) * (y[-1] - y[-2]) / (x[-1] - x[-2]) if len(x) > 1 else y[-1])
+                continue
+
             for i in range(len(x) - 1):
                 if x[i] <= x_i <= x[i + 1]:
-                    y_i = y[i] + (y[i + 1] - y[i]) * (x_i - x[i]) / (x[i + 1] - x[i])
+                    y_i = y[i] + (x_i - x[i]) * (y[i + 1] - y[i]) / (x[i + 1] - x[i])
                     y_interp.append(y_i)
                     break
-            else:
-                y_interp.append(None)  # Handle cases where x_interp is outside the range of x
         return y_interp
 
     @staticmethod
@@ -48,41 +56,38 @@ class Interpolation:
         z_interp = []
         for x_i, y_i in zip(x_interp, y_interp):
             # Find the four nearest data points
-            x1, x2 = None, None
-            y1, y2 = None, None
-            z11, z12, z21, z22 = None, None, None, None
+            x1 = x[0]
+            x2 = x[-1]
+            y1 = y[0]
+            y2 = y[-1]
 
-            for i in range(len(x) - 1):
-                if x[i] <= x_i <= x[i + 1]:
+            for i in range(len(x)):
+                if x[i] <= x_i:
                     x1 = x[i]
-                    x2 = x[i + 1]
+                if x[i] >= x_i:
+                    x2 = x[i]
                     break
 
-            for j in range(len(y) - 1):
-                if y[j] <= y_i <= y[j + 1]:
-                    y1 = y[j]
-                    y2 = y[j + 1]
+            for i in range(len(y)):
+                if y[i] <= y_i:
+                    y1 = y[i]
+                if y[i] >= y_i:
+                    y2 = y[i]
                     break
-            
-            if x1 is None or x2 is None or y1 is None or y2 is None:
-                z_interp.append(None)  # Handle cases where interpolation point is outside data range
-                continue
 
-            x_index1 = x.index(x1)
-            x_index2 = x.index(x2)
-            y_index1 = y.index(y1)
-            y_index2 = y.index(y2)
-            
-            z11 = z[y_index1][x_index1]
-            z12 = z[y_index1][x_index2]
-            z21 = z[y_index2][x_index1]
-            z22 = z[y_index2][x_index2]
+            # Perform bilinear interpolation
+            try:
+                z11 = z[x.index(x1)][y.index(y1)]
+                z12 = z[x.index(x1)][y.index(y2)]
+                z21 = z[x.index(x2)][y.index(y1)]
+                z22 = z[x.index(x2)][y.index(y2)]
 
-            # Bilinear interpolation
-            z_i = (z11 * (x2 - x_i) * (y2 - y_i) +
-                   z21 * (x_i - x1) * (y2 - y_i) +
-                   z12 * (x2 - x_i) * (y_i - y1) +
-                   z22 * (x_i - x1) * (y_i - y1)) / ((x2 - x1) * (y2 - y1))
+                z_i = (z11 * (x2 - x_i) * (y2 - y_i) +
+                       z21 * (x_i - x1) * (y2 - y_i) +
+                       z12 * (x2 - x_i) * (y_i - y1) +
+                       z22 * (x_i - x1) * (y_i - y1)) / ((x2 - x1) * (y2 - y1))
+            except (ValueError, IndexError):
+                z_i = 0
+
             z_interp.append(z_i)
-
         return z_interp
