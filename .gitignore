@@ -17,3 +17,5 @@ test.db
 tempfolder
 *.zip
 *.csv
+*.txt
+*.db
