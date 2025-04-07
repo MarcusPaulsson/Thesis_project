@@ -19,14 +19,14 @@ user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PRO
 
 
 # Zero-shot prompting
-'''
+''''''
 PROMPT_TECHNIQUE_SETTING = "Zero-shot" # placeholder for storing content to correct result directory
 
 SYSTEM_PROMPT="",
 HEAD_PROMPT = ""
 TAIL_PROMPT=" Give only the code, no test cases."
 
-'''
+
 # Zero-shot Chain of thougths
 '''
 PROMPT_TECHNIQUE_SETTING = "Zero-shot-CoT" 
@@ -79,9 +79,10 @@ TAIL_PROMPT="Give only the code."
 '''
 
 # Iterative refinement prompting
-''''''
+'''
 PROMPT_TECHNIQUE_SETTING = "Iterative" 
 
 SYSTEM_PROMPT="","Read the task description again and refine the provided code to be better and fix potential problems"
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code."
+'''
