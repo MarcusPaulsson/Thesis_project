@@ -48,13 +48,13 @@ TAIL_PROMPT="Give only the code, no test cases."
 
 
 # Role prompting (Student)
-'''
+''''''
 PROMPT_TECHNIQUE_SETTING = "Student-role" 
 
 SYSTEM_PROMPT="You are a university student studying computer science, with basic knowledge in software enginnering."
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
-'''
+
 
 # Meta prompting
 '''
@@ -79,9 +79,10 @@ TAIL_PROMPT="Give only the code, no test cases."
 '''
 
 # Iterative refinement prompting
-''''''
+'''
 PROMPT_TECHNIQUE_SETTING = "Iterative" 
 
 SYSTEM_PROMPT="","Read the task description again and refine the provided code to be better and fix potential problems"
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
+'''
