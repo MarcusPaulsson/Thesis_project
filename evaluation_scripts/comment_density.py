@@ -175,13 +175,13 @@ results_gemma.update(analyze_folders_and_count_comment_density(folder_paths_gemm
 
 print("\nComment Density per Folder:")
 for folder, (avg_density, std_dev_density) in results_gemini.items():
-    print(f"  {folder}: Average Density = {avg_density:.4f}")
+    print(f"  {folder}: Average Density = {avg_density:.2f}")
 
 for folder, (avg_density, std_dev_density) in results_chatgpt.items():
-    print(f"  {folder}: Average Density = {avg_density:.4f}")
+    print(f"  {folder}: Average Density = {avg_density:.2f}")
 
 for folder, (avg_density, std_dev_density) in results_gemma.items():
-    print(f"  {folder}: Average Density = {avg_density:.4f}")
+    print(f"  {folder}: Average Density = {avg_density:.2f}")
 
 # Split density calculation by technique for Gemini
 gemini_densities = {
@@ -279,7 +279,7 @@ for technique, densities in gemini_densities.items():
     if densities:
         avg_density = statistics.mean(densities)
         std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
-        print(f"  {technique}: Average Density = {avg_density:.4f}")
+        print(f"  {technique}: Average Density = {avg_density:.2f}")
     else:
         print(f"  {technique}: No data available.")
 
@@ -288,7 +288,7 @@ for technique, densities in chatgpt_densities.items():
     if densities:
         avg_density = statistics.mean(densities)
         std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
-        print(f"  {technique}: Average Density = {avg_density:.4f}")
+        print(f"  {technique}: Average Density = {avg_density:.2f}")
     else:
         print(f"  {technique}: No data available.")
 
@@ -297,6 +297,6 @@ for technique, densities in gemma_densities.items():
     if densities:
         avg_density = statistics.mean(densities)
         std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
-        print(f"  {technique}: Average Density = {avg_density:.4f}")
+        print(f"  {technique}: Average Density = {avg_density:.2f}")
     else:
         print(f"  {technique}: No data available.")
