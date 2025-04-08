@@ -20,25 +20,29 @@ def get_standard_libraries():
     return stdlib_modules
 
 STANDARD_LIBRARIES = get_standard_libraries()
-BUILTIN_NAMES = dir(builtins)
+
+BUILTIN_NAMES = set(dir(builtins))
+BUILTIN_NAMES= BUILTIN_NAMES.union(set(dir(inspect)))
+
+
 
 def analyze_dependency(node, scope, module_context):
+    """Analyzes the dependencies of a node in the AST."""
     dependencies = {"self-contained": set(), "slib-runnable": set(), "plib-runnable": set(),
-                    "class-runnable": set(), "file-runnable": set(), "project-runnable": set()}
+                    "class-runnable": set(), "file-runnable": set(), "project-runnable": set(),
+                    "builtin-used": set()}  # Added 'builtin-used'
 
     if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
         name = node.id
         if name in BUILTIN_NAMES:
-            dependencies["self-contained"].add(name)
+            dependencies["builtin-used"].add(name)
         elif name in scope['file'] and name not in scope['class']:
             dependencies["file-runnable"].add(name)
         elif name in scope['class']:
             dependencies["class-runnable"].add(name)
+        # We only consider direct name access as a runnable dependency if it's a function call (handled below)
         elif name in module_context['imported_modules']:
-            if module_context['imported_modules'][name] in STANDARD_LIBRARIES:
-                dependencies["slib-runnable"].add(name)
-            else:
-                dependencies["plib-runnable"].add(name)
+            pass # Do not add the module name itself as a runnable dependency
         elif name in module_context['project_level_names']:
             dependencies["project-runnable"].add(name)
 
@@ -49,7 +53,8 @@ def analyze_dependency(node, scope, module_context):
             module_name = value.id
             full_name = f"{module_name}.{attr}"
             if module_name in module_context['imported_modules']:
-                if module_context['imported_modules'][module_name] in STANDARD_LIBRARIES:
+                imported_module = module_context['imported_modules'][module_name]
+                if imported_module in STANDARD_LIBRARIES:
                     dependencies["slib-runnable"].add(full_name)
                 else:
                     dependencies["plib-runnable"].add(full_name)
@@ -59,32 +64,33 @@ def analyze_dependency(node, scope, module_context):
                 dependencies["file-runnable"].add(full_name)
             elif module_name in module_context['project_level_names']:
                 dependencies["project-runnable"].add(full_name)
-        # Handle more complex attribute accesses if needed
 
     elif isinstance(node, ast.Call):
         func = node.func
         if isinstance(func, ast.Name):
             name = func.id
             if name in BUILTIN_NAMES:
-                dependencies["self-contained"].add(name + "()")
+                dependencies["builtin-used"].add(name + "()")
             elif name in scope['file'] and name not in scope['class']:
                 dependencies["file-runnable"].add(name + "()")
             elif name in scope['class']:
                 dependencies["class-runnable"].add(name + "()")
             elif name in module_context['imported_modules']:
-                if module_context['imported_modules'][name] in STANDARD_LIBRARIES:
+                imported_module = module_context['imported_modules'][name]
+                if imported_module in STANDARD_LIBRARIES:
                     dependencies["slib-runnable"].add(name + "()")
                 else:
                     dependencies["plib-runnable"].add(name + "()")
             elif name in module_context['project_level_names']:
                 dependencies["project-runnable"].add(name + "()")
         elif isinstance(func, ast.Attribute):
-            # Similar logic as attribute access
+            # Attribute calls (e.g., json.load()) are already handled above
             pass
 
     return dependencies
 
 def analyze_module(filepath):
+    """Analyzes a single Python module for function dependencies."""
     try:
         with open(filepath, 'r') as f:
             tree = ast.parse(f.read())
@@ -93,11 +99,11 @@ def analyze_module(filepath):
     except Exception as e:
         return None, f"Error reading {filepath}: {e}"
 
-    module_context = {'imported_modules': {}, 'project_level_names': set()}
+    module_context = {'imported_modules': {}, 'imported_modules_used': set(), 'project_level_names': set()}
     file_level_names = set()
     class_definitions = {}
 
-    # First pass to collect module-level information
+    # First pass to collect module-level information (imports and definitions)
     for node in tree.body:
         if isinstance(node, ast.Import):
             for alias in node.names:
@@ -132,13 +138,35 @@ def analyze_module(filepath):
                     break
 
             dependencies = {"self-contained": set(), "slib-runnable": set(), "plib-runnable": set(),
-                            "class-runnable": set(), "file-runnable": set(), "project-runnable": set()}
+                            "class-runnable": set(), "file-runnable": set(), "project-runnable": set(),
+                            "builtin-used": set()} # Added 'builtin-used'
             for child in ast.walk(node):
                 dep = analyze_dependency(child, scope, module_context)
                 for dep_type, names in dep.items():
                     dependencies[dep_type].update(names)
+
+            # Update imported_modules_used based on the dependencies found in this function
+            for dep_type in ["slib-runnable", "plib-runnable", "builtin-used" ]:
+            #for dep_type in ["slib-runnable", "plib-runnable", "builtin-used","class-runnable", "file-runnable" , "project-runnable","self-contained"]:
+                for name in dependencies[dep_type]:
+                    if '.' in name:
+                        module_alias = name.split('.')[0]
+                    else:
+                        module_alias = name
+                    if module_alias in module_context['imported_modules']:
+                        module_context['imported_modules_used'].add(module_alias)
+
+
+            builtins_to_remove = set()
+            for item in dependencies["builtin-used"]:
+                if not item.endswith("()"):
+                    builtins_to_remove.add(item)
+
+            dependencies["builtin-used"] -= builtins_to_remove
+            
             function_dependencies[function_name] = dependencies
 
+    
     return function_dependencies, None
 
 def numerical_sort_key(filename):
@@ -175,201 +203,283 @@ def analyze_folders_and_count_calls(folder_paths):
             if dependencies:
                 for func_deps in dependencies.values():
                     for dep_type, names in func_deps.items():
-                        if dep_type in ["slib-runnable", "plib-runnable"]:
+                        if dep_type in ["slib-runnable", "plib-runnable", "builtin-used" ]:
+                        #if dep_type in ["slib-runnable", "plib-runnable", "builtin-used", "class-runnable", "file-runnable" , "project-runnable" ,"self-contained"]:
                             total_calls += len(names)
+                            
         results[folder_name] = total_calls
     return results
 
-# Define folder paths
-upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #adjust if running locally.
+if __name__ == "__main__":
+    # Define folder paths
+    upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #adjust if running locally.
 
-result_setting = "results" # "results"
-#result_setting = "filtered_results" # "results"
+    result_setting = "results" # "results"
+    #result_setting = "filtered_results" # "results"
 
-# folder_paths_gemini_cli_games = {
-#     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
-#     "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot-CoT"),
-#     "Gemini cli_games Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Expert-role"),
-#     "Gemini cli_games Student-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Student-role"),
-# }
-# folder_paths_chatgpt_cli_games = {
-#     "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot"),
-#     "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot-CoT"),
-#     "ChatGPT cli_games Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Expert-role"),
-#     "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
-# }
+    # folder_paths_gemini_cli_games = {
+    #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
+    #     "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot-CoT"),
+    #     "Gemini cli_games Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Expert-role"),
+    #     "Gemini cli_games Student-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Student-role"),
+    # }
+    # folder_paths_chatgpt_cli_games = {
+    #     "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot"),
+    #     "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot-CoT"),
+    #     "ChatGPT cli_games Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Expert-role"),
+    #     "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
+    # }
 
-# ClassEval
-folder_paths_gemini_classEval = {
-    "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
-    "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
-    "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
-    "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
-    "Gemini classEval Meta": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Meta"),
-    "Gemini classEval Naive": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Naive"),
-    "Gemini classEval Iterative": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Iterative"),
-}
-folder_paths_chatgpt_classEval = {
-    "ChatGPT classEval Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot"),
-    "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
-    "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
-    "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
-    "ChatGPT classEval Meta": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Meta'),
-    "ChatGPT classEval Naive": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Naive'),
-    "ChatGPT classEval Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Iterative'),
-}
-folder_paths_gemma_classEval = {
-    "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
-    "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
-    "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
-    "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),
-    "Gemma3 classEval Meta": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Meta"),
-    "Gemma3 classEval Naive": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Naive"),
-    "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
-}
-
-
-# APPS
-folder_paths_chatgpt_APPS = {
-    "ChatGPT APPS Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot"),
-    "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot-CoT"),
-    "ChatGPT APPS Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Expert-role"),
-    "ChatGPT APPS Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Student-role"),
-    "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
-    "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
-    "ChatGPT APPS Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Iterative"),
-}
-folder_paths_gemini_APPS = {
-    "Gemini APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot"),
-    "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
-    "Gemini APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Expert-role"),
-    "Gemini APPS Student-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Student-role"),
-    "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
-    "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
-    "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
-}
-folder_paths_gemma_APPS = {
-    "Gemma3 APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot"),
-    "Gemma3 APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot-CoT"),
-    "Gemma3 APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Expert-role"),
-    "Gemma3 APPS Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Student-role"),
-    "Gemma3 APPS Meta": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Meta"),
-    "Gemma3 APPS Naive": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Naive"),
-    "Gemma3 APPS Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Iterative"),
-}
-
-# Analyze folders and count library calls (using the new logic which focuses on slib and plib)
-results_gemini = {}
-results_chatgpt = {}
-results_gemma = {}
-
-results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_APPS))
-results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_classEval))
-
-results_gemma.update(analyze_folders_and_count_calls(folder_paths_gemma_classEval))
-results_gemma.update(analyze_folders_and_count_calls(folder_paths_gemma_APPS))
-
-results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_APPS))
-results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_classEval))
-
-print("\nTotal Standard and Public Library Call Counts per prompt technique:")
-gemini_calls = {  # Split call count calculation by technique
-    "Zero-shot": 0,
-    "Zero-shot-CoT": 0,
-    "Expert-role": 0,
-    "Student-role": 0,
-    "Meta": 0,
-    "Naive": 0,
-    "Iterative": 0,
-}
-
-chatgpt_calls = {
-    "Zero-shot": 0,
-    "Zero-shot-CoT": 0,
-    "Expert-role": 0,
-    "Student-role": 0,
-    "Meta": 0,
-    "Naive": 0,
-    "Iterative": 0,
-}
-
-gemma_calls = {
-    "Zero-shot": 0,
-    "Zero-shot-CoT": 0,
-    "Expert-role": 0,
-    "Student-role": 0,
-    "Meta": 0,
-    "Naive": 0,
-    "Iterative": 0,
-}
-
-for folder, total_calls in results_gemini.items():
-    if "Zero-shot" in folder and "CoT" not in folder:
-        gemini_calls["Zero-shot"] += total_calls
-    elif "Zero-shot-CoT" in folder:
-        gemini_calls["Zero-shot-CoT"] += total_calls
-    elif "Expert-role" in folder:
-        gemini_calls["Expert-role"] += total_calls
-    elif "Student-role" in folder:
-        gemini_calls["Student-role"] += total_calls
-    elif "Meta" in folder:
-        gemini_calls["Meta"] += total_calls
-    elif "Naive" in folder:
-        gemini_calls["Naive"] += total_calls
-    elif "Iterative" in folder:
-        gemini_calls["Iterative"] += total_calls
-
-for folder, total_calls in results_chatgpt.items():
-    if "Zero-shot" in folder and "CoT" not in folder:
-        chatgpt_calls["Zero-shot"] += total_calls
-    elif "Zero-shot-CoT" in folder:
-        chatgpt_calls["Zero-shot-CoT"] += total_calls
-    elif "Expert-role" in folder:
-        chatgpt_calls["Expert-role"] += total_calls
-    elif "Student-role" in folder:
-        chatgpt_calls["Student-role"] += total_calls
-    elif "Meta" in folder:
-        chatgpt_calls["Meta"] += total_calls
-    elif "Naive" in folder:
-        chatgpt_calls["Naive"] += total_calls
-    elif "Iterative" in folder:
-        chatgpt_calls["Iterative"] += total_calls
-
-for folder, total_calls in results_gemma.items():
-    if "Zero-shot" in folder and "CoT" not in folder:
-        chatgpt_calls["Zero-shot"] += total_calls
-    elif "Zero-shot-CoT" in folder:
-        chatgpt_calls["Zero-shot-CoT"] += total_calls
-    elif "Expert-role" in folder:
-        chatgpt_calls["Expert-role"] += total_calls
-    elif "Student-role" in folder:
-        chatgpt_calls["Student-role"] += total_calls
-    elif "Meta" in folder:
-        chatgpt_calls["Meta"] += total_calls
-    elif "Naive" in folder:
-        chatgpt_calls["Naive"] += total_calls
-    elif "Iterative" in folder:
-        chatgpt_calls["Iterative"] += total_calls
-
-print("Gemini Total Standard and Public Library Calls:")
-for technique, count in gemini_calls.items():
-    print(f"  {technique}: {count}")
-
-print("\nChatGPT Total Standard and Public Library Calls:")
-for technique, count in chatgpt_calls.items():
-    print(f"  {technique}: {count}")
-
-print("\Gemma3 Total Standard and Public Library Calls:")
-for technique, count in results_gemma.items():
-    print(f"  {technique}: {count}")
+    # ClassEval
+    folder_paths_gemini_classEval = {
+        "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
+        "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
+        "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
+        "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
+        "Gemini classEval Meta": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Meta"),
+        "Gemini classEval Naive": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Naive"),
+        "Gemini classEval Iterative": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Iterative"),
+        "Gemini classEval Combined": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Combined"),
+    }
+    folder_paths_chatgpt_classEval = {
+        "ChatGPT classEval Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot"),
+        "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
+        "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
+        "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
+        "ChatGPT classEval Meta": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Meta'),
+        "ChatGPT classEval Naive": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Naive'),
+        "ChatGPT classEval Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Iterative'),
+        "ChatGPT classEval Combined": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Combined'),
+    }
+    folder_paths_gemma_classEval = {
+        "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
+        "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
+        "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
+        "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),
+        "Gemma3 classEval Meta": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Meta"),
+        "Gemma3 classEval Naive": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Naive"),
+        "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
+        "Gemma3 classEval Combined": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Combined"),
+    }
 
 
-print("\nTotal Standard and Public Library Calls per Folder:")
-for folder, total_calls in results_gemini.items():
-    print(f"  {folder}: {total_calls}")
+    # APPS
+    folder_paths_chatgpt_APPS = {
+        "ChatGPT APPS Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot"),
+        "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot-CoT"),
+        "ChatGPT APPS Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Expert-role"),
+        "ChatGPT APPS Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Student-role"),
+        "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
+        "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
+        "ChatGPT APPS Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Iterative"),
+        "ChatGPT APPS Combined": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Combined"),
+    }
+    folder_paths_gemini_APPS = {
+        "Gemini APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot"),
+        "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
+        "Gemini APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Expert-role"),
+        "Gemini APPS Student-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Student-role"),
+        "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
+        "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
+        "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
+        "Gemini APPS Combined": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Combined"),
+    }
+    folder_paths_gemma_APPS = {
+        "Gemma3 APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot"),
+        "Gemma3 APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot-CoT"),
+        "Gemma3 APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Expert-role"),
+        "Gemma3 APPS Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Student-role"),
+        "Gemma3 APPS Meta": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Meta"),
+        "Gemma3 APPS Naive": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Naive"),
+        "Gemma3 APPS Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Iterative"),
+        "Gemma3 APPS Combined": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Combined"),
+    }
 
-for folder, total_calls in results_chatgpt.items():
-    print(f"  {folder}: {total_calls}")
+    # Analyze folders and count library calls (using the new logic which focuses on slib and plib)
+    results_gemini = {}
+    results_chatgpt = {}
+    results_gemma = {}
 
-for folder, total_calls in results_gemma.items():
-    print(f"  {folder}: {total_calls}")
+    results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_APPS))
+    results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_classEval))
+
+    results_gemma.update(analyze_folders_and_count_calls(folder_paths_gemma_classEval))
+    results_gemma.update(analyze_folders_and_count_calls(folder_paths_gemma_APPS))
+
+    results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_APPS))
+    results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_classEval))
+
+    print("\nTotal Standard and Public Library Call Counts per prompt technique:")
+    gemini_calls = {  # Split call count calculation by technique
+        "Zero-shot": 0,
+        "Zero-shot-CoT": 0,
+        "Expert-role": 0,
+        "Student-role": 0,
+        "Meta": 0,
+        "Naive": 0,
+        "Iterative": 0,
+        "Combined": 0,
+    }
+
+    chatgpt_calls = {
+        "Zero-shot": 0,
+        "Zero-shot-CoT": 0,
+        "Expert-role": 0,
+        "Student-role": 0,
+        "Meta": 0,
+        "Naive": 0,
+        "Iterative": 0,
+        "Combined": 0,
+    }
+
+    gemma_calls = {
+        "Zero-shot": 0,
+        "Zero-shot-CoT": 0,
+        "Expert-role": 0,
+        "Student-role": 0,
+        "Meta": 0,
+        "Naive": 0,
+        "Iterative": 0,
+        "Combined": 0,
+    }
+
+    for folder, total_calls in results_gemini.items():
+        if "Zero-shot" in folder and "CoT" not in folder:
+            gemini_calls["Zero-shot"] += total_calls
+        elif "Zero-shot-CoT" in folder:
+            gemini_calls["Zero-shot-CoT"] += total_calls
+        elif "Expert-role" in folder:
+            gemini_calls["Expert-role"] += total_calls
+        elif "Student-role" in folder:
+            gemini_calls["Student-role"] += total_calls
+        elif "Meta" in folder:
+            gemini_calls["Meta"] += total_calls
+        elif "Naive" in folder:
+            gemini_calls["Naive"] += total_calls
+        elif "Iterative" in folder:
+            gemini_calls["Iterative"] += total_calls
+        elif "Combined" in folder:
+            gemini_calls["Combined"] += total_calls
+
+    for folder, total_calls in results_chatgpt.items():
+        if "Zero-shot" in folder and "CoT" not in folder:
+            chatgpt_calls["Zero-shot"] += total_calls
+        elif "Zero-shot-CoT" in folder:
+            chatgpt_calls["Zero-shot-CoT"] += total_calls
+        elif "Expert-role" in folder:
+            chatgpt_calls["Expert-role"] += total_calls
+        elif "Student-role" in folder:
+            chatgpt_calls["Student-role"] += total_calls
+        elif "Meta" in folder:
+            chatgpt_calls["Meta"] += total_calls
+        elif "Naive" in folder:
+            chatgpt_calls["Naive"] += total_calls
+        elif "Iterative" in folder:
+            chatgpt_calls["Iterative"] += total_calls
+        elif "Combined" in folder:
+            gemini_calls["Combined"] += total_calls
+
+    for folder, total_calls in results_gemma.items():
+        if "Zero-shot" in folder and "CoT" not in folder:
+            gemma_calls["Zero-shot"] += total_calls
+        elif "Zero-shot-CoT" in folder:
+            gemma_calls["Zero-shot-CoT"] += total_calls
+        elif "Expert-role" in folder:
+            gemma_calls["Expert-role"] += total_calls
+        elif "Student-role" in folder:
+            gemma_calls["Student-role"] += total_calls
+        elif "Meta" in folder:
+            gemma_calls["Meta"] += total_calls
+        elif "Naive" in folder:
+            gemma_calls["Naive"] += total_calls
+        elif "Iterative" in folder:
+            gemma_calls["Iterative"] += total_calls
+        elif "Combined" in folder:
+            gemini_calls["Combined"] += total_calls
+
+    print("Gemini Total Standard and Public Library Calls:")
+    for technique, count in gemini_calls.items():
+        print(f"  {technique}: {count}")
+
+    print("\nChatGPT Total Standard and Public Library Calls:")
+    for technique, count in chatgpt_calls.items():
+        print(f"  {technique}: {count}")
+
+    print("\nGemma3 Total Standard and Public Library Calls:")
+    for technique, count in gemma_calls.items():
+        print(f"  {technique}: {count}")
+
+
+    print("\nTotal Standard and Public Library Calls per Folder:")
+    for folder, total_calls in results_gemini.items():
+        print(f"  {folder}: {total_calls}")
+
+    for folder, total_calls in results_chatgpt.items():
+        print(f"  {folder}: {total_calls}")
+
+    for folder, total_calls in results_gemma.items():
+        print(f"  {folder}: {total_calls}")
+
+
+run_on_single_file = False
+if run_on_single_file:
+    # Define the path to the file you want to analyze
+    upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    filepath_to_analyze = os.path.join(upper_dir, "filtered_results", "ChatGPT", "classEval", "Iterative", "code_18.py")
+
+    function_dependencies, error = analyze_module(filepath_to_analyze)
+
+    print(f"\nAnalysis of '{filepath_to_analyze}':\n")
+    if error:
+        print(f"Error: {error}")
+    elif function_dependencies:
+        overall_counts = {
+            "self-contained": 0,
+            "slib-runnable": 0,
+            "plib-runnable": 0,
+            "class-runnable": 0,
+            "file-runnable": 0,
+            "project-runnable": 0,
+            "builtin-used": 0,
+        }
+
+        for function_name, dependencies in function_dependencies.items():
+            print(f"Function: {function_name}")
+            slib_count = len(dependencies.get("slib-runnable", set()))
+            plib_count = len(dependencies.get("plib-runnable", set()))
+            builtin_count = len(dependencies.get("builtin-used", set()))
+            class_count = len(dependencies.get("class-runnable", set()))
+            file_count = len(dependencies.get("file-runnable", set()))
+            project_count = len(dependencies.get("project-runnable", set()))
+            self_contained_count = len(dependencies.get("self-contained", set()))
+
+            overall_counts["slib-runnable"] += slib_count
+            overall_counts["plib-runnable"] += plib_count
+            overall_counts["builtin-used"] += builtin_count
+            overall_counts["class-runnable"] += class_count
+            overall_counts["file-runnable"] += file_count
+            overall_counts["project-runnable"] += project_count
+            overall_counts["self-contained"] += self_contained_count
+
+            for dep_type, names in dependencies.items():
+                if names:
+                    print(f"  {dep_type.replace('-', ' ').title()}: {', '.join(sorted(list(names)))}")
+            print(f"  Function Standard Library Calls: {slib_count}")
+            print(f"  Function Public Library Calls: {plib_count}")
+            print(f"  Function Built-in Calls: {builtin_count}")
+            print(f"  Function Class Runnable Calls: {class_count}")
+            print(f"  Function File Runnable Calls: {file_count}")
+            print(f"  Function Project Runnable Calls: {project_count}")
+            print(f"  Function Self-Contained Calls: {self_contained_count}\n")
+
+        print(f"\nOverall Counts for '{filepath_to_analyze}':")
+        print(f"  Total Standard Library Calls: {overall_counts['slib-runnable']}")
+        print(f"  Total Public Library Calls: {overall_counts['plib-runnable']}")
+        print(f"  Total Built-in Calls: {overall_counts['builtin-used']}")
+        print(f"  Total Class Runnable Calls: {overall_counts['class-runnable']}")
+        print(f"  Total File Runnable Calls: {overall_counts['file-runnable']}")
+        print(f"  Total Project Runnable Calls: {overall_counts['project-runnable']}")
+        print(f"  Total Self-Contained Calls: {overall_counts['self-contained']}")
+
+    else:
+        print("No functions found in the file.")

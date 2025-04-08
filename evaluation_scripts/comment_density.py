@@ -100,6 +100,7 @@ folder_paths_gemini_classEval = {
     "Gemini classEval Meta": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Meta"),
     "Gemini classEval Naive": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Naive"),
     "Gemini classEval Iterative": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Iterative"),
+    "Gemini classEval Combined": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Combined"),
 }
 
 folder_paths_chatgpt_classEval = {
@@ -110,6 +111,7 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Meta": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Meta'),
     "ChatGPT classEval Naive": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Naive'),
     "ChatGPT classEval Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Iterative'),
+    "ChatGPT classEval Combined": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Combined'),
 }
 folder_paths_gemma_classEval = {
     "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
@@ -119,6 +121,8 @@ folder_paths_gemma_classEval = {
     "Gemma3 classEval Meta": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Meta"),
     "Gemma3 classEval Naive": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Naive"),
     "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
+    "Gemma3 classEval Combined": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Combined"),
+
 }
 
 # APPS
@@ -130,6 +134,7 @@ folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
     "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
     "ChatGPT APPS Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'APPS', 'Iterative'),
+    "ChatGPT APPS Combined": os.path.join(upper_dir,result_setting, 'ChatGPT', 'APPS', 'Combined'),
 }
 folder_paths_gemini_APPS = {
     "Gemini APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot"),
@@ -139,6 +144,7 @@ folder_paths_gemini_APPS = {
     "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
     "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
     "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
+    "Gemini APPS Combined": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Combined"),
 }
 folder_paths_gemma_APPS = {
     "Gemma3 APPS Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot"),
@@ -148,6 +154,7 @@ folder_paths_gemma_APPS = {
     "Gemma3 APPS Meta": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Meta"),
     "Gemma3 APPS Naive": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Naive"),
     "Gemma3 APPS Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Iterative"),
+    "Gemma3 APPS Combined": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Combined"),
 }
 
 # Analyze folders and count comment density
@@ -156,20 +163,24 @@ folder_paths_gemma_APPS = {
 
 results_gemini={}  
 results_chatgpt ={} 
+results_gemma ={} 
 
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_classEval))
 results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_classEval))
-results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemma_classEval))
+results_gemma.update(analyze_folders_and_count_comment_density(folder_paths_gemma_classEval))
 
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_APPS))
 results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_APPS))
-results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemma_APPS))
+results_gemma.update(analyze_folders_and_count_comment_density(folder_paths_gemma_APPS))
 
 print("\nComment Density per Folder:")
 for folder, (avg_density, std_dev_density) in results_gemini.items():
     print(f"  {folder}: Average Density = {avg_density:.4f}")
 
 for folder, (avg_density, std_dev_density) in results_chatgpt.items():
+    print(f"  {folder}: Average Density = {avg_density:.4f}")
+
+for folder, (avg_density, std_dev_density) in results_gemma.items():
     print(f"  {folder}: Average Density = {avg_density:.4f}")
 
 # Split density calculation by technique for Gemini
@@ -181,6 +192,7 @@ gemini_densities = {
     "Meta": [],
     "Naive": [],
     "Iterative" :[],
+    "Combined" :[],
 }
 
 # Split density calculation by technique for ChatGPT
@@ -192,6 +204,19 @@ chatgpt_densities = {
     "Meta": [],
     "Naive": [],
     "Iterative":[], 
+    "Combined" :[],
+}
+
+# Split density calculation by technique for ChatGPT
+gemma_densities = {
+    "Zero-shot": [],
+    "Zero-shot-CoT": [],
+    "Expert-role": [],
+    "Student-role": [],
+    "Meta": [],
+    "Naive": [],
+    "Iterative":[], 
+    "Combined" :[],
 }
 
 for folder, (avg_density, _) in results_gemini.items(): #ignore standard deviation from folder output
@@ -209,6 +234,8 @@ for folder, (avg_density, _) in results_gemini.items(): #ignore standard deviati
         gemini_densities["Naive"].append(avg_density)
     elif "Iterative" in folder:
         gemini_densities["Iterative"].append(avg_density)
+    elif "Combined" in folder:
+        gemini_densities["Combined"].append(avg_density)
 
 
 for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviation from folder output
@@ -226,6 +253,26 @@ for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviat
         chatgpt_densities["Naive"].append(avg_density)
     elif "Iterative" in folder:
         chatgpt_densities["Iterative"].append(avg_density)
+    elif "Combined" in folder:
+        gemini_densities["Combined"].append(avg_density)
+
+for folder, (avg_density, _) in results_gemma.items(): #ignore standard deviation from folder output
+    if "Zero-shot" in folder and "CoT" not in folder:
+        chatgpt_densities["Zero-shot"].append(avg_density)
+    elif "Zero-shot-CoT" in folder:
+        chatgpt_densities["Zero-shot-CoT"].append(avg_density)
+    elif "Expert-role" in folder:
+        chatgpt_densities["Expert-role"].append(avg_density)
+    elif "Student-role" in folder:
+        chatgpt_densities["Student-role"].append(avg_density)
+    elif "Meta" in folder:
+        chatgpt_densities["Meta"].append(avg_density)
+    elif "Naive" in folder:
+        chatgpt_densities["Naive"].append(avg_density)
+    elif "Iterative" in folder:
+        chatgpt_densities["Iterative"].append(avg_density)
+    elif "Combined" in folder:
+        chatgpt_densities["Combined"].append(avg_density)
 
 print("\nGemini Comment Density Averages:")
 for technique, densities in gemini_densities.items():
@@ -238,6 +285,15 @@ for technique, densities in gemini_densities.items():
 
 print("\nChatGPT Comment Density Averages:")
 for technique, densities in chatgpt_densities.items():
+    if densities:
+        avg_density = statistics.mean(densities)
+        std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
+        print(f"  {technique}: Average Density = {avg_density:.4f}")
+    else:
+        print(f"  {technique}: No data available.")
+
+print("\nChatGPT Comment Density Averages:")
+for technique, densities in gemma_densities.items():
     if densities:
         avg_density = statistics.mean(densities)
         std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0

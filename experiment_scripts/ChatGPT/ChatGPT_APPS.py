@@ -106,7 +106,7 @@ if __name__ == "__main__":
     start_index = 0
     end_index = 100  # Adjust to the number of tasks you want to run.
     max_workers = 10 # Adjust the number of parallel threads
-    run_iterative = True if prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" else False
+    run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 

@@ -21,13 +21,8 @@ class AccessGatewayFilter:
         if 'headers' in request and 'Authorization' in request['headers']:
             user = self.get_jwt_user(request)
             if user:
-                if user['user'].get('level', 0) >= 3:
-                    self.set_current_user_info_and_log(user['user'])
-                    return True
-                else:
-                    return False
-            else:
-                return False
+                self.set_current_user_info_and_log(user['user'])
+                return True
         return False
 
 
@@ -38,9 +33,7 @@ class AccessGatewayFilter:
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
         """
-        if request_uri.startswith('/api') or request_uri.startswith('/login'):
-            return True
-        return False
+        return request_uri.startswith('/api') or request_uri.startswith('/login')
 
 
     def get_jwt_user(self, request):
@@ -56,12 +49,7 @@ class AccessGatewayFilter:
                 user = auth_header['user']
                 if jwt == user['name'] + str(datetime.date.today()):
                     return {'user': user}
-                else:
-                    return None
-            else:
-                return None
-        else:
-            return None
+        return None
 
     def set_current_user_info_and_log(self, user):
         """

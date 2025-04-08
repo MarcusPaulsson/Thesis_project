@@ -63,8 +63,8 @@ class AssessmentSystem:
         ['student 1']
         """
         fail_students = []
-        for name, student_data in self.students.items():
-            for score in student_data['courses'].values():
+        for name, student_info in self.students.items():
+            for course, score in student_info['courses'].items():
                 if score < 60:
                     fail_students.append(name)
                     break
@@ -77,9 +77,9 @@ class AssessmentSystem:
         :return: float, average scores of this course if anyone have score of this course, or None if nobody have records.
         """
         scores = []
-        for name, student_data in self.students.items():
-            if course in student_data['courses']:
-                scores.append(student_data['courses'][course])
+        for name, student_info in self.students.items():
+            if course in student_info['courses']:
+                scores.append(student_info['courses'][course])
         if scores:
             return sum(scores) / len(scores)
         else:

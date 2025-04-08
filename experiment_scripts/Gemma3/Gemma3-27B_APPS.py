@@ -13,6 +13,7 @@ sys.path.append(main_dir)
 sys.path.append(upper_dir)
 
 import config
+import time
 from extract_code_python import extract_and_save_python_code, save_results_to_json
 import prompt_technique_templates as prompt
 
@@ -23,7 +24,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
     client = genai.Client(api_key=config.GEMINI_API_KEY)
     model = "gemma-3-27b-it"
     user_prompt = system_prompt + " Use python to code. Give only the code.\n" + task_prompt
-
+    time.sleep(2)
     contents = [
         types.Content(
             role="user",
@@ -135,9 +136,9 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 5 # Adjust to the number of tasks you want to run in parallel
-    max_workers = 5  # Adjust the number of parallel calls you want to make
-    run_iterative = True if prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" else False
+    end_index = 10 # Adjust to the number of tasks you want to run in parallel
+    max_workers = 1  # Adjust the number of parallel calls you want to make
+    run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 

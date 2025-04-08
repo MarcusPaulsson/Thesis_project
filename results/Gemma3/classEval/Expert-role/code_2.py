@@ -108,6 +108,6 @@ class ArgumentParser:
             elif value.lower() == "false":
                 return False
             else:
-                return value
+                return bool(value)
         else:
             return value

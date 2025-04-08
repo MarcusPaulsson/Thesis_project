@@ -68,6 +68,10 @@ class AccessGatewayFilter:
                 user = auth_header['user']
                 if jwt == user['name'] + str(datetime.date.today()):
                     return {'user': user}
+                else:
+                    return None
+            else:
+                return None
         return None
 
     def set_current_user_info_and_log(self, user):

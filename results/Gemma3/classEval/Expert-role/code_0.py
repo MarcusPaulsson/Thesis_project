@@ -84,4 +84,4 @@ class AccessGatewayFilter:
         >>> filter.set_current_user_info_and_log(user)
 
         """
-        logging.info(f"User {user.get('name', 'unknown')} accessed the gateway.")
+        logging.info(f"User {user.get('name', 'unknown')} accessed the resource.")

@@ -5,6 +5,8 @@ from google.genai import types
 import json
 import sys
 import re
+import time
+import concurrent.futures
 
 # Adjust paths as needed
 main_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -16,16 +18,13 @@ import config
 from extract_code_python import extract_and_save_python_code, save_results_to_json
 import prompt_technique_templates as prompt
 
-def run_task_with_gemini(task_prompt):
+def run_task_with_gemini_iter(task_prompt, system_prompt):
     """
-    Run a single task by passing the task prompt as the user's message
-    to the Gemini API.
+    Runs a single iteration of a task using the Gemini API.
     """
     client = genai.Client(api_key=config.GEMINI_API_KEY)
-
     model = "gemini-2.0-flash"  # or "gemini-pro", "gemini-2.0-pro"
-    system_prompt = prompt.SYSTEM_PROMPT  # or some other system prompt.
-    user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PROMPT
+    user_prompt = system_prompt + " Use python to code. Give only the code.\n\n" + task_prompt
 
     contents = [
         types.Content(
@@ -34,10 +33,10 @@ def run_task_with_gemini(task_prompt):
         ),
     ]
     generate_content_config = types.GenerateContentConfig(
-        temperature=0.7,  # Adjust as needed
+        temperature=0.7,
         top_p=1,
         top_k=40,
-        max_output_tokens=2500,  # Adjust as needed
+        max_output_tokens=2500,
         response_mime_type="text/plain",
     )
 
@@ -47,8 +46,19 @@ def run_task_with_gemini(task_prompt):
         config=generate_content_config,
     )
 
-    # Extract and return the assistant's reply
     return response.text
+
+def process_task_with_iterations(task_prompt):
+    """Runs a single task through multiple iterations."""
+    print(f"Processing task with iterations...")
+    result_iter1 = run_task_with_gemini_iter(task_prompt, prompt.SYSTEM_PROMPT[0])
+    if not result_iter1:
+        return {"assistant_response": None, "error": "Iteration 1 failed"}
+    assistant_response_iter1 = result_iter1
+    result_iter2 = run_task_with_gemini_iter(assistant_response_iter1 + "\n" + task_prompt, prompt.SYSTEM_PROMPT[1])
+    if not result_iter2:
+        return {"assistant_response": None, "error": "Iteration 2 failed"}
+    return {"assistant_response": result_iter2, "error": None}
 
 def extract_apps_tasks(json_file_path):
     """
@@ -59,7 +69,6 @@ def extract_apps_tasks(json_file_path):
         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
             for line in jsonfile:
                 line = line.strip()
-
                 try:
                     data = json.loads(line)
                     if "question" in data:
@@ -71,6 +80,36 @@ def extract_apps_tasks(json_file_path):
         print(f"Error: JSON file '{json_file_path}' not found.")
         return None
 
+def process_tasks_parallel(tasks, start_index, end_index, max_workers=5, iterative=False):
+    """Processes tasks in parallel using ThreadPoolExecutor, with optional iteration."""
+    results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {}
+        for i in range(start_index, min(end_index, len(tasks))):
+            task_prompt = tasks[i]
+            if iterative:
+                future = executor.submit(process_task_with_iterations, task_prompt)
+            else:
+                future = executor.submit(run_task_with_gemini_iter, task_prompt, prompt.SYSTEM_PROMPT[0]) # Run only first prompt if not iterative
+            futures[future] = i
+
+        for future in concurrent.futures.as_completed(futures):
+            index = futures[future]
+            api_result = future.result()
+            if iterative:
+                if api_result and api_result.get("assistant_response"):
+                    results.append({"task_index": index, "assistant_response": api_result["assistant_response"]})
+                elif api_result and api_result.get("error"):
+                    print(f"Task {index} failed: {api_result['error']}")
+                else:
+                    print(f"Task {index} encountered an unexpected issue during iterations.")
+            else:
+                if api_result:
+                    results.append({"task_index": index, "assistant_response": api_result})
+                else:
+                    print(f"Task {index} failed during the first iteration.")
+    return results
+
 if __name__ == "__main__":
     # Load tasks from the APPS JSON file
     apps_file_path = os.path.join(main_dir, "data", "apps.json")  # Adjust filename and path
@@ -80,16 +119,12 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 86
-    end_index = 88  # Adjust to the number of tasks you want to run.
+    start_index = 0
+    end_index = 10  # Adjust to the number of tasks you want to run.
+    max_workers = 1 # Adjust the number of parallel threads
+    run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
-    results = []
-    for i in range(start_index, end_index):
-        task_prompt = tasks[i]
-        task_prompt + " Use python for coding."
-        print(f"Processing task {i}...")
-        assistant_response = run_task_with_gemini(task_prompt)
-        results.append({"task_index": i, "assistant_response": assistant_response})
+    results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 
     # Save results to JSON and extract Python code
     results_dir = os.path.join(main_dir, "results", "Gemini", "APPS", prompt.PROMPT_TECHNIQUE_SETTING)  # Adjust directory as needed.

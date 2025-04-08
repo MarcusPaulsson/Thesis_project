@@ -44,17 +44,17 @@ PROMPT_TECHNIQUE_SETTING = "Expert-role"
 SYSTEM_PROMPT="You are an expert software developer, skilled in producing clean and well-structured code."
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
+
 '''
 
-
 # Role prompting (Student)
-''''''
+'''
 PROMPT_TECHNIQUE_SETTING = "Student-role" 
 
 SYSTEM_PROMPT="You are a university student studying computer science, with basic knowledge in software enginnering."
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
-
+'''
 
 # Meta prompting
 '''
@@ -86,3 +86,19 @@ SYSTEM_PROMPT="","Read the task description again and refine the provided code t
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
 '''
+
+# Combined Heuristic
+''''''
+PROMPT_TECHNIQUE_SETTING = "Combined" 
+
+SYSTEM_PROMPT="""You are an expert software developer, skilled in producing clean and well-structured code. Generate code that is clean, easy to read with low complexity, and uphold high software quality standards.
+For the following coding task, solve it in the following steps:
+1. Define which variables needed.
+2. Find a suitable algorithm, structure and approach to solve the task.
+3. Refine the previous steps.
+4. Give a code solution that solves the task.
+""","Read the task description again and refine the provided code to be better and fix potential problems. Generate code that is clean, easy to read and with low complexity, and uphold high software quality standards."
+HEAD_PROMPT = ""
+TAIL_PROMPT="Give only the code, no test cases."
+
+
