@@ -10,32 +10,28 @@ def solve():
                 return False
         return True
 
-    chars = ['a', 'b', 'c']
+    def find_string(n, s, t):
+        import itertools
+        chars = ['a', 'b', 'c']
+        
+        possible_strings = []
 
-    import itertools
+        for p in itertools.permutations(['a'] * n + ['b'] * n + ['c'] * n):
+            res = "".join(p)
+            if check(res, s, t):
+                possible_strings.append(res)
 
-    for perm in itertools.permutations(chars):
-        res = ""
-        res += perm[0] * n
-        res += perm[1] * n
-        res += perm[2] * n
+        if possible_strings:
+            return possible_strings[0]
+        else:
+            return None
 
-        if check(res, s, t):
-            print("YES")
-            print(res)
-            return
-    
-    for perm in itertools.permutations(chars):
-        res = ""
-        res += perm[2] * n
-        res += perm[1] * n
-        res += perm[0] * n
+    result = find_string(n, s, t)
 
-        if check(res, s, t):
-            print("YES")
-            print(res)
-            return
-
-    print("NO")
+    if result:
+        print("YES")
+        print(result)
+    else:
+        print("NO")
 
 solve()

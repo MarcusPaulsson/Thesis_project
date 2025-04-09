@@ -1,25 +1,23 @@
 def solve():
-    x = int(input())
-    hh, mm = map(int, input().split())
+  x = int(input())
+  hh, mm = map(int, input().split())
 
-    def is_lucky(h, m):
-        return '7' in str(h) or '7' in str(m)
+  def is_lucky(h, m):
+    return '7' in str(h) or '7' in str(m)
 
-    def to_minutes(h, m):
-        return h * 60 + m
+  count = 0
+  curr_hh = hh
+  curr_mm = mm
 
-    def to_time(minutes):
-        h = (minutes // 60) % 24
-        m = minutes % 60
-        return h, m
+  while not is_lucky(curr_hh, curr_mm):
+    curr_mm -= x
+    if curr_mm < 0:
+      curr_hh -= 1
+      curr_mm += 60
+      if curr_hh < 0:
+        curr_hh += 24
+    count += 1
 
-    target_minutes = to_minutes(hh, mm)
-    
-    for presses in range(1000):
-        alarm_minutes = (target_minutes - presses * x) % (24 * 60)
-        alarm_h, alarm_m = to_time(alarm_minutes)
-        if is_lucky(alarm_h, alarm_m):
-            print(presses)
-            return
+  print(count)
 
 solve()

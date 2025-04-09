@@ -1,21 +1,16 @@
 def calculate_days_off(n):
-    # Each week consists of 5 work days and 2 days off
-    days_in_week = 7
-    work_days = 5
-    off_days = 2
+    # Maximum days off are limited by the number of weekends that can fit in n days
+    full_weeks = n // 7
+    max_days_off = full_weeks * 2 + min(2, n % 7)
     
-    # Calculate total complete weeks in n days
-    complete_weeks = n // days_in_week
-    remaining_days = n % days_in_week
+    # Minimum days off occur when we utilize the work days as much as possible
+    if n < 5:
+        min_days_off = n % 7 if n % 7 <= 2 else 0
+    else:
+        min_days_off = max_days_off
     
-    # Maximum days off is determined by complete weeks and any remaining days
-    max_days_off = complete_weeks * off_days + min(remaining_days, off_days)
-    
-    # Minimum days off occurs when we consider how the year starts
-    min_days_off = 0 if n <= work_days else 0 if remaining_days <= work_days else off_days
+    return min_days_off, max_days_off
 
-    print(min_days_off, max_days_off)
-
-# Read input
-n = int(input().strip())
-calculate_days_off(n)
+n = int(input())
+min_off, max_off = calculate_days_off(n)
+print(min_off, max_off)

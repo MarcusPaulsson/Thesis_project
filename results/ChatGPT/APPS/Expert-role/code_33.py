@@ -1,42 +1,32 @@
-def count_common_terms(a1, b1, a2, b2, L, R):
-    from math import gcd
+def count_common_integers(a1, b1, a2, b2, L, R):
+    def adjust(start, step):
+        if start < L:
+            # Find the first valid integer >= L
+            start += ((L - start + step - 1) // step) * step
+        elif start > R:
+            return None
+        return start
 
-    # Normalize the sequences
-    a1, b1 = a1, b1 % a1
-    a2, b2 = a2, b2 % a2
+    # Calculate the first valid x values for both sequences
+    start1 = adjust(b1, a1)
+    start2 = adjust(b2, a2)
 
-    # Calculate the GCD of the differences
-    g = gcd(a1, a2)
-
-    # Check if the two sequences can produce common terms
-    if (b2 - b1) % g != 0:
+    if start1 is None or start2 is None:
         return 0
 
-    # Find the first term in the intersection of the two sequences
-    x0 = (b2 - b1) // g * (a1 // g) % (a2 // g) * a1 + b1
-    
-    # Generate the first term in the sequence
-    if x0 < L:
-        x0 += ((L - x0 + a1 * a2 // g - 1) // (a1 * a2 // g)) * (a1 * a2 // g)
-    elif x0 > R:
-        return 0
+    # Ensure we start from the maximum of both starts
+    start = max(start1, start2)
 
-    # Calculate the step size
-    step = a1 * a2 // g
+    # Count the number of valid integers in the range [L, R]
+    count = 0
+    while start <= R:
+        if (start - b1) % a1 == 0 and (start - b2) % a2 == 0:
+            count += 1
+        start += max(a1, a2)
 
-    # Calculate the last term within the range
-    if x0 > R:
-        return 0
-
-    last = R // step * step + (b1 if last % step == b1 else 0)
-
-    # Count the terms
-    if x0 > last:
-        return 0
-
-    return (last - x0) // step + 1
+    return count
 
 # Input reading
 a1, b1, a2, b2, L, R = map(int, input().split())
-result = count_common_terms(a1, b1, a2, b2, L, R)
+result = count_common_integers(a1, b1, a2, b2, L, R)
 print(result)

@@ -1,25 +1,31 @@
 n, pos, l, r = map(int, input().split())
 
-# If all tabs within the desired segment are already open
-if l == 1 and r == n:
-    print(0)
+# If all tabs are already in the range, no action is needed
+if l <= pos <= r:
+    # Close left and right if needed
+    left_closes = pos - l
+    right_closes = r - pos
+    total_time = max(0, left_closes) + max(0, right_closes)
+    print(total_time)
 else:
-    seconds = 0
+    # Calculate the number of seconds to close tabs
+    time = 0
 
-    # Close tabs to the left of l
+    # If we need to close tabs on the left
     if pos < l:
-        seconds += (l - pos)  # Move to l
-        seconds += 1  # Close left
-    elif pos >= l and pos <= r:
-        # If the cursor is within the range, close left and right as needed
-        if l > 1:
-            seconds += (pos - l) + 1  # Move to l and close left
-        if r < n:
-            seconds += (r - pos) + 1  # Move to r and close right
-    else:  # pos > r
-        # Move to r and close left
-        seconds += (pos - r) + 1  # Move to r
-        if l > 1:
-            seconds += (r - l + 1)  # Close left
+        time += (l - pos)  # Move to l
+        time += 1  # Close left tabs
 
-    print(seconds)
+    # If we need to close tabs on the right
+    elif pos > r:
+        time += (pos - r)  # Move to r
+        time += 1  # Close right tabs
+
+    # If we need to close both sides
+    if l > 1:  # If there's something to close on the left
+        time += (l - 1) + 1  # Move to l and close left
+
+    if r < n:  # If there's something to close on the right
+        time += (n - r) + 1  # Move to r and close right
+
+    print(time)

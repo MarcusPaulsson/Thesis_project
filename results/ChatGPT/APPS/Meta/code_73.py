@@ -1,10 +1,17 @@
-def can_complete_wall(n, heights):
-    max_height = max(heights)
-    for h in heights:
-        if h < max_height and (h + 1) not in heights:
-            return "NO"
-    return "YES"
-
 n = int(input())
-heights = list(map(int, input().split()))
-print(can_complete_wall(n, heights))
+a = list(map(int, input().split()))
+
+max_height = max(a)
+target_height = min(a)
+
+can_complete = True
+
+for height in a:
+    if height < target_height or height > max_height:
+        can_complete = False
+        break
+
+if can_complete:
+    print("YES")
+else:
+    print("NO")

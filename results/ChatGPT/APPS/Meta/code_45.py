@@ -1,31 +1,36 @@
 def find_sequence(n, k):
-    # Check if it is possible to have a strictly increasing sequence of k elements that sum to n
-    min_sum = k * (k + 1) // 2  # 1 + 2 + ... + k
+    # The minimum sum of the first k positive integers is k * (k + 1) // 2
+    min_sum = k * (k + 1) // 2
+    
+    # If n is less than the minimum sum, it's impossible to form such a sequence
     if n < min_sum:
         return -1
-
-    # The maximum GCD we can use is n // k, because we need each number to be at least that much
+    
+    # The maximum GCD we can use is n // k
+    # We will try to use the largest GCD possible that allows us to form the sequence
     max_gcd = n // k
-
-    # We can start from max_gcd and build the sequence
+    
+    # Start with the first k numbers multiplied by the GCD
     sequence = [(i + 1) * max_gcd for i in range(k)]
-
-    # Check if the sum exceeds n
+    
+    # Calculate the current sum of this sequence
     current_sum = sum(sequence)
-    if current_sum > n:
-        return -1
-
-    # Adjust the last element to make the sum equal to n
-    sequence[-1] += n - current_sum
-
+    
+    # If the current sum is less than n, we need to adjust the last element
+    if current_sum < n:
+        # Increase the last element to make the sum equal to n
+        sequence[-1] += (n - current_sum)
+    
     return sequence
 
 # Read input
 n, k = map(int, input().split())
+
+# Get the result
 result = find_sequence(n, k)
 
-# Print result
+# Print the result
 if result == -1:
     print(-1)
 else:
-    print(" ".join(map(str, result)))
+    print(' '.join(map(str, result)))

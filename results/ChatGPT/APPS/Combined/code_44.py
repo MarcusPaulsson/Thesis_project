@@ -1,22 +1,28 @@
-def minimal_time_to_post_office(distance, segment_length, drive_time, walk_time, repair_time):
-    # Calculate the number of full segments and the remaining distance
-    full_segments = distance // segment_length
-    remaining_distance = distance % segment_length
-
-    # Calculate the time spent driving full segments with repairs
-    total_drive_time = full_segments * (segment_length * drive_time + repair_time)
+def minimal_time_to_post_office(d, k, a, b, t):
+    # Calculate total time if walking the entire distance
+    walking_time = d * b
     
-    if full_segments > 0:
-        total_drive_time -= repair_time  # Remove the last repair time as it's not needed after the last segment
+    # If driving is quicker than walking, calculate the mixed strategy
+    if a * k + t < b:
+        # Full segments of k that can be driven
+        full_segments = d // k
+        remaining_distance = d % k
+        
+        # Calculate driving time for full segments
+        driving_time = full_segments * (k * a + t)
+        
+        # If there are full segments, subtract the last repair time
+        if full_segments > 0:
+            driving_time -= t
+            
+        # Add time for the remaining distance driven
+        driving_time += remaining_distance * a
+        
+        # Return the minimum of walking time and driving time
+        return min(driving_time, walking_time)
 
-    # Add time for the remaining distance
-    total_drive_time += remaining_distance * drive_time
-
-    # Calculate the time if Vasiliy walks the entire distance
-    total_walk_time = distance * walk_time
-
-    # Return the minimum time between driving and walking
-    return min(total_drive_time, total_walk_time)
+    # If driving is not quicker, just walk
+    return walking_time
 
 # Input reading
 d, k, a, b, t = map(int, input().split())

@@ -1,28 +1,32 @@
 def construct_binary_string(a, b, x):
-    # Start with the base pattern depending on x
-    if x % 2 == 1:
-        s = '01' * (x // 2) + '0' * (a - (x // 2)) + '1' * (b - (x // 2))
-    else:
-        s = '10' * (x // 2) + '0' * (a - (x // 2)) + '1' * (b - (x // 2))
+    # Initialize the result list
+    result = []
     
-    # Adjust the string to meet the exact counts of a and b
+    # Determine the starting character based on the counts of a and b
     if a > b:
-        s = s.replace('0', '', a - (x // 2))
+        current_char = '0'
     else:
-        s = s.replace('1', '', b - (x // 2))
+        current_char = '1'
     
-    # Fill remaining characters
-    while len(s) < a + b:
-        if a > 0:
-            s += '0'
-            a -= 1
-        if b > 0:
-            s += '1'
-            b -= 1
+    # Create the alternating pattern
+    for _ in range(x // 2):
+        result.append(current_char)
+        if current_char == '0':
+            current_char = '1'
+        else:
+            current_char = '0'
     
-    return s
+    # Add the remaining characters of the same type
+    if current_char == '0':
+        result.append('0' * (a - (x + 1) // 2))
+        result.append('1' * (b - x // 2))
+    else:
+        result.append('1' * (b - (x + 1) // 2))
+        result.append('0' * (a - x // 2))
+    
+    # Join the result and print it
+    print(''.join(result))
 
-# Read input
+# Read input values
 a, b, x = map(int, input().split())
-result = construct_binary_string(a, b, x)
-print(result)
+construct_binary_string(a, b, x)

@@ -1,33 +1,32 @@
-def has_palindrome_subsequence(test_cases):
+def has_palindrome_subsequence(t, test_cases):
     results = []
-    for a in test_cases:
-        n = len(a)
+    for case in test_cases:
+        n, a = case
         found = False
-        # Using a set to track the indices of each number
-        indices = {}
+        index_map = {}
+        
         for i in range(n):
-            if a[i] in indices:
-                # If we have seen this number before, we can form a palindrome
-                # Check the distance from the last occurrence
-                if i - indices[a[i]] > 1:
+            if a[i] in index_map:
+                # Check if the same number has appeared before
+                if (i - index_map[a[i]]) > 1:
                     found = True
                     break
-            # Update the last occurrence index
-            indices[a[i]] = i
+            index_map[a[i]] = i
+        
         results.append("YES" if found else "NO")
+    
     return results
 
-# Input reading
+# Read input
 t = int(input())
 test_cases = []
+
 for _ in range(t):
     n = int(input())
     a = list(map(int, input().split()))
-    test_cases.append(a)
+    test_cases.append((n, a))
 
-# Get results
-results = has_palindrome_subsequence(test_cases)
-
-# Output results
+# Process and print results
+results = has_palindrome_subsequence(t, test_cases)
 for result in results:
     print(result)

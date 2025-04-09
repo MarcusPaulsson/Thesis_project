@@ -1,33 +1,39 @@
-def get_coordinates(n):
+def hex_spiral_coordinates(n):
     if n == 0:
         return (0, 0)
 
+    # Determine the layer of the spiral
     layer = 0
-    moves_in_layer = 0
-
-    # Determine which layer the move n is in
-    while moves_in_layer <= n:
+    while n > 6 * layer * (layer + 1) // 2:
         layer += 1
-        moves_in_layer = 3 * layer * (layer + 1)  # Total moves in layer
 
-    layer -= 1
-    moves_in_layer = 3 * layer * (layer + 1)  # Moves in the last complete layer
-    position_in_layer = n - moves_in_layer  # Position in the current layer
+    # Calculate the position in the current layer
+    position_in_layer = n - 6 * (layer - 1) * layer // 2
+    side_length = layer
 
-    # Calculate the coordinates based on the layer and position
-    x, y = layer, 0  # Starting position for the layer
-
-    if position_in_layer < layer:
-        x -= position_in_layer
-    elif position_in_layer < 2 * layer:
-        x -= layer
-        y += position_in_layer - layer
+    # Calculate hexagon coordinates based on the layer and position
+    x, y = 0, 0
+    if position_in_layer <= side_length:
+        x = side_length
+        y = position_in_layer - side_length
+    elif position_in_layer <= 2 * side_length:
+        x = side_length - (position_in_layer - side_length)
+        y = side_length
+    elif position_in_layer <= 3 * side_length:
+        x = -side_length
+        y = side_length - (position_in_layer - 2 * side_length)
+    elif position_in_layer <= 4 * side_length:
+        x = -side_length + (position_in_layer - 3 * side_length)
+        y = -side_length
+    elif position_in_layer <= 5 * side_length:
+        x = side_length
+        y = -side_length + (position_in_layer - 4 * side_length)
     else:
-        x += position_in_layer - 2 * layer
-        y += layer
+        x = side_length - (position_in_layer - 5 * side_length)
+        y = side_length
 
     return (x, y)
 
-n = int(input().strip())
-x, y = get_coordinates(n)
+n = int(input())
+x, y = hex_spiral_coordinates(n)
 print(x, y)

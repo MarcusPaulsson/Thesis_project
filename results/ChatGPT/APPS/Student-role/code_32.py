@@ -1,31 +1,32 @@
-def is_valid_journey(n, journey):
-    position = 0  # Position starts at the North Pole (0 km from North Pole)
-    
-    for t, direction in journey:
-        if position == 0 and direction != "South":
-            return "NO"  # Limak can only move South from the North Pole
-        if position == 20000 and direction != "North":
-            return "NO"  # Limak can only move North from the South Pole
-        
-        if direction == "South":
-            position += t
-        elif direction == "North":
-            position -= t
-        elif direction == "West" or direction == "East":
-            pass  # These directions don't change the position
-        
-        if position < 0 or position > 20000:
-            return "NO"  # Invalid position
-    
-    if position != 0:
-        return "NO"  # Must end at the North Pole
-    
-    return "YES"
-
-# Input reading
 n = int(input())
-journey = [tuple(input().split()) for _ in range(n)]
-journey = [(int(t), direction) for t, direction in journey]
+current_distance = 0  # Distance from the North Pole in kilometers
 
-# Output the result
-print(is_valid_journey(n, journey))
+valid = True
+
+for _ in range(n):
+    t_i, dir_i = input().split()
+    t_i = int(t_i)
+    
+    if current_distance == 0 and dir_i != "South":
+        valid = False
+        break
+    if current_distance == 20000 and dir_i != "North":
+        valid = False
+        break
+    
+    if dir_i == "South":
+        current_distance += t_i
+    elif dir_i == "North":
+        current_distance -= t_i
+    elif dir_i == "West" or dir_i == "East":
+        # Moving West or East does not affect the distance from the poles
+        pass
+    
+    if current_distance < 0 or current_distance > 20000:
+        valid = False
+        break
+
+if valid and current_distance == 0:
+    print("YES")
+else:
+    print("NO")

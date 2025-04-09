@@ -1,16 +1,24 @@
-d, k, a, b, t = map(int, input().split())
-
-if d <= k:
-    print(d * a)
-else:
-    ans = k * a
-    d -= k
-    if a * k + t >= b * k:
-        ans += d * b
+def solve():
+    d, k, a, b, t = map(int, input().split())
+    
+    if d <= k:
+        print(d * a)
     else:
-        num_breaks = d // k
-        ans += num_breaks * (a * k + t)
-        d %= k
-        if d > 0:
-            ans += min(d * a + t, d * b)
-    print(ans)
+        cost1 = k * a + (d - k) * b
+        
+        num_breaks = (d - 1) // k
+        
+        cost2 = num_breaks * (k * a + t) + (d - num_breaks * k) * a
+        
+        cost3 = (d // k) * (k * a + t) + (d % k) * b
+
+        cost4 = k*a + t + (d-k)*b
+        
+        if t + k*a > k*b:
+            print(k*a + (d-k)*b)
+
+        else:
+             print(min(cost1, cost2))
+    
+
+solve()

@@ -3,22 +3,23 @@ def solve():
     s = input()
     
     count = 0
-    distinct_cyclical_strings = set()
+    distinct_strings = set()
     
     for i in range(2**n):
         binary_string = bin(i)[2:].zfill(n)
         
         is_substring = False
         for j in range(n):
-            rotated_string = binary_string[j:] + binary_string[:j]
-            if s in rotated_string:
+            shifted_string = binary_string[j:] + binary_string[:j]
+            if s in shifted_string:
                 is_substring = True
                 break
         
-        if is_substring and binary_string not in distinct_cyclical_strings:
-            count += 1
-            distinct_cyclical_strings.add(binary_string)
-            
+        if is_substring:
+            if binary_string not in distinct_strings:
+                count += 1
+                distinct_strings.add(binary_string)
+    
     print(count)
 
 solve()

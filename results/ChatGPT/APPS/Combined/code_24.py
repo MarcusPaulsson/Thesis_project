@@ -1,40 +1,33 @@
 def can_alice_win(board):
-    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # right, down, diagonal right-down, diagonal left-down
-    n = 10  # board size
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # right, down, diagonal down-right, diagonal down-left
+    n = 10
 
-    def check_win(x, y):
-        for dx, dy in directions:
-            count = 1  # Start counting from the current position
-            # Check in the positive direction
-            count += count_streak(x, y, dx, dy)
-            # Check in the negative direction
-            count += count_streak(x, y, -dx, -dy)
-            
-            if count >= 5:
-                return True
-        return False
-
-    def count_streak(x, y, dx, dy):
+    def count_consecutive_xs(x, y, dx, dy):
         count = 0
-        for step in range(1, 5):
-            nx, ny = x + step * dx, y + step * dy
-            if 0 <= nx < n and 0 <= ny < n and board[nx][ny] == 'X':
-                count += 1
-            else:
-                break
+        while 0 <= x < n and 0 <= y < n and board[x][y] == 'X':
+            count += 1
+            x += dx
+            y += dy
         return count
 
     for i in range(n):
         for j in range(n):
             if board[i][j] == '.':
-                board[i][j] = 'X'  # Place a cross temporarily
-                if check_win(i, j):
-                    return 'YES'
-                board[i][j] = '.'  # Reset the cell
+                board[i][j] = 'X'  # Temporarily place an 'X'
+                
+                for dx, dy in directions:
+                    # Count in both directions
+                    total_count = 1  # Starting with the placed 'X'
+                    total_count += count_consecutive_xs(i + dx, j + dy, dx, dy)  # Positive direction
+                    total_count += count_consecutive_xs(i - dx, j - dy, -dx, -dy)  # Negative direction
+                    
+                    if total_count >= 5:
+                        return "YES"
+                
+                board[i][j] = '.'  # Remove the temporary 'X'
 
-    return 'NO'
+    return "NO"
 
-
-# Read input
-board = [input().strip() for _ in range(10)]
+# Read the input
+board = [list(input().strip()) for _ in range(10)]
 print(can_alice_win(board))

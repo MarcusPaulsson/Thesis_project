@@ -1,70 +1,96 @@
 def solve():
     n, k = map(int, input().split())
     p = list(map(int, input().split()))
-    
+
     used = [False] * (n + 1)
     for x in p:
         used[x] = True
-    
+
     remaining = []
     for i in range(n, 0, -1):
         if not used[i]:
             remaining.append(i)
-    
-    p = p + remaining
-    
+
+    p_full = p[:]
+    for x in remaining:
+        p_full.append(x)
+
     def is_stack_sortable(arr):
         s = []
         b = []
-        i = 0
+        a = arr[:]
         
-        while i < len(arr) or len(s) > 0:
-            if len(arr) > i and (len(s) == 0 or arr[i] < s[-1]):
-                s.append(arr[i])
+        i = 0
+        while i < 2 * n:
+            if len(a) > 0 and (len(s) == 0 or a[0] < (s[-1])):
+                s.append(a[0])
+                a.pop(0)
                 i += 1
             elif len(s) > 0:
-                b.append(s.pop())
+                b.append(s[-1])
+                s.pop()
+                i += 1
             else:
-                return False
-        return all(b[i] <= b[i+1] for i in range(len(b)-1))
-    
-    import itertools
-    
-    
-    remaining_len = n - k
-    
-    possible_remaining = []
+                break
 
-    def find_lexicographically_largest_stack_sortable(current_p, remaining_nums):
-        if not remaining_nums:
-            if is_stack_sortable(current_p):
-                return current_p
-            else:
-                return None
+        if len(s) == 0 and len(a) == 0:
+            for i in range(len(b) - 1):
+                if b[i] > b[i+1]:
+                    return False
+            return True
+        else:
+            return False
+
+    if not is_stack_sortable(p_full):
+        print("-1")
+        return
+
+    
+    def generate_permutations(arr, k):
         
-        remaining_nums.sort(reverse=True)
+        used_nums = set(arr[:k])
+        nums_to_fill = []
+        for i in range(1, n + 1):
+            if i not in used_nums:
+                nums_to_fill.append(i)
+        nums_to_fill.sort(reverse=True)
+
         
-        for i in range(len(remaining_nums)):
-            next_num = remaining_nums[i]
-            next_remaining_nums = remaining_nums[:i] + remaining_nums[i+1:]
+        def backtrack(index, current_permutation):
+            if index == n:
+                return current_permutation[:]
             
-            result = find_lexicographically_largest_stack_sortable(current_p + [next_num], next_remaining_nums)
-            if result:
-                return result
-        
-        return None
+            if index < k:
+                return backtrack(index + 1, current_permutation)
+
+            
+            for num in nums_to_fill:
+                if num not in current_permutation:
+                    current_permutation.append(num)
+                    
+                    new_nums_to_fill = nums_to_fill[:]
+                    new_nums_to_fill.remove(num)
+                    
+                    temp_result = backtrack(index + 1, current_permutation)
+                    if temp_result:
+                        return temp_result
+                    
+                    current_permutation.pop()
+            return None
+
+        result = backtrack(0, arr[:k])
+        return result
+
     
-    remaining_nums = []
-    for i in range(1, n + 1):
-        if i not in p[:k]:
-            remaining_nums.append(i)
-    
-    
-    result = find_lexicographically_largest_stack_sortable(p[:k], remaining_nums)
-    
-    if result:
-        print(*result)
+    lexicographically_max_permutation = generate_permutations(p[:], k)
+
+    if lexicographically_max_permutation:
+        if is_stack_sortable(lexicographically_max_permutation):
+            print(*lexicographically_max_permutation)
+        else:
+            print("-1")
     else:
         print("-1")
+
 
 solve()

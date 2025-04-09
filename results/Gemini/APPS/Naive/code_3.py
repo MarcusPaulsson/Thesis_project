@@ -2,8 +2,7 @@ def solve():
     n, q = map(int, input().split())
     painters = []
     for _ in range(q):
-        l, r = map(int, input().split())
-        painters.append((l, r))
+        painters.append(tuple(map(int, input().split())))
 
     def calculate_painted_sections(selected_painters):
         painted = [False] * n

@@ -1,16 +1,18 @@
 def solve():
-  h1, m1 = map(int, input().split(':'))
-  h2, m2 = map(int, input().split(':'))
-
-  start_minutes = h1 * 60 + m1
-  end_minutes = h2 * 60 + m2
-
-  total_minutes = end_minutes - start_minutes
-  midpoint_minutes = start_minutes + total_minutes // 2
-
-  h3 = midpoint_minutes // 60
-  m3 = midpoint_minutes % 60
-
-  print("{:02d}:{:02d}".format(h3, m3))
+    start_time = input()
+    end_time = input()
+    
+    start_h, start_m = map(int, start_time.split(':'))
+    end_h, end_m = map(int, end_time.split(':'))
+    
+    start_minutes = start_h * 60 + start_m
+    end_minutes = end_h * 60 + end_m
+    
+    mid_minutes = (start_minutes + end_minutes) // 2
+    
+    mid_h = mid_minutes // 60
+    mid_m = mid_minutes % 60
+    
+    print(f"{mid_h:02}:{mid_m:02}")
 
 solve()

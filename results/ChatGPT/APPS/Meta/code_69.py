@@ -1,61 +1,61 @@
 def find_spanning_tree(n, m, D, edges):
     from collections import defaultdict, deque
 
-    # Build the adjacency list
     graph = defaultdict(list)
-    for u, v in edges:
-        graph[u].append(v)
+    for v, u in edges:
         graph[v].append(u)
+        graph[u].append(v)
 
-    # Check for degree constraints
-    if len(graph[1]) < D:
+    if D > len(graph[1]):
         return "NO"
 
-    # Use BFS or DFS to find a spanning tree
-    visited = [False] * (n + 1)
+    # Start constructing the spanning tree
     spanning_tree_edges = []
+    degree_count = {i: 0 for i in range(1, n + 1)}
+    visited = set()
+    
+    # BFS/DFS to construct spanning tree
+    def dfs(node):
+        visited.add(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited and degree_count[node] < D:
+                spanning_tree_edges.append((node, neighbor))
+                degree_count[node] += 1
+                degree_count[neighbor] += 1
+                dfs(neighbor)
 
-    # Start with vertex 1
-    visited[1] = True
-    queue = deque([1])
-    degree_count = 0
+    # Start DFS from vertex 1
+    dfs(1)
 
-    # First, let's add D edges from vertex 1
-    for neighbor in graph[1]:
-        if degree_count < D:
-            spanning_tree_edges.append((1, neighbor))
-            visited[neighbor] = True
-            degree_count += 1
-        else:
-            break
-
-    # Now we need to perform BFS/DFS to cover the rest of the graph
-    while queue:
-        current = queue.popleft()
-        for neighbor in graph[current]:
-            if not visited[neighbor]:
-                visited[neighbor] = True
-                spanning_tree_edges.append((current, neighbor))
-                queue.append(neighbor)
-                if len(spanning_tree_edges) == n - 1:
-                    break
-        if len(spanning_tree_edges) == n - 1:
-            break
-
-    if len(spanning_tree_edges) == n - 1:
-        return "YES", spanning_tree_edges
-    else:
+    # Check if we reached the required degree for vertex 1
+    if degree_count[1] != D:
         return "NO"
+
+    # Ensure we have n-1 edges in the spanning tree
+    # We can add remaining edges if needed
+    for v in range(1, n + 1):
+        for neighbor in graph[v]:
+            if degree_count[v] < (n - 1):
+                if degree_count[neighbor] < (n - 1) and (v, neighbor) not in spanning_tree_edges and (neighbor, v) not in spanning_tree_edges:
+                    spanning_tree_edges.append((v, neighbor))
+                    degree_count[v] += 1
+                    degree_count[neighbor] += 1
+                    if len(spanning_tree_edges) == n - 1:
+                        break
+
+    if len(spanning_tree_edges) != n - 1:
+        return "NO"
+
+    result = ["YES"]
+    for edge in spanning_tree_edges:
+        result.append(f"{edge[0]} {edge[1]}")
+    
+    return "\n".join(result)
 
 # Input reading
 n, m, D = map(int, input().split())
 edges = [tuple(map(int, input().split())) for _ in range(m)]
 
+# Output result
 result = find_spanning_tree(n, m, D, edges)
-
-if result == "NO":
-    print(result)
-else:
-    print(result[0])
-    for u, v in result[1]:
-        print(u, v)
+print(result)

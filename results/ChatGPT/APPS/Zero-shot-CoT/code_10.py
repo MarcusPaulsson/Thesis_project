@@ -1,9 +1,17 @@
 n = int(input())
 
-# Calculate maximum days off
-max_days_off = (n // 7) * 2 + min(2, n % 7)
+# Calculate the number of weeks and the remaining days
+weeks = n // 7
+remaining_days = n % 7
 
-# Calculate minimum days off
-min_days_off = 0 if n < 5 else (n // 7) * 2 + (1 if n % 7 >= 5 else 0)
+# Minimum days off
+min_days_off = weeks * 2
+if remaining_days > 5:
+    min_days_off += 2
+elif remaining_days > 0:
+    min_days_off += 0
+
+# Maximum days off
+max_days_off = weeks * 2 + min(remaining_days, 2)
 
 print(min_days_off, max_days_off)

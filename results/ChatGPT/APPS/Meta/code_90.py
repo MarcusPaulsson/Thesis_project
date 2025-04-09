@@ -1,33 +1,42 @@
-def can_reach(n, m, d, c):
-    # Initialize the result array with zeros
-    result = [0] * n
+def can_reach_river(n, m, d, lengths):
+    total_length = sum(lengths)
     
-    # Position to place the platforms
-    current_position = 1  # starts from 1 since 0 is the left bank
-
-    # Place each platform
-    for i in range(m):
-        platform_length = c[i]
+    # Check if the total length of platforms is greater than the width of the river
+    if total_length > n:
+        return "NO"
+    
+    # Initialize the river cells array
+    river_cells = [0] * n
+    current_position = 0
+    
+    # Place platforms in the river cells
+    for idx in range(m):
+        platform_length = lengths[idx]
+        # Check if we can place the platform
+        if current_position + platform_length > n:
+            return "NO"
         
-        # Place the platform at the current position
+        # Fill the river cells with platform index (1-indexed)
         for j in range(platform_length):
-            result[current_position - 1 + j] = i + 1  # 1-indexed platform
+            river_cells[current_position + j] = idx + 1  # 1-indexed platform
         current_position += platform_length
+        
+        # Add a gap to ensure we can jump to the next platform
+        if idx < m - 1:  # No need to add gap after the last platform
+            current_position += d
+    
+    return "YES", river_cells
 
-        # If we can place the next platform, we need to ensure there's space.
-        if i < m - 1:  # If there is another platform
-            current_position += 1  # Leave a gap for jumping
-
-    # Now we need to check if we can reach n + 1 from 0
-    # We can reach n + 1 if the last platform can be accessed
-    if current_position - 1 <= n:
-        print("YES")
-        print(" ".join(map(str, result)))
-    else:
-        print("NO")
-
-# Input reading
+# Read input
 n, m, d = map(int, input().split())
-c = list(map(int, input().split()))
+lengths = list(map(int, input().split()))
 
-can_reach(n, m, d, c)
+# Get the result
+result = can_reach_river(n, m, d, lengths)
+
+# Print the output
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    print(' '.join(map(str, result[1])))

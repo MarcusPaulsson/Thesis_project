@@ -1,40 +1,54 @@
-def count_bracket_sequences(n, s):
-    MOD = 10**9 + 7
-    m = len(s)
+MOD = 10**9 + 7
+
+def count_regular_sequences(n, s):
+    len_s = len(s)
     
-    # Precompute the Catalan numbers up to 2n
-    catalan = [0] * (n + 1)
-    catalan[0] = 1
-    for i in range(1, n + 1):
-        catalan[i] = (catalan[i - 1] * (2 * (2 * i - 1)) % MOD * pow(i + 1, MOD - 2, MOD)) % MOD
+    # Precompute the number of ways to form regular bracket sequences of length 2k
+    dp = [0] * (n + 1)
+    dp[0] = 1
     
-    # Check the validity of the substring s
-    balance = 0
-    min_balance = 0
-    for char in s:
-        if char == '(':
-            balance += 1
-        else:
-            balance -= 1
-        min_balance = min(min_balance, balance)
-
-    # If the balance is not valid or too negative, return 0
-    if balance < 0 or balance + n < 0 or min_balance < 0:
+    for k in range(1, n + 1):
+        for j in range(k):
+            dp[k] = (dp[k] + dp[j] * dp[k - 1 - j]) % MOD
+            
+    total_regular_sequences = dp[n]
+    
+    # Check how many open and close brackets are in s
+    open_s = s.count('(')
+    close_s = s.count(')')
+    
+    # If s has more close brackets than open brackets, it's impossible
+    if open_s < close_s or open_s > n or close_s > n:
         return 0
-
-    # Count the valid configurations around the substring s
-    left_needed = (n - (balance + 1)) // 2
-    right_needed = (n - (balance - 1)) // 2
-
-    if (n - (balance + 1)) % 2 != 0 or (n - (balance - 1)) % 2 != 0 or left_needed < 0 or right_needed < 0:
-        return 0
-
-    # Total valid sequences
-    return (catalan[left_needed] * catalan[right_needed]) % MOD
+    
+    # We need to find valid placements for s in the regular sequence
+    valid_count = 0
+    
+    for start in range(n - (len_s - 1) + 1):
+        open_before = start
+        close_before = (n - 1) - (len_s - 1 - open_s) - start
+        
+        # Check if it is valid to insert s here
+        if open_before < close_before:
+            continue
+        
+        # Total remaining open and close brackets
+        remaining_open = n - open_s
+        remaining_close = n - close_s
+        
+        # Valid placements count
+        if remaining_open >= remaining_close:
+            valid_count += dp[remaining_open]
+            valid_count %= MOD
+            
+    return valid_count
 
 # Input reading
-n = int(input().strip())
+n = int(input())
 s = input().strip()
 
-# Calculate and print the result
-print(count_bracket_sequences(n, s))
+# Calculate the result
+result = count_regular_sequences(n, s)
+
+# Output the result
+print(result)

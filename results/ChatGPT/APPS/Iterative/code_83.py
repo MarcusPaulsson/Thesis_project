@@ -1,30 +1,25 @@
 def minimal_perimeter(a, b):
-    total_tiles = a + b
+    total = a + b
     min_perimeter = float('inf')
 
-    # Check all possible dimensions for the total rectangle
-    for width in range(1, int(total_tiles**0.5) + 1):
-        if total_tiles % width == 0:
-            height = total_tiles // width
-
-            # Check for all possible dimensions of the red rectangle
-            for r_width in range(1, int(a**0.5) + 1):
-                if a % r_width == 0:
-                    r_height = a // r_width
-                    # Ensure red rectangle fits within the total rectangle
-                    if (r_width <= width and r_height <= height) or (r_height <= width and r_width <= height):
-                        # Check for all possible dimensions of the blue rectangle
-                        for b_width in range(1, int(b**0.5) + 1):
-                            if b % b_width == 0:
-                                b_height = b // b_width
-                                # Ensure blue rectangle fits within the total rectangle
-                                if (b_width <= width and b_height <= height) or (b_height <= width and b_width <= height):
-                                    # Calculate perimeter
-                                    perimeter = 2 * (width + height)
+    for width in range(1, int(total**0.5) + 1):
+        if total % width == 0:
+            length = total // width
+            
+            # Check for red rectangle
+            for red_width in range(1, int(a**0.5) + 1):
+                if a % red_width == 0:
+                    red_length = a // red_width
+                    if red_width <= width and red_length <= length:
+                        # Check for blue rectangle
+                        for blue_width in range(1, int(b**0.5) + 1):
+                            if b % blue_width == 0:
+                                blue_length = b // blue_width
+                                if blue_width <= width and blue_length <= length:
+                                    perimeter = 2 * (width + length)
                                     min_perimeter = min(min_perimeter, perimeter)
-
+    
     return min_perimeter
 
-# Read input
 a, b = map(int, input().split())
 print(minimal_perimeter(a, b))

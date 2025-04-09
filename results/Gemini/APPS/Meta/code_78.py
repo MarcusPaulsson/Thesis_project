@@ -1,9 +1,9 @@
 def solve():
     n = int(input())
     s = input()
-    len_s = len(s)
     mod = 10**9 + 7
-
+    ls = len(s)
+    
     def is_regular(seq):
         balance = 0
         for char in seq:
@@ -17,16 +17,19 @@ def solve():
 
     def count_regular_sequences(n, s):
         count = 0
-        for i in range(1 << (2 * n)):
+        for i in range(2**(2*n)):
             seq = ""
-            for j in range(2 * n):
-                if (i >> j) & 1:
-                    seq += '('
+            temp = i
+            for _ in range(2*n):
+                if temp % 2 == 0:
+                    seq = '(' + seq
                 else:
-                    seq += ')'
+                    seq = ')' + seq
+                temp //= 2
+            
             if is_regular(seq) and s in seq:
-                count += 1
-        return count % mod
+                count = (count + 1) % mod
+        return count
 
     print(count_regular_sequences(n, s))
 

@@ -1,27 +1,25 @@
-def count_cyclical_strings(n, s):
+def count_cyclic_strings(n, s):
     from itertools import product
-    
-    len_s = len(s)
-    all_strings = set()
-    
+
+    def is_cyclic(s1, s2):
+        return s1 in (s2 + s2)
+
     # Generate all binary strings of length n
-    for bits in product('01', repeat=n):
-        t = ''.join(bits)
-        # Check if any cyclical shift of t contains s as a substring
-        if any(s in t[i:] + t[:i] for i in range(n)):
-            all_strings.add(t)
+    binary_strings = [''.join(p) for p in product("01", repeat=n)]
+    
+    # Use a set to track unique cyclical strings that contain s
+    unique_cyclic_strings = set()
 
-    return len(all_strings)
+    # Check each binary string if it contains s in any cyclic shift
+    for t in binary_strings:
+        if any(is_cyclic(s, t[i:] + t[:i]) for i in range(n)):
+            unique_cyclic_strings.add(t)
 
-# Read input
+    return len(unique_cyclic_strings)
+
+# Input reading
 n = int(input().strip())
 s = input().strip()
 
-# Ensure the string s is not longer than n
-if len(s) > n:
-    print(0)
-else:
-    # Get the result
-    result = count_cyclical_strings(n, s)
-    # Print the result
-    print(result)
+# Output the result
+print(count_cyclic_strings(n, s))

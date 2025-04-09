@@ -15,13 +15,14 @@ def solve():
         return True
 
     import itertools
+    
     for permutation in itertools.permutations(strings):
         if check_order(list(permutation)):
             print("YES")
             for s in permutation:
                 print(s)
             return
-
+    
     print("NO")
 
 solve()

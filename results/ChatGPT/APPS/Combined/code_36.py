@@ -1,43 +1,49 @@
-def get_coordinates(n):
+def hexagon_coordinates(n):
     if n == 0:
         return (0, 0)
 
+    # Determine the layer of the hexagonal spiral
     layer = 0
     moves_in_layer = 1
 
-    # Determine the layer of the hexagonal spiral
     while n >= moves_in_layer:
         n -= moves_in_layer
         layer += 1
         moves_in_layer = 6 * layer
 
-    # Calculate the initial position and determine the direction and steps in the current layer
+    # Calculate the position in the current layer
     x, y = layer, 0
-    direction = n // layer
-    steps_in_direction = n % layer
 
-    # Move based on the calculated direction
-    if direction == 0:  # right
-        x += steps_in_direction
-    elif direction == 1:  # top-right
-        x += layer
-        y += steps_in_direction
-    elif direction == 2:  # top-left
-        x += layer - steps_in_direction
-        y += layer
-    elif direction == 3:  # left
-        x -= steps_in_direction
-        y += layer
-    elif direction == 4:  # bottom-left
-        x -= layer
-        y -= steps_in_direction
-    elif direction == 5:  # bottom-right
-        x -= layer - steps_in_direction
-        y -= layer
+    if n == 0:
+        return (x, y)
+
+    # Each segment has 'layer' moves
+    segment = n // layer
+    position_in_segment = n % layer
+
+    # Move to the corresponding direction based on segment
+    if segment == 0:  # First segment
+        x += position_in_segment
+    elif segment == 1:  # Second segment
+        x -= position_in_segment
+        y += position_in_segment
+    elif segment == 2:  # Third segment
+        x -= position_in_segment
+        y -= position_in_segment
+    elif segment == 3:  # Fourth segment
+        x -= position_in_segment
+        y += position_in_segment
+    elif segment == 4:  # Fifth segment
+        x += position_in_segment
+        y -= position_in_segment
+    elif segment == 5:  # Sixth segment
+        x += position_in_segment
 
     return (x, y)
 
-if __name__ == "__main__":
-    n = int(input().strip())
-    result = get_coordinates(n)
-    print(result[0], result[1])
+# Read input
+n = int(input().strip())
+# Get coordinates
+result = hexagon_coordinates(n)
+# Print result
+print(result[0], result[1])

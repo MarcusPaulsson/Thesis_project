@@ -1,36 +1,33 @@
 def count_common_terms(a1, b1, a2, b2, L, R):
-    def first_term(a, b, start):
+    def count_terms(a, b, start, end):
         if a == 0:
-            return b if b >= start else None
-        n = (start - b + a - 1) // a  # ceil((start - b) / a)
-        return a * n + b if n >= 0 else None
+            return 1 if start <= b <= end else 0
+        
+        # Calculate the first term in the range
+        first_term = max(b, start + (a - (start - b) % a) % a)
+        # Calculate the last term in the range
+        last_term = min(end, b + ((end - b) // a) * a)
+        
+        if first_term > last_term:
+            return 0
+        
+        return (last_term - first_term) // a + 1
     
-    def last_term(a, b, end):
-        if a == 0:
-            return b if b <= end else None
-        n = (end - b) // a  # floor((end - b) / a)
-        return a * n + b if n >= 0 else None
+    count1 = count_terms(a1, b1, L, R)
+    count2 = count_terms(a2, b2, L, R)
 
-    # Find the first and last common terms for both sequences
-    first_x = first_term(a1, b1, L)
-    last_x = last_term(a1, b1, R)
+    count_common = 0
+    
+    for k in range(count1):
+        x = a1 * k + b1
+        if L <= x <= R:
+            # Check if x can be represented in the second progression
+            if (x - b2) % a2 == 0 and (x - b2) // a2 >= 0:
+                count_common += 1
 
-    if first_x is None or last_x is None or first_x > R or last_x < L:
-        return 0
+    return count_common
 
-    count_a1 = (last_x - first_x) // a1 + 1
-
-    first_y = first_term(a2, b2, L)
-    last_y = last_term(a2, b2, R)
-
-    if first_y is None or last_y is None or first_y > R or last_y < L:
-        return 0
-
-    count_a2 = (last_y - first_y) // a2 + 1
-
-    return min(count_a1, count_a2)
-
-# Input
+# Input reading
 a1, b1, a2, b2, L, R = map(int, input().split())
-# Output
+# Output the result
 print(count_common_terms(a1, b1, a2, b2, L, R))

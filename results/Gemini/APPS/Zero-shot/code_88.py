@@ -8,81 +8,111 @@ def solve():
     
     matrix = [[0] * n for _ in range(n)]
     
-    def check_palindromic(mat):
-        for i in range(n):
-            for j in range(n):
-                if mat[i][j] != mat[n-1-i][j] or mat[i][j] != mat[i][n-1-j]:
-                    return False
+    def can_place(r, c, val):
+        if matrix[r][c] != 0:
+            return False
         return True
     
-    def solve_recursive(row, col):
-        if row == n:
-            if check_palindromic(matrix):
-                print("YES")
-                for r in matrix:
-                    print(*r)
-                return True
-            else:
-                return False
+    def place(r, c, val):
+        matrix[r][c] = val
+        matrix[n-1-r][c] = val
+        matrix[r][n-1-c] = val
+        matrix[n-1-r][n-1-c] = val
+        counts[val] -= 4
         
-        if col == n:
-            return solve_recursive(row + 1, 0)
+    def unplace(r, c, val):
+        matrix[r][c] = 0
+        matrix[n-1-r][c] = 0
+        matrix[r][n-1-c] = 0
+        matrix[n-1-r][n-1-c] = 0
+        counts[val] += 4
+
+    def can_place_2(r, c, val):
+        if matrix[r][c] != 0:
+            return False
+        return True
+    
+    def place_2(r, c, val):
+        matrix[r][c] = val
+        matrix[n-1-r][c] = val
+        counts[val] -= 2
         
-        if matrix[row][col] != 0:
-            return solve_recursive(row, col + 1)
+    def unplace_2(r, c, val):
+        matrix[r][c] = 0
+        matrix[n-1-r][c] = 0
+        counts[val] += 2
         
-        for num in list(counts.keys()):
-            if counts[num] > 0:
-                
-                r_sym = n - 1 - row
-                c_sym = n - 1 - col
-                
-                if row == r_sym and col == c_sym:
-                    if counts[num] >= 1:
-                        matrix[row][col] = num
-                        counts[num] -= 1
-                        if solve_recursive(row, col + 1):
-                            return True
-                        counts[num] += 1
-                        matrix[row][col] = 0
-                elif row == r_sym:
-                    if counts[num] >= 2:
-                        matrix[row][col] = num
-                        matrix[r_sym][c_sym] = num
-                        counts[num] -= 2
-                        if solve_recursive(row, col + 1):
-                            return True
-                        counts[num] += 2
-                        matrix[row][col] = 0
-                        matrix[r_sym][c_sym] = 0
-                elif col == c_sym:
-                    if counts[num] >= 2:
-                        matrix[row][col] = num
-                        matrix[r_sym][c_sym] = num
-                        counts[num] -= 2
-                        if solve_recursive(row, col + 1):
-                            return True
-                        counts[num] += 2
-                        matrix[row][col] = 0
-                        matrix[r_sym][c_sym] = 0
-                else:
-                    if counts[num] >= 4:
-                        matrix[row][col] = num
-                        matrix[row][c_sym] = num
-                        matrix[r_sym][col] = num
-                        matrix[r_sym][c_sym] = num
-                        counts[num] -= 4
-                        if solve_recursive(row, col + 1):
-                            return True
-                        counts[num] += 4
-                        matrix[row][col] = 0
-                        matrix[row][c_sym] = 0
-                        matrix[r_sym][col] = 0
-                        matrix[r_sym][c_sym] = 0
+    def can_place_2_2(r, c, val):
+        if matrix[r][c] != 0:
+            return False
+        return True
+    
+    def place_2_2(r, c, val):
+        matrix[r][c] = val
+        matrix[r][n-1-c] = val
+        counts[val] -= 2
         
+    def unplace_2_2(r, c, val):
+        matrix[r][c] = 0
+        matrix[r][n-1-c] = 0
+        counts[val] += 2
+
+    def can_place_1(r, c, val):
+        if matrix[r][c] != 0:
+            return False
+        return True
+    
+    def place_1(r, c, val):
+        matrix[r][c] = val
+        counts[val] -= 1
+        
+    def unplace_1(r, c, val):
+        matrix[r][c] = 0
+        counts[val] += 1
+
+    def solve_recursive(r, c):
+        if r == (n + 1) // 2:
+            return True
+        
+        next_r = r
+        next_c = c + 1
+        if next_c == (n + 1) // 2:
+            next_r = r + 1
+            next_c = 0
+            
+        for val in sorted(counts.keys()):
+            if counts[val] > 0:
+                if r < n // 2 and c < n // 2:
+                    if counts[val] >= 4 and can_place(r, c, val) :
+                        place(r, c, val)
+                        if solve_recursive(next_r, next_c):
+                            return True
+                        unplace(r, c, val)
+                elif r < n // 2 and c == n // 2 and n % 2 != 0:
+                    if counts[val] >= 2 and can_place_2(r, c, val):
+                        place_2(r, c, val)
+                        if solve_recursive(next_r, next_c):
+                            return True
+                        unplace_2(r, c, val)
+                elif r == n // 2 and c < n // 2 and n % 2 != 0:
+                    if counts[val] >= 2 and can_place_2_2(r, c, val):
+                        place_2_2(r, c, val)
+                        if solve_recursive(next_r, next_c):
+                            return True
+                        unplace_2_2(r, c, val)
+                elif r == n // 2 and c == n // 2 and n % 2 != 0:
+                     if counts[val] >= 1 and can_place_1(r, c, val):
+                        place_1(r, c, val)
+                        if solve_recursive(next_r, next_c):
+                            return True
+                        unplace_1(r, c, val)
         return False
     
-    if not solve_recursive(0, 0):
+    if solve_recursive(0, 0):
+        print("YES")
+        for row in matrix:
+            print(*row)
+    else:
         print("NO")
 
 solve()

@@ -1,49 +1,43 @@
 def max_projects(n, r, projects):
-    # Separate the projects into two groups: those that increase rating and those that decrease it
-    increase_projects = []
-    decrease_projects = []
+    # Separate projects into those that can increase rating and those that can decrease rating
+    can_gain = []
+    can_lose = []
 
     for a, b in projects:
         if b >= 0:
-            increase_projects.append((a, b))
+            can_gain.append((a, b))
         else:
-            decrease_projects.append((a, b))
+            can_lose.append((a, b))
 
-    # Sort increasing projects by required rating
-    increase_projects.sort()
+    # Sort projects that can increase rating by their required rating
+    can_gain.sort()
+    
+    # Sort projects that can decrease rating by their required rating
+    can_lose.sort()
 
-    # Try to complete all increasing projects first
+    # Perform projects that can gain rating
     current_rating = r
-    completed_projects = 0
+    total_completed = 0
 
-    for a, b in increase_projects:
+    for a, b in can_gain:
         if current_rating >= a:
             current_rating += b
-            completed_projects += 1
+            total_completed += 1
 
-    # Sort decreasing projects by required rating
-    decrease_projects.sort()
+    # Perform projects that can lose rating
+    # To do this, we need to sort them and try to complete them in a way that
+    # we never go below zero rating.
+    for a, b in can_lose:
+        if current_rating >= a:
+            current_rating += b
+            if current_rating >= 0:
+                total_completed += 1
 
-    # Try to complete decreasing projects
-    while True:
-        any_completed = False
-        for a, b in decrease_projects:
-            if current_rating >= a:
-                current_rating += b
-                if current_rating < 0:  # If rating drops below zero, we can't complete this project
-                    current_rating -= b  # revert the change
-                else:
-                    completed_projects += 1
-                    any_completed = True
-        if not any_completed:
-            break
+    return total_completed
 
-    return completed_projects
-
-# Read input
+# Input reading
 n, r = map(int, input().split())
 projects = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Get the result and print
-result = max_projects(n, r, projects)
-print(result)
+# Calculate and print the result
+print(max_projects(n, r, projects))

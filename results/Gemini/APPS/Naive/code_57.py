@@ -1,59 +1,83 @@
 def solve():
     n = int(input())
     f = list(map(int, input().split()))
-
-    givers = [i + 1 for i in range(n)]
-    receivers = [i + 1 for i in range(n)]
-
-    assigned_receivers = set()
-    for i in range(n):
-        if f[i] != 0:
-            givers.remove(i + 1)
-            receivers.remove(f[i])
-            assigned_receivers.add(f[i])
-
-    unassigned_givers_indices = [i for i in range(n) if f[i] == 0]
-
-    for i in range(len(unassigned_givers_indices)):
-        giver_index = unassigned_givers_indices[i]
-        giver = giver_index + 1
+    
+    givers = list(range(1, n + 1))
+    receivers = list(range(1, n + 1))
+    
+    for gift in f:
+        if gift != 0:
+            if gift in receivers:
+                receivers.remove(gift)
+    
+    zeros_indices = [i for i, x in enumerate(f) if x == 0]
+    
+    for i, index in enumerate(zeros_indices):
+        giver = givers[index]
         
-        possible_receivers = []
-        for receiver in receivers:
-            if receiver != giver:
-                possible_receivers.append(receiver)
-        
-        if not possible_receivers:
-            print("No solution exists.")
-            return
-
-        receiver = possible_receivers[0]
-        
-        f[giver_index] = receiver
-        receivers.remove(receiver)
-
-    # Check for self-gifting after assigning initial values.
-    for i in range(n):
-        if f[i] == i + 1:
-            # Swap with another unassigned index if possible
-            for j in range(n):
-                if i != j and f[j] != 0 and f[j] != j + 1:
-                    if f[i] not in [k+1 for k in range(n) if k != j]:
-                        
-                        temp = f[i]
-                        f[i] = f[j]
-                        f[j] = temp
-                        break
+        if len(receivers) > 0:
+            potential_receiver = receivers[0]
+            
+            if potential_receiver != giver:
+                f[index] = potential_receiver
+                receivers.remove(potential_receiver)
             else:
-                # Swap with another unassigned index if possible
-                for j in range(n):
-                    if i != j and f[j] != 0 :
-                        
-                        temp = f[i]
-                        f[i] = f[j]
-                        f[j] = temp
-                        break
+                if len(receivers) > 1:
+                    potential_receiver = receivers[1]
+                    f[index] = potential_receiver
+                    receivers.remove(potential_receiver)
+                else:
+                    # Swap with another zero
+                    for j in range(len(zeros_indices)):
+                        if j != i:
+                            
+                            other_index = zeros_indices[j]
+                            
+                            temp = f[index]
+                            f[index] = receivers[0]
+                            f[other_index] = givers[index]
 
+                            if givers[index] != f[other_index] and receivers[0]!=givers[index]:
+                                f[other_index] = receivers[0]
+                                f[index] = givers[other_index]
+                                
+                                if givers[other_index] != f[index]:
+                                    
+                                    if len(receivers) > 1:
+                                        
+                                        
+                                        if len(receivers) > 0:
+                                            potential_receiver = receivers[0]
+                                            
+                                            if potential_receiver != givers[index]:
+                                                f[index] = potential_receiver
+                                                receivers.remove(potential_receiver)
+                                                break
+                                            else:
+                                                
+                                                if len(receivers) > 1:
+                                                    potential_receiver = receivers[1]
+                                                    f[index] = potential_receiver
+                                                    receivers.remove(potential_receiver)
+                                                    break
+                                    
+                                    
+                                    
+                                    
+                                
+                                break
+                            
+                            else:
+                                
+                                
+                                f[other_index] = 0
+                                f[index] = 0
+                                
+                                
+                                
+                                
+                    
+    
     print(*f)
 
 solve()

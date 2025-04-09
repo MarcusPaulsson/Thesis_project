@@ -2,69 +2,63 @@ def solve():
     n, k = map(int, input().split())
     mod = 10**6 + 3
 
-    if n >= 63 and k > 1:
+    if n < 63 and k > (1 << n):
         print(1, 1)
         return
 
-    if k > (1 << n):
-        print(1, 1)
-        return
+    num = 1
+    den = 1
+    
+    twos_num = 0
+    twos_den = 0
 
-    numerator = 1
-    denominator = 1
-    
-    days = pow(2, n, mod)
-    
-    for i in range(int(k)):
-        numerator = (numerator * (days - i)) % mod
-        denominator = (denominator * days) % mod
-    
-    
-    
-    def mod_inverse(a, m):
-        m0 = m
-        y = 0
-        x = 1
+    for i in range(k):
+        if i == 0:
+            continue
+        val = pow(2, n, mod) - i
+        num = (num * (val % mod)) % mod
+        
+        temp = i
+        while temp % 2 == 0 and temp > 0:
+            twos_num += 1
+            temp //= 2
+            
+    den = pow(pow(2, n, mod), k - 1, mod)
 
-        if (m == 1):
-            return 0
-
-        while (a > 1):
-
-            q = a // m
-
-            t = m
-            m = a % m
-            a = t
-            t = y
-
-            y = x - q * y
-            x = t
-
-        if (x < 0):
-            x = x + m0
-
-        return x
+    temp_den = k - 1
+    while temp_den % 2 == 0 and temp_den > 0:
+        twos_den += 1
+        temp_den //= 2
+    
+    twos_den *= n
     
     
-    inverse_denominator = mod_inverse(denominator, mod)
+    twos_diff = twos_den - twos_num
     
-    probability_no_match = (numerator * inverse_denominator) % mod
-    
-    probability_match = (1 - probability_no_match + mod) % mod
+    if twos_diff > 0:
+        den = (den * pow(pow(2,twos_diff,mod),1,mod)) % mod
+        
     
     
     
-    gcd_val = gcd(probability_match, mod)
-    a = probability_match // gcd_val
-    b = mod // gcd_val
-
-    print(a % mod, b % mod)
-
-
-def gcd(a, b):
-    if b == 0:
-        return a
-    return gcd(b, a % b)
+    
+    
+    
+    
+    
+    inv_den = pow(den, mod - 2, mod)
+    prob_diff = (num * inv_den) % mod
+    
+    
+    
+    
+    a = (1 - prob_diff + mod) % mod
+    b = 1
+    
+    
+    
+    
+    
+    print(a, 1)
 
 solve()

@@ -4,50 +4,49 @@ def solve():
     for _ in range(n):
         projects.append(list(map(int, input().split())))
 
-    positive_projects = []
-    negative_projects = []
-    for a, b in projects:
-        if b >= 0:
-            positive_projects.append((a, b))
-        else:
-            negative_projects.append((a, b))
+    def check(subset):
+        pos = []
+        neg = []
+        for i in subset:
+            if projects[i][1] >= 0:
+                pos.append(i)
+            else:
+                neg.append(i)
 
-    positive_projects.sort()
+        pos.sort(key=lambda x: projects[x][0])
+        neg.sort(key=lambda x: projects[x][0] + projects[x][1], reverse=True)
 
-    count = 0
-    for a, b in positive_projects:
-        if r >= a:
-            r += b
-            count += 1
-
-    negative_projects.sort(key=lambda x: x[0] + x[1], reverse=True)
-
-    
-    def can_complete(subset):
         current_rating = r
-        for a, b in subset:
-            if current_rating >= a:
-                current_rating += b
+        
+        for i in pos:
+            if current_rating >= projects[i][0]:
+                current_rating += projects[i][1]
+            else:
+                return False
+        
+        for i in neg:
+            if current_rating >= projects[i][0]:
+                current_rating += projects[i][1]
                 if current_rating < 0:
                     return False
             else:
                 return False
+        
+        if current_rating < 0:
+            return False
+            
         return True
 
-    def find_max_subset(negative_projects_list, current_rating):
-        max_size = 0
+    max_size = 0
+    for i in range(1 << n):
+        subset = []
+        for j in range(n):
+            if (i >> j) & 1:
+                subset.append(j)
         
-        for i in range(1 << len(negative_projects_list)):
-            subset = []
-            for j in range(len(negative_projects_list)):
-                if (i >> j) & 1:
-                    subset.append(negative_projects_list[j])
-            
-            if can_complete(subset):
-                max_size = max(max_size, len(subset))
+        if check(subset):
+            max_size = max(max_size, len(subset))
 
-        return max_size
-
-    print(count + find_max_subset(negative_projects, r))
+    print(max_size)
 
 solve()

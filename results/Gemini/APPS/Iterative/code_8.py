@@ -4,25 +4,32 @@ def solve():
     def check_mentsu(hand):
         counts = {}
         for tile in hand:
-            if tile not in counts:
-                counts[tile] = 0
-            counts[tile] += 1
+            counts[tile] = counts.get(tile, 0) + 1
 
         for tile in counts:
             if counts[tile] >= 3:
                 return True
 
-        suits = {'m': [], 'p': [], 's': []}
+        nums = []
+        suits = []
         for tile in hand:
-            suits[tile[1]].append(int(tile[0]))
+            nums.append(int(tile[0]))
+            suits.append(tile[1])
 
-        for suit in suits:
-            suits[suit].sort()
-            if len(suits[suit]) >= 3:
-                for i in range(len(suits[suit]) - 2):
-                    if suits[suit][i+1] == suits[suit][i] + 1 and suits[suit][i+2] == suits[suit][i] + 2:
-                        return True
-
+        if len(hand) < 3:
+            return False
+        
+        for i in range(len(hand)):
+            for j in range(i + 1, len(hand)):
+                for k in range(j + 1, len(hand)):
+                    if suits[i] == suits[j] == suits[k]:
+                        a = nums[i]
+                        b = nums[j]
+                        c = nums[k]
+                        
+                        sorted_nums = sorted([a, b, c])
+                        if sorted_nums[1] == sorted_nums[0] + 1 and sorted_nums[2] == sorted_nums[1] + 1:
+                            return True
         return False
 
     if check_mentsu(tiles):
@@ -31,27 +38,27 @@ def solve():
 
     counts = {}
     for tile in tiles:
-        if tile not in counts:
-            counts[tile] = 0
-        counts[tile] += 1
+        counts[tile] = counts.get(tile, 0) + 1
 
     for tile in counts:
-        if counts[tile] >= 2:
+        if counts[tile] == 2:
             print(1)
             return
     
-    suits = {'m': [], 'p': [], 's': []}
+    nums = []
+    suits = []
     for tile in tiles:
-        suits[tile[1]].append(int(tile[0]))
+        nums.append(int(tile[0]))
+        suits.append(tile[1])
 
-    for suit in suits:
-        suits[suit].sort()
-        if len(suits[suit]) >= 2:
-            for i in range(len(suits[suit])):
-                for j in range(i + 1, len(suits[suit])):
-                    if suits[suit][j] == suits[suit][i] + 1 or suits[suit][j] == suits[suit][i] + 2:
-                        print(1)
-                        return
+    for i in range(len(tiles)):
+        for j in range(i + 1, len(tiles)):
+            if suits[i] == suits[j]:
+                a = nums[i]
+                b = nums[j]
+                if abs(a - b) <= 2:
+                    print(1)
+                    return
 
     print(2)
 

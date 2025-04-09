@@ -2,66 +2,34 @@ def solve():
     n, k = map(int, input().split())
 
     if k * (k + 1) // 2 > n:
-        print("-1")
+        print(-1)
         return
 
-    best_gcd = 0
-    best_seq = []
+    best_gcd = 1
+    for i in range(1, int(n**0.5) + 1):
+        if n % i == 0:
+            if n // i >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, i)
+            if i >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, n // i)
 
-    for gcd in range(int(n**0.5), 0, -1):
-        if n % gcd == 0:
-            
-            
-            def check(cur_gcd):
-              
-              rem = n // cur_gcd
-              if k * (k + 1) // 2 > rem:
-                  return False
-              
-              seq = [i for i in range(1, k)]
-              last = rem - sum(seq)
-              
-              if last <= seq[-1]:
-                return False
-              
-              return True
+    if best_gcd == 1 and k * (k + 1) // 2 > n:
+      print("-1")
+      return
+    
+    
+    seq = []
+    sum_so_far = 0
+    for i in range(1, k):
+        seq.append(best_gcd * i)
+        sum_so_far += best_gcd * i
 
-            if check(gcd):
-                rem = n // gcd
-                seq = [i for i in range(1, k)]
-                last = rem - sum(seq)
-                
-                seq = [x * gcd for x in seq]
-                seq.append(last * gcd)
-                
-                print(*seq)
-                return
-            
+    seq.append(n - sum_so_far)
 
-            def check2(cur_gcd):
-              rem = n // cur_gcd
-              if k * (k + 1) // 2 > rem:
-                  return False
-              
-              seq = [i for i in range(1, k)]
-              last = rem - sum(seq)
-              
-              if last <= seq[-1]:
-                return False
-              
-              return True
-
-            if check2(n // gcd):
-                rem = gcd
-                seq = [i for i in range(1, k)]
-                last = rem - sum(seq)
-                
-                seq = [x * (n // gcd) for x in seq]
-                seq.append(last * (n // gcd))
-                
-                print(*seq)
-                return
-
-    print("-1")
+    if seq[-1] <= seq[-2]:
+        print(-1)
+        return
+    
+    print(*seq)
 
 solve()

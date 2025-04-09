@@ -1,31 +1,51 @@
 def solve():
   n = int(input())
   
-  weeks = n // 7
-  remaining = n % 7
+  min_days_off = (n // 7) * 2
+  rem = n % 7
   
-  min_days_off = weeks * 2
-  max_days_off = weeks * 2
-  
-  if remaining == 1:
+  if rem == 1:
     min_days_off += 0
-    max_days_off += 1
-  elif remaining == 2:
+  elif rem == 2:
     min_days_off += 0
-    max_days_off += 2
-  elif remaining == 3:
+  elif rem == 3:
     min_days_off += 0
-    max_days_off += 2
-  elif remaining == 4:
+  elif rem == 4:
     min_days_off += 0
-    max_days_off += 2
-  elif remaining == 5:
+  elif rem == 5:
     min_days_off += 0
-    max_days_off += 2
-  elif remaining == 6:
+  elif rem == 6:
     min_days_off += 1
-    max_days_off += 2
-  
-  print(min_days_off, max_days_off)
 
+  max_days_off = (n // 7) * 2
+  rem = n % 7
+
+  if rem == 1:
+    max_days_off += 1
+  elif rem == 2:
+    max_days_off += 2
+  elif rem == 3:
+    max_days_off += 2
+  elif rem == 4:
+    max_days_off += 2
+  elif rem == 5:
+    max_days_off += 2
+  elif rem == 6:
+    max_days_off += 2
+
+  if n <= 1:
+      min_days_off = 0
+      max_days_off = n
+  elif n <= 2:
+      min_days_off = 0
+      max_days_off = 2
+  elif n <= 3:
+      min_days_off = 0
+      max_days_off = 2
+  elif n <= 4:
+      min_days_off = 0
+      max_days_off = 2
+      
+  print(min_days_off, max_days_off)
+  
 solve()

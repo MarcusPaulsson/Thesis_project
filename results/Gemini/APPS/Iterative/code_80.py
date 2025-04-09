@@ -1,48 +1,34 @@
 def solve():
     n = int(input())
     s = input()
-    
-    def check(num_colors):
-        colors = [0] * n
+
+    def check(coloring):
+        temp_s = list(s)
         
-        def solve_recursive(index, current_colors):
-            if index == n:
-                return current_colors
-            
-            for color in range(1, num_colors + 1):
-                new_colors = current_colors[:]
-                new_colors[index] = color
-                
-                
-                groups = [[] for _ in range(num_colors + 1)]
-                for i in range(n):
-                    groups[new_colors[i]].append(s[i])
-                
-                
-                sorted_groups = []
-                for i in range(1, num_colors+1):
-                    sorted_groups.extend(sorted(groups[i]))
-                
-                
-                is_sortable = True
-                sorted_s = sorted(list(s))
-                
-                if sorted_groups != sorted_s:
-                    is_sortable = False
-                
-                if is_sortable:
-                    return new_colors
-            
-            return None
-        
-        result = solve_recursive(0, [0] * n)
-        if result:
-            return result
-        else:
-            return None
+        for _ in range(n * (n - 1) // 2):
+            swapped = False
+            for i in range(n - 1):
+                if temp_s[i] > temp_s[i+1] and coloring[i] != coloring[i+1]:
+                    temp_s[i], temp_s[i+1] = temp_s[i+1], temp_s[i]
+                    swapped = True
+            if not swapped:
+                break
+        return "".join(temp_s) == "".join(sorted(s))
     
+    def find_coloring(num_colors):
+        for i in range(num_colors**n):
+            coloring = []
+            temp = i
+            for _ in range(n):
+                coloring.append(temp % num_colors + 1)
+                temp //= num_colors
+            
+            if check(coloring):
+                return coloring
+        return None
+
     for num_colors in range(1, n + 1):
-        coloring = check(num_colors)
+        coloring = find_coloring(num_colors)
         if coloring:
             print(num_colors)
             print(*coloring)

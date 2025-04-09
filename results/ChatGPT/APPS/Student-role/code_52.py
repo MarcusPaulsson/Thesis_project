@@ -1,28 +1,27 @@
 def max_sum_divisible_by_k(n, m, k, matrix):
-    from itertools import combinations
-
     max_elements = m // 2
-    total_max_sum = 0
-
-    # Iterate through each row
+    dp = [[0] * k for _ in range(max_elements + 1)]
+    
     for row in matrix:
-        row.sort(reverse=True)  # Sort row in descending order to maximize sum
-        current_max_sum = [0] * k  # To store max sum for each modulo class
+        row.sort(reverse=True)
+        new_dp = [dp[:] for dp in dp]
         
-        # Try all combinations of selecting up to max_elements
-        for r in range(max_elements + 1):
-            for comb in combinations(row, r):
-                current_sum = sum(comb)
-                current_max_sum[current_sum % k] = max(current_max_sum[current_sum % k], current_sum)
+        for count in range(max_elements + 1):
+            for j in range(k):
+                if dp[count][j] > 0 or count == 0:  # Account for the initial 0 sum
+                    for x in range(1, min(max_elements - count, len(row)) + 1):
+                        sum_selected = sum(row[:x])
+                        new_remainder = (j + sum_selected) % k
+                        new_dp[count + x][new_remainder] = max(new_dp[count + x][new_remainder], dp[count][j] + sum_selected)
         
-        total_max_sum += max(current_max_sum)
+        dp = new_dp
+    
+    return max(dp[count][0] for count in range(max_elements + 1))
 
-    return total_max_sum
-
-# Input reading
+# Input handling
 n, m, k = map(int, input().split())
 matrix = [list(map(int, input().split())) for _ in range(n)]
 
-# Get the result and print
+# Calculate and print the result
 result = max_sum_divisible_by_k(n, m, k, matrix)
 print(result)

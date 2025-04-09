@@ -1,63 +1,77 @@
 from collections import defaultdict, deque
+import sys
 
-def bfs(start, n, graph):
-    dist = [-1] * (n + 1)
-    dist[start] = 0
-    q = deque([start])
+def bfs(start):
+    visited = [-1] * (n + 1)
+    queue = deque([start])
+    visited[start] = 0
     farthest_node = start
-
-    while q:
-        node = q.popleft()
-        for neighbor in graph[node]:
-            if dist[neighbor] == -1:
-                dist[neighbor] = dist[node] + 1
-                q.append(neighbor)
-                if dist[neighbor] > dist[farthest_node]:
-                    farthest_node = neighbor
+    max_distance = 0
     
-    return farthest_node, dist
+    while queue:
+        node = queue.popleft()
+        
+        for neighbor in graph[node]:
+            if visited[neighbor] == -1:
+                visited[neighbor] = visited[node] + 1
+                queue.append(neighbor)
+                
+                if visited[neighbor] > max_distance:
+                    max_distance = visited[neighbor]
+                    farthest_node = neighbor
+                    
+    return farthest_node, max_distance
 
-def find_diameter_path(graph, start, end, dist_from_start):
-    path = []
-    current = end
-    while current != start:
-        path.append(current)
-        for neighbor in graph[current]:
-            if dist_from_start[neighbor] == dist_from_start[current] - 1:
-                current = neighbor
-                break
-    path.append(start)
-    return path[::-1]  # Reverse to get the path from start to end
+def find_three_nodes():
+    # Step 1: Find a farthest node from an arbitrary node (node 1)
+    farthest_from_start, _ = bfs(1)
+    
+    # Step 2: Find the farthest node from that farthest node (this gives us one endpoint of the diameter)
+    farthest_from_a, diameter_length = bfs(farthest_from_start)
+    
+    # Step 3: The other endpoint of the diameter
+    farthest_from_b, _ = bfs(farthest_from_a)
+    
+    # Now we need to find the third node that maximizes the edges
+    # We can use BFS from one of the endpoints to get the nodes along the diameter path
+    path_nodes = []
+    queue = deque([farthest_from_start])
+    parent = {farthest_from_start: None}
+    
+    while queue:
+        node = queue.popleft()
+        path_nodes.append(node)
+        
+        for neighbor in graph[node]:
+            if neighbor not in parent:
+                parent[neighbor] = node
+                queue.append(neighbor)
+    
+    # Reconstruct the path from farthest_from_start to farthest_from_b
+    diameter_path = []
+    current = farthest_from_b
+    while current is not None:
+        diameter_path.append(current)
+        current = parent[current]
+    
+    diameter_path.reverse()
+    
+    # Choose three nodes: two endpoints of the diameter and one additional node
+    if len(diameter_path) > 2:
+        third_node = diameter_path[len(diameter_path) // 2]
+    else:
+        third_node = diameter_path[0]  # In case of very small diameter
+    
+    return diameter_length + 1, farthest_from_start, third_node, farthest_from_b
 
-def main():
-    n = int(input().strip())
-    graph = defaultdict(list)
+n = int(sys.stdin.readline().strip())
+graph = defaultdict(list)
 
-    for _ in range(n - 1):
-        a, b = map(int, input().strip().split())
-        graph[a].append(b)
-        graph[b].append(a)
+for _ in range(n - 1):
+    a, b = map(int, sys.stdin.readline().strip().split())
+    graph[a].append(b)
+    graph[b].append(a)
 
-    # Step 1: Find the farthest node from an arbitrary node (node 1)
-    farthest_node_from_start, _ = bfs(1, n, graph)
-
-    # Step 2: Find the farthest node from that farthest node
-    farthest_node, dist_from_one_end = bfs(farthest_node_from_start, n, graph)
-
-    # Step 3: Find the path and distances from the other endpoint
-    diameter_path = find_diameter_path(graph, farthest_node_from_start, farthest_node, dist_from_one_end)
-    diameter_length = len(diameter_path) - 1  # Number of edges
-
-    # Choosing three distinct vertices: first, middle, last of the diameter path
-    a = diameter_path[0]
-    c = diameter_path[-1]
-    b = diameter_path[len(diameter_path) // 2]  # Middle node
-
-    # The maximum edges covered
-    max_edges = diameter_length + 1  # edges are one less than the number of nodes in the path
-
-    print(max_edges)
-    print(a, b, c)
-
-if __name__ == "__main__":
-    main()
+max_edges, a, b, c = find_three_nodes()
+print(max_edges)
+print(a, b, c)

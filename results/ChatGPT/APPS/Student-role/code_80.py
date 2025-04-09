@@ -1,28 +1,28 @@
-def min_colors_to_sort(n, s):
-    # Create a list to store the colors
-    color = [0] * n
-    # Create a dictionary to store last positions of each character
-    last_position = {}
-    
-    # Iterate through the string to assign colors
-    for i in range(n):
-        char = s[i]
-        if char in last_position:
-            # Determine the color to use for this character
-            color[i] = (last_position[char] + 1) % (max_color + 1)
-        else:
-            color[i] = 1  # Start new color
-        last_position[char] = color[i]  # Update last position for this character
-
-    # Calculate the maximum color used
-    max_color = max(color)
-
-    # Output the result
-    print(max_color)
-    print(' '.join(map(str, color)))
-
-# Input reading
 n = int(input())
 s = input()
 
-min_colors_to_sort(n, s)
+from collections import defaultdict
+
+# Create a mapping of characters to their positions
+positions = defaultdict(list)
+for i, char in enumerate(s):
+    positions[char].append(i)
+
+# Colors array
+colors = [0] * n
+current_color = 1
+
+# Create a list of unique characters sorted
+unique_chars = sorted(positions.keys())
+
+# Assign colors based on the positions of characters
+for char in unique_chars:
+    for i in range(len(positions[char])):
+        colors[positions[char][i]] = current_color
+        current_color += 1 if i == len(positions[char]) - 1 else 0
+
+# The number of colors used is the max in the colors array
+max_color = max(colors)
+
+print(max_color)
+print(' '.join(map(str, colors)))

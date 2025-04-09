@@ -1,28 +1,27 @@
 def maxAccordionLength(s: str) -> int:
-    opening_bracket_index = s.find('[')
-    closing_bracket_index = s.rfind(']')
+    n = len(s)
     
-    # Check for valid brackets
-    if opening_bracket_index == -1 or closing_bracket_index == -1 or opening_bracket_index >= closing_bracket_index:
+    # Find the last occurrence of the opening bracket '['
+    left_bracket_index = s.rfind('[')
+    # Find the first occurrence of the closing bracket ']'
+    right_bracket_index = s.find(']', left_bracket_index)
+    
+    # If there's no valid brackets or they are in the wrong order, return -1
+    if left_bracket_index == -1 or right_bracket_index == -1 or left_bracket_index >= right_bracket_index:
         return -1
-    
-    # Find the first colon after the opening bracket
-    first_colon_index = s.find(':', opening_bracket_index)
-    # Find the last colon before the closing bracket
-    last_colon_index = s.rfind(':', opening_bracket_index, closing_bracket_index)
-    
-    # Check for valid colons
-    if first_colon_index == -1 or last_colon_index == -1 or first_colon_index >= last_colon_index:
+
+    # Count the number of ':' and '|' between the brackets
+    colon_count = s[left_bracket_index + 1:right_bracket_index].count(':')
+    pipe_count = s[left_bracket_index + 1:right_bracket_index].count('|')
+
+    # There must be at least 2 colons and at least 0 pipes
+    if colon_count < 2:
         return -1
-    
-    # Count vertical lines between the two colons
-    vertical_lines_count = s[first_colon_index + 1:last_colon_index].count('|')
-    
-    # Calculate the maximum length of the accordion
-    max_length = 4 + vertical_lines_count
-    
+
+    # The maximum length is the length of the brackets plus the pipes and colons
+    max_length = (right_bracket_index - left_bracket_index + 1)  # Length of '[::]'
     return max_length
 
-# Input reading
+# Read input and output the result
 s = input().strip()
 print(maxAccordionLength(s))

@@ -1,12 +1,11 @@
 def solve():
-    n, L = map(int, input().split())
+    n, l = map(int, input().split())
     kefa = list(map(int, input().split()))
     sasha = list(map(int, input().split()))
 
-    for shift in range(L):
-        shifted_sasha = [(x + shift) % L for x in sasha]
-        shifted_sasha.sort()
-        if kefa == shifted_sasha:
+    for shift in range(l):
+        shifted_kefa = sorted([(x + shift) % l for x in kefa])
+        if shifted_kefa == sasha:
             print("YES")
             return
 

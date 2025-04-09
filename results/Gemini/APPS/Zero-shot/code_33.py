@@ -1,9 +1,9 @@
 import math
 
 def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
+    if b == 0:
+        return a
+    return gcd(b, a % b)
 
 def extended_gcd(a, b):
     if a == 0:
@@ -21,55 +21,39 @@ def solve():
     if (b2 - b1) % g != 0:
         print(0)
         return
-    
-    lcm = (a1 * a2) // g
-    
+
     d, x, y = extended_gcd(a1, a2)
     x *= (b2 - b1) // d
     y *= (b2 - b1) // d
-    
+
+    lcm = (a1 * a2) // g
+
     x0 = x
     y0 = y
     
-    k = (x0 % (a2 // g) + (a2 // g)) % (a2 // g)
     
-    x = x0 - k * (a2 // g)
-    y = y0 + k * (a1 // g)
-
-    first_val = a1 * x + b1
-    
-    
-    if first_val < max(b1, b2):
-        k_adjust = (max(b1,b2) - first_val + lcm - 1) // lcm
-        first_val += k_adjust * lcm
-    
-    
-    
-    if first_val < 0 :
-        k_adjust = (-first_val + lcm -1 ) // lcm
-        first_val += k_adjust * lcm
-    
-    
-    
-    
-    if first_val < max(b1,b2):
-        k_adjust = (max(b1,b2) - first_val + lcm -1) // lcm
-        first_val += k_adjust * lcm
-    
-    
-    
-    
-    if first_val < L:
-      k_adjust = (L - first_val + lcm - 1) // lcm
-      first_val += k_adjust * lcm
+    def find_k_range(L, R, a1, b1, a2, b2, lcm, x0, y0):
       
-    if first_val > R:
-      print(0)
-      return
+        k_min = math.ceil((L - b1 - a1 * x0) / lcm)
+        k_max = math.floor((R - b1 - a1 * x0) / lcm)
+        
+        return k_min, k_max
+        
+    k_min, k_max = find_k_range(L, R, a1, b1, a2, b2, lcm, x0, y0)
 
+    count = 0
     
-    count = (R - first_val) // lcm + 1
-    
+    for k in range(k_min, k_max + 1):
+      val = a1 * (x0 + (lcm // a1) * k) + b1
+      
+      if L <= val <= R:
+        
+        k_prime = (val - b1) / a1
+        l_prime = (val - b2) / a2
+        
+        if k_prime >= 0 and l_prime >= 0:
+            count += 1
+
     print(count)
-    
+
 solve()

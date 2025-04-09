@@ -1,63 +1,49 @@
 def solve():
     n, k = map(int, input().split())
     p = list(map(int, input().split()))
-    
-    used = set(p)
+
+    used = [False] * (n + 1)
+    for x in p:
+        used[x] = True
+
     remaining = []
     for i in range(n, 0, -1):
-        if i not in used:
+        if not used[i]:
             remaining.append(i)
 
-    p = p + remaining
-    
+    p_extended = p[:]
+    for x in remaining:
+        p_extended.append(x)
+
     def is_stack_sortable(arr):
+        a = arr[:]
         s = []
         b = []
+        
         i = 0
-        j = 0
-        while i < len(arr) or len(s) > 0:
-            if len(s) > 0 and s[-1] == min(arr[i:] + s):
+        
+        while a or s:
+            
+            can_push = len(a) > 0
+            can_pop = len(s) > 0
+            
+            if can_push and can_pop and a[0] < s[-1]:
+                s.append(a.pop(0))
+            elif can_pop:
                 b.append(s.pop())
-            elif i < len(arr):
-                s.append(arr[i])
-                i += 1
+            elif can_push:
+                s.append(a.pop(0))
             else:
                 return False
-
+        
         for i in range(len(b) - 1):
             if b[i] > b[i+1]:
                 return False
         return True
-    
 
-    def find_lexicographically_maximal_permutation(n, k, given_p):
-        used = set(given_p)
-        remaining = []
-        for i in range(n, 0, -1):
-            if i not in used:
-                remaining.append(i)
-        
-        import itertools
-        
-        best_p = None
-        
-        for perm in itertools.permutations(remaining):
-            curr_p = given_p + list(perm)
-            if is_stack_sortable(curr_p):
-                if best_p is None:
-                    best_p = curr_p
-                else:
-                    if curr_p > best_p:
-                        best_p = curr_p
-        
-        return best_p
-    
-    
-    result = find_lexicographically_maximal_permutation(n, k, p[:k])
-    
-    if result is None:
-        print("-1")
+    if is_stack_sortable(p_extended):
+        print(*p_extended)
     else:
-        print(*result)
+        print("-1")
 
 solve()

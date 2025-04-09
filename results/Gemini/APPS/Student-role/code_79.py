@@ -1,56 +1,63 @@
 def solve():
     n = input()
-    s = list(n)
-    length = len(s)
-    ans = float('inf')
-
-    for suffix in ["00", "25", "50", "75"]:
-        temp_s = s[:]
-        moves = 0
-
-        # Find the last digit of the suffix
-        try:
-            idx2 = -1
-            for i in range(length - 1, -1, -1):
-                if temp_s[i] == suffix[1]:
-                    idx2 = i
-                    break
-            if idx2 == -1:
-                continue
-
-            moves += length - 1 - idx2
-            temp_s.pop(idx2)
-
-            # Find the first digit of the suffix
-            idx1 = -1
-            for i in range(len(temp_s) - 1, -1, -1):
-                if temp_s[i] == suffix[0]:
-                    idx1 = i
-                    break
-            if idx1 == -1:
-                continue
-
-            moves += len(temp_s) - 1 - idx1
-            temp_s.pop(idx1)
-
-            # Remove leading zeroes
-            leading_zeroes = 0
-            for i in range(len(temp_s)):
-                if temp_s[i] == '0':
-                    leading_zeroes += 1
-                else:
-                    break
-            
-            moves += leading_zeroes
-            
-            ans = min(ans, moves)
-        
-        except:
-            pass
+    n_len = len(n)
     
-    if ans == float('inf'):
+    def calculate_moves(s, target):
+        moves = 0
+        s_list = list(s)
+        
+        # Find the last occurrence of the first digit of target
+        first_digit_index = -1
+        for i in range(n_len - 1, -1, -1):
+            if s_list[i] == target[0]:
+                first_digit_index = i
+                break
+        
+        if first_digit_index == -1:
+            return float('inf')
+        
+        # Move the first digit to the last position
+        for i in range(first_digit_index, n_len - 1):
+            s_list[i], s_list[i+1] = s_list[i+1], s_list[i]
+            moves += 1
+        
+        # Find the last occurrence of the second digit of target in the remaining digits
+        second_digit_index = -1
+        for i in range(n_len - 2, -1, -1):
+            if s_list[i] == target[1]:
+                second_digit_index = i
+                break
+        
+        if second_digit_index == -1:
+            return float('inf')
+        
+        # Move the second digit to the second to last position
+        for i in range(second_digit_index, n_len - 2):
+            s_list[i], s_list[i+1] = s_list[i+1], s_list[i]
+            moves += 1
+            
+        # Remove leading zeros
+        leading_zeros = 0
+        for i in range(n_len - 2):
+            if s_list[i] == '0':
+                leading_zeros += 1
+            else:
+                break
+
+        
+        return moves + leading_zeros
+    
+    min_moves = float('inf')
+    
+    min_moves = min(min_moves, calculate_moves(n, "00"))
+    min_moves = min(min_moves, calculate_moves(n, "25"))
+    min_moves = min(min_moves, calculate_moves(n, "50"))
+    min_moves = min(min_moves, calculate_moves(n, "75"))
+    
+    if min_moves == float('inf'):
         print("-1")
     else:
-        print(ans)
+        print(min_moves)
+        
 
 solve()

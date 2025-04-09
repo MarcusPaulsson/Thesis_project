@@ -1,40 +1,37 @@
-def max_removable_length(s: str, t: str) -> int:
+def max_removable_substring_length(s: str, t: str) -> int:
     n, m = len(s), len(t)
     
-    # Initialize arrays to store the first and last occurrences of t's characters in s
-    left, right = [-1] * m, [-1] * m
-
-    # Fill the left array to find the first occurrences
+    # Precompute leftmost indices of each character in t from s
+    left_indices = [-1] * m
     j = 0
     for i in range(n):
         if j < m and s[i] == t[j]:
-            left[j] = i
+            left_indices[j] = i
             j += 1
-
-    # Fill the right array to find the last occurrences
+    
+    # Precompute rightmost indices of each character in t from s
+    right_indices = [-1] * m
     j = m - 1
     for i in range(n - 1, -1, -1):
         if j >= 0 and s[i] == t[j]:
-            right[j] = i
+            right_indices[j] = i
             j -= 1
 
-    # Calculate the maximum removable length
-    max_length = 0
-    
-    # Check removable length between the left and right occurrences
+    # Calculate maximum removable length
+    max_removable_length = 0
     for i in range(m - 1):
-        max_length = max(max_length, right[i + 1] - left[i] - 1)
+        max_removable_length = max(max_removable_length, right_indices[i + 1] - left_indices[i] - 1)
 
-    # Consider removing characters before the first character of t
-    max_length = max(max_length, left[0])
-    # Consider removing characters after the last character of t
-    max_length = max(max_length, n - right[m - 1] - 1)
+    # Consider removing from the start or the end of the string
+    max_removable_length = max(max_removable_length, left_indices[0])  # Removing from start
+    max_removable_length = max(max_removable_length, n - 1 - right_indices[m - 1])  # Removing from end
 
-    return max_length
+    return max_removable_length
 
 # Input reading
-s = input().strip()
-t = input().strip()
-
-# Output the result
-print(max_removable_length(s, t))
+if __name__ == "__main__":
+    s = input().strip()
+    t = input().strip()
+    
+    # Output the result
+    print(max_removable_substring_length(s, t))

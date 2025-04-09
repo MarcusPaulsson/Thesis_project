@@ -1,23 +1,27 @@
 from collections import Counter
-import sys
+from math import gcd
 
-n = int(input().strip())
-divisors = list(map(int, input().strip().split()))
+n = int(input())
+divisors = list(map(int, input().split()))
 
 # Count the occurrences of each divisor
 count = Counter(divisors)
 
-# Initialize x and y
-x, y = 1, 1
+# Get all unique divisors
+unique_divisors = list(count.keys())
 
-# For each divisor, if it appears twice, it is a common divisor
-for d in count:
+# The product x * y is the product of all unique divisors raised to their counts
+x = 1
+y = 1
+
+# For each unique divisor
+for d in unique_divisors:
+    # If the count is 2, it is a common divisor
     if count[d] == 2:
-        # If d appears twice, it is a divisor for both x and y
         x *= d
         y *= d
+    # If the count is 1, assign it to x or y
     elif count[d] == 1:
-        # If d appears once, assign it to either x or y
         if x < y:
             x *= d
         else:

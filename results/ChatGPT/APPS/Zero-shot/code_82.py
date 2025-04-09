@@ -1,19 +1,18 @@
 n, k = map(int, input().split())
-a = list(map(int, input().split()))
+difficulties = list(map(int, input().split()))
 
-count = 0
+solved = 0
 
 # Solve from the left
-while count < n and a[count] <= k:
-    count += 1
+while solved < n and difficulties[solved] <= k:
+    solved += 1
 
 # Solve from the right
-while count < n and a[n - 1 - (count - count)] <= k:
-    count += 1
+while solved < n and difficulties[n - 1 - (solved - (n - solved))] <= k:
+    solved += 1
 
-# The count could have counted the overlap in the middle
-# So we need to ensure we don't double count the last problem
-if count > n:
-    count = n
+# Avoid double counting if the leftmost and rightmost problems are solved
+if solved > n:
+    solved = n
 
-print(count)
+print(solved)

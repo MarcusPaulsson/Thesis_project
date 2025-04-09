@@ -3,65 +3,50 @@ def solve():
     s = input()
     mod = 10**9 + 7
     len_s = len(s)
+
+    def is_regular(seq):
+        balance = 0
+        for char in seq:
+            if char == '(':
+                balance += 1
+            else:
+                balance -= 1
+            if balance < 0:
+                return False
+        return balance == 0
+
+    def contains_substring(seq, sub):
+        return sub in seq
+
+    count = 0
     
-    dp = {}
-    
-    def count_regular(length, balance):
-        if length == 0:
-            return 1 if balance == 0 else 0
-        if balance < 0:
-            return 0
-        
-        if (length, balance) in dp:
-            return dp[(length, balance)]
-        
-        res = (count_regular(length - 1, balance + 1) + count_regular(length - 1, balance - 1)) % mod
-        dp[(length, balance)] = res
-        return res
+    def generate_sequences(length):
+      sequences = []
+      def backtrack(current_sequence, open_count, close_count):
+          if len(current_sequence) == length:
+              sequences.append("".join(current_sequence))
+              return
+          
+          if open_count < length // 2:
+              current_sequence.append("(")
+              backtrack(current_sequence, open_count + 1, close_count)
+              current_sequence.pop()
+          
+          if close_count < open_count:
+              current_sequence.append(")")
+              backtrack(current_sequence, open_count, close_count + 1)
+              current_sequence.pop()
+      
+      backtrack([], 0, 0)
+      return sequences
 
-    def count_with_substring(n, s):
-        total_regular = count_regular(2 * n, 0)
-        
-        def count_without_substring(n, s):
-            
-            def generate_bracket_sequences(length, balance, current_sequence, has_substring):
-                if length == 0:
-                    if balance == 0:
-                        return 1 if has_substring else 0
-                    else:
-                        return 0
-                
-                count = 0
-                
-                # Add '('
-                new_sequence_open = current_sequence + '('
-                if not has_substring and s in new_sequence_open:
-                    count = (count + generate_bracket_sequences(length - 1, balance + 1, new_sequence_open, True)) % mod
-                elif has_substring:
-                    count = (count + generate_bracket_sequences(length - 1, balance + 1, new_sequence_open, True)) % mod
-                else:
-                    count = (count + generate_bracket_sequences(length - 1, balance + 1, new_sequence_open, False)) % mod
 
-                # Add ')'
-                new_sequence_close = current_sequence + ')'
-                if balance > 0:
-                    if not has_substring and s in new_sequence_close:
-                        count = (count + generate_bracket_sequences(length - 1, balance - 1, new_sequence_close, True)) % mod
-                    elif has_substring:
-                        count = (count + generate_bracket_sequences(length - 1, balance - 1, new_sequence_close, True)) % mod
-                    else:
-                        count = (count + generate_bracket_sequences(length - 1, balance - 1, new_sequence_close, False)) % mod
-                
-                return count
-            
-            return generate_bracket_sequences(2 * n, 0, "", False)
-        
-        without_substring = count_without_substring(n, s)
-        return (total_regular - without_substring + mod) % mod
+    all_sequences = generate_sequences(2 * n)
 
-    if len_s > 2 * n:
-        print(0)
-    else:
-        print(count_with_substring(n, s))
+    for seq in all_sequences:
+        if is_regular(seq) and contains_substring(seq, s):
+            count = (count + 1) % mod
+
+    print(count)
 
 solve()

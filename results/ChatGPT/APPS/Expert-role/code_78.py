@@ -1,53 +1,53 @@
+MOD = 10**9 + 7
+
 def count_regular_sequences(n, s):
-    MOD = 1000000007
     m = len(s)
     
-    # Precompute the number of valid bracket sequences of length 2k
-    dp = [0] * (n + 1)
-    dp[0] = 1  # Base case: one valid sequence of length 0 (the empty sequence)
+    # Precompute factorials and inverse factorials for combinations
+    fact = [1] * (2*n + 1)
+    inv_fact = [1] * (2*n + 1)
     
-    for k in range(1, n + 1):
-        for j in range(k):
-            dp[k] = (dp[k] + dp[j] * dp[k - 1 - j]) % MOD
+    for i in range(2, 2*n + 1):
+        fact[i] = fact[i - 1] * i % MOD
+
+    inv_fact[2*n] = pow(fact[2*n], MOD - 2, MOD)
+    for i in range(2*n - 1, 0, -1):
+        inv_fact[i] = inv_fact[i + 1] * (i + 1) % MOD
     
-    # Check if the string s can be a substring of a valid sequence of length 2n
-    bal = 0
-    min_bal = 0
+    # Function to calculate C(n, k) = n! / (k! * (n-k)!)
+    def C(n, k):
+        if k < 0 or k > n:
+            return 0
+        return fact[n] * inv_fact[k] % MOD * inv_fact[n - k] % MOD
+
+    # Check the balance of the string s
+    balance = 0
+    min_balance = 0
     for char in s:
         if char == '(':
-            bal += 1
+            balance += 1
         else:
-            bal -= 1
-        min_bal = min(min_bal, bal)
-    
-    # If the balance is negative or the final balance is not zero, return 0
-    if bal < 0 or bal > n or (n - bal) < 0 or (n - bal) % 2 != 0:
-        return 0
-    
-    # Calculate the necessary opening and closing brackets
-    open_needed = (n - bal) // 2
-    close_needed = n - open_needed
-    
-    if open_needed < 0 or close_needed < 0 or open_needed + close_needed != n:
-        return 0
-    
-    # Count valid sequences
-    total_sequences = dp[n]
-    
-    # Now, we need to calculate the valid sequences that can be formed around s
-    count = 0
-    for i in range(max(0, open_needed - min_bal), min(open_needed, n - m + 1) + 1):
-        left_open = open_needed - i
-        right_open = n - (m + left_open)
-        if right_open < 0:
-            continue
-        count = (count + dp[left_open] * dp[right_open]) % MOD
-    
-    return count
+            balance -= 1
+        min_balance = min(min_balance, balance)
 
-# Input reading
+    # If the balance is negative or more than n, return 0
+    if balance > n or min_balance < 0:
+        return 0
+    
+    # Remaining open and close brackets after placing s
+    remaining_open = n - (s.count('('))
+    remaining_close = n - (s.count(')'))
+    
+    result = 0
+    for i in range(remaining_open + 1):
+        # i is the number of open brackets before s
+        # remaining_open - i is the number of open brackets after s
+        # remaining_close must match the total number of closing brackets
+        result += C(remaining_open, i) * C(remaining_open + remaining_close - 1, remaining_close - 1) % MOD
+        result %= MOD
+
+    return result
+
 n = int(input().strip())
 s = input().strip()
-
-# Output the result
 print(count_regular_sequences(n, s))

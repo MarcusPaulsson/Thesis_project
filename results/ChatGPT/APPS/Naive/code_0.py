@@ -1,47 +1,36 @@
-def max_length_acordion(s: str) -> int:
-    n = len(s)
+def max_acordion_length(s):
+    # Initialize variables to find the first and last brackets and colons
+    left_bracket_index = -1
+    right_bracket_index = -1
+    first_colon_index = -1
+    last_colon_index = -1
     
-    # Initialize indices for the first opening bracket and the last closing bracket
-    first_open = -1
-    last_close = -1
+    # Iterate through the string to find required characters
+    for i, char in enumerate(s):
+        if char == '[' and left_bracket_index == -1:
+            left_bracket_index = i
+        elif char == ']' and left_bracket_index != -1:
+            right_bracket_index = i
+        elif char == ':' and first_colon_index == -1:
+            first_colon_index = i
+        elif char == ':':
+            last_colon_index = i
     
-    # Find the first '[' and the last ']'
-    for i in range(n):
-        if s[i] == '[' and first_open == -1:
-            first_open = i
-        if s[i] == ']' and first_open != -1:
-            last_close = i
-    
-    # If we haven't found both brackets, return -1
-    if first_open == -1 or last_close == -1 or last_close <= first_open:
+    # Check if we found valid indices for accordion structure
+    if left_bracket_index == -1 or right_bracket_index == -1 or first_colon_index == -1 or last_colon_index == -1:
         return -1
     
-    # Now we need to find the colons and vertical lines
-    first_colon = -1
-    second_colon = -1
-    vertical_count = 0
-    
-    # Iterate between the first '[' and last ']' to find colons and vertical lines
-    for i in range(first_open + 1, last_close):
-        if s[i] == ':':
-            if first_colon == -1:
-                first_colon = i
-            elif second_colon == -1:
-                second_colon = i
-                break  # We found both colons, no need to continue
-    
-        if s[i] == '|':
-            vertical_count += 1
-    
-    # If we found at least one colon and both colons are in the right order
-    if first_colon != -1 and (second_colon == -1 or second_colon > first_colon):
-        # Calculate the length of the accordion
-        accordion_length = (last_close - first_open + 1) + vertical_count
-        return accordion_length
-    else:
+    # Ensure that the colons are correctly positioned
+    if first_colon_index >= last_colon_index or left_bracket_index >= first_colon_index or right_bracket_index <= last_colon_index:
         return -1
+    
+    # Count the number of '|' characters between the colons
+    vertical_lines_count = s[first_colon_index + 1:last_colon_index].count('|')
+    
+    # Calculate the maximum length of the accordion
+    return 4 + vertical_lines_count  # 4 for the brackets and colons, plus the number of '|'
 
-# Read input
+# Input reading
 s = input().strip()
 # Output the result
-print(max_length_acordion(s))
+print(max_acordion_length(s))

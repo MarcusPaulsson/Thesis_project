@@ -1,36 +1,56 @@
+from collections import Counter
+
 def solve():
     a = input()
     b = input()
-    a_digits = sorted(list(a), reverse=True)
     
-    if len(a) < len(b):
+    a_digits = sorted(list(a), reverse=True)
+    n_a = len(a)
+    n_b = len(b)
+    
+    if n_a > n_b:
         print("".join(a_digits))
         return
     
-    def find_max_permutation(index, current_num, remaining_digits):
-        if index == len(a):
+    def find_max_permutation(index, remaining_digits, current_num):
+        if index == n_a:
             return current_num
         
         best_num = ""
         
-        for digit in sorted(list(set(remaining_digits)), reverse=True):
-            temp_remaining_digits = remaining_digits[:]
-            temp_remaining_digits.remove(digit)
-            new_num = current_num + digit
-            
-            if new_num <= b[:index+1]:
-                if new_num == b[:index+1]:
-                    result = find_max_permutation(index + 1, new_num, temp_remaining_digits)
-                    if result != "" and (best_num == "" or result > best_num):
-                        best_num = result
-                else:
-                    sorted_remaining = sorted(temp_remaining_digits, reverse=True)
-                    result = new_num + "".join(sorted_remaining)
-                    if best_num == "" or result > best_num:
-                        best_num = result
+        for digit in sorted(remaining_digits.keys(), reverse=True):
+            if remaining_digits[digit] > 0:
+                temp_remaining_digits = remaining_digits.copy()
+                temp_remaining_digits[digit] -= 1
+                if temp_remaining_digits[digit] == 0:
+                    del temp_remaining_digits[digit]
+                    
+                new_num = current_num + digit
+                
+                if new_num <= b[:index+1]:
+                    if len(new_num) < n_a:
+                        if new_num < b[:index+1]:
+                            sorted_rem = sorted(temp_remaining_digits.keys(), reverse=True)
+                            rem_str = ""
+                            for d in sorted_rem:
+                                rem_str += d * temp_remaining_digits[d]
+                            
+                            candidate = new_num + rem_str
+                            if len(candidate) == n_a:
+                                if best_num == "" or candidate > best_num:
+                                    best_num = candidate
+                        else:
+                            candidate = find_max_permutation(index + 1, temp_remaining_digits, new_num)
+                            if candidate != "" and (best_num == "" or candidate > best_num):
+                                best_num = candidate
+                    else:
+                        best_num = new_num
+        
         return best_num
+
+    a_counts = Counter(a)
+    result = find_max_permutation(0, a_counts, "")
     
-    result = find_max_permutation(0, "", list(a))
     print(result)
 
 solve()

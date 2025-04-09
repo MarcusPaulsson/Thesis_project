@@ -2,29 +2,30 @@ n = int(input())
 a = input().strip()
 f = list(map(int, input().strip().split()))
 
-# Convert f to a mapping from characters
-f_map = {str(i + 1): str(f[i]) for i in range(9)}
+# Convert f to a list where the index represents the digit - 1
+f = [0] + f  # f[0] is unused, we use indices 1 to 9
 
-# Initialize result as the original number
-result = a
+max_number = a  # Start with the original number
 
-# Flag to indicate if we are replacing the segment
-replacing = False
+# We will look for the best segment to replace
+changed = False
 new_number = []
 
-for digit in a:
-    if not replacing and f_map[digit] > digit:
+for i in range(n):
+    digit = int(a[i])
+    if f[digit] > digit:
         # Start replacing
-        replacing = True
-    elif replacing and f_map[digit] < digit:
-        # Stop replacing if we see a digit that should not be replaced
-        replacing = False
-        
-    if replacing:
-        new_number.append(f_map[digit])
+        new_number.append(str(f[digit]))
+        changed = True
+    elif f[digit] < digit and changed:
+        # Stop replacing if we already started
+        break
     else:
-        new_number.append(digit)
+        new_number.append(str(digit))
 
-# Join the new number and compare with original
-max_number = ''.join(new_number)
+# If we started replacing but didn't stop, we should finalize it
+if changed:
+    max_number = ''.join(new_number) + a[i+1:]
+
+# Output the maximum number
 print(max(max_number, a))

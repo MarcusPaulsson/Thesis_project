@@ -11,8 +11,9 @@ def reachable_count(n):
     while current not in reachable:
         reachable.add(current)
         current = f(current)
-    
+        
     return len(reachable)
 
-n = int(input().strip())
-print(reachable_count(n))
+if __name__ == "__main__":
+    n = int(input().strip())
+    print(reachable_count(n))

@@ -9,7 +9,7 @@ def solve():
             even_count += 1
         else:
             odd_count += 1
-            
+    
     print(min(odd_count, even_count))
 
 solve()

@@ -8,8 +8,7 @@ def solve():
         min_dist = float('inf')
         for j in range(n):
             if a[j] == 0:
-                dist = abs(i - j)
-                min_dist = min(min_dist, dist)
+                min_dist = min(min_dist, abs(i - j))
         distances[i] = min_dist
     
     print(*distances)

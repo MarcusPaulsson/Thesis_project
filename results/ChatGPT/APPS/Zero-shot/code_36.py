@@ -1,38 +1,33 @@
-def hexagonal_spiral(n):
+def hexagonal_coordinates(n):
     if n == 0:
         return (0, 0)
 
     layer = 0
-    moves_in_layer = 6
-    total_moves = 0
-
-    while total_moves + moves_in_layer <= n:
-        total_moves += moves_in_layer
+    steps_in_layer = 6
+    moves = 0
+    
+    while moves + steps_in_layer <= n:
+        moves += steps_in_layer
         layer += 1
-        moves_in_layer += 6
+        steps_in_layer += 6
 
-    remaining_moves = n - total_moves
+    remaining_moves = n - moves
     x, y = layer, 0
 
     if remaining_moves == 0:
         return (x, y)
 
-    direction = remaining_moves // 1
-    if direction == 1:
-        x, y = layer, 0
-    elif direction == 2:
-        x, y = layer - (remaining_moves - 1), remaining_moves - 1
-    elif direction == 3:
-        x, y = -remaining_moves + 1, layer
-    elif direction == 4:
-        x, y = -layer, layer - (remaining_moves - 3)
-    elif direction == 5:
-        x, y = -layer + (remaining_moves - 4), -layer
-    elif direction == 6:
-        x, y = remaining_moves - 5, -layer + (remaining_moves - 5)
+    # Directions for hexagonal grid: right, top-right, top-left, left, bottom-left, bottom-right
+    directions = [(1, 0), (0, 1), (-1, 1), (-1, 0), (0, -1), (1, -1)]
+    
+    # Apply the remaining moves in the current layer
+    for i in range(remaining_moves):
+        dx, dy = directions[i % 6]
+        x += dx
+        y += dy
 
     return (x, y)
 
 n = int(input().strip())
-result = hexagonal_spiral(n)
+result = hexagonal_coordinates(n)
 print(result[0], result[1])

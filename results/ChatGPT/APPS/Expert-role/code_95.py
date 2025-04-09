@@ -1,33 +1,50 @@
-def can_construct_string(n, s, t):
-    # Create a base string with n 'a's, n 'b's, and n 'c's
-    base = 'a' * n + 'b' * n + 'c' * n
+def generate_string(n, s, t):
+    # Create the base string with n 'a's, n 'b's, and n 'c's
+    base_string = 'a' * n + 'b' * n + 'c' * n
     
-    # Check if we can find positions to create a valid string
-    # We can use a simple approach to rearrange
-    for i in range(3):
-        for j in range(3):
-            if i != j:
-                # Create a potential result by interleaving different characters
-                res = []
-                for k in range(n):
-                    res.append(chr(97 + i))  # 'a' + i
-                    res.append(chr(97 + j))  # 'a' + j
-                res.append(chr(97 + (3 - i - j)))  # add the remaining character
-                result = ''.join(res)
-                
-                # Check if neither s nor t is a substring
-                if s not in result and t not in result:
-                    return "YES", result
+    # Check if it's possible to form a valid string
+    if s[0] == t[0] or s[0] == t[1] or s[1] == t[0] or s[1] == t[1]:
+        print("NO")
+        return
     
-    return "NO", ""
+    # Initialize the result list
+    res = []
+
+    # Create a list of characters to work with
+    chars = ['a'] * n + ['b'] * n + ['c'] * n
+    
+    # Current characters to be added
+    current = 0
+    
+    while current < len(chars):
+        # Try to add a character while avoiding the substrings s and t
+        for i in range(current, len(chars)):
+            # Check the last two added characters
+            if len(res) >= 1 and chars[i] == res[-1]:
+                continue
+            if len(res) >= 2 and (res[-1] == s[0] and res[-2] == s[1]) or (res[-1] == t[0] and res[-2] == t[1]):
+                continue
+            
+            # Add the character to the result
+            res.append(chars[i])
+            # Move the current pointer
+            current += 1
+            break
+        else:
+            # If we can't add any character, break the loop
+            break
+            
+    # If we filled the result with the necessary length
+    if len(res) == 3 * n:
+        print("YES")
+        print(''.join(res))
+    else:
+        print("NO")
 
 # Read input
-n = int(input().strip())
+n = int(input())
 s = input().strip()
 t = input().strip()
 
-# Generate and print the result
-result = can_construct_string(n, s, t)
-print(result[0])
-if result[0] == "YES":
-    print(result[1])
+# Generate the string
+generate_string(n, s, t)

@@ -1,19 +1,15 @@
-# Read input values
 n = int(input())
 a1, a2, a3 = map(int, input().split())
 b1, b2, b3 = map(int, input().split())
 
-# Maximum wins calculation
-max_wins = min(a1, b2) + min(a2, b3) + min(a3, b1)
+# Maximum wins for Alice
+max_wins = min(a1, b3) + min(a2, b1) + min(a3, b2)
 
-# Minimum wins calculation
-# Calculate losses for Alice
-alice_loses = 0
-alice_loses += max(0, b1 - a3)  # Bob's rocks beat Alice's paper
-alice_loses += max(0, b2 - a1)  # Bob's scissors beat Alice's rock
-alice_loses += max(0, b3 - a2)  # Bob's paper beats Alice's scissors
+# Minimum wins for Alice
+# Calculate Bob's potential wins:
+bob_wins = min(b1, a2) + min(b2, a3) + min(b3, a1)
 
-min_wins = n - alice_loses
+# Since total rounds are n, Alice's minimum wins will be:
+min_wins = n - bob_wins
 
-# Output the results
 print(min_wins, max_wins)

@@ -1,24 +1,20 @@
 def solve():
     n = int(input())
-    strings = []
-    for _ in range(n):
-        strings.append(input())
+    strings = [input() for _ in range(n)]
+
+    strings.sort(key=len)
 
     def is_substring(a, b):
         return a in b
 
-    strings.sort(key=len)
+    def check_order(order):
+        for i in range(1, len(order)):
+            for j in range(i):
+                if not is_substring(order[j], order[i]):
+                    return False
+        return True
 
-    valid = True
-    for i in range(1, n):
-        for j in range(i):
-            if not is_substring(strings[j], strings[i]):
-                valid = False
-                break
-        if not valid:
-            break
-
-    if valid:
+    if check_order(strings):
         print("YES")
         for s in strings:
             print(s)

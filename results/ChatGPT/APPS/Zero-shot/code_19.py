@@ -2,37 +2,35 @@ def check_records(test_cases):
     results = []
     for case in test_cases:
         n = case[0]
-        records = case[1]
-        
+        pairs = case[1]
         valid = True
-        previous_plays, previous_clears = 0, 0
         
-        for p, c in records:
-            if p < previous_plays or c < previous_clears or c > p:
-                valid = False
-                break
-            
-            if p - previous_plays < c - previous_clears:
-                valid = False
-                break
-            
-            previous_plays, previous_clears = p, c
+        for i in range(n):
+            p, c = pairs[i]
+            if i > 0:
+                prev_p, prev_c = pairs[i - 1]
+                if p < prev_p or c < prev_c or c > p:
+                    valid = False
+                    break
+                if (p - prev_p) < (c - prev_c):
+                    valid = False
+                    break
         
-        results.append("YES" if valid else "NO")
+        if valid:
+            results.append("YES")
+        else:
+            results.append("NO")
     
     return results
 
-# Reading input
+# Read input
 T = int(input())
 test_cases = []
 for _ in range(T):
     n = int(input())
-    records = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, records))
+    pairs = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, pairs))
 
-# Checking records
+# Check each test case and print results
 results = check_records(test_cases)
-
-# Printing results
-for result in results:
-    print(result)
+print("\n".join(results))

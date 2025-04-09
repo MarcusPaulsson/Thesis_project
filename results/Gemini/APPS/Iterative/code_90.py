@@ -1,47 +1,64 @@
 def solve():
     n, m, d = map(int, input().split())
     c = list(map(int, input().split()))
-
+    
     total_length = sum(c)
+    arr = [0] * n
     
-    min_empty = m - 1
-    max_empty = n - total_length
+    pos = 0
+    remaining = n
     
-    if max_empty + min_empty >= d - 1:
+    for i in range(m):
+        needed = min(remaining - total_length, d - 1)
+        pos += needed
+        remaining -= needed
         
-        arr = [0] * n
+        for j in range(c[i]):
+            arr[pos] = i + 1
+            pos += 1
+        remaining -= c[i]
+        total_length -= c[i]
         
-        current_pos = 0
+    if remaining < 0:
+        print("NO")
+        return
+
+    if total_length > 0:
+        print("NO")
+        return
+    
+    
+    
+    
+    reachable = False
+    
+    def check_reachable(arrangement):
         
-        for i in range(m):
+        curr_pos = 0
+        
+        
+        while curr_pos < n:
             
-            needed_empty = min(d - 1, n - total_length)
-            
-            for j in range(needed_empty):
-                arr[current_pos] = 0
-                current_pos += 1
+            next_pos = -1
+            for i in range(curr_pos + 1, min(curr_pos + d + 1, n + 1)):
+                if i == n:
+                    
+                    return True
                 
-            for j in range(c[i]):
-                arr[current_pos] = i + 1
-                current_pos += 1
+                if arrangement[i-1] != 0:
+                    next_pos = i
+                    
+            if next_pos == -1:
+                return False
             
-            n -= needed_empty
-            
-            n -= c[i]
-            
-            d -= needed_empty
+            curr_pos = next_pos
         
-        
-        
-        for i in range(len(arr) -1, -1, -1):
-            if arr[i] == 0 and n > 0:
-                n -= 1
-            else:
-                break
-        
+        return True
+
+    if check_reachable(arr):
         print("YES")
         print(*arr)
     else:
         print("NO")
-    
+
 solve()

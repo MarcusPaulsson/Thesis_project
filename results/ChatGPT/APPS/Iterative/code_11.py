@@ -1,20 +1,17 @@
 import math
 
 def max_chocolates(n, a, b, p, q):
-    # Count the number of tiles painted Red
-    red_count = n // a
-    # Count the number of tiles painted Blue
-    blue_count = n // b
-    # Count the number of tiles painted Red and Blue
-    both_count = n // (a * b // math.gcd(a, b))
+    count_red = n // a
+    count_blue = n // b
+    lcm_ab = a * (b // math.gcd(a, b))  # Calculate LCM using GCD
+    count_both = n // lcm_ab
     
-    # Calculate maximum chocolates
-    # If we paint the overlapping tiles as Red
-    option1 = (red_count - both_count) * p + (blue_count - both_count) * q + both_count * p
-    # If we paint the overlapping tiles as Blue
-    option2 = (red_count - both_count) * p + (blue_count - both_count) * q + both_count * q
+    # Calculate chocolates for both painting strategies
+    chocolates_option_1 = (count_red - count_both) * p + count_blue * q
+    chocolates_option_2 = count_red * p + (count_blue - count_both) * q
     
-    return max(option1, option2)
+    return max(chocolates_option_1, chocolates_option_2)
 
 n, a, b, p, q = map(int, input().split())
-print(max_chocolates(n, a, b, p, q))
+result = max_chocolates(n, a, b, p, q)
+print(result)

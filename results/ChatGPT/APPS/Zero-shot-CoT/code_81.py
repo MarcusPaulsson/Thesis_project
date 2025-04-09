@@ -1,20 +1,18 @@
 def can_reorder_strings(n, strings):
-    # Sort strings by length
-    strings.sort(key=len)
+    # Sort strings by length first, then lexicographically
+    strings.sort(key=lambda x: (len(x), x))
     
-    # Check for the substring condition
-    for i in range(n):
-        for j in range(i):
-            if strings[j] not in strings[i]:
-                print("NO")
-                return
+    # Check if each string is a substring of the next one
+    for i in range(n - 1):
+        if strings[i] not in strings[i + 1]:
+            return "NO"
     
-    print("YES")
-    for s in strings:
-        print(s)
+    return "YES\n" + "\n".join(strings)
 
 # Input reading
 n = int(input())
 strings = [input().strip() for _ in range(n)]
 
-can_reorder_strings(n, strings)
+# Get result and print
+result = can_reorder_strings(n, strings)
+print(result)

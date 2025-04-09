@@ -1,12 +1,14 @@
 def solve():
-    n, L = map(int, input().split())
+    n, l = map(int, input().split())
     kefa = list(map(int, input().split()))
     sasha = list(map(int, input().split()))
 
-    for shift in range(L):
-        shifted_sasha = [(x + shift) % L for x in sasha]
-        shifted_sasha.sort()
-        if kefa == shifted_sasha:
+    for start_diff in range(l):
+        possible = True
+        shifted_kefa = [(x + start_diff) % l for x in kefa]
+        shifted_kefa.sort()
+        
+        if shifted_kefa == sasha:
             print("YES")
             return
     

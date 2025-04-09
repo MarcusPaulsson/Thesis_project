@@ -3,21 +3,19 @@ def has_palindrome_subsequence(t, test_cases):
     for case in test_cases:
         n, a = case
         found = False
-        # Check for any element that appears at least twice with at least one element between them
-        first_occurrence = {}
+        # Check for any element that appears at least twice
+        indices = {}
         for i in range(n):
-            if a[i] in first_occurrence:
-                # If we've seen this element before and it's not adjacent, we found a palindrome
-                if i - first_occurrence[a[i]] > 1:
+            if a[i] in indices:
+                # If we find the same element again and the distance is at least 2
+                if i - indices[a[i]] >= 2:
                     found = True
                     break
-            # Record the first occurrence of the element
-            first_occurrence[a[i]] = i
-        
+            indices[a[i]] = i
         results.append("YES" if found else "NO")
     return results
 
-# Input reading
+# Read input
 t = int(input())
 test_cases = []
 for _ in range(t):
@@ -25,9 +23,7 @@ for _ in range(t):
     a = list(map(int, input().split()))
     test_cases.append((n, a))
 
-# Get results
+# Get results and print them
 results = has_palindrome_subsequence(t, test_cases)
-
-# Output results
 for result in results:
     print(result)

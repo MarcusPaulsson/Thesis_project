@@ -3,47 +3,44 @@ def solve():
     s = input()
     sorted_s = sorted(s)
 
-    for i in range(1 << n):
+    for i in range(2**n):
         coloring = ""
-        s0 = ""
-        s1 = ""
         for j in range(n):
             if (i >> j) & 1:
-                coloring += "1"
-                s1 += s[j]
+                coloring += '1'
             else:
-                coloring += "0"
-                s0 += s[j]
+                coloring += '0'
+        coloring = coloring[::-1]
 
-        s0_sorted = sorted(s0)
-        s1_sorted = sorted(s1)
+        s0 = []
+        s1 = []
+        for k in range(n):
+            if coloring[k] == '0':
+                s0.append(s[k])
+            else:
+                s1.append(s[k])
 
-        merged = ""
-        idx0 = 0
-        idx1 = 0
+        s0.sort()
+        s1.sort()
 
-        k = 0
-        possible = True
-        for j in range(n):
-            if coloring[j] == '0':
-                if idx0 < len(s0_sorted):
-                    merged += s0_sorted[idx0]
-                    idx0 += 1
+        merged = []
+        i = 0
+        j = 0
+        for k in range(n):
+            if coloring[k] == '0':
+                if i < len(s0):
+                    merged.append(s0[i])
+                    i += 1
                 else:
-                    possible = False
                     break
             else:
-                if idx1 < len(s1_sorted):
-                    merged += s1_sorted[idx1]
-                    idx1 += 1
+                if j < len(s1):
+                    merged.append(s1[j])
+                    j += 1
                 else:
-                    possible = False
                     break
         
-        if not possible:
-            continue
-
-        if list(merged) == sorted_s:
+        if "".join(merged) == "".join(sorted_s):
             print("YES")
             print(coloring)
             return

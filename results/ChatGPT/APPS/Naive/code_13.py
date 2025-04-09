@@ -1,65 +1,70 @@
-from collections import defaultdict, deque
-import sys
+from collections import deque, defaultdict
 
-def topological_sort(n, dependencies):
-    in_degree = [0] * (n + 1)
+def main_courses_sequence(n, k, main_courses, dependencies):
     graph = defaultdict(list)
+    in_degree = [0] * (n + 1)
+    
+    # Build the graph and compute in-degrees
+    for course_id in range(1, n + 1):
+        for dep in dependencies[course_id - 1]:
+            graph[dep].append(course_id)
+            in_degree[course_id] += 1
 
-    # Build the graph and in-degree count
-    for course, deps in dependencies.items():
-        for dep in deps:
-            graph[dep].append(course)
-            in_degree[course] += 1
-
-    # Queue for courses with no prerequisites
-    zero_in_degree = deque()
-    for i in range(1, n + 1):
-        if in_degree[i] == 0:
-            zero_in_degree.append(i)
+    # Queue for courses that can be taken (in-degree of 0)
+    queue = deque()
+    for course_id in range(1, n + 1):
+        if in_degree[course_id] == 0:
+            queue.append(course_id)
 
     order = []
-    while zero_in_degree:
-        course = zero_in_degree.popleft()
-        order.append(course)
-        for next_course in graph[course]:
-            in_degree[next_course] -= 1
-            if in_degree[next_course] == 0:
-                zero_in_degree.append(next_course)
+    taken_courses = set()
 
-    return order
+    # Process the courses in topological order
+    while queue:
+        course_id = queue.popleft()
+        order.append(course_id)
+        taken_courses.add(course_id)
 
-def main():
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    n, k = map(int, data[0].split())
-    main_courses = list(map(int, data[1].split()))
-    
-    dependencies = defaultdict(list)
-    for i in range(n):
-        line = list(map(int, data[i + 2].split()))
-        t_i = line[0]
-        dependencies[i + 1] = line[1:t_i + 1]
+        for neighbor in graph[course_id]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
 
-    # Get the topological order of courses
-    order = topological_sort(n, dependencies)
+    # Check if we can take all main courses
+    if not all(course in taken_courses for course in main_courses):
+        return -1
 
-    # Set for fast lookup of main courses
-    main_set = set(main_courses)
-    passed_courses = set()
-    result_order = []
+    # Find all courses needed to take
+    needed_courses = set(main_courses)
+    for course in main_courses:
+        stack = [course]
+        while stack:
+            curr = stack.pop()
+            for dep in dependencies[curr - 1]:
+                if dep not in needed_courses:
+                    needed_courses.add(dep)
+                    stack.append(dep)
 
-    # Process courses in topological order
-    for course in order:
-        if course in main_set or any(dep in passed_courses for dep in dependencies[course]):
-            result_order.append(course)
-            passed_courses.add(course)
+    # Filter the courses to include only the needed ones
+    result = [course for course in order if course in needed_courses]
+    return len(result), result
 
-    if not main_set.issubset(passed_courses):
-        print(-1)
-    else:
-        print(len(result_order))
-        print(" ".join(map(str, result_order)))
+# Input reading
+n, k = map(int, input().split())
+main_courses = list(map(int, input().split()))
+dependencies = []
 
-if __name__ == "__main__":
-    main()
+for _ in range(n):
+    line = list(map(int, input().split()))
+    dependencies.append(line[1:])
+
+# Get the result
+result = main_courses_sequence(n, k, main_courses, dependencies)
+
+# Output
+if result == -1:
+    print(-1)
+else:
+    m, course_order = result
+    print(m)
+    print(" ".join(map(str, course_order)))

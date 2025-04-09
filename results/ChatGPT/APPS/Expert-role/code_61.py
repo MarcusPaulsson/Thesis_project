@@ -1,39 +1,25 @@
-def max_transformed_number(n, a, f):
-    # Convert the function into a mapping from digit to its transformed value
-    f_map = {str(i + 1): str(f[i]) for i in range(9)}
-    
-    # Create a list to store the transformed number
-    transformed = []
-    transformation_started = False
-    
-    for digit in a:
-        if not transformation_started and f_map[digit] > digit:
-            # Start transforming if the current digit can be improved
-            transformation_started = True
-        if transformation_started:
-            # Replace the digit with its transformed value
-            transformed.append(f_map[digit])
-        else:
-            transformed.append(digit)
-    
-    # If we finished transforming and the transformation was started
-    # We should ensure we keep transforming till the end if it's beneficial
-    if transformation_started:
-        for i in range(len(transformed)):
-            if transformed[i] < a[i]:
-                break
-            transformed[i] = f_map[a[i]]
-    
-    result = ''.join(transformed)
-    return result
-
-# Input reading
-n = int(input().strip())
+n = int(input())
 a = input().strip()
 f = list(map(int, input().strip().split()))
 
-# Getting the result
-result = max_transformed_number(n, a, f)
+max_number = list(a)  # Start with the original number as a list of characters
+i = 0
 
-# Printing the result
-print(result)
+while i < n:
+    if f[int(a[i]) - 1] > int(a[i]):
+        # Start replacing if f(x) is greater than x
+        while i < n and f[int(a[i]) - 1] >= int(a[i]):
+            max_number[i] = str(f[int(a[i]) - 1])
+            i += 1
+        break
+    elif f[int(a[i]) - 1] < int(a[i]):
+        # Once we find a digit where f(x) is less than x, we stop
+        break
+    i += 1
+
+# If we started replacing, we continue replacing until we find a digit that would be reduced
+while i < n and f[int(a[i]) - 1] >= int(a[i]):
+    max_number[i] = str(f[int(a[i]) - 1])
+    i += 1
+
+print(''.join(max_number))

@@ -1,25 +1,35 @@
 def solve():
-    n = int(input())
-    a = list(map(int, input().split()))
+  n = int(input())
+  a = list(map(int, input().split()))
 
-    def check(d):
-        for target in set(a):
-            possible = True
-            for val in a:
-                if val == target or val + d == target or val - d == target:
-                    continue
-                else:
-                    possible = False
-                    break
-            if possible:
-                return True
-        return False
+  if n == 1:
+    print(0)
+    return
 
-    for d in range(101):
-        if check(d):
-            print(d)
-            return
-    
+  unique_nums = sorted(list(set(a)))
+
+  if len(unique_nums) > 3:
     print(-1)
+    return
+  
+  if len(unique_nums) == 1:
+    print(0)
+    return
+
+  if len(unique_nums) == 2:
+    x, y = unique_nums
+    if (x + y) % 2 == 0:
+      print((y - x) // 2)
+    else:
+      print(y - x)
+    return
+
+  if len(unique_nums) == 3:
+    x, y, z = unique_nums
+    if y - x == z - y:
+      print(y - x)
+    else:
+      print(-1)
+    return
 
 solve()

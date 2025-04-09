@@ -21,10 +21,11 @@ def solve():
                 matrix[j][i] = 1
                 k -= 2
 
-    if k != 0:
+    if k > 0:
         print("-1")
-    else:
-        for row in matrix:
-            print(*row)
+        return
+
+    for row in matrix:
+        print(*row)
 
 solve()

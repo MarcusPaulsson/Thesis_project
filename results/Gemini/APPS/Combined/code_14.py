@@ -1,13 +1,23 @@
 def is_stack_sortable(arr):
     stack = []
-    b = []
-    
+    expected = 1
     for x in arr:
-        stack.append(x)
-        while stack and (not b or stack[-1] > b[-1]):
-            b.append(stack.pop())
-
-    return all(b[i] < b[i+1] for i in range(len(b) - 1)) if b else True
+        while stack and stack[-1] == expected:
+            stack.pop()
+            expected += 1
+        if x == expected:
+            expected += 1
+        elif stack and stack[-1] < x:
+            return False
+        else:
+            stack.append(x)
+    while stack:
+        if stack[-1] == expected:
+            stack.pop()
+            expected += 1
+        else:
+            return False
+    return True
 
 def solve():
     n, k = map(int, input().split())
@@ -22,28 +32,21 @@ def solve():
         if not used[i]:
             remaining.append(i)
     
-    p_full = p + remaining
-
-    if is_stack_sortable(p_full):
-      print(*p_full)
-      return
-
+    
     import itertools
     
     best_permutation = None
-
+    
     for permutation in itertools.permutations(remaining):
-        current_permutation = p + list(permutation)
-        if is_stack_sortable(current_permutation):
+        candidate = p + list(permutation)
+        if is_stack_sortable(candidate):
             if best_permutation is None:
-                best_permutation = current_permutation
-            else:
-                if current_permutation > best_permutation:
-                    best_permutation = current_permutation
-
-    if best_permutation is None:
-      print("-1")
+                best_permutation = candidate
+            elif candidate > best_permutation:
+                best_permutation = candidate
+                
+    if best_permutation:
+        print(*best_permutation)
     else:
-      print(*best_permutation)
-
+        print("-1")
 solve()

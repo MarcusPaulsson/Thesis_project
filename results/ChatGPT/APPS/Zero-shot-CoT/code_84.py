@@ -1,36 +1,29 @@
-n = int(input().strip())
-s = input().strip()
+n = int(input())
+s = input()
 
-sorted_s = sorted(s)
-coloring = ['0'] * n
+# Count occurrences of each character
+from collections import Counter
+count = Counter(s)
 
-# Build a mapping of character to their positions in the sorted string
-char_positions = {}
-for idx, char in enumerate(sorted_s):
-    if char not in char_positions:
-        char_positions[char] = []
-    char_positions[char].append(idx)
+# Check for the maximum frequency of any character
+max_freq = max(count.values())
 
-# To keep track of how many of each character we have colored
-colored_count = {char: 0 for char in char_positions}
-
-for i in range(n):
-    char = s[i]
-    # Get the actual position in the sorted array that this character would go to
-    pos = char_positions[char][colored_count[char]]
-    colored_count[char] += 1
-
-    # If the color for current character is not set, set it to '0' or '1' depending on its position
-    if coloring[pos] == '0':
-        coloring[pos] = '0'
-    else:
-        coloring[pos] = '1'
-
-# Check if the coloring can lead to a sorted arrangement
-for i in range(1, n):
-    if s[i] < s[i - 1] and coloring[i] == coloring[i - 1]:
-        print("NO")
-        break
+# If max frequency is greater than (n + 1) // 2, it's impossible to color
+if max_freq > (n + 1) // 2:
+    print("NO")
 else:
     print("YES")
+    # Generate coloring
+    coloring = ['0'] * n
+    # Fill in the first half with '0' and the second half with '1'
+    half = (n + 1) // 2
+    used = Counter()
+    
+    for i in range(n):
+        if used[s[i]] < count[s[i]] // 2:
+            coloring[i] = '0'
+        else:
+            coloring[i] = '1'
+        used[s[i]] += 1
+    
     print(''.join(coloring))

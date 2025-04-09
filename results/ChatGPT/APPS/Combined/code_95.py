@@ -1,34 +1,42 @@
 def generate_string(n, s, t):
-    # Create a base list with n 'a's, n 'b's, and n 'c's
-    base_list = ['a'] * n + ['b'] * n + ['c'] * n
+    # Create the base string with n 'a's, n 'b's, and n 'c's
+    base = ['a'] * n + ['b'] * n + ['c'] * n
+    
+    # Check for forbidden pairs
+    forbidden_pairs = {s, t}
 
-    # Function to check if the last two characters form a forbidden substring
-    def is_forbidden(last_two):
-        return last_two in {s, t}
+    # Function to check if the last two characters form a forbidden pair
+    def ends_with_forbidden(pair):
+        return pair in forbidden_pairs
 
-    # Attempt to construct a valid string
+    # Construct the result string
     result = []
-    for char in base_list:
-        if len(result) >= 1 and is_forbidden(result[-1] + char):
-            # If appending this char leads to a forbidden substring, try to find a different char
-            for alternate in base_list:
-                if alternate != char and not is_forbidden(result[-1] + alternate):
-                    result.append(alternate)
-                    base_list.remove(alternate)
+    for char in base:
+        result.append(char)
+        # If the last two characters form a forbidden pair, skip the next character
+        if len(result) >= 2 and ends_with_forbidden(''.join(result[-2:])):
+            # Find a valid character to replace the last character
+            for replacement in 'abc':
+                if replacement != char and (len(result) < 2 or not ends_with_forbidden(''.join(result[-2:] + [replacement]))):
+                    result[-1] = replacement
                     break
-            else:
-                # If no valid alternate found, return "NO"
-                return "NO"
-        else:
-            result.append(char)
 
-    return "YES\n" + ''.join(result)
+    # Join the result and check if it contains forbidden substrings
+    result_str = ''.join(result)
+    if any(f in result_str for f in forbidden_pairs):
+        return "NO", None
 
-# Input reading
+    return "YES", result_str
+
+# Reading input
 n = int(input().strip())
 s = input().strip()
 t = input().strip()
 
-# Generate and print the result
+# Generating the result
 result = generate_string(n, s, t)
-print(result)
+
+# Print the output
+print(result[0])
+if result[0] == "YES":
+    print(result[1])

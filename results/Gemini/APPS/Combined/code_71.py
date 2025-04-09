@@ -1,14 +1,17 @@
 def solve():
     a = int(input())
-    total = 0
-    count = 0
-    i = 1
-    while True:
-        total += i * (i + 1) // 2
-        if total >= a:
-            print(count)
-            return
-        i += 1
-        count += 1
+
+    if a == 1:
+        print(0)  # Corrected output for a=1 to match the problem description's implied behavior.
+        return
+
+    n = 0
+    power_of_2 = 1
+    while power_of_2 <= a:
+        power_of_2 *= 2
+        n += 1
+
+    print(n - 1)
+
 
 solve()

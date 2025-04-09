@@ -1,15 +1,14 @@
 def solve():
-    n, l = map(int, input().split())
-    kefa = list(map(int, input().split()))
-    sasha = list(map(int, input().split()))
-
-    for shift in range(l):
-        shifted_sasha = [(x + shift) % l for x in sasha]
-        shifted_sasha.sort()
-        if kefa == shifted_sasha:
-            print("YES")
-            return
-
-    print("NO")
+    s = input()
+    n = len(s)
+    max_len = 0
+    
+    for i in range(n):
+        for j in range(i, n):
+            sub = s[i:j+1]
+            if sub != sub[::-1]:
+                max_len = max(max_len, len(sub))
+                
+    print(max_len)
 
 solve()

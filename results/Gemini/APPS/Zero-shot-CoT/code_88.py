@@ -8,73 +8,73 @@ def solve():
     
     matrix = [[0] * n for _ in range(n)]
     
-    def is_palindromic(mat):
-        rows = len(mat)
-        cols = len(mat[0])
-        
-        # Check rows
-        for i in range(rows):
-            for j in range(cols):
-                if mat[i][j] != mat[rows - 1 - i][j]:
+    def check(matrix):
+        for i in range(n):
+            for j in range(n):
+                if matrix[i][j] != matrix[n-1-i][j] or matrix[i][j] != matrix[i][n-1-j]:
                     return False
-        
-        # Check columns
-        for i in range(rows):
-            for j in range(cols):
-                if mat[i][j] != mat[i][cols - 1 - j]:
-                    return False
-        
         return True
     
-    def can_fill(row, col):
-        return row >= 0 and row < n and col >= 0 and col < n and matrix[row][col] == 0
-    
-    def solve_recursive(row, col):
-        if row >= (n + 1) // 2:
-            return is_palindromic(matrix)
+    def backtrack(row, col):
+        if row == n:
+            return check(matrix)
         
-        if col >= (n + 1) // 2:
-            return solve_recursive(row + 1, 0)
+        if col == n:
+            return backtrack(row + 1, 0)
         
         for num in list(counts.keys()):
             if counts[num] > 0:
+                matrix[row][col] = num
+                counts[num] -= 1
                 
-                def fill_cells(r, c, val):
-                    matrix[r][c] = val
-                    if r != n - 1 - r:
-                        matrix[n - 1 - r][c] = val
-                    if c != n - 1 - c:
-                        matrix[r][n - 1 - c] = val
-                    if r != n - 1 - r and c != n - 1 - c:
-                        matrix[n - 1 - r][n - 1 - c] = val
+                if backtrack(row, col + 1):
+                    return True
                 
-                def get_num_filled_cells(r, c):
-                    count = 1
-                    if r != n - 1 - r:
-                        count += 1
-                    if c != n - 1 - c:
-                        count += 1
-                    if r != n - 1 - r and c != n - 1 - c:
-                        count += 1
-                    return count
-                    
+                counts[num] += 1
+                matrix[row][col] = 0
                 
-                num_filled_cells = get_num_filled_cells(row, col)
-                
-                if counts[num] >= num_filled_cells:
-                    
-                    counts[num] -= num_filled_cells
-                    fill_cells(row, col, num)
-                    
-                    if solve_recursive(row, col + 1):
-                        return True
-                    
-                    counts[num] += num_filled_cells
-                    fill_cells(row, col, 0)
-        
         return False
+
+    def fill_matrix():
+        for i in range((n + 1) // 2):
+            for j in range((n + 1) // 2):
+                if matrix[i][j] == 0:
+                  
+                    found = False
+                    for num in list(counts.keys()):
+                        
+                        needed = 1
+                        if i != n - 1 - i:
+                            needed += 1
+                        if j != n - 1 - j:
+                            needed += 1
+                        if i != n - 1 - i and j != n - 1 - j:
+                            needed += 1
+                            
+                        if counts[num] >= needed:
+                            matrix[i][j] = num
+                            counts[num] -= 1
+                            
+                            if i != n - 1 - i:
+                                matrix[n-1-i][j] = num
+                                counts[num] -= 1
+                            
+                            if j != n - 1 - j:
+                                matrix[i][n-1-j] = num
+                                counts[num] -= 1
+                            
+                            if i != n - 1 - i and j != n - 1 - j:
+                                matrix[n-1-i][n-1-j] = num
+                                counts[num] -= 1
+                            
+                            found = True
+                            break
+                    
+                    if not found:
+                        return False
+        return True
     
-    if solve_recursive(0, 0):
+    if fill_matrix():
         print("YES")
         for row in matrix:
             print(*row)

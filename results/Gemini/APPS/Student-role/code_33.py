@@ -1,4 +1,9 @@
-from math import gcd
+import math
+
+def gcd(a, b):
+    if b == 0:
+        return a
+    return gcd(b, a % b)
 
 def extended_gcd(a, b):
     if a == 0:
@@ -18,20 +23,29 @@ def solve():
         return
 
     d, x, y = extended_gcd(a1, a2)
-    x *= (b2 - b1) // g
-    y *= (b2 - b1) // g
+    x *= (b2 - b1) // d
+    y *= (b2 - b1) // d
 
     lcm = a1 * a2 // g
 
-    x0 = (x * a1 + b1) 
+    x0 = x
+    y0 = y
+
+    t = math.ceil((-x0) / (a2 // g))
+    x0 += (a2 // g) * t
+    y0 -= (a1 // g) * t
+
+    val = a1 * x0 + b1
     
-    k = (L - x0 + lcm - 1) // lcm
-    x0 += k * lcm
+    if val < L:
+        t = math.ceil((L - val) / lcm)
+        val += lcm * t
     
-    if x0 > R:
+    if val > R:
         print(0)
         return
 
-    print((R - x0) // lcm + 1)
+    count = (R - val) // lcm + 1
+    print(count)
 
 solve()

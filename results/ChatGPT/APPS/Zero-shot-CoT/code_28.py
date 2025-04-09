@@ -1,25 +1,25 @@
 n = int(input())
 files = [input().split() for _ in range(n)]
-example_files = []
-regular_files = []
+
+examples = []
+regulars = []
 
 for name, typ in files:
     if typ == '1':
-        example_files.append(name)
+        examples.append(name)
     else:
-        regular_files.append(name)
+        regulars.append(name)
 
-e = len(example_files)
-moves = []
+script = []
+e = len(examples)
 
-# Move example files to 1, 2, ..., e
+# Rename examples to 1, 2, ..., e
 for i in range(e):
-    moves.append(f"move {example_files[i]} {i + 1}")
+    script.append(f"move {examples[i]} {i + 1}")
 
-# Move regular files to e + 1, e + 2, ..., n
-for i in range(len(regular_files)):
-    moves.append(f"move {regular_files[i]} {e + i + 1}")
+# Rename regular tests to e + 1, e + 2, ..., n
+for i in range(len(regulars)):
+    script.append(f"move {regulars[i]} {e + i + 1}")
 
-print(len(moves))
-for move in moves:
-    print(move)
+print(len(script))
+print("\n".join(script))

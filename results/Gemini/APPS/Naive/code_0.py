@@ -1,40 +1,41 @@
 def solve():
     s = input()
     n = len(s)
-    ans = -1
+    
+    max_len = -1
+    
     for i in range(n):
-        for j in range(i + 3, n):
-            if s[i] == '[' and s[j] == ']':
-                
-                first_colon_index = -1
-                for k in range(i + 1, j):
-                    if s[k] == ':':
-                        first_colon_index = k
-                        break
-                
-                if first_colon_index == -1:
-                    continue
+        if s[i] == '[':
+            for j in range(i + 1, n):
+                if s[j] == ']':
                     
-                second_colon_index = -1
-                for k in range(first_colon_index + 1, j):
-                    if s[k] == ':':
-                        second_colon_index = k
-                        break
-                        
-                if second_colon_index == -1:
-                    continue
+                    first_colon = -1
+                    for k in range(i + 1, j):
+                        if s[k] == ':':
+                            first_colon = k
+                            break
                     
-                vertical_bars_count = 0
-                for k in range(first_colon_index + 1, second_colon_index):
-                    if s[k] == '|':
-                        vertical_bars_count += 1
-                    else:
-                        vertical_bars_count = -1000
-                        break
-                        
-                if vertical_bars_count >= 0:
-                    ans = max(ans, 4 + vertical_bars_count)
+                    if first_colon == -1:
+                        continue
                     
-    print(ans)
+                    second_colon = -1
+                    for k in range(j - 1, first_colon, -1):
+                        if s[k] == ':':
+                            second_colon = k
+                            break
+                    
+                    if second_colon == -1:
+                        continue
+                    
+                    
+                    pipes = 0
+                    for k in range(first_colon + 1, second_colon):
+                        if s[k] == '|':
+                            pipes += 1
+                    
+                    current_len = 4 + pipes
+                    max_len = max(max_len, current_len)
+    
+    print(max_len)
 
 solve()

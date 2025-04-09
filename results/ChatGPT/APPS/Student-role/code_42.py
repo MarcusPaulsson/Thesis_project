@@ -1,24 +1,21 @@
 def count_cyclic_strings(n, s):
     from itertools import product
 
-    def is_cyclic_shift(s1, s2):
-        return len(s1) == len(s2) and s1 in s2 + s2
+    def is_valid_cyclic(t):
+        # Check if s is a substring in any cyclic shift of t
+        doubled_t = t + t
+        return s in doubled_t
 
     # Generate all binary strings of length n
-    binary_strings = [''.join(p) for p in product('01', repeat=n)]
+    all_binary_strings = [''.join(p) for p in product('01', repeat=n)]
     
-    distinct_cyclic_strings = set()
+    # Count valid cyclic strings
+    valid_count = sum(1 for t in all_binary_strings if is_valid_cyclic(t))
     
-    for t in binary_strings:
-        if s in t:
-            # Check for cyclic shifts and add only the canonical form
-            min_shift = min(t[i:] + t[:i] for i in range(n))
-            distinct_cyclic_strings.add(min_shift)
-    
-    return len(distinct_cyclic_strings)
+    return valid_count
 
 # Input reading
-n = int(input())
+n = int(input().strip())
 s = input().strip()
 
 # Output the result

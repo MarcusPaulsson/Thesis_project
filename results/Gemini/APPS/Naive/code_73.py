@@ -1,17 +1,16 @@
 def solve():
     n = int(input())
     a = list(map(int, input().split()))
-    
+
     stack = []
-    
-    for height in a:
+    for x in a:
         if not stack:
-            stack.append(height)
-        elif stack[-1] == height:
+            stack.append(x)
+        elif stack[-1] == x:
             stack.pop()
         else:
-            stack.append(height)
-            
+            stack.append(x)
+
     if not stack:
         print("YES")
     elif len(stack) == 1:

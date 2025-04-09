@@ -6,25 +6,23 @@ def minimal_perimeter(a, b):
         if total_tiles % width == 0:
             height = total_tiles // width
             
-            # Check for red rectangle with width and height
-            if a <= width * height:
-                red_width = min(width, a)
-                red_height = (a + red_width - 1) // red_width
-                if red_height <= height:
-                    perimeter = 2 * (width + height)
-                    min_perimeter = min(min_perimeter, perimeter)
-                    
-            # Check for blue rectangle with width and height
-            if b <= width * height:
-                blue_width = min(width, b)
-                blue_height = (b + blue_width - 1) // blue_width
-                if blue_height <= height:
-                    perimeter = 2 * (width + height)
-                    min_perimeter = min(min_perimeter, perimeter)
-    
+            # Check for red rectangle
+            for r_width in range(1, int(a**0.5) + 1):
+                if a % r_width == 0:
+                    r_height = a // r_width
+                    if r_width <= width and r_height <= height:
+                        perimeter = 2 * (width + height)
+                        min_perimeter = min(min_perimeter, perimeter)
+                
+            # Check for blue rectangle
+            for b_width in range(1, int(b**0.5) + 1):
+                if b % b_width == 0:
+                    b_height = b // b_width
+                    if b_width <= width and b_height <= height:
+                        perimeter = 2 * (width + height)
+                        min_perimeter = min(min_perimeter, perimeter)
+
     return min_perimeter
 
-# Input
-a, b = map(int, input().strip().split())
-# Output
+a, b = map(int, input().split())
 print(minimal_perimeter(a, b))

@@ -1,10 +1,16 @@
 n = int(input())
 
-def next_lucky_year(current_year):
-    while True:
-        current_year += 1
-        if str(current_year).count('0') + len(set(str(current_year))) - 1 <= 1:
-            return current_year
+def is_lucky(year):
+    count = 0
+    while year > 0:
+        if year % 10 != 0:
+            count += 1
+        year //= 10
+    return count <= 1
 
-next_year = next_lucky_year(n)
-print(next_year - n)
+current_year = n
+while True:
+    current_year += 1
+    if is_lucky(current_year):
+        print(current_year - n)
+        break

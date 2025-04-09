@@ -1,26 +1,29 @@
 def solve():
-  n = int(input())
-  records = []
-  for _ in range(n):
-    records.append(tuple(map(int, input().split())))
-
-  for i in range(n):
-    if records[i][1] > records[i][0]:
-      print("NO")
-      return
-
-  for i in range(1, n):
-    if records[i][0] < records[i-1][0] or records[i][1] < records[i-1][1]:
-      print("NO")
-      return
+    n = int(input())
+    pairs = []
+    for _ in range(n):
+        pairs.append(list(map(int, input().split())))
     
-    if records[i][1] - records[i-1][1] > records[i][0] - records[i-1][0]:
-      print("NO")
-      return
-  
-  print("YES")
-
+    valid = True
+    for i in range(n):
+        if pairs[i][1] > pairs[i][0]:
+            valid = False
+            break
+    
+    if valid:
+        for i in range(1, n):
+            if pairs[i][0] < pairs[i-1][0] or pairs[i][1] < pairs[i-1][1]:
+                valid = False
+                break
+            if pairs[i][1] - pairs[i-1][1] > pairs[i][0] - pairs[i-1][0]:
+                valid = False
+                break
+    
+    if valid:
+        print("YES")
+    else:
+        print("NO")
 
 t = int(input())
 for _ in range(t):
-  solve()
+    solve()

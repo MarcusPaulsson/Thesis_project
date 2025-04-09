@@ -22,32 +22,35 @@ def solve():
 
     lcm = (a1 * a2) // g
 
-    # Find a solution to a1*x + a2*y = b2 - b1
+    # Find the smallest x such that x = a1*k + b1 = a2*l + b2
+    # a1*k + b1 = a2*l + b2
+    # a1*k - a2*l = b2 - b1
+    # a1*x - a2*y = gcd(a1, a2)
+    # a1*(x * (b2-b1)/g) - a2*(y * (b2-b1)/g) = b2 - b1
+
     d, x, y = extended_gcd(a1, a2)
     x *= (b2 - b1) // g
     y *= (b2 - b1) // g
 
-    # Find a general solution:
-    # x = x0 + (a2/g)*t
-    # y = y0 - (a1/g)*t
+    # General solution: k = x + (a2/g)*t, l = y + (a1/g)*t
+    # x + (a2/g)*t >= 0
+    # y + (a1/g)*t >= 0
+    # k = x + (a2/g)*t
+    # a1*(x + (a2/g)*t) + b1 >= L
+    # a1*x + a1*(a2/g)*t + b1 >= L
+    # t >= (L - a1*x - b1) / (a1*a2/g)
+    # t >= (L - a1*x - b1) / lcm
 
-    # We want to find the smallest x0 such that a1*x0 + b1 >= L and a2*y0 + b2 >= L
-    # This is equivalent to finding the smallest t such that
-    # a1*(x + (a2/g)*t) + b1 >= L and a2*(y - (a1/g)*t) + b2 >= L
+    start_x = a1 * x + b1
 
-    # Let's find the minimum value that satisfies a1*x + b1 = a2*y + b2
-    first_val = a1 * x + b1
-
-    # Adjust the value to be within the range [L, R]
-    if first_val < L:
-        k = (L - first_val + lcm - 1) // lcm
-        first_val += k * lcm
+    t_min = (L - start_x + lcm - 1) // lcm
+    
+    first_val = start_x + lcm * t_min
 
     if first_val > R:
         print(0)
         return
-
-    # Calculate the number of solutions
+    
     count = (R - first_val) // lcm + 1
 
     print(count)

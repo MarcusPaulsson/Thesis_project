@@ -1,59 +1,45 @@
-def can_construct_palindromic_matrix(n, nums):
-    from collections import Counter
-    
-    count = Counter(nums)
-    matrix = [[0] * n for _ in range(n)]
-    
-    # Count how many of each number we have
-    odd_count = 0
+n = int(input())
+a = list(map(int, input().split()))
+
+from collections import Counter
+
+count = Counter(a)
+matrix = [[0] * n for _ in range(n)]
+
+# Check if it is possible to fill the matrix
+odd_count = 0
+for value, freq in count.items():
+    if freq % 2 == 1:
+        odd_count += 1
+
+# For odd n, we can have one odd frequency; for even n, we cannot have any
+if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
+    print("NO")
+else:
+    # Fill the matrix
+    half_matrix = []
     center_value = None
     
-    for value, cnt in count.items():
-        if cnt % 4 != 0:
-            if cnt % 4 == 2:
-                odd_count += 1
-            elif cnt % 4 == 1:
-                odd_count += 1
-                center_value = value
-            odd_count += cnt // 4
-        else:
-            odd_count += cnt // 4
-            
-    if (n % 2 == 1 and odd_count > 1) or (n % 2 == 0 and odd_count > 0):
-        return "NO"
-
-    # Fill the matrix in a palindromic way
-    i, j = 0, 0
-    for value, cnt in count.items():
-        while cnt > 0:
+    for value, freq in count.items():
+        if freq % 2 == 1:
+            center_value = value
+        half_matrix.extend([value] * (freq // 2))
+    
+    half_size = len(half_matrix)
+    
+    # Arrange values in a palindromic way
+    for i in range(n):
+        for j in range(n):
             if i < n // 2:
-                matrix[i][j] = value
-                matrix[n - 1 - i][j] = value
-                matrix[i][n - 1 - j] = value
-                matrix[n - 1 - i][n - 1 - j] = value
-                cnt -= 4
-                if j < n - 1:
-                    j += 1
-                else:
-                    j = 0
-                    i += 1
-            else:
-                if n % 2 == 1 and i == n // 2 and j == n // 2:
+                matrix[i][j] = half_matrix[i] if j < n // 2 else half_matrix[i]
+                matrix[n - 1 - i][j] = matrix[i][j]
+            elif i == n // 2 and n % 2 == 1:
+                if j == n // 2:
                     matrix[i][j] = center_value
-                    cnt -= 1
-                break
+                else:
+                    matrix[i][j] = half_matrix[i]
+                    matrix[i][n - 1 - j] = matrix[i][j]
 
-    return "YES", matrix
-
-# Read input
-n = int(input())
-nums = list(map(int, input().split()))
-
-result = can_construct_palindromic_matrix(n, nums)
-
-if result == "NO":
-    print(result)
-else:
-    print(result[0])
-    for row in result[1]:
-        print(" ".join(map(str, row)))
+    print("YES")
+    for row in matrix:
+        print(' '.join(map(str, row)))

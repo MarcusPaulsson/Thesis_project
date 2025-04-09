@@ -9,17 +9,13 @@ def solve():
     def is_substring(a, b):
         return a in b
 
-    possible = True
     for i in range(1, n):
         if not is_substring(strings[i-1], strings[i]):
-            possible = False
-            break
+            print("NO")
+            return
 
-    if possible:
-        print("YES")
-        for s in strings:
-            print(s)
-    else:
-        print("NO")
+    print("YES")
+    for s in strings:
+        print(s)
 
 solve()

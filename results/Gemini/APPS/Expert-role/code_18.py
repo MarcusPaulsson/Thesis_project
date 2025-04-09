@@ -1,35 +1,23 @@
 def solve():
     s = input()
     n = len(s)
-    t = ""
+    
+    suffix_min = [0] * n
+    suffix_min[-1] = s[-1]
+    for i in range(n - 2, -1, -1):
+        suffix_min[i] = min(s[i], suffix_min[i+1])
+    
+    t = []
     u = ""
     
-    suffix_min = [""] * (n + 1)
-    suffix_min[n] = ""
-    
-    for i in range(n - 1, -1, -1):
-        if suffix_min[i+1] == "" or s[i] < suffix_min[i+1][0]:
-            suffix_min[i] = s[i]
-        else:
-            suffix_min[i] = suffix_min[i+1][0]
-        suffix_min[i] += suffix_min[i+1]
-    
-    i = 0
-    while i < n:
-        if len(t) == 0:
-            t += s[i]
-            i += 1
-        elif suffix_min[i] == "" or t[-1] <= suffix_min[i][0]:
-            u += t[-1]
-            t = t[:-1]
-        else:
-            t += s[i]
-            i += 1
+    for i in range(n):
+        t.append(s[i])
+        while t and t[-1] <= suffix_min[i if i < n-1 else i]:
+            u += t.pop()
             
-    while len(t) > 0:
-        u += t[-1]
-        t = t[:-1]
-        
+    while t:
+        u += t.pop()
+    
     print(u)
 
 solve()

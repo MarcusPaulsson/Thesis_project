@@ -1,37 +1,47 @@
-def can_construct_square(n, m, tiles):
-    if m % 2 != 0:
-        return "NO"
+def can_construct_symmetric_square(t, test_cases):
+    results = []
     
-    # To construct a symmetric matrix, we need matching tiles
-    tile_pairs = set()
+    for case in test_cases:
+        n, m, tiles = case
+        if m % 2 != 0:  # m must be even for a symmetric square
+            results.append("NO")
+            continue
+        
+        # Check for valid pairs
+        valid_pairs = set()
+        for tile in tiles:
+            top_left, top_right = tile[0]
+            bottom_left, bottom_right = tile[1]
+            valid_pairs.add((top_right, bottom_left))  # This must match for symmetry
+        
+        # We need at least one tile that can form a symmetric pair
+        found_symmetric_pair = False
+        for tile in tiles:
+            top_left, top_right = tile[0]
+            bottom_left, bottom_right = tile[1]
+            if (top_left, bottom_right) in valid_pairs:
+                found_symmetric_pair = True
+                break
+        
+        results.append("YES" if found_symmetric_pair else "NO")
+    
+    return results
 
-    for tile in tiles:
-        top_left, top_right = tile[0]
-        bottom_left, bottom_right = tile[1]
-        tile_pairs.add((top_right, bottom_left, bottom_right, top_left))
-    
-    # Check for each tile if there is a corresponding tile to match
-    for tile in tiles:
-        top_left, top_right = tile[0]
-        bottom_left, bottom_right = tile[1]
-        if (bottom_right, top_left, top_left, bottom_left) not in tile_pairs:
-            return "NO"
-    
-    return "YES"
-
+# Input reading
 t = int(input())
-results = []
-
+test_cases = []
 for _ in range(t):
     n, m = map(int, input().split())
     tiles = []
-    
-    for _ in range(n):
-        top = list(map(int, input().split()))
-        bottom = list(map(int, input().split()))
-        tiles.append((top, bottom))
-    
-    result = can_construct_square(n, m, tiles)
-    results.append(result)
+    for __ in range(n):
+        tile_top = list(map(int, input().split()))
+        tile_bottom = list(map(int, input().split()))
+        tiles.append((tile_top, tile_bottom))
+    test_cases.append((n, m, tiles))
 
-print("\n".join(results))
+# Get results
+results = can_construct_symmetric_square(t, test_cases)
+
+# Print results
+for result in results:
+    print(result)

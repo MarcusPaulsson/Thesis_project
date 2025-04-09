@@ -14,7 +14,7 @@ def solve():
             
             if sum1 == sum2:
                 
-                temp_digits = [int(c) for c in s1 + s2]
+                temp_digits = [int(c) for c in s1 + s2 ]
                 
                 diff = 0
                 for k in range(6):

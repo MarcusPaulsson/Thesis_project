@@ -1,8 +1,8 @@
-def is_lucky(hh, mm):
-    return '7' in f"{hh:02d}{mm:02d}"
+def is_lucky_time(hh, mm):
+    return '7' in f'{hh:02d}{mm:02d}'
 
-def previous_time(hh, mm, x):
-    mm -= x
+def time_before(hh, mm, minutes):
+    mm -= minutes
     if mm < 0:
         mm += 60
         hh -= 1
@@ -10,12 +10,12 @@ def previous_time(hh, mm, x):
             hh += 24
     return hh, mm
 
-x = int(input())
-hh, mm = map(int, input().split())
+x = int(input().strip())
+hh, mm = map(int, input().strip().split())
 
-y = 0
-while not is_lucky(hh, mm):
-    y += 1
-    hh, mm = previous_time(hh, mm, x)
+presses = 0
+while not is_lucky_time(hh, mm):
+    presses += 1
+    hh, mm = time_before(hh, mm, x)
 
-print(y)
+print(presses)

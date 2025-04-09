@@ -1,27 +1,25 @@
+def can_tracks_coincide(n, L, kefa_distances, sasha_distances):
+    # Calculate the differences for Kefa's barriers
+    kefa_diffs = [(kefa_distances[i] - kefa_distances[i - 1]) % L for i in range(1, n)]
+    kefa_diffs.append((kefa_distances[0] + L - kefa_distances[-1]) % L)  # Closing the circle
+
+    # Calculate the differences for Sasha's barriers
+    sasha_diffs = [(sasha_distances[i] - sasha_distances[i - 1]) % L for i in range(1, n)]
+    sasha_diffs.append((sasha_distances[0] + L - sasha_distances[-1]) % L)  # Closing the circle
+
+    # Check if any rotation of Kefa's differences matches Sasha's differences
+    doubled_kefa_diffs = kefa_diffs + kefa_diffs
+
+    for i in range(n):
+        if doubled_kefa_diffs[i:i+n] == sasha_diffs:
+            return "YES"
+    
+    return "NO"
+
+# Reading input
 n, L = map(int, input().split())
 kefa_distances = list(map(int, input().split()))
 sasha_distances = list(map(int, input().split()))
 
-# Normalize distances for Kefa and Sasha
-def normalize(distances):
-    normalized = []
-    for i in range(n):
-        normalized.append((distances[i] - distances[0]) % L)
-    return normalized
-
-kefa_normalized = normalize(kefa_distances)
-sasha_normalized = normalize(sasha_distances)
-
-# Check if Kefa's normalized distances match Sasha's normalized distances in any circular permutation
-def can_match(kefa, sasha):
-    double_kefa = kefa + kefa
-    sasha_length = len(sasha)
-    for i in range(len(kefa)):
-        if double_kefa[i:i+sasha_length] == sasha:
-            return True
-    return False
-
-if can_match(kefa_normalized, sasha_normalized):
-    print("YES")
-else:
-    print("NO")
+# Output result
+print(can_tracks_coincide(n, L, kefa_distances, sasha_distances))

@@ -1,20 +1,14 @@
-def is_palindrome(s):
-  """Checks if a string is a palindrome."""
-  return s == s[::-1]
-
 def solve():
-  """Finds the length of the longest non-palindrome substring."""
-  s = input()
-  n = len(s)
+    s = input()
+    n = len(s)
+    max_len = 0
 
-  if len(set(s)) == 1:
-    print(0)
-    return
+    for i in range(n):
+        for j in range(i, n):
+            sub = s[i:j+1]
+            if sub != sub[::-1]:
+                max_len = max(max_len, len(sub))
 
-  if not is_palindrome(s):
-    print(n)
-    return
-  
-  print(n - 1)
+    print(max_len)
 
 solve()

@@ -1,18 +1,12 @@
 def solve():
-  n = int(input())
-  a = list(map(int, input().split()))
-
-  min_instability = float('inf')
-
-  for i in range(n):
-    temp_a = a[:i] + a[i+1:]
+    n = int(input())
+    a = list(map(int, input().split()))
     
-    max_val = max(temp_a)
-    min_val = min(temp_a)
+    a.sort()
     
-    instability = max_val - min_val
-    min_instability = min(min_instability, instability)
-
-  print(min_instability)
+    instability1 = a[n-2] - a[0]
+    instability2 = a[n-1] - a[1]
+    
+    print(min(instability1, instability2))
 
 solve()

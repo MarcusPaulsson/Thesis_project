@@ -1,6 +1,9 @@
-x = float(input())
+def solve():
+  x = float(input())
+  for i in range(1, 11):
+    for j in range(1, 11):
+      if abs(i / j - x) < 1e-7:
+        print(i, j)
+        return
 
-a = int((x * 10) // 1)
-b = int((x * 10) % 1 * 10)
-
-print(a, b)
+solve()

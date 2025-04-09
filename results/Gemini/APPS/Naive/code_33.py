@@ -1,80 +1,107 @@
+import math
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
 def extended_gcd(a, b):
-  """
-  Extended Euclidean algorithm to find the greatest common divisor (GCD) of a and b,
-  as well as coefficients x and y such that ax + by = gcd(a, b).
-
-  Args:
-    a: An integer.
-    b: An integer.
-
-  Returns:
-    A tuple (gcd, x, y) where:
-      gcd: The greatest common divisor of a and b.
-      x: An integer coefficient such that ax + by = gcd.
-      y: An integer coefficient such that ax + by = gcd.
-  """
-  if a == 0:
-    return (b, 0, 1)
-
-  gcd, x1, y1 = extended_gcd(b % a, a)
-
-  x = y1 - (b // a) * x1
-  y = x1
-
-  return (gcd, x, y)
-
+    if a == 0:
+        return b, 0, 1
+    d, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return d, x, y
 
 def solve():
-  """
-  Reads input, calculates the number of integers that satisfy the given conditions,
-  and prints the result.
-  """
-  a1, b1, a2, b2, L, R = map(int, input().split())
+    a1, b1, a2, b2, L, R = map(int, input().split())
 
-  # Find the smallest x such that x = a1*k + b1 = a2*l + b2 for some k, l >= 0.
-  # This is equivalent to solving a1*k - a2*l = b2 - b1.
-  diff = b2 - b1
-  gcd, x, y = extended_gcd(a1, a2)
+    g = gcd(a1, a2)
+    
+    if (b2 - b1) % g != 0:
+        print(0)
+        return
+    
+    lcm = (a1 * a2) // g
+    
+    d, x, y = extended_gcd(a1, a2)
+    
+    x *= (b2 - b1) // g
+    y *= (b2 - b1) // g
 
-  if diff % gcd != 0:
-    print(0)
-    return
+    x0 = x
+    y0 = y
+    
+    x = x0 % (a2 // g)
+    
+    first_solution = a1 * x + b1
+    
+    k = math.ceil((L - first_solution) / lcm)
+    
+    first_valid = first_solution + k * lcm
+    
+    if first_valid > R:
+        print(0)
+        return
+    
+    k1 = math.ceil((-x0) / (a2 // g)) 
+    
+    x_pos = x0 + k1 * (a2 // g)
 
-  x *= (diff // gcd)
-  y *= (diff // gcd)
+    first_solution_pos = a1 * x_pos + b1
+    
+    k_pos = math.ceil((L-first_solution_pos) / lcm)
+    
+    first_valid_pos = first_solution_pos + k_pos * lcm
+    
+    if first_valid_pos < L:
+        k_pos +=1
+        first_valid_pos = first_solution_pos + k_pos * lcm
+        
+    if first_valid_pos > R:
+        print(0)
+        return
+    
+    
+    k2 = math.floor((R - first_valid_pos) / lcm)
+    
+    
+    count = k2 + 1
+    
+    
+    k_neg = math.floor((x0) / (a2 // g))
+    
+    x_neg = x0 - k_neg * (a2//g)
+    
+    first_solution_neg = a1 * x_neg + b1
+    
+    k_neg2 = math.ceil((L-first_solution_neg) / lcm)
+    
+    first_valid_neg = first_solution_neg + k_neg2 * lcm
+    
+    if first_valid_neg < L:
+        k_neg2 += 1
+        first_valid_neg = first_solution_neg + k_neg2 * lcm
+        
+    if first_valid_neg > R:
+        print(0)
+        return
 
-  # Find the general solution for k and l:
-  # k = x + (a2/gcd)*t
-  # l = y + (a1/gcd)*t
-  # x = a1*k + b1 = a1*(x + (a2/gcd)*t) + b1
+    
+    k_neg3 = math.floor((R - first_valid_neg) / lcm)
+    
+    
+    count_neg = k_neg3+1
+    
+    
+    if first_valid_pos == first_valid_neg:
+        print(count)
+    else:
+        start = max(first_valid_pos, first_valid_neg)
+        end = R
+        
+        k_total = math.floor((R - start) / lcm)
+        
+        print(k_total+1)
 
-  # Find the smallest value of t such that k >= 0 and l >= 0.
-  t1 = -x * gcd // a2
-  if (-x * gcd) % a2 != 0:
-    t1 -= 1
-  
-  t2 = -y * gcd // a1
-  if (-y * gcd) % a1 != 0:
-    t2 -= 1
-  
-  t = max(t1, t2)
-
-  k = x + (a2 // gcd) * t
-  l = y + (a1 // gcd) * t
-
-  start_x = a1 * k + b1
-  
-  if start_x < L:
-    add = (L - start_x + (a1 * a2 // gcd) - 1) // (a1 * a2 // gcd)
-    start_x += add * (a1 * a2 // gcd)
-  
-  if start_x > R:
-    print(0)
-    return
-
-  count = (R - start_x) // (a1 * a2 // gcd) + 1
-  print(count)
-
-
-if __name__ == "__main__":
-  solve()
+solve()

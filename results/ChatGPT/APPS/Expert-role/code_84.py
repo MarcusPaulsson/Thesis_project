@@ -1,36 +1,44 @@
 def can_color_string(n, s):
-    # Create a list to hold the count of each character
-    count = {}
-    for char in s:
-        if char in count:
-            count[char] += 1
-        else:
-            count[char] = 1
-
-    # Check if we can color the string
-    color = []
+    # Count the occurrences of each character
+    from collections import Counter
+    count = Counter(s)
+    
+    # If any character appears more than twice, it is impossible to color
+    if any(c > 2 for c in count.values()):
+        return "NO"
+    
+    # Create a list to store the coloring
+    coloring = ['0'] * n
+    
+    # We will use two colors: '0' and '1'
+    color = 0
+    
+    # Last seen position for each character
+    last_seen = {}
+    
     for i in range(n):
-        if i > 0 and s[i] < s[i - 1]:
-            # If current character is less than previous, we need to color differently
-            if color and color[-1] == '0':
-                color.append('1')
-            else:
-                color.append('0')
+        char = s[i]
+        
+        # If we have seen this character before, color it the same as the last one
+        if char in last_seen:
+            coloring[i] = coloring[last_seen[char]]
         else:
-            color.append('0')
+            # Assign a new color
+            coloring[i] = str(color)
+            color = 1 - color  # Toggle color for next unique character
+            
+        last_seen[char] = i
+    
+    return "YES", ''.join(coloring)
 
-    # Check if there are any adjacent characters that are the same but have different colors
-    for i in range(1, n):
-        if s[i] == s[i - 1] and color[i] != color[i - 1]:
-            return "NO"
-
-    return "YES\n" + ''.join(color)
-
-
-# Read input
+# Input reading
 n = int(input())
 s = input().strip()
 
-# Get the result and print it
+# Check and output the result
 result = can_color_string(n, s)
-print(result)
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    print(result[1])

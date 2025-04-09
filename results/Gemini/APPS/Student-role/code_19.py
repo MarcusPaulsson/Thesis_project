@@ -1,23 +1,25 @@
 def solve():
   n = int(input())
-  stats = []
+  pairs = []
   for _ in range(n):
-    stats.append(list(map(int, input().split())))
-  
-  valid = True
+    pairs.append(list(map(int, input().split())))
+
+  possible = True
   for i in range(n):
-    if stats[i][1] > stats[i][0]:
-      valid = False
+    if pairs[i][1] > pairs[i][0]:
+      possible = False
       break
+
     if i > 0:
-      if stats[i][0] < stats[i-1][0] or stats[i][1] < stats[i-1][1]:
-        valid = False
+      if pairs[i][0] < pairs[i-1][0] or pairs[i][1] < pairs[i-1][1]:
+        possible = False
         break
-      if stats[i][0] - stats[i-1][0] < stats[i][1] - stats[i-1][1]:
-        valid = False
+
+      if pairs[i][0] - pairs[i-1][0] < pairs[i][1] - pairs[i-1][1]:
+        possible = False
         break
-  
-  if valid:
+
+  if possible:
     print("YES")
   else:
     print("NO")

@@ -1,42 +1,38 @@
-def max_beauty_after_swap(n, trophies):
-    # Calculate the lengths of golden segments
-    segments = []
+def max_beauty_with_swap(n, trophies):
+    # Step 1: Calculate the maximum length of golden trophies without any swaps
+    max_length = 0
     current_length = 0
+    segments = []
     
     for trophy in trophies:
         if trophy == 'G':
             current_length += 1
         else:
-            if current_length > 0:
-                segments.append(current_length)
+            segments.append(current_length)
+            max_length = max(max_length, current_length)
             current_length = 0
-            
-    if current_length > 0:
-        segments.append(current_length)
+    segments.append(current_length)
+    max_length = max(max_length, current_length)
     
-    # If there are no golden trophies
-    if not segments:
-        return 0
-    
-    # Find the maximum length without any swap
-    max_length = max(segments)
-    
-    # If there's only one segment, we cannot swap to increase the length
-    if len(segments) == 1:
+    # If there are no silver trophies, return max_length immediately
+    if 'S' not in trophies:
         return max_length
     
-    # Calculate the maximum possible length with one swap
-    max_with_swap = max_length
+    # Step 2: Check for the possibility of increasing the length by one swap
+    max_possible_length = max_length
     
+    # We need to check adjacent segments of 'G's separated by 'S'
     for i in range(len(segments) - 1):
-        # Consider swapping a silver trophy between two golden segments
-        max_with_swap = max(max_with_swap, segments[i] + segments[i + 1])
+        if segments[i] > 0 and segments[i + 1] > 0:
+            # If there is an S between two segments of Gs
+            combined_length = segments[i] + segments[i + 1]
+            max_possible_length = max(max_possible_length, combined_length + 1)
     
-    return min(max_with_swap + 1, n)  # We cannot exceed n
+    return max_possible_length
 
 # Input reading
 n = int(input())
 trophies = input().strip()
 
-# Output the result
-print(max_beauty_after_swap(n, trophies))
+# Calculate and print the result
+print(max_beauty_with_swap(n, trophies))

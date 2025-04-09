@@ -1,22 +1,25 @@
-def min_operations_to_remainder(n, x, y, number):
-    # The target remainder in the last x digits
+def min_operations(n, x, y, number):
+    # The length of the number is n
+    # We need to ensure the last x digits of the number give remainder 10^y
+    
+    # The target pattern
     target = ['0'] * x
-    target[y] = '1'  # Set the y-th position to 1 for 10^y
+    target[y] = '1'  # Set the y-th position to 1 as required
     
-    # Get the current last x digits of the number
-    current = list(number[-x:])
+    # Count operations needed
+    operations = 0
     
-    # Count the number of differences
-    operations = sum(1 for i in range(x) if current[i] != target[i])
-    
+    # We only need to check the last x digits of the number
+    for i in range(x):
+        if number[n - 1 - i] != target[x - 1 - i]:
+            operations += 1
+            
     return operations
 
-# Read input
+# Input reading
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# Get the result
-result = min_operations_to_remainder(n, x, y, number)
-
-# Print the result
+# Calculate and print the result
+result = min_operations(n, x, y, number)
 print(result)

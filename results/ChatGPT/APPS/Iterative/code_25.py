@@ -1,35 +1,44 @@
-def create_matrix(n, k):
-    max_possible_k = n * (n + 1) // 2
-    if k > max_possible_k:
-        return -1  # Not enough space to place k ones
+def create_symmetrical_matrix(n, k):
+    # Check if the number of 1s is valid for a symmetric matrix
+    if k > n * n or k < 0 or (n % 2 == 0 and k % 2 == 1):
+        return -1
     
+    # Initialize the matrix with zeroes
     matrix = [[0] * n for _ in range(n)]
-
+    
     # Fill the matrix to be lexicographically maximal
     for i in range(n):
+        for j in range(n):
+            if i == j:  # Diagonal elements
+                if k > 0:
+                    matrix[i][j] = 1
+                    k -= 1
+            elif j > i:  # Upper triangle elements
+                if k >= 2:
+                    matrix[i][j] = 1
+                    matrix[j][i] = 1
+                    k -= 2
+            
+            if k <= 0:
+                break
         if k <= 0:
             break
-        for j in range(i, n):
-            if k > 0:
-                matrix[i][j] = 1
-                if i != j:
-                    matrix[j][i] = 1  # Make it symmetric
-                    k -= 2  # Off-diagonal counts as two
-                else:
-                    k -= 1  # Diagonal counts as one
-
+    
+    # If there are still ones left to place, return -1
     if k > 0:
-        return -1  # Still remaining ones that couldn't be placed
-
+        return -1
+    
     return matrix
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
-result = create_matrix(n, k)
 
-# Output result
+# Create the matrix
+result = create_symmetrical_matrix(n, k)
+
+# Print the result
 if result == -1:
     print(result)
 else:
     for row in result:
-        print(" ".join(map(str, row)))
+        print(' '.join(map(str, row)))

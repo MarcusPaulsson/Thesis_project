@@ -6,23 +6,27 @@ def can_construct_square(t, test_cases):
             results.append("NO")
             continue
         
-        can_form_symmetry = False
-        # Check if any tile can form symmetric pairs
+        half_tiles = {}
         for tile in tiles:
             top_left, top_right = tile[0]
             bottom_left, bottom_right = tile[1]
-            if top_right == bottom_left:
-                can_form_symmetry = True
-                break
+            # Check if we have the necessary symmetry
+            if (top_right, bottom_left) not in half_tiles:
+                half_tiles[(top_left, top_right)] = (bottom_left, bottom_right)
+            if (bottom_right, bottom_left) not in half_tiles:
+                half_tiles[(bottom_left, bottom_right)] = (top_right, top_left)
         
-        if can_form_symmetry:
+        # Need at least one pair that matches the symmetry requirement
+        can_construct = any((k[1] == v[0] and v[1] == k[0]) for k, v in half_tiles.items())
+        
+        if can_construct:
             results.append("YES")
         else:
             results.append("NO")
     
     return results
 
-# Read input and prepare data
+# Read input
 t = int(input())
 test_cases = []
 for _ in range(t):
@@ -34,7 +38,7 @@ for _ in range(t):
         tiles.append((top, bottom))
     test_cases.append((n, m, tiles))
 
-# Get results and print them
+# Get results
 results = can_construct_square(t, test_cases)
 for result in results:
     print(result)

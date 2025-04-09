@@ -1,37 +1,32 @@
-def fill_gift_preferences(n, f):
-    # Prepare lists to track givers and takers
-    givers = set(range(1, n + 1))  # Set of all friends
-    known_gifts = set()  # Friends who have known gift preferences
+def fill_gifts(n, f):
+    givers = []
+    receivers = set(range(1, n + 1))
 
-    # Identify known gifts and available givers
+    # Identify the friends who have specific targets and those that do not
     for i in range(n):
-        if f[i] != 0:
-            known_gifts.add(f[i])
-            givers.discard(i + 1)  # Remove giver from available set
-    
-    # Available friends who haven't received gifts yet
-    available_givers = list(givers)
-    giftless_friends = [i + 1 for i in range(n) if f[i] == 0]
+        if f[i] == 0:
+            givers.append(i + 1)  # Store the 1-based index of friends who don't know
+        else:
+            receivers.discard(f[i])  # Remove the known receivers from the set
 
-    # Assign gifts to those who have 0
-    for i in range(len(giftless_friends)):
-        friend = giftless_friends[i]
-        # We need to assign them a gift from available_givers
-        # Ensure not to assign to themselves
-        for j in range(len(available_givers)):
-            if available_givers[j] != friend:
-                f[friend - 1] = available_givers[j]
-                available_givers.pop(j)  # Remove the assigned giver
-                break
+    # Now 'givers' contains friends that need to assign gifts
+    # 'receivers' contains friends who can be assigned gifts
+    receivers = list(receivers)
+
+    # Fill in the gifts for those who had 0
+    for i in range(len(givers)):
+        giver = givers[i]
+        receiver = receivers[i]
+        f[giver - 1] = receiver  # Assign the gift
 
     return f
 
-# Input reading
-n = int(input().strip())
-f = list(map(int, input().strip().split()))
+# Read input
+n = int(input())
+f = list(map(int, input().split()))
 
-# Fill the preferences
-result = fill_gift_preferences(n, f)
+# Fill the gift assignments
+result = fill_gifts(n, f)
 
-# Output the result
+# Print the result
 print(" ".join(map(str, result)))

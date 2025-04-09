@@ -1,28 +1,36 @@
 from collections import Counter
-from math import gcd
+import sys
+import math
 
 n = int(input())
 divisors = list(map(int, input().split()))
 
-# Count occurrences of each divisor
+# Count the occurrences of each divisor
 count = Counter(divisors)
 
-# The two numbers x and y can be found as follows:
-# x should be the product of the maximum divisor with the divisor that appears once
-# y should be the maximum divisor itself
-d1, d2 = 1, 1
-for divisor, occurrences in count.items():
-    if occurrences == 1:
-        d1 = divisor
-    elif occurrences == 2:
-        d2 = divisor
+# Get the unique divisors
+unique_divisors = list(count.keys())
 
-# The maximum divisor from the list
-max_divisor = max(divisors)
+# Initialize x and y
+x = 1
+y = 1
 
-# Calculate x and y
-x = max_divisor * d1
-y = max_divisor * d2
+# Calculate x and y using the count of divisors
+for d in unique_divisors:
+    if count[d] == 1:
+        # d is a divisor of only one of the two numbers
+        if x == 1:
+            x = d
+        else:
+            y = d
+    elif count[d] == 2:
+        # d is a divisor of both numbers
+        x *= d
+        y *= d
 
-# Output the result
+# Adjust x and y if they are not set correctly
+if x == 1 and y == 1:
+    x = unique_divisors[0]
+    y = unique_divisors[1]
+
 print(x, y)

@@ -1,32 +1,29 @@
 def min_moves_to_divisible_by_25(n):
     s = str(n)
     length = len(s)
-    positions = []
-
-    # Find positions of '0' and '5' to form '25' or '00'
-    for i in range(length):
-        if s[i] == '0' or s[i] == '5':
-            positions.append((s[i], i))
-
+    
+    # We need to check for pairs (0, 5) or (2, 5) or (5, 0)
+    target_pairs = ['00', '25', '50', '75']
     min_moves = float('inf')
-    found = False
+    
+    for pair in target_pairs:
+        first, second = pair
+        
+        # Check if we can find the second digit first
+        pos_second = -1
+        for i in range(length - 1, -1, -1):
+            if s[i] == second:
+                pos_second = i
+                # Now look for the first digit before it
+                for j in range(pos_second - 1, -1, -1):
+                    if s[j] == first:
+                        moves = (pos_second - j) + (length - 1 - pos_second)
+                        min_moves = min(min_moves, moves)
+                        break
+                break
+    
+    return min_moves if min_moves != float('inf') else -1
 
-    # Check pairs of digits that can form '25', '00', or '75'
-    for i in range(length):
-        for j in range(i + 1, length):
-            if (s[i], s[j]) in [('2', '5'), ('7', '5'), ('0', '0')]:
-                if s[i] == '2' and s[j] == '5':
-                    moves = (j - i) + (length - 1 - j)
-                elif s[i] == '7' and s[j] == '5':
-                    moves = (j - i) + (length - 1 - j)
-                elif s[i] == '0' and s[j] == '0':
-                    moves = (j - i) + (length - 1 - j)
-
-                found = True
-                min_moves = min(min_moves, moves)
-
-    return min_moves if found else -1
-
-# Input reading
+# Read input
 n = int(input().strip())
 print(min_moves_to_divisible_by_25(n))

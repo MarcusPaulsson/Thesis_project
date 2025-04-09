@@ -1,6 +1,6 @@
 def gcd(a, b):
     """
-    Calculates the greatest common divisor (GCD) of two integers using the Euclidean algorithm.
+    Calculate the greatest common divisor (GCD) of two integers using the Euclidean algorithm.
 
     Args:
         a (int): The first integer.
@@ -13,10 +13,9 @@ def gcd(a, b):
         a, b = b, a % b
     return a
 
-
 def lcm(a, b):
     """
-    Calculates the least common multiple (LCM) of two integers.
+    Calculate the least common multiple (LCM) of two integers.
 
     Args:
         a (int): The first integer.
@@ -27,26 +26,30 @@ def lcm(a, b):
     """
     return (a * b) // gcd(a, b)
 
-
 def solve():
     """
-    Reads input, calculates the maximum number of chocolates Joty can get, and prints the result.
+    Solve the problem of maximizing the number of chocolates Joty can get by painting tiles Red or Blue.
+
+    Reads input, calculates the number of tiles divisible by a and b, and determines the optimal
+    painting strategy to maximize chocolate earnings. Prints the maximum number of chocolates.
     """
     n, a, b, p, q = map(int, input().split())
 
-    count_a = n // a
-    count_b = n // b
-    count_lcm = n // lcm(a, b)
+    red_count = n // a
+    blue_count = n // b
+    both_count = n // lcm(a, b)
 
-    chocolates = count_a * p + count_b * q
+    red_only = red_count - both_count
+    blue_only = blue_count - both_count
+
+    total_chocolates = red_only * p + blue_only * q
 
     if p > q:
-        chocolates -= count_lcm * q
+        total_chocolates += both_count * p
     else:
-        chocolates -= count_lcm * p
+        total_chocolates += both_count * q
 
-    print(chocolates)
-
+    print(total_chocolates)
 
 if __name__ == "__main__":
     solve()

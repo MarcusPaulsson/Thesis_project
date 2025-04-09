@@ -1,30 +1,41 @@
-def is_valid_flag(n, m, field):
+def is_valid_flag(n, m, grid):
     # Check for horizontal stripes
-    if n % 3 == 0:
+    def check_horizontal():
         stripe_height = n // 3
+        if n % 3 != 0:
+            return False
         colors = set()
+        
         for i in range(3):
-            stripe = field[i * stripe_height:(i + 1) * stripe_height]
-            if len(set(row for row in stripe)) != 1:
-                return "NO"
-            colors.add(stripe[0][0])
-        if len(colors) == 3:
-            return "YES"
+            color = grid[i * stripe_height][0]
+            colors.add(color)
+            for j in range(stripe_height):
+                if grid[i * stripe_height + j] != color * m:
+                    return False
+        return len(colors) == 3
 
     # Check for vertical stripes
-    if m % 3 == 0:
+    def check_vertical():
         stripe_width = m // 3
+        if m % 3 != 0:
+            return False
         colors = set()
+        
         for i in range(3):
-            stripe = [row[i * stripe_width:(i + 1) * stripe_width] for row in field]
-            if len(set(row for row in stripe)) != 1:
-                return "NO"
-            colors.add(stripe[0][0])
-        if len(colors) == 3:
-            return "YES"
+            color = grid[0][i * stripe_width]
+            colors.add(color)
+            for j in range(stripe_width):
+                for k in range(n):
+                    if grid[k][i * stripe_width + j] != color:
+                        return False
+        return len(colors) == 3
 
-    return "NO"
+    return check_horizontal() or check_vertical()
 
 n, m = map(int, input().split())
-field = [input().strip() for _ in range(n)]
-print(is_valid_flag(n, m, field))
+grid = [input().strip() for _ in range(n)]
+
+if is_valid_flag(n, m, grid):
+    print("YES")
+else:
+    print("NO")

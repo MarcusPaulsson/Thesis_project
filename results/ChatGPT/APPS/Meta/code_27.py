@@ -1,16 +1,9 @@
 n = int(input())
 s = input()
 
-# Initialize the minimum operations to the maximum possible (typing all characters)
-min_operations = n
-
-# Check for every possible prefix of the string
-for i in range(1, n + 1):
-    prefix = s[:i]
-    # Check if the string starts with the current prefix repeated
-    if s.startswith(prefix * (n // i)):
-        # Calculate operations: type the prefix, copy it once, and type the remainder
-        operations = i + (n - i) // i + (n - i) % i
-        min_operations = min(min_operations, operations)
+min_operations = n  # Start with the maximum operations (typing each character)
+for i in range(1, n):
+    if s[:i] == s[i:i+i]:  # Check if the prefix can be copied
+        min_operations = min(min_operations, i + 1 + (n - (i * 2)))  # Type i characters, copy, then type the rest
 
 print(min_operations)

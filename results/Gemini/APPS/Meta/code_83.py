@@ -1,29 +1,29 @@
 def solve():
-  a, b = map(int, input().split())
-  total = a + b
-  
-  best_perimeter = float('inf')
-  
-  for h in range(1, int(total**0.5) + 2):
-    if total % h == 0:
-      w = total // h
-      
-      # Case 1: a forms a rectangle
-      for h_a in range(1, int(a**0.5) + 2):
-        if a % h_a == 0:
-          w_a = a // h_a
-          
-          if h_a <= h and w_a <= w:
-            best_perimeter = min(best_perimeter, 2 * (h + w))
-
-      # Case 2: b forms a rectangle
-      for h_b in range(1, int(b**0.5) + 2):
-        if b % h_b == 0:
-          w_b = b // h_b
-          
-          if h_b <= h and w_b <= w:
-            best_perimeter = min(best_perimeter, 2 * (h + w))
+    a, b = map(int, input().split())
+    total = a + b
+    
+    best_perimeter = float('inf')
+    
+    for height in range(1, int(total**0.5) + 2):
+        if total % height == 0:
+            width = total // height
             
-  print(best_perimeter)
+            # Case 1: a forms a rectangle
+            for a_height in range(1, int(a**0.5) + 2):
+                if a % a_height == 0:
+                    a_width = a // a_height
+                    
+                    if a_height <= height and a_width <= width:
+                        best_perimeter = min(best_perimeter, 2 * (height + width))
+            
+            # Case 2: b forms a rectangle
+            for b_height in range(1, int(b**0.5) + 2):
+                if b % b_height == 0:
+                    b_width = b // b_height
+                    
+                    if b_height <= height and b_width <= width:
+                        best_perimeter = min(best_perimeter, 2 * (height + width))
+                        
+    print(best_perimeter)
 
 solve()

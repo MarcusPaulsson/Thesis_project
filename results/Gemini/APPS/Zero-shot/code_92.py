@@ -1,7 +1,10 @@
 x = float(input())
 
-for a in range(1, 11):
-  for b in range(1, 11):
-    if abs(a / b - x) < 1e-7:
-      print(a, b)
-      exit()
+a = int((x * 10) // 1)
+b = int((x * 10) % 1 * 10 + 1)
+if b > 10:
+  b = 10
+if a == 0:
+  a = 1
+
+print(a, b)

@@ -1,41 +1,45 @@
+def generate_string(n, s, t):
+    # Check for impossible cases
+    if (s[0] == t[0] or s[1] == t[1]) and (s[0] == s[1] or t[0] == t[1]):
+        return "NO"
+    
+    # Initialize counts for 'a', 'b', and 'c'
+    count = {'a': n, 'b': n, 'c': n}
+    
+    # Start building the result string
+    result = []
+    
+    # Function to append a character while ensuring no invalid substrings
+    def append_char():
+        for char in 'abc':
+            if count[char] > 0:
+                # Check the last two characters in the result to avoid forbidden substrings
+                if len(result) < 2 or result[-1] != char or result[-2] != char:
+                    return char
+        return None
+    
+    # Construct the result string
+    for _ in range(3 * n):
+        char = append_char()
+        if char is None:
+            return "NO"
+        result.append(char)
+        count[char] -= 1
+    
+    # Final check for forbidden substrings
+    for i in range(len(result) - 1):
+        if ''.join(result[i:i+2]) == s or ''.join(result[i:i+2]) == t:
+            return "NO"
+    
+    return "YES", ''.join(result)
+
 n = int(input())
 s = input().strip()
 t = input().strip()
 
-# Create the resulting string with n 'a's, n 'b's, and n 'c's
-res = ['a'] * n + ['b'] * n + ['c'] * n
-
-# Function to check if the substrings s or t are present
-def contains_substrings(res, s, t):
-    result_str = ''.join(res)
-    return s in result_str or t in result_str
-
-# Generate a valid string
-def generate_valid_string(n, s, t):
-    # Create a simple base pattern
-    base_pattern = "abc" * n
-    # Check if the basic pattern contains s or t
-    if contains_substrings(base_pattern, s, t):
-        # If it does, we can try a different arrangement
-        # Attempt to create a pattern that avoids s and t
-        res = []
-        for i in range(n):
-            res.append('a')
-            res.append('b')
-            res.append('c')
-        
-        # Convert to string
-        res_str = ''.join(res)
-        if not contains_substrings(res_str, s, t):
-            return res_str
-    
-    # If the basic pattern works, return it
-    return base_pattern
-
-result = generate_valid_string(n, s, t)
-
-if result:
-    print("YES")
+result = generate_string(n, s, t)
+if result == "NO":
     print(result)
 else:
-    print("NO")
+    print(result[0])
+    print(result[1])

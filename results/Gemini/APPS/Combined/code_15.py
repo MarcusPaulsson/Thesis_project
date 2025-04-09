@@ -6,11 +6,13 @@ def solve():
             print("YES")
         else:
             print("NO")
+        return
+
+    diff = b - a
+
+    if diff % c == 0 and diff // c >= 0:
+        print("YES")
     else:
-        diff = b - a
-        if diff % c == 0 and diff // c >= 0:
-            print("YES")
-        else:
-            print("NO")
+        print("NO")
 
 solve()

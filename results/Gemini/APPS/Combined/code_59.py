@@ -1,10 +1,10 @@
 def solve():
     n, x, y = map(int, input().split())
     s = input()
-
+    
     count = 0
     for i in range(n - x, n):
-        if i == n - y - 1:
+        if i == n - 1 - y:
             if s[i] == '0':
                 count += 1
         else:

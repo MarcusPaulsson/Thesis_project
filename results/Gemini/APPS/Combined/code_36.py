@@ -6,35 +6,71 @@ def solve():
         return
 
     layer = 0
+    count = 0
     while True:
-        moves_in_layer = 6 * layer
-        if n <= moves_in_layer:
+        if count + 6 * layer <= n:
+            count += 6 * layer
+            layer += 1
+        else:
+            layer -= 1
             break
-        n -= moves_in_layer
-        layer += 1
 
-    side = (n - 1) // layer
-    rem = (n - 1) % layer
+    remaining = n - count
+    x, y = 2 * layer, 0
 
-    if side == 0:
-        x = 2 * layer - rem
-        y = 2 * rem
-    elif side == 1:
-        x = layer - 2 * rem
-        y = 2 * layer
-    elif side == 2:
-        x = -layer - rem
-        y = 2 * layer - 2 * rem
-    elif side == 3:
-        x = -2 * layer + rem
-        y = -2 * rem
-    elif side == 4:
-        x = -layer + 2 * rem
-        y = -2 * layer
+    segment_length = layer
+
+    if remaining == 0:
+        print(x, y)
+        return
+
+    # Segment 1
+    if remaining <= segment_length:
+        x -= 2 * remaining
+        print(x, y)
+        return
     else:
-        x = layer + rem
-        y = -2 * layer + 2 * rem
+        x -= 2 * segment_length
+        remaining -= segment_length
 
+    # Segment 2
+    y += 2 * remaining
+    if remaining <= segment_length:
+        print(x, y)
+        return
+    else:
+        y += 2 * segment_length
+        remaining -= segment_length
+
+    # Segment 3
+    x += 2 * remaining
+    if remaining <= segment_length:
+        print(x, y)
+        return
+    else:
+        x += 2 * segment_length
+        remaining -= segment_length
+
+    # Segment 4
+    y -= 2 * remaining
+    if remaining <= segment_length:
+        print(x, y)
+        return
+    else:
+        y -= 2 * segment_length
+        remaining -= segment_length
+
+    # Segment 5
+    x -= 2 * remaining
+    if remaining <= segment_length:
+        print(x, y)
+        return
+    else:
+        x -= 2 * segment_length
+        remaining -= segment_length
+    
+    # Segment 6
+    y += 2 * remaining
     print(x, y)
 
 solve()

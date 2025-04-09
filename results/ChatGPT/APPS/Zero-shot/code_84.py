@@ -1,45 +1,32 @@
-def can_color_string(n, s):
-    # Create a list to store the positions of each character
-    positions = {}
-    
-    for i, char in enumerate(s):
-        if char not in positions:
-            positions[char] = []
-        positions[char].append(i)
-    
-    # Prepare to create the coloring
+def can_color_sort(s):
+    n = len(s)
     color = [''] * n
-    current_color = 0
+    last_seen = {}
     
-    # Sort the keys to iterate in alphabetical order
-    sorted_chars = sorted(positions.keys())
-    
-    for char in sorted_chars:
-        # Get the indices for this character
-        indices = positions[char]
-        
-        # Check if we can color without conflict
-        for index in indices:
-            if color[index] == '':
-                color[index] = str(current_color)
+    for i in range(n):
+        char = s[i]
+        if char in last_seen:
+            if last_seen[char] == '0':
+                color[i] = '1'
             else:
-                # Conflict in coloring
-                if color[index] != str(current_color):
-                    return "NO"
+                color[i] = '0'
+        else:
+            color[i] = '0' if i % 2 == 0 else '1'
         
-        # Switch color for the next character
-        current_color = 1 - current_color
+        last_seen[char] = color[i]
+    
+    for i in range(n - 1):
+        if s[i] > s[i + 1] and color[i] == color[i + 1]:
+            return "NO"
     
     return "YES", ''.join(color)
 
-# Read input
+# Input reading
 n = int(input().strip())
 s = input().strip()
 
-# Get the result
-result = can_color_string(n, s)
-
-# Print the output
+# Check if possible to color and sort
+result = can_color_sort(s)
 if result == "NO":
     print(result)
 else:

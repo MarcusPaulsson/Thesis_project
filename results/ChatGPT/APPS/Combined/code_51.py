@@ -1,28 +1,29 @@
-from collections import Counter
+def find_x_and_y(divisors):
+    from collections import Counter
+    import math
 
-def find_x_y(n, divisors):
+    # Count occurrences of each divisor
     divisor_count = Counter(divisors)
-    
-    x, y = 1, 1
 
-    for d, count in divisor_count.items():
-        if count == 2:
-            x *= d
-            y *= d
-        else:
-            if x % d != 0:
-                x *= d
-            else:
-                y *= d
-    
-    return x, y
+    # Find the largest divisor, which will be one of the numbers (either x or y)
+    max_divisor = max(divisor_count)
+
+    # Calculate the product of all divisors
+    product_of_divisors = 1
+    for divisor, count in divisor_count.items():
+        product_of_divisors *= divisor ** count
+
+    # Calculate the other number using the product
+    other_number = product_of_divisors // max_divisor
+
+    return max_divisor, other_number
 
 # Input reading
 n = int(input().strip())
 divisors = list(map(int, input().strip().split()))
 
 # Finding x and y
-x, y = find_x_y(n, divisors)
+x, y = find_x_and_y(divisors)
 
-# Output result
+# Output the result
 print(x, y)

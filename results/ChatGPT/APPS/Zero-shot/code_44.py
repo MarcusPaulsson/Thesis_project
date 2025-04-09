@@ -1,40 +1,30 @@
-def minimal_time(d, k, a, b, t):
-    # Time if Vasiliy walks the entire distance
-    walk_time = d * b
+def min_time_to_post_office(d, k, a, b, t):
+    time = float('inf')
 
-    # Initialize the minimum time to the walking time
-    min_time = walk_time
+    # Case 1: Walk the entire distance
+    time = min(time, d * b)
 
-    # Calculate the maximum number of full k kilometers Vasiliy can drive
-    full_drives = d // k
+    # Case 2: Use the car as much as possible
+    full_cycles = d // k
     remaining_distance = d % k
 
-    # Calculate time taken for each possible scenario of driving and walking
-    for drives in range(full_drives + 1):
-        # Distance driven by car
-        distance_driven = drives * k
+    # Calculate time if using the car for full cycles
+    if full_cycles > 0:
+        time_using_car = (full_cycles * k * a) + (full_cycles - 1) * t + (remaining_distance * a if remaining_distance > 0 else 0)
+        time = min(time, time_using_car)
 
-        # Time taken for driving
-        driving_time = distance_driven * a
-        
-        # Time taken for repairs
-        repairs_time = drives * t
+    # Add walking time for remaining distance after using the car
+    time_using_car = (full_cycles * k * a) + (full_cycles * t) + (remaining_distance * b)
+    time = min(time, time_using_car)
 
-        # Remaining distance to walk
-        distance_to_walk = d - distance_driven
-        
-        # Time taken for walking
-        walking_time = distance_to_walk * b
+    # Add time for using car and then walking
+    if full_cycles > 0:
+        time_using_car_and_walk = (full_cycles * k * a) + (full_cycles - 1) * t + (remaining_distance * b)
+        time = min(time, time_using_car_and_walk)
 
-        # Total time for this combination
-        total_time = driving_time + repairs_time + walking_time
+    return time
 
-        # Update the minimum time
-        min_time = min(min_time, total_time)
-
-    return min_time
-
-# Read input
+# Input
 d, k, a, b, t = map(int, input().split())
-# Print the result
-print(minimal_time(d, k, a, b, t))
+# Output
+print(min_time_to_post_office(d, k, a, b, t))

@@ -1,32 +1,27 @@
 def restore_permutation(n, q):
-    # Initialize the permutation array
     p = [0] * n
-    # Start with p[0] as an unknown, we will calculate it later
-    sum_q = 0
-    
-    # Calculate p[i] based on the differences in q
+    p[0] = 0  # We will adjust later
+
+    # Calculate the prefix sums based on q
     for i in range(1, n):
-        sum_q += q[i - 1]
-        p[i] = sum_q
-    
-    # Now, we need to find a suitable p[0]
+        p[i] = p[i - 1] + q[i - 1]
+
+    # Find the minimum value in p to adjust the permutation to start from 1
     min_p = min(p)
-    # p[0] should be 1 - min_p to ensure the smallest number is 1
-    p[0] = 1 - min_p
-    
-    # Generate the full permutation
-    for i in range(1, n):
-        p[i] += p[0]
-    
-    # Check if the generated permutation is valid
-    if len(set(p)) == n and all(1 <= num <= n for num in p):
-        print(' '.join(map(str, p)))
+
+    # Adjust all values to make them start from 1
+    for i in range(n):
+        p[i] -= min_p - 1
+
+    # Check if we have a valid permutation
+    if len(set(p)) == n and all(1 <= x <= n for x in p):
+        print(" ".join(map(str, p)))
     else:
         print(-1)
 
-# Read inputs
-n = int(input())
-q = list(map(int, input().split()))
+# Reading input
+n = int(input().strip())
+q = list(map(int, input().strip().split()))
 
-# Call the function
+# Restore the permutation
 restore_permutation(n, q)

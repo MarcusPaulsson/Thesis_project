@@ -1,28 +1,32 @@
 def min_colors_to_sort(n, s):
-    colors = [0] * n
-    color_count = 0
-    last_seen = {}
+    from collections import defaultdict
     
-    for i in range(n):
-        char = s[i]
-        if char in last_seen:
-            colors[i] = last_seen[char]
+    # Step 1: Find the positions of each character
+    positions = defaultdict(list)
+    for i, char in enumerate(s):
+        positions[char].append(i)
+    
+    # Step 2: Determine the minimum number of colors needed
+    color = [0] * n
+    next_color = 1
+    last_used = [-1] * 26  # Track the last color used for each character
+    
+    for i, char in enumerate(s):
+        index = ord(char) - ord('a')
+        if last_used[index] == -1:
+            # If this character has not been colored yet
+            color[i] = next_color
+            last_used[index] = next_color
+            next_color += 1
         else:
-            color_count += 1
-            last_seen[char] = color_count
-            colors[i] = color_count
-            
-        # Ensure that we maintain the correct colorings for sorting
-        for j in range(i):
-            if s[j] > s[i] and colors[j] == colors[i]:
-                colors[j] = color_count + 1
-                color_count += 1
-                
-    print(color_count)
-    print(' '.join(map(str, colors)))
+            # If this character has been colored, use the same color
+            color[i] = last_used[index]
 
-# Read input
+    # Output the result
+    print(next_color - 1)
+    print(' '.join(map(str, color)))
+
+# Example input
 n = int(input().strip())
 s = input().strip()
-
 min_colors_to_sort(n, s)

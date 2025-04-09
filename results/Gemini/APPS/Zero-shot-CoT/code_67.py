@@ -1,16 +1,24 @@
 def solve():
-    n, k = map(int, input().split())
-    t = input()
+    n = int(input())
+    a = list(map(int, input().split()))
     
-    max_overlap = 0
-    for overlap in range(1, n):
-        if t[:n-overlap] == t[overlap:]:
-            max_overlap = n - overlap
-            break
-            
-    if max_overlap == 0:
-        print(t + t * (k - 1))
-    else:
-        print(t + t[max_overlap:] * (k - 1))
+    nice_indices = []
+    
+    for i in range(n):
+        temp_arr = a[:i] + a[i+1:]
+        total_sum = sum(temp_arr)
+        
+        is_good = False
+        for j in range(len(temp_arr)):
+            if temp_arr[j] == (total_sum - temp_arr[j]):
+                is_good = True
+                break
+        
+        if is_good:
+            nice_indices.append(i + 1)
+    
+    print(len(nice_indices))
+    if nice_indices:
+        print(*nice_indices)
 
 solve()

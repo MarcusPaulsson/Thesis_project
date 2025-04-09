@@ -1,27 +1,32 @@
-from itertools import combinations
-
 def max_sum_divisible_by_k(n, m, k, matrix):
-    max_select = m // 2
-    total_max_sum = 0
+    max_elements_to_choose = m // 2
+    dp = [[-1] * k for _ in range(n + 1)]
+    dp[0][0] = 0  # Base case: sum of 0 is achievable with 0 elements
 
-    for row in matrix:
-        possible_sums = set()
-        
-        # Generate all possible sums from selecting up to max_select elements
-        for r in range(max_select + 1):
-            for combo in combinations(row, r):
-                possible_sums.add(sum(combo))
-        
-        # Filter sums to find the maximum that is divisible by k
-        divisible_sums = [s for s in possible_sums if s % k == 0]
-        total_max_sum += max(divisible_sums, default=0)  # Use default=0 to handle empty case
+    for i in range(1, n + 1):
+        row = sorted(matrix[i - 1], reverse=True)[:max_elements_to_choose]
+        current_sums = [0]  # Start with the sum of 0 (choosing no elements)
 
-    return total_max_sum
+        # Calculate all possible sums for the current row
+        for j in range(1, len(row) + 1):
+            current_sums.append(current_sums[-1] + row[j - 1])
 
-# Reading input
+        # Update dp for the current row
+        for j in range(k):
+            if dp[i - 1][j] != -1:  # Previous state is valid
+                dp[i][j] = max(dp[i][j], dp[i - 1][j])  # Carry forward previous sums
+                
+                # Try to add combinations of elements from the current row
+                for s in current_sums:
+                    new_sum = dp[i - 1][j] + s
+                    new_mod = new_sum % k
+                    dp[i][new_mod] = max(dp[i][new_mod], new_sum)
+
+    return max(dp[n])
+
+# Input reading
 n, m, k = map(int, input().split())
 matrix = [list(map(int, input().split())) for _ in range(n)]
 
-# Calculating the maximum sum divisible by k
 result = max_sum_divisible_by_k(n, m, k, matrix)
 print(result)

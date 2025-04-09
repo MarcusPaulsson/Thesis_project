@@ -1,13 +1,14 @@
 n = int(input())
 a = list(map(int, input().split()))
 
-# Find the maximum height of the wall
 max_height = max(a)
+min_height = min(a)
 
-# Check if all parts can reach the maximum height without gaps
-for height in a:
-    if height < max_height and (height + 1) not in a:
-        print("NO")
+# Check if all heights can be raised to max_height without gaps
+can_complete = True
+for i in range(n):
+    if a[i] < min_height or (i > 0 and a[i] != a[i - 1] and a[i] != max_height):
+        can_complete = False
         break
-else:
-    print("YES")
+
+print("YES" if can_complete else "NO")

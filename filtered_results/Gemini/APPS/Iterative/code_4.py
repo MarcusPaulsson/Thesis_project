@@ -1,14 +1,15 @@
 def solve():
     x = int(input())
     hh, mm = map(int, input().split())
-
+    
     count = 0
     while True:
-        h_str = str(hh).zfill(2)
-        m_str = str(mm).zfill(2)
-        if '7' in h_str or '7' in m_str:
+        h = str(hh).zfill(2)
+        m = str(mm).zfill(2)
+        
+        if '7' in h or '7' in m:
             print(count)
-            break
+            return
         
         mm -= x
         if mm < 0:

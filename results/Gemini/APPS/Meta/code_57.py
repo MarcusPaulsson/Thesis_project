@@ -3,57 +3,44 @@ def solve():
     f = list(map(int, input().split()))
 
     givers = [i + 1 for i in range(n)]
-    receivers = [True] * (n + 1)
-    receivers[0] = False
+    receivers = [i + 1 for i in range(n)]
+
+    given = set()
+    received = set()
 
     for i in range(n):
         if f[i] != 0:
-            receivers[f[i]] = False
+            given.add(f[i])
 
-    available_receivers = []
-    for i in range(1, n + 1):
-        if receivers[i]:
-            available_receivers.append(i)
-    
-    unknown_givers_indices = []
+    missing_givers = []
     for i in range(n):
         if f[i] == 0:
-            unknown_givers_indices.append(i)
+            missing_givers.append(i)
 
-    for i in range(len(unknown_givers_indices)):
-        f[unknown_givers_indices[i]] = available_receivers[i]
+    missing_receivers = []
+    for i in range(1, n + 1):
+        if i not in given:
+            missing_receivers.append(i)
 
-    # Handle self-gifting
-    for i in range(n):
-        if f[i] == i + 1:
-            for j in range(n):
-                if i != j and f[j] != 0 and f[j] != j + 1:
-                  
-                  temp = f[i]
-                  f[i] = f[j]
-                  f[j] = temp
-                  break
+    for i in range(len(missing_givers)):
+        f[missing_givers[i]] = missing_receivers[i]
+
+    
+    
+    for i in range(len(missing_givers)):
+        if f[missing_givers[i]] == missing_givers[i] + 1:
+            
+            for j in range(len(missing_givers)):
+                if i != j and f[missing_givers[j]] != missing_givers[j] + 1:
+                    f[missing_givers[i]], f[missing_givers[j]] = f[missing_givers[j]], f[missing_givers[i]]
+                    break
             else:
-                for j in range(n):
-                  if i != j and f[j] == 0:
-                    if i + 1 != available_receivers[unknown_givers_indices.index(j)] and j+1 != available_receivers[unknown_givers_indices.index(i)]:
-                      temp = f[i]
-                      f[i] = f[j]
-                      f[j] = temp
-                      break
-                else:
-                   
-                    for j in range(n):
-                       if j != i:
-                            temp = f[i]
-                            f[i] = f[j]
-                            f[j] = temp
-                            if f[i] == i + 1 or f[j] == j+1:
-                                temp = f[i]
-                                f[i] = f[j]
-                                f[j] = temp
-                            break
-
+                
+                if len(missing_givers) > 1:
+                  if i == 0:
+                    f[missing_givers[i]], f[missing_givers[i+1]] = f[missing_givers[i+1]], f[missing_givers[i]]
+                  else:
+                    f[missing_givers[i]], f[missing_givers[0]] = f[missing_givers[0]], f[missing_givers[i]]
 
     print(*f)
 

@@ -1,43 +1,28 @@
 def min_moves_to_divisible_by_25(n: int) -> int:
     s = str(n)
     length = len(s)
-    moves = float('inf')
-    
-    # Valid endings for divisibility by 25
-    targets = ['00', '25', '50', '75']
+    target_pairs = ['00', '25', '50', '75']
+    min_moves = float('inf')
 
-    for target in targets:
-        last_digit, first_digit = target[1], target[0]
+    for pair in target_pairs:
+        pos1 = pos2 = -1
         
-        # Initialize positions as -1 (not found)
-        pos_last = pos_first = -1
-        
-        # Find the position of the last digit in the target
+        # Iterate through the string in reverse to find the required digits
         for i in range(length - 1, -1, -1):
-            if s[i] == last_digit:
-                pos_last = i
+            if s[i] == pair[1] and pos2 == -1:
+                pos2 = i
+            elif s[i] == pair[0] and pos2 != -1:
+                pos1 = i
                 break
         
-        if pos_last == -1:
-            continue  # Skip if last digit not found
+        # Calculate moves if both positions are valid
+        if pos1 != -1 and pos2 != -1:
+            moves = (length - 1 - pos2) + (pos2 - pos1 - 1)
+            min_moves = min(min_moves, moves)
 
-        # Find the position of the first digit in the target before the last digit
-        for i in range(pos_last - 1, -1, -1):
-            if s[i] == first_digit:
-                pos_first = i
-                break
-        
-        if pos_first == -1:
-            continue  # Skip if first digit not found
-        
-        # Calculate the moves required to bring first_digit next to last_digit
-        moves_required = (length - 1 - pos_last) + (pos_first - (pos_last - 1))
-        moves = min(moves, moves_required)
+    return min_moves if min_moves != float('inf') else -1
 
-    return moves if moves != float('inf') else -1
-
-# Read input
-n = int(input().strip())
-# Get result and print it
-result = min_moves_to_divisible_by_25(n)
-print(result)
+# Example usage
+if __name__ == "__main__":
+    n = int(input().strip())
+    print(min_moves_to_divisible_by_25(n))

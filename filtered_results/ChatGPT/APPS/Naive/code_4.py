@@ -1,25 +1,21 @@
-def is_lucky_time(hh, mm):
+def is_lucky_hour(hh, mm):
     return '7' in f"{hh:02d}{mm:02d}"
 
-def time_minus_x_minutes(hh, mm, x):
-    mm -= x
-    if mm < 0:
-        mm += 60
-        hh -= 1
-    if hh < 0:
-        hh += 24
-    return hh, mm
+def time_before(hh, mm, x):
+    total_minutes = hh * 60 + mm
+    while total_minutes >= 0:
+        yield divmod(total_minutes, 60)
+        total_minutes -= x
 
-def find_lucky_snooze_count(x, hh, mm):
-    count = 0
-    while not is_lucky_time(hh, mm):
-        count += 1
-        hh, mm = time_minus_x_minutes(hh, mm, x)
-    return count
+def find_lucky_time(x, hh, mm):
+    for presses, (h, m) in enumerate(time_before(hh, mm, x)):
+        if is_lucky_hour(h, m):
+            return presses
+    return -1  # This should never happen as per problem guarantee
 
 # Input reading
 x = int(input().strip())
 hh, mm = map(int, input().strip().split())
 
-# Calculate and print the result
-print(find_lucky_snooze_count(x, hh, mm))
+# Output the result
+print(find_lucky_time(x, hh, mm))

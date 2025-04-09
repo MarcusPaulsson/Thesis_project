@@ -2,57 +2,44 @@ def solve():
     a, b, x = map(int, input().split())
     
     if a > b:
-        start_with_zero = True
+        start = 0
     else:
-        start_with_zero = False
-        
+        start = 1
+    
     s = ""
     
-    if start_with_zero:
-        
-        if x % 2 == 0:
-            while x > 0:
-                s += "0"
-                a -= 1
-                s += "1"
-                b -= 1
-                x -= 2
-            s += "0" * a
-            s += "1" * b
-        else:
-            while x > 1:
-                s += "0"
-                a -= 1
-                s += "1"
-                b -= 1
-                x -= 2
-            s += "0" * a
-            s += "1" * b
-            s += "0"
-            a -= 1
-            s = s[::-1]
+    if start == 0:
+        s += "0"
+        a -= 1
     else:
-        if x % 2 == 0:
-            while x > 0:
+        s += "1"
+        b -= 1
+    
+    
+    while x > 0:
+        if s[-1] == '0':
+            if b > 0:
                 s += "1"
                 b -= 1
-                s += "0"
-                a -= 1
-                x -= 2
-            s += "1" * b
-            s += "0" * a
+                x -= 1
+            else:
+                s += "0" * a
+                a = 0
+                break
         else:
-            while x > 1:
-                s += "1"
-                b -= 1
+            if a > 0:
                 s += "0"
                 a -= 1
-                x -= 2
-            s += "1" * b
-            s += "0" * a
-            s += "1"
-            b -= 1
-            s = s[::-1]
+                x -= 1
+            else:
+                s += "1" * b
+                b = 0
+                break
+    
+    if a > 0:
+        s += "0" * a
+    if b > 0:
+        s += "1" * b
     
     print(s)
 

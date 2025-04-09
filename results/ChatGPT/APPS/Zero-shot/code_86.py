@@ -1,28 +1,34 @@
 def solve_problems(n, k):
-    # Minimum problems needed with strictly increasing sequence
-    min_needed = k * (k + 1) // 2
-    
-    if n < min_needed:
+    # Minimum sum of problems required: 1 + 2 + 3 + ... + k = k * (k + 1) // 2
+    min_sum = k * (k + 1) // 2
+    if n < min_sum:
         print("NO")
         return
-    
+
+    # Maximum sum of problems we can reach: 1 * 2^(k-1) + 2^(k-1) + 2^(k-2) + ... + 2^0
+    # This is a geometric series with the first term as 1 and ratio as 2.
+    max_sum = (1 << k) - 1  # 2^k - 1
+    if n > max_sum:
+        print("NO")
+        return
+
+    # Now, we need to construct the sequence
+    a = [0] * k
     # Start with the minimum valid sequence
-    a = list(range(1, k + 1))
-    remaining = n - min_needed
-    
-    # Distribute the remaining problems as optimally as possible
+    for i in range(k):
+        a[i] = i + 1
+
+    current_sum = min_sum
     for i in range(k - 1, -1, -1):
-        if remaining == 0:
-            break
-        
-        # Maximum we can add to a[i] while respecting the constraints
-        max_possible_increase = min(remaining, 2 * a[i] - a[i + 1] if i < k - 1 else float('inf'))
-        
-        a[i] += max_possible_increase
-        remaining -= max_possible_increase
-    
-    # Check if we have exactly n problems solved
-    if sum(a) == n:
+        # While current_sum is less than n, try to increase a[i]
+        while current_sum < n:
+            if a[i] * 2 <= (a[i + 1] if i + 1 < k else float('inf')):  # can double
+                current_sum += a[i]
+                a[i] *= 2
+            else:
+                break
+
+    if current_sum == n:
         print("YES")
         print(" ".join(map(str, a)))
     else:

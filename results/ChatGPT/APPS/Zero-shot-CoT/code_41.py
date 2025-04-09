@@ -2,22 +2,18 @@ n = int(input())
 a = list(map(int, input().split()))
 
 # Initialize the distance array with a large number
-d = [float('inf')] * n
+distance = [float('inf')] * n
 
-# First pass: from left to right
-last_zero = -1
+# Forward pass to find distances to the nearest zero
 for i in range(n):
     if a[i] == 0:
-        last_zero = i
-    if last_zero != -1:
-        d[i] = i - last_zero
+        distance[i] = 0
+    elif i > 0:
+        distance[i] = distance[i - 1] + 1
 
-# Second pass: from right to left
-last_zero = -1
-for i in range(n-1, -1, -1):
-    if a[i] == 0:
-        last_zero = i
-    if last_zero != -1:
-        d[i] = min(d[i], last_zero - i)
+# Backward pass to find distances to the nearest zero
+for i in range(n - 2, -1, -1):
+    if distance[i] > distance[i + 1] + 1:
+        distance[i] = distance[i + 1] + 1
 
-print(' '.join(map(str, d)))
+print(' '.join(map(str, distance)))

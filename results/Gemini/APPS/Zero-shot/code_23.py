@@ -5,61 +5,40 @@ def solve():
     b = input()
 
     a_digits = sorted(list(a), reverse=True)
-    b_digits = list(b)
-
+    
     if len(a) < len(b):
-        print("".join(sorted(list(a), reverse=True)))
-        return
-
-    if len(a) > len(b):
-        print("".join(sorted(list(a), reverse=True)))
+        print("".join(a_digits))
         return
     
-    a_count = Counter(a)
+    a_counts = Counter(a)
     
-    def find_max(index, current_num, remaining_count):
-        if index == len(a):
+    def find_max(idx, current_num, remaining_counts):
+        if idx == len(a):
             return current_num
         
         best_num = ""
         
-        for digit in sorted(remaining_count.keys(), reverse=True):
-            if int(digit) > int(b_digits[index]):
-                continue
+        for digit in sorted(remaining_counts.keys(), reverse=True):
+            temp_counts = remaining_counts.copy()
             
-            if remaining_count[digit] == 0:
-                continue
-                
-            new_count = remaining_count.copy()
-            new_count[digit] -= 1
-            
-            if new_count[digit] == 0:
-                del new_count[digit]
-            
-            new_num = current_num + digit
-            
-            if int(digit) < int(b_digits[index]):
-                remaining_digits = []
-                for d, count in new_count.items():
-                    remaining_digits.extend([d] * count)
-                
-                remaining_digits.sort(reverse=True)
-                
-                if remaining_digits:
-                    temp_num = new_num + "".join(remaining_digits)
-                    if not best_num or int(temp_num) > int(best_num):
-                        best_num = temp_num
-                else:
-                    if not best_num or int(new_num) > int(best_num):
-                        best_num = new_num
-            else:
-                temp_num = find_max(index+1, new_num, new_count)
-                if temp_num and (not best_num or int(temp_num) > int(best_num)):
-                    best_num = temp_num
+            if temp_counts[digit] > 0:
+                temp_counts[digit] -= 1
+                if temp_counts[digit] == 0:
+                    del temp_counts[digit]
                     
+                new_num = current_num + digit
+                
+                if len(new_num) <= len(b):
+                    if len(new_num) < len(b) or new_num <= b:
+                        result = find_max(idx + 1, new_num, temp_counts)
+                        if len(result) > len(best_num):
+                            best_num = result
+                        elif len(result) == len(best_num) and result > best_num:
+                            best_num = result
+        
         return best_num
 
-    result = find_max(0, "", a_count)
+    result = find_max(0, "", a_counts)
     print(result)
 
 solve()

@@ -3,13 +3,15 @@ def is_palindrome(s):
 
 s = input().strip()
 
+# If the entire string is not a palindrome, return its length
 if not is_palindrome(s):
     print(len(s))
 else:
-    # Check for the longest non-palindromic substring
-    # If all characters are the same, then all substrings are palindromes
-    if len(set(s)) == 1:
+    # Check for the longest non-palindrome substring
+    n = len(s)
+    # If all characters are the same, return 0
+    if s.count(s[0]) == n:
         print(0)
     else:
-        # The longest non-palindromic substring will be the entire string minus one character
-        print(len(s) - 1)
+        # The longest non-palindrome substring can be at least n-1
+        print(n - 1)

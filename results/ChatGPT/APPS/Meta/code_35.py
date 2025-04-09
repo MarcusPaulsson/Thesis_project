@@ -1,35 +1,48 @@
-def is_valid_flag(n, m, grid):
-    # Check if there are exactly three colors
-    colors = set()
-    for row in grid:
-        colors.update(row)
-    
-    if len(colors) != 3:
-        return "NO"
+n, m = map(int, input().split())
+field = [input().strip() for _ in range(n)]
 
+def is_valid_flag(field, n, m):
     # Check for horizontal stripes
     stripe_height = n // 3
-    if n % 3 != 0 or stripe_height == 0:
+    if n % 3 != 0:
         return "NO"
     
-    # Check each stripe
-    seen_colors = set()
+    colors = set()
     for i in range(3):
-        stripe_color = grid[i * stripe_height][0]
-        if stripe_color in seen_colors:
+        start_row = i * stripe_height
+        color = field[start_row][0]
+        if color not in 'RGB' or color in colors:
             return "NO"
-        seen_colors.add(stripe_color)
-        
-        for j in range(i * stripe_height, (i + 1) * stripe_height):
-            if grid[j] != stripe_color * m:
+        colors.add(color)
+        for j in range(stripe_height):
+            if field[start_row + j] != color * m:
                 return "NO"
 
-    return "YES"
+    return "YES" if len(colors) == 3 else "NO"
 
-def main():
-    n, m = map(int, input().split())
-    grid = [input().strip() for _ in range(n)]
-    result = is_valid_flag(n, m, grid)
-    print(result)
+# Check for vertical stripes
+def is_valid_vertical_flag(field, n, m):
+    stripe_width = m // 3
+    if m % 3 != 0:
+        return "NO"
+    
+    colors = set()
+    for i in range(3):
+        start_col = i * stripe_width
+        color = field[0][start_col]
+        if color not in 'RGB' or color in colors:
+            return "NO"
+        colors.add(color)
+        for j in range(m):
+            for k in range(n):
+                if field[k][start_col + j] != color:
+                    return "NO"
 
-main()
+    return "YES" if len(colors) == 3 else "NO"
+
+# Check both orientations
+result = is_valid_flag(field, n, m) if n % 3 == 0 else "NO"
+if result == "NO":
+    result = is_valid_vertical_flag(field, n, m) if m % 3 == 0 else "NO"
+
+print(result)

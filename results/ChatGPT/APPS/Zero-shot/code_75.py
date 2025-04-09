@@ -1,34 +1,31 @@
 def max_days(a, b, c):
-    # Days of the week food schedule
-    week_food = [a, b, c, a, c, b, a]  # fish, rabbit, chicken respectively
+    # Days of the week food distribution
+    week_pattern = [0, 1, 0, 2, 0, 1, 2]  # 0: fish, 1: rabbit, 2: chicken
+    food_count = [a, b, c]
     
-    # Calculate how many complete weeks can be sustained
-    complete_weeks = min(a // 3, b // 2, c // 1)
-    a -= complete_weeks * 3
-    b -= complete_weeks * 2
-    c -= complete_weeks * 1
-    
-    # Now check for how many additional days we can go
-    max_additional_days = 0
-    
-    # Try starting from each day of the week
-    for start_day in range(7):
-        food = [a, b, c]
-        days = 0
+    def can_feed_for_days(start_day, days):
+        food_needed = [0, 0, 0]  # fish, rabbit, chicken
         
-        # Simulate days
-        for i in range(7):
-            day = (start_day + i) % 7
-            if food[day // 2] > 0:  # fish food for 0, 3, 6 | rabbit for 1, 5 | chicken for 2, 4
-                food[day // 2] -= 1
-                days += 1
-            else:
-                break
+        for i in range(days):
+            food_needed[week_pattern[(start_day + i) % 7]] += 1
         
-        max_additional_days = max(max_additional_days, days)
-    
-    return complete_weeks * 7 + max_additional_days
+        return all(food_needed[i] <= food_count[i] for i in range(3))
 
-# Input
+    max_days_possible = 0
+    
+    for start_day in range(7):
+        left, right = 0, 10**18  # an arbitrary large number
+        while left < right:
+            mid = (left + right + 1) // 2
+            if can_feed_for_days(start_day, mid):
+                left = mid
+            else:
+                right = mid - 1
+        max_days_possible = max(max_days_possible, left)
+    
+    return max_days_possible
+
+# Read input
 a, b, c = map(int, input().split())
+# Output the result
 print(max_days(a, b, c))

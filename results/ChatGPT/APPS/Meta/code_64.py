@@ -1,25 +1,42 @@
+def schedule_exams(n, m, exams):
+    days = [0] * n  # Initialize days with 0 (rest days)
+    preparation_needed = [0] * m  # Track preparation days needed for each exam
+
+    # Fill preparation_needed with the required preparation days
+    for i in range(m):
+        preparation_needed[i] = exams[i][2]
+
+    # Check if we can allocate preparation days before each exam
+    for i in range(m):
+        s_i, d_i, c_i = exams[i]
+        s_i -= 1  # Convert to 0-based index
+        d_i -= 1  # Convert to 0-based index
+
+        # Try to allocate the preparation days
+        allocated_days = 0
+        for day in range(s_i, d_i):
+            if allocated_days < c_i and days[day] == 0:  # If we still need preparation days and the day is free
+                days[day] = i + 1  # Mark this day for exam i
+                allocated_days += 1
+
+        # If we didn't allocate enough days, it's impossible
+        if allocated_days < c_i:
+            return -1
+
+    # Now fill the exam days
+    for i in range(m):
+        d_i = exams[i][1] - 1  # Convert to 0-based index
+        days[d_i] = m + 1  # Mark this day for the exam
+
+    return days
+
+# Reading input
 n, m = map(int, input().split())
-exams = [list(map(int, input().split())) for _ in range(m)]
-schedule = [0] * n  # Initialize the schedule with rest days (0)
+exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-# Mark exam days
-for i in range(m):
-    s, d, c = exams[i]
-    schedule[d - 1] = m + 1  # Mark exam day with m + 1
+result = schedule_exams(n, m, exams)
 
-# Prepare for exams
-for i in range(m):
-    s, d, c = exams[i]
-    prepared_days = 0
-    for j in range(s - 1, d - 1):  # From s_i to d_i - 1
-        if prepared_days < c and schedule[j] == 0:  # Only prepare on rest days
-            schedule[j] = i + 1  # Mark preparation day with exam number (1-indexed)
-            prepared_days += 1
-            
-    # Check if we have prepared enough days
-    if prepared_days < c:
-        print(-1)
-        exit()
-
-# Print the final schedule
-print(' '.join(map(str, schedule)))
+if result == -1:
+    print(-1)
+else:
+    print(' '.join(map(str, result)))

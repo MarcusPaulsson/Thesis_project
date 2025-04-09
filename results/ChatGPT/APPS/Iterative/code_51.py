@@ -1,41 +1,32 @@
 from collections import Counter
+from math import gcd
+from functools import reduce
 
-def restore_xy(n, divisors):
-    count = Counter(divisors)
-    
-    # Identify the maximum divisor, which is the candidate for x or y
-    max_divisor = max(divisors)
-    
-    # Find the second maximum divisor which must be x or y
-    second_max_divisor = 1
-    for d in divisors:
-        if d < max_divisor:
-            second_max_divisor = max(second_max_divisor, d)
-    
-    # Calculate potential x and y
-    x = max_divisor
-    y = second_max_divisor
-    
-    # Ensure y is the correct value by checking divisor counts
-    temp_count = count.copy()
-    
-    for d in divisors:
-        if x % d == 0 and temp_count[d] > 0:
-            temp_count[d] -= 1
-        if y % d == 0 and temp_count[d] > 0:
-            temp_count[d] -= 1
-    
-    # Check if all counts are satisfied
-    if all(v == 0 for v in temp_count.values()):
-        return x, y
-    
-    return None
-
-# Input reading
 n = int(input())
 divisors = list(map(int, input().split()))
 
-# Call the function and print the result
-result = restore_xy(n, divisors)
-if result:
-    print(result[0], result[1])
+# Count the frequency of each divisor
+count = Counter(divisors)
+
+# Find the maximum divisor, which should be x or y
+max_divisor = max(count.keys())
+
+# To find x and y, we will iterate over the divisors and determine their possible pairs
+# We can calculate x and y by multiplying all unique divisors
+x = 1
+y = 1
+
+# Separate common and non-common divisors
+for d in count:
+    if count[d] > 1:
+        # This is a common divisor, multiply it to both x and y
+        x *= d
+        y *= d
+    else:
+        # This is a non-common divisor, assign it to x or y based on their current products
+        if x < y:
+            x *= d
+        else:
+            y *= d
+
+print(x, y)

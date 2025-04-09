@@ -1,18 +1,20 @@
 def solve():
-  n, l = map(int, input().split())
-  kefa = list(map(int, input().split()))
-  sasha = list(map(int, input().split()))
+    n, l = map(int, input().split())
+    kefa = list(map(int, input().split()))
+    sasha = list(map(int, input().split()))
 
-  for shift in range(l):
-    match = True
-    for i in range(n):
-      if (kefa[i] - sasha[0] + l) % l != (sasha[i] - sasha[0] + l) % l:
-        match = False
-        break
-    if match:
-      print("YES")
-      return
+    for shift in range(n):
+        shifted_sasha = [(sasha[i] - sasha[0] + l) % l for i in range(n)]
+        shifted_sasha.sort()
 
-  print("NO")
+        kefa_shifted = [(kefa[i] - kefa[0] + l) % l for i in range(n)]
+        kefa_shifted.sort()
+        
+
+        if shifted_sasha == kefa_shifted:
+            print("YES")
+            return
+
+    print("NO")
 
 solve()

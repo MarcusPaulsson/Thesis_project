@@ -3,38 +3,40 @@ def solve():
     exams = []
     for i in range(m):
         s, d, c = map(int, input().split())
-        exams.append((s, d, c, i + 1))
+        exams.append((s, d, c))
 
     schedule = [0] * n
     exam_days = {}
-    for s, d, c, i in exams:
-        exam_days[d - 1] = i
+    for i in range(m):
+        exam_days[exams[i][1]] = i + 1
+        schedule[exams[i][1] - 1] = m + 1
 
-    for day in exam_days:
-        schedule[day] = m + 1
-
-    preparation_days = [0] * m
+    prep_counts = [0] * m
     
-    for day in range(n):
-        if schedule[day] == 0:
-            best_exam = -1
-            for s, d, c, i in exams:
-                exam_index = i - 1
-                if s - 1 <= day < d - 1 and preparation_days[exam_index] < c:
-                    if best_exam == -1:
-                        best_exam = exam_index
-                    else:
-                        s_best, d_best, c_best, i_best = exams[best_exam]
-                        if d < d_best:
-                            best_exam = exam_index
+    for day in range(1, n + 1):
+        if schedule[day - 1] == m + 1:
+            continue
+        
+        best_exam = -1
+        
+        for i in range(m):
+            s, d, c = exams[i]
             
-            if best_exam != -1:
-                schedule[day] = exams[best_exam][3]
-                preparation_days[best_exam] += 1
+            if s <= day < d and prep_counts[i] < c:
+                if best_exam == -1:
+                    best_exam = i
+                else:
+                    s_best, d_best, c_best = exams[best_exam]
+                    if d < d_best:
+                        best_exam = i
+                        
+        if best_exam != -1:
+            schedule[day - 1] = best_exam + 1
+            prep_counts[best_exam] += 1
 
     possible = True
     for i in range(m):
-        if preparation_days[i] != exams[i][2]:
+        if prep_counts[i] != exams[i][2]:
             possible = False
             break
 

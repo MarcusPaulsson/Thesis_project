@@ -3,32 +3,53 @@ def solve():
     c = list(map(int, input().split()))
 
     total_length = sum(c)
-    min_empty = m - 1
+    
+    if d > n + 1:
+        print("YES")
+        result = [0] * n
+        last = n
+        for i in range(m - 1, -1, -1):
+          for j in range(c[i]):
+            result[last - 1] = i + 1
+            last -= 1
+        print(*result)
+        return
 
-    if n + 1 - (total_length + min_empty + 1) > d:
+    min_space = (m + 1) * (d - 1)
+    if total_length + min_space > n + d - 1:
         print("NO")
         return
-    
-    print("YES")
-    a = [0] * n
-    
-    current_pos = 0
-    for i in range(m):
-        
-        
-        needed_empty = 0
-        if i == m-1:
-            needed_empty = n - current_pos - c[i]
-        else:
-            needed_empty = min(d-1, n - (current_pos + sum(c[i:]) + (m-i-1)))
-        
-        
-        current_pos += needed_empty
-        
-        for j in range(c[i]):
-            a[current_pos] = i + 1
-            current_pos += 1
 
-    print(*a)
+    print("YES")
+    result = [0] * n
+    
+    pos = 0
+    platform_positions = []
+    
+    for i in range(m):
+      platform_positions.append(pos)
+      pos += d - 1
+    
+    remaining_space = n - total_length - sum([x for x in platform_positions])
+    
+    for i in range(m):
+      add = min(remaining_space, d - 1)
+      platform_positions[i] += add
+      remaining_space -= add
+    
+    last = n
+    for i in range(m - 1, -1, -1):
+      
+      start = last - c[i]
+      
+      while start < platform_positions[i]:
+        start += 1
+      
+      for j in range(start, last):
+        result[j] = i + 1
+      
+      last = start
+        
+    print(*result)
 
 solve()

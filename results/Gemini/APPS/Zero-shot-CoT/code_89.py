@@ -5,21 +5,22 @@ def solve():
         projects.append(list(map(int, input().split())))
 
     def check(order):
-        current_rating = r
+        curr_r = r
         for i in order:
             a, b = projects[i]
-            if current_rating < a:
+            if curr_r < a:
                 return False
-            current_rating += b
-            if current_rating < 0:
+            curr_r += b
+            if curr_r < 0:
                 return False
         return True
 
     import itertools
-    for perm in itertools.permutations(range(n)):
-        if check(perm):
+    for order in itertools.permutations(range(n)):
+        if check(order):
             print("YES")
             return
+    
     print("NO")
 
 solve()

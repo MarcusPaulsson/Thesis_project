@@ -1,31 +1,35 @@
-def create_rename_script(n, files):
+def rename_files(n, files):
     examples = []
     regulars = []
-    
-    for name, file_type in files:
-        if file_type == '1':
+
+    # Split files into examples and regular tests
+    for name, type_ in files:
+        if type_ == '1':
             examples.append(name)
         else:
             regulars.append(name)
-    
-    total_files = n
-    e = len(examples)
-    
+
+    # Prepare the result
     moves = []
     
-    # Renaming examples to 1, 2, ..., e
-    for i in range(e):
-        moves.append(f"move {examples[i]} {i + 1}")
-    
-    # Renaming regular tests to e + 1, e + 2, ..., n
-    for i in range(len(regulars)):
-        moves.append(f"move {regulars[i]} {e + i + 1}")
-    
-    # Final output
+    # Rename examples to 1, 2, ..., e
+    for i, example_name in enumerate(examples):
+        new_name = str(i + 1)
+        moves.append(f"move {example_name} {new_name}")
+
+    # Rename regular tests to e + 1, e + 2, ..., n
+    e = len(examples)
+    for i, regular_name in enumerate(regulars):
+        new_name = str(e + i + 1)
+        current_name = regular_name if i == 0 else str(e + i)
+        moves.append(f"move {current_name} {new_name}")
+
+    # Output results
     print(len(moves))
     print("\n".join(moves))
 
-if __name__ == "__main__":
-    n = int(input().strip())
-    files = [input().strip().split() for _ in range(n)]
-    create_rename_script(n, files)
+# Read input
+n = int(input().strip())
+files = [input().strip().split() for _ in range(n)]
+
+rename_files(n, files)

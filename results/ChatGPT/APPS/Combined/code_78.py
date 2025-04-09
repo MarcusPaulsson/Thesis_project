@@ -1,45 +1,42 @@
-MOD = 1000000007
+MOD = 10**9 + 7
 
-def count_regular_sequences(n, s):
-    len_s = len(s)
-    current_balance = 0
-    min_balance = 0
-
-    # Calculate current balance and minimum balance for the substring s
-    for char in s:
-        if char == '(':
-            current_balance += 1
-        else:
-            current_balance -= 1
-        min_balance = min(min_balance, current_balance)
-
-    # Validity check for substring s
-    if current_balance < 0 or current_balance + n < len_s or min_balance < 0:
-        return 0
-
-    # Dynamic programming table to count valid bracket sequences
+def count_regular_bracket_sequences(n, s):
+    m = len(s)
+    
+    # Precompute the number of valid sequences of length 2k
     dp = [[0] * (n + 1) for _ in range(n + 1)]
-    dp[0][0] = 1  # Base case: one way to have an empty sequence
-
+    dp[0][0] = 1
+    
     for i in range(1, n + 1):
         for j in range(i + 1):
-            dp[i][j] = dp[i - 1][j]  # Add a closing bracket
-            if j > 0:
-                dp[i][j] += dp[i - 1][j - 1]  # Add an opening bracket
+            dp[i][j] = (dp[i - 1][j + 1] if j + 1 <= i - 1 else 0) + (dp[i - 1][j - 1] if j > 0 else 0)
             dp[i][j] %= MOD
 
-    # Calculate valid sequences that can be formed with remaining brackets
-    valid_sequences = 0
-    for k in range(n + 1):
-        if 0 <= k + current_balance <= n:
-            valid_sequences += dp[n - len_s][k + current_balance]
-            valid_sequences %= MOD
+    # Count the number of left and right brackets in s
+    left_brackets = s.count('(')
+    right_brackets = s.count(')')
 
-    return valid_sequences
+    # Validate the brackets count
+    if left_brackets < right_brackets or left_brackets > n or right_brackets > n:
+        return 0
+    
+    # Calculate remaining length for valid sequences
+    remaining_length = 2 * (n - (left_brackets + right_brackets))
 
-# Read input
+    if remaining_length < 0 or (remaining_length // 2) < 0:
+        return 0
+
+    valid_sequences = dp[n - (left_brackets + right_brackets)][0]
+    
+    # Calculate total sequences by placing `s` in valid sequences
+    total_sequences = valid_sequences * (remaining_length + 1) % MOD
+    
+    return total_sequences
+
+# Read input values
 n = int(input().strip())
 s = input().strip()
 
-# Output result
-print(count_regular_sequences(n, s))
+# Compute the result
+result = count_regular_bracket_sequences(n, s)
+print(result)

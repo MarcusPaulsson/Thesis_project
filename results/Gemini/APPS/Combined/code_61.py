@@ -3,26 +3,26 @@ def solve():
     a = input()
     f = list(map(int, input().split()))
 
-    a_list = list(a)
-    best_a = a_list[:]
-
+    a_list = list(map(int, list(a)))
+    
+    start = -1
+    end = -1
+    
     for i in range(n):
-        temp_a = a_list[:]
-        changed = False
-        for j in range(i, n):
-            digit = int(a_list[j])
-            new_digit = f[digit - 1]
-            if new_digit > digit:
-                temp_a[j] = str(new_digit)
-                changed = True
-            elif new_digit < digit:
-                break
-            else:
-                temp_a[j] = str(new_digit)
-
-        if changed:
+        if f[a_list[i] - 1] > a_list[i] and start == -1:
+            start = i
+        if start != -1 and f[a_list[i] - 1] >= a_list[i]:
+            end = i
+        elif start != -1:
             break
-
-    print("".join(temp_a))
+            
+    if start == -1:
+        print(a)
+    else:
+        ans_list = a_list[:]
+        for i in range(start, end + 1):
+            ans_list[i] = f[a_list[i] - 1]
+            
+        print("".join(map(str, ans_list)))
 
 solve()

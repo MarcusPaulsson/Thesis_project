@@ -9,35 +9,38 @@ def solve():
                 coloring += "1"
             else:
                 coloring += "0"
-        
-        s0 = ""
-        s1 = ""
+
+        zeros = ""
+        ones = ""
         for j in range(n):
             if coloring[j] == '0':
-                s0 += s[j]
+                zeros += s[j]
             else:
-                s1 += s[j]
-        
-        s0 = "".join(sorted(s0))
-        s1 = "".join(sorted(s1))
+                ones += s[j]
+
+        sorted_s = "".join(sorted(s))
         
         merged = ""
-        idx0 = 0
-        idx1 = 0
-        
-        for j in range(n):
-            if coloring[j] == '0':
-                merged += s0[idx0]
-                idx0 += 1
+        zero_idx = 0
+        one_idx = 0
+
+        possible = True
+        for char in sorted_s:
+            if zero_idx < len(zeros) and zeros[zero_idx] == char:
+                merged += zeros[zero_idx]
+                zero_idx += 1
+            elif one_idx < len(ones) and ones[one_idx] == char:
+                merged += ones[one_idx]
+                one_idx += 1
             else:
-                merged += s1[idx1]
-                idx1 += 1
-        
-        if "".join(sorted(s)) == merged:
+                possible = False
+                break
+
+        if possible:
             print("YES")
             print(coloring)
             return
-    
+
     print("NO")
 
 solve()

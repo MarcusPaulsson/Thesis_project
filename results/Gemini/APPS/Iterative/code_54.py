@@ -1,34 +1,37 @@
 def solve():
-  n = int(input())
-  a = list(map(int, input().split()))
+    n = int(input())
+    a = list(map(int, input().split()))
 
-  unique_values = sorted(list(set(a)))
+    if n == 1:
+        print(0)
+        return
 
-  if len(unique_values) > 3:
-    print(-1)
-    return
+    unique_vals = sorted(list(set(a)))
+    
+    if len(unique_vals) > 3:
+        print(-1)
+        return
+    
+    if len(unique_vals) == 1:
+        print(0)
+        return
+    
+    if len(unique_vals) == 2:
+        x, y = unique_vals
+        d = abs(y - x)
+        if d % 2 == 0:
+            print(d // 2)
+        else:
+            print(d)
+        return
 
-  if len(unique_values) == 1:
-    print(0)
-    return
-
-  if len(unique_values) == 2:
-    val1, val2 = unique_values
-    D = abs(val1 - val2)
-    if D % 2 == 0:
-      D //= 2
-      print(D)
-    else:
-      print(D)
-    return
-
-  if len(unique_values) == 3:
-    val1, val2, val3 = unique_values
-    if val2 - val1 == val3 - val2:
-      print(val2 - val1)
-    else:
-      print(-1)
-    return
+    if len(unique_vals) == 3:
+        x, y, z = unique_vals
+        if y - x == z - y:
+            print(y - x)
+        else:
+            print(-1)
+        return
 
 
 solve()

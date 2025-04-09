@@ -1,23 +1,24 @@
-def count_circular_binary_strings(n, s):
+def count_cyclic_strings(n, s):
     from itertools import product
 
     m = len(s)
-    count = 0
-    seen = set()
+    total_strings = 0
+    all_strings = set()
 
+    # Generate all binary strings of length n
     for bits in product('01', repeat=n):
         t = ''.join(bits)
-        # Check if s is a substring in any cyclic shift of t
+        # Check if s is a substring of any cyclic shift of t
         if any(s in t[i:] + t[:i] for i in range(n)):
-            # Add the string in its canonical form to avoid duplicates
-            canonical = min(t[i:] + t[:i] for i in range(n))
-            seen.add(canonical)
+            all_strings.add(t)
 
-    return len(seen)
+    total_strings = len(all_strings)
+    return total_strings
 
-# Input reading
-n = int(input())
+# Input handling
+n = int(input().strip())
 s = input().strip()
 
-# Output the result
-print(count_circular_binary_strings(n, s))
+# Calculate and print the result
+result = count_cyclic_strings(n, s)
+print(result)

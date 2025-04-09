@@ -1,115 +1,83 @@
 def solve():
     n = int(input())
-    tests = []
+    files = []
     for _ in range(n):
-        tests.append(input().split())
+        files.append(input().split())
 
     examples = []
     regular = []
     for i in range(n):
-        if tests[i][1] == '1':
-            examples.append((tests[i][0], i))
+        if files[i][1] == '1':
+            examples.append((files[i][0], i))
         else:
-            regular.append((tests[i][0], i))
-
-    moves = []
+            regular.append((files[i][0], i))
     
     e = len(examples)
-
-    # Move examples to 1...e
+    
+    moves = []
+    
+    # Move examples to 1, 2, ..., e
     for i in range(e):
         if examples[i][0] != str(i + 1):
-            if any(test[0] == str(i + 1) for test in tests):
+            
+            if any(f[0] == str(i+1) for f in examples) or any(f[0] == str(i+1) for f in regular):
+                temp_name = generate_temp_name(files)
+                moves.append(f"move {examples[i][0]} {temp_name}")
                 
-                found = False
+                # Find the file that should be moved to this position
                 for j in range(n):
-                    if tests[j][0] not in [str(k+1) for k in range(n)]:
-                         moves.append(f"move {tests[j][0]} temp{j}")
-                         tests[j][0] = f"temp{j}"
-                         found = True
-                         break
-                if not found:
-                    moves.append(f"move {tests[0][0]} temp")
-                    tests[0][0] = "temp"
-                
-                found_index = -1
-                for j in range(len(tests)):
-                    if tests[j][0] == str(i+1):
-                        found_index = j
+                    if files[j][0] == str(i+1):
+                        if files[j][1] == '1':
+                            moves.append(f"move {str(i+1)} {temp_name + '_temp'}")
+                            moves.append(f"move {temp_name} {str(i+1)}")
+                            moves.append(f"move {temp_name + '_temp'} {str(i+1)}")
+                            
+                        else:
+                            moves.append(f"move {str(i+1)} {examples[i][0]}")
+                            moves.append(f"move {temp_name} {str(i+1)}")
                         break
+                else:
+                    moves.append(f"move {temp_name} {str(i+1)}")
                 
-                moves.append(f"move {examples[i][0]} temp1")
-                moves.append(f"move {str(i+1)} {examples[i][0]}")
-                moves.append(f"move temp1 {str(i+1)}")
-                
-                for p in range(len(examples)):
-                    if examples[p][0] == examples[i][0]:
-                        examples[p] = (str(i+1), examples[p][1])
-                        break
-                
-                for p in range(len(tests)):
-                    if tests[p][0] == examples[i][0]:
-                        tests[p][0] = str(i+1)
-                        break
-                
-            else:
-                moves.append(f"move {examples[i][0]} {i+1}")
-                for p in range(len(examples)):
-                    if examples[p][0] == examples[i][0]:
-                        examples[p] = (str(i+1), examples[p][1])
-                        break
-                for p in range(len(tests)):
-                    if tests[p][0] == examples[i][0]:
-                        tests[p][0] = str(i+1)
-                        break
 
-    # Move regular tests to e+1...n
+            else:
+                moves.append(f"move {examples[i][0]} {str(i + 1)}")
+    
+    # Move regular tests to e+1, e+2, ..., n
     for i in range(len(regular)):
         if regular[i][0] != str(e + i + 1):
-            if any(test[0] == str(e + i + 1) for test in tests):
-                found = False
+            
+            if any(f[0] == str(e+i+1) for f in examples) or any(f[0] == str(e+i+1) for f in regular):
+                temp_name = generate_temp_name(files)
+                moves.append(f"move {regular[i][0]} {temp_name}")
+                
                 for j in range(n):
-                    if tests[j][0] not in [str(k+1) for k in range(n)]:
-                         moves.append(f"move {tests[j][0]} temp{j}")
-                         tests[j][0] = f"temp{j}"
-                         found = True
-                         break
-                if not found:
-                     moves.append(f"move {tests[0][0]} temp")
-                     tests[0][0] = "temp"
-                
-                found_index = -1
-                for j in range(len(tests)):
-                    if tests[j][0] == str(e + i + 1):
-                        found_index = j
+                    if files[j][0] == str(e+i+1):
+                        if files[j][1] == '1':
+                            moves.append(f"move {str(e+i+1)} {temp_name + '_temp'}")
+                            moves.append(f"move {temp_name} {str(e+i+1)}")
+                            moves.append(f"move {temp_name + '_temp'} {str(e+i+1)}")
+                        else:
+                            moves.append(f"move {str(e+i+1)} {regular[i][0]}")
+                            moves.append(f"move {temp_name} {str(e+i+1)}")
                         break
                 
-                moves.append(f"move {regular[i][0]} temp1")
-                moves.append(f"move {str(e + i + 1)} {regular[i][0]}")
-                moves.append(f"move temp1 {str(e + i + 1)}")
+                else:
+                    moves.append(f"move {temp_name} {str(e + i + 1)}")
 
-                for p in range(len(regular)):
-                    if regular[p][0] == regular[i][0]:
-                        regular[p] = (str(e + i + 1), regular[p][1])
-                        break
-
-                for p in range(len(tests)):
-                    if tests[p][0] == regular[i][0]:
-                        tests[p][0] = str(e + i + 1)
-                        break
             else:
-                moves.append(f"move {regular[i][0]} {e + i + 1}")
-                for p in range(len(regular)):
-                    if regular[p][0] == regular[i][0]:
-                        regular[p] = (str(e + i + 1), regular[p][1])
-                        break
-                for p in range(len(tests)):
-                    if tests[p][0] == regular[i][0]:
-                        tests[p][0] = str(e + i + 1)
-                        break
-
+                moves.append(f"move {regular[i][0]} {str(e + i + 1)}")
+    
     print(len(moves))
     for move in moves:
         print(move)
 
+def generate_temp_name(files):
+    temp_name = "temp1"
+    i = 1
+    while any(f[0] == temp_name for f in files):
+        temp_name = f"temp{i}"
+        i += 1
+    return temp_name
+    
 solve()

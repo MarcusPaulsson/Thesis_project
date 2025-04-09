@@ -4,7 +4,7 @@ def solve():
     for _ in range(n):
         projects.append(list(map(int, input().split())))
 
-    def check_order(order):
+    def can_complete(order):
         current_rating = r
         for i in order:
             a, b = projects[i]
@@ -16,9 +16,8 @@ def solve():
         return True
 
     import itertools
-    for order_tuple in itertools.permutations(range(n)):
-        order = list(order_tuple)
-        if check_order(order):
+    for order in itertools.permutations(range(n)):
+        if can_complete(order):
             print("YES")
             return
     

@@ -2,51 +2,76 @@ def solve():
     n = int(input())
     s = input()
 
-    for i in range(2**n):
+    for i in range(1 << n):
         coloring = ""
         for j in range(n):
             if (i >> j) & 1:
                 coloring += "1"
             else:
                 coloring += "0"
-        
-        color0 = ""
-        color1 = ""
+
+        s0 = ""
+        s1 = ""
         for j in range(n):
             if coloring[j] == '0':
-                color0 += s[j]
+                s0 += s[j]
             else:
-                color1 += s[j]
+                s1 += s[j]
+
+        sorted_s = sorted(s)
         
-        sorted_color0 = "".join(sorted(color0))
-        sorted_color1 = "".join(sorted(color1))
-        
-        merged = ""
+        merged_s = ""
         idx0 = 0
         idx1 = 0
         
-        coloring_check = ""
+        possible = True
+        merged_s = ""
         
+        idx0 = 0
+        idx1 = 0
         
-        for k in range(n):
-            
-            
-            if idx0 < len(sorted_color0) and (idx1 == len(sorted_color1) or sorted_color0[idx0] <= sorted_color1[idx1]):
-                merged += sorted_color0[idx0]
+        for char in sorted_s:
+            if idx0 < len(s0) and s0[idx0] == char:
+                merged_s += '0'
                 idx0 += 1
-                coloring_check += '0'
-                
-            else:
-                merged += sorted_color1[idx1]
+            elif idx1 < len(s1) and s1[idx1] == char:
+                merged_s += '1'
                 idx1 += 1
-                coloring_check += '1'
-        
-        
-        if "".join(sorted(s)) == merged:
-            print("YES")
-            print(coloring)
-            return
-    
+            else:
+                possible = False
+                break
+
+        if possible:
+            
+            coloring_result = ""
+            
+            idx0 = 0
+            idx1 = 0
+            
+            result_coloring = ""
+            
+            for k in range(n):
+                if coloring[k] == '0':
+                    
+                    if idx0 < len(s0) and s[k] == s0[idx0]:
+                        result_coloring += '0'
+                        idx0 += 1
+                    else:
+                        result_coloring = None
+                        break
+                else:
+                    if idx1 < len(s1) and s[k] == s1[idx1]:
+                        result_coloring += '1'
+                        idx1 += 1
+                    else:
+                        result_coloring = None
+                        break
+                        
+            if result_coloring != None:
+                print("YES")
+                print(coloring)
+                return
+
     print("NO")
 
 solve()

@@ -1,49 +1,55 @@
-def max_intersection_length(n, segments):
-    # Create lists to store the left and right ends of the segments
-    left_ends = [segments[i][0] for i in range(n)]
-    right_ends = [segments[i][1] for i in range(n)]
-    
-    # Compute prefix and suffix maximums and minimums
-    max_left_prefix = [0] * n
-    min_right_prefix = [0] * n
-    max_left_suffix = [0] * n
-    min_right_suffix = [0] * n
+def maximal_intersection_length(n, segments):
+    lefts = [l for l, r in segments]
+    rights = [r for l, r in segments]
 
-    max_left_prefix[0] = left_ends[0]
-    min_right_prefix[0] = right_ends[0]
+    # Precompute the maximum left and minimum right excluding each segment
+    max_left_exclude = [0] * n
+    min_right_exclude = [0] * n
     
+    # Calculate prefix max for left ends
+    prefix_max_left = [0] * n
+    prefix_max_left[0] = lefts[0]
     for i in range(1, n):
-        max_left_prefix[i] = max(max_left_prefix[i - 1], left_ends[i])
-        min_right_prefix[i] = min(min_right_prefix[i - 1], right_ends[i])
-
-    max_left_suffix[n - 1] = left_ends[n - 1]
-    min_right_suffix[n - 1] = right_ends[n - 1]
+        prefix_max_left[i] = max(prefix_max_left[i - 1], lefts[i])
     
+    # Calculate suffix max for left ends
+    suffix_max_left = [0] * n
+    suffix_max_left[-1] = lefts[-1]
     for i in range(n - 2, -1, -1):
-        max_left_suffix[i] = max(max_left_suffix[i + 1], left_ends[i])
-        min_right_suffix[i] = min(min_right_suffix[i + 1], right_ends[i])
+        suffix_max_left[i] = max(suffix_max_left[i + 1], lefts[i])
+    
+    # Calculate prefix min for right ends
+    prefix_min_right = [0] * n
+    prefix_min_right[0] = rights[0]
+    for i in range(1, n):
+        prefix_min_right[i] = min(prefix_min_right[i - 1], rights[i])
+    
+    # Calculate suffix min for right ends
+    suffix_min_right = [0] * n
+    suffix_min_right[-1] = rights[-1]
+    for i in range(n - 2, -1, -1):
+        suffix_min_right[i] = min(suffix_min_right[i + 1], rights[i])
     
     max_length = 0
-    
     for i in range(n):
         if i == 0:
-            max_left = max_left_suffix[1]
-            min_right = min_right_suffix[1]
+            max_left = suffix_max_left[1]
+            min_right = prefix_min_right[1]
         elif i == n - 1:
-            max_left = max_left_prefix[n - 2]
-            min_right = min_right_prefix[n - 2]
+            max_left = prefix_max_left[n - 2]
+            min_right = suffix_min_right[n - 2]
         else:
-            max_left = max(max_left_prefix[i - 1], max_left_suffix[i + 1])
-            min_right = min(min_right_prefix[i - 1], min_right_suffix[i + 1])
-
+            max_left = max(prefix_max_left[i - 1], suffix_max_left[i + 1])
+            min_right = min(prefix_min_right[i - 1], suffix_min_right[i + 1])
+        
         intersection_length = max(0, min_right - max_left)
         max_length = max(max_length, intersection_length)
     
     return max_length
 
 # Read input
-n = int(input())
-segments = [tuple(map(int, input().split())) for _ in range(n)]
+n = int(input().strip())
+segments = [tuple(map(int, input().strip().split())) for _ in range(n)]
 
 # Calculate and print the result
-print(max_intersection_length(n, segments))
+print(maximal_intersection_length(n, segments))

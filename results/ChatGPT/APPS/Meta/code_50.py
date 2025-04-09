@@ -1,67 +1,71 @@
-def dfs(node, parent, depth, graph, depths, farthest):
-    depths[node] = depth
-    for neighbor in graph[node]:
-        if neighbor != parent:
-            dfs(neighbor, node, depth + 1, graph, depths, farthest)
-            if depths[neighbor] > depths[farthest[0]]:
-                farthest[0] = neighbor
+from collections import defaultdict, deque
 
-def find_farthest(node, graph):
-    depths = [-1] * len(graph)
-    farthest = [node]
-    dfs(node, -1, 0, graph, depths, farthest)
-    return farthest[0], depths
+def bfs(start, graph):
+    visited = {start}
+    q = deque([start])
+    farthest_node = start
+    distance = 0
+    
+    while q:
+        next_q = deque()
+        while q:
+            node = q.popleft()
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    next_q.append(neighbor)
+                    farthest_node = neighbor
+        q = next_q
+        distance += 1
+        
+    return farthest_node, distance - 1
 
-def get_edges_count(a, b, c, parent, graph):
-    path_edges = set()
-    def add_path_edges(start, end):
-        while start != end:
-            path_edges.add((min(start, parent[start]), max(start, parent[start])))
-            start = parent[start]
-    
-    add_path_edges(a, b)
-    add_path_edges(b, c)
-    add_path_edges(a, c)
-    
-    return len(path_edges)
-
-def main():
-    import sys
-    from collections import defaultdict
-    
-    input = sys.stdin.read
-    data = input().splitlines()
-    
-    n = int(data[0])
+def find_max_edges_in_paths(n, edges):
     graph = defaultdict(list)
     
-    for line in data[1:n]:
-        u, v = map(int, line.split())
-        graph[u].append(v)
-        graph[v].append(u)
+    for a, b in edges:
+        graph[a].append(b)
+        graph[b].append(a)
     
-    # Step 1: Find two farthest points in the tree
-    first_farthest, _ = find_farthest(1, graph)
-    second_farthest, depths = find_farthest(first_farthest, graph)
+    # Step 1: Find one endpoint of the longest path in the tree
+    endpoint1 = bfs(1, graph)[0]
     
-    # Step 2: Get parent information for the path
-    parent = [-1] * (n + 1)
-    stack = [(first_farthest, -1)]
-    while stack:
-        node, par = stack.pop()
-        parent[node] = par
-        for neighbor in graph[node]:
-            if neighbor != par:
-                stack.append((neighbor, node))
+    # Step 2: Find the farthest node from endpoint1, which gives us the diameter endpoint
+    endpoint2, diameter_length = bfs(endpoint1, graph)
+    
+    # Step 3: We find the path from endpoint1 to endpoint2 to determine the path vertices
+    def find_path(start, end):
+        parent = {start: None}
+        q = deque([start])
+        while q:
+            node = q.popleft()
+            if node == end:
+                break
+            for neighbor in graph[node]:
+                if neighbor not in parent:
+                    parent[neighbor] = node
+                    q.append(neighbor)
 
-    # Step 3: Get the farthest point from the second farthest to get all edges
-    third_farthest, _ = find_farthest(second_farthest, graph)
-    
-    # Step 4: Calculate edges
-    result_edges = get_edges_count(first_farthest, second_farthest, third_farthest, parent, graph)
-    
-    print(result_edges)
-    print(first_farthest, second_farthest, third_farthest)
+        path = []
+        while end is not None:
+            path.append(end)
+            end = parent[end]
+        return path[::-1]
 
-if __name__ == "__main__":
-    main()
+    path = find_path(endpoint1, endpoint2)
+    
+    # The middle of the path can be a good candidate for the third vertex
+    mid_index = len(path) // 2
+    third_vertex = path[mid_index]
+    
+    # We can use the two endpoints and the middle vertex as our three distinct vertices
+    a, b, c = path[0], path[-1], third_vertex
+    
+    return diameter_length + 1, a, b, c
+
+n = int(input())
+edges = [tuple(map(int, input().split())) for _ in range(n - 1)]
+
+result, a, b, c = find_max_edges_in_paths(n, edges)
+print(result)
+print(a, b, c)

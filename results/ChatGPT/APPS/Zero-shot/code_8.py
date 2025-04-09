@@ -1,45 +1,46 @@
-def can_form_koutsu(tiles):
-    from collections import Counter
-    count = Counter(tiles)
-    return any(v >= 3 for v in count.values())
-
-def can_form_shuntsu(tiles):
-    suits = {'m': [], 'p': [], 's': []}
-    for tile in tiles:
-        number = int(tile[0])
-        suit = tile[1]
-        suits[suit].append(number)
-
-    for numbers in suits.values():
-        numbers.sort()
-        for i in range(len(numbers) - 2):
-            if (numbers[i] + 1 in numbers) and (numbers[i] + 2 in numbers):
-                return True
-    return False
-
 def min_draws(tiles):
-    if can_form_koutsu(tiles) or can_form_shuntsu(tiles):
+    def is_koutsu(tiles):
+        return len(set(tiles)) == 1
+
+    def is_shuntsu(tiles):
+        suits = {}
+        for tile in tiles:
+            num, suit = int(tile[0]), tile[1]
+            if suit not in suits:
+                suits[suit] = []
+            suits[suit].append(num)
+        
+        for suit, numbers in suits.items():
+            if len(numbers) >= 3:
+                numbers.sort()
+                for i in range(len(numbers) - 2):
+                    if (numbers[i] + 1 in numbers and
+                        numbers[i] + 2 in numbers):
+                        return True
+        return False
+
+    if is_koutsu(tiles) or is_shuntsu(tiles):
         return 0
 
-    # Check for koutsu possibility by adding a tile
+    # Check for possible shuntsu with one draw
     for tile in tiles:
-        if tiles.count(tile) < 2:
-            return 1  # Drawing a third tile for a koutsu
+        num, suit = int(tile[0]), tile[1]
+        if (num - 1 >= 1 and num + 1 <= 9):
+            if (str(num - 1) + suit not in tiles and
+                str(num + 1) + suit not in tiles):
+                return 1
 
-    # Check for shuntsu possibility by adding a tile
-    suits = {'m': [], 'p': [], 's': []}
+    # Check for possible shuntsu with two draws
     for tile in tiles:
-        number = int(tile[0])
-        suit = tile[1]
-        suits[suit].append(number)
+        num, suit = int(tile[0]), tile[1]
+        if (num - 1 >= 1 and
+            str(num - 1) + suit not in tiles):
+            return 2
+        if (num + 1 <= 9 and
+            str(num + 1) + suit not in tiles):
+            return 2
 
-    for suit in suits:
-        numbers = sorted(suits[suit])
-        for number in numbers:
-            if number - 1 not in numbers and number + 1 not in numbers:
-                return 1  # Drawing a tile to complete a shuntsu
+    return 2  # In the worst case, we need to draw 2 tiles
 
-    return 2  # At worst, we need to draw 2 tiles
-
-tiles = input().split()
+tiles = input().strip().split()
 print(min_draws(tiles))

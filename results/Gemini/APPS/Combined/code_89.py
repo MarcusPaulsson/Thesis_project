@@ -10,32 +10,28 @@ def solve():
             negative_projects.append((a, b))
 
     positive_projects.sort()
-    
-    possible = True
-    for a, b in positive_projects:
-        if r < a:
-            possible = False
-            break
-        r += b
+    negative_projects.sort(key=lambda x: x[0] + x[1], reverse=True)
 
-    if not possible:
+    def check_projects(projects, initial_rating):
+        current_rating = initial_rating
+        for a, b in projects:
+            if current_rating < a:
+                return False
+            current_rating += b
+            if current_rating < 0:
+                return False
+        return True
+
+    if not check_projects(positive_projects, r):
         print("NO")
         return
 
-    negative_projects.sort(key=lambda x: x[0] + x[1], reverse=True)
-    
-    for a, b in negative_projects:
-        if r < a:
-            possible = False
-            break
-        r += b
-        if r < 0:
-            possible = False
-            break
+    r += sum(b for a, b in positive_projects)
 
-    if possible:
-        print("YES")
-    else:
+    if not check_projects(negative_projects, r):
         print("NO")
+        return
+
+    print("YES")
 
 solve()

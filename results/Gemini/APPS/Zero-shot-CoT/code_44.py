@@ -1,19 +1,10 @@
 d, k, a, b, t = map(int, input().split())
 
 if d <= k:
-  print(d * a)
+    print(d * a)
 else:
-  if a * k + t >= b * k:
-    print(k * a + (d - k) * b)
-  else:
-    num_breaks = (d // k)
-    remaining = d % k
-    
-    time = num_breaks * (a * k + t)
-    
-    if remaining > 0:
-      time += min(remaining * a, remaining * b + t)
+    if a * k + t >= b * k:
+        print(k * a + (d - k) * b)
     else:
-      time -= t
-
-    print(time)
+        num_breaks = (d - 1) // k
+        print(num_breaks * (a * k + t) + (d - num_breaks * k) * a)

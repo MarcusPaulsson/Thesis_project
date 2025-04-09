@@ -1,23 +1,24 @@
 def find_kth_digit(k):
-    length = 1  # Starting with 1-digit numbers
-    count = 9   # There are 9 one-digit numbers
-    start = 1   # The first one-digit number is 1
+    length = 1  # The current digit length (1 for 1-9, 2 for 10-99, etc.)
+    count = 9   # The count of numbers with the current digit length
+    start = 1   # The starting number with the current digit length
 
-    # Determine the length of the number that contains the k-th digit
+    # Determine the range in which the k-th digit falls
     while k > length * count:
         k -= length * count
         length += 1
         count *= 10
         start *= 10
 
-    # Find the exact number that contains the k-th digit
+    # Find the actual number that contains the k-th digit
     start += (k - 1) // length
-    num_str = str(start)
+    number_str = str(start)
     
-    # Find the digit's position in that number
-    digit_index = (k - 1) % length
-    return num_str[digit_index]
+    # Find the specific digit in that number
+    return number_str[(k - 1) % length]
 
 if __name__ == "__main__":
+    # Read input
     k = int(input().strip())
+    # Print the k-th digit
     print(find_kth_digit(k))

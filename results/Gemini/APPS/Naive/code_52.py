@@ -6,56 +6,39 @@ def solve():
 
     dp = {}
 
-    def get_dp(row_idx, rem):
-        if (row_idx, rem) in dp:
-            return dp[(row_idx, rem)]
-        
-        if row_idx == n:
-            if rem == 0:
-                return 0
+    def max_sum_divisible_by_k(row_index, current_sum):
+        if row_index == n:
+            if current_sum % k == 0:
+                return current_sum
             else:
-                return float('-inf')
+                return -float('inf')
         
-        max_sum = float('-inf')
+        if (row_index, current_sum) in dp:
+            return dp[(row_index, current_sum)]
         
-        # Option 1: Don't pick any element from this row
-        max_sum = max(max_sum, get_dp(row_idx + 1, rem))
-
-        # Option 2: Pick elements from this row
-        row = a[row_idx]
-        max_picks = m // 2
-
-        row_dp = {}
-        def get_row_dp(col_idx, picks, row_rem):
-            if (col_idx, picks, row_rem) in row_dp:
-                return row_dp[(col_idx, picks, row_rem)]
-
-            if col_idx == m:
-                if picks == 0:
-                    return 0
-                else:
-                    return float('-inf')
-
-            res = float('-inf')
+        max_val = max_sum_divisible_by_k(row_index + 1, current_sum)
+        
+        row = a[row_index]
+        max_elements = m // 2
+        
+        for i in range(1 << m):
+            count = 0
+            subset_sum = 0
+            elements = []
             
-            # Don't pick this element
-            res = max(res, get_row_dp(col_idx + 1, picks, row_rem))
-
-            # Pick this element if possible
-            if picks > 0:
-                res = max(res, row[col_idx] + get_row_dp(col_idx + 1, picks - 1, (row_rem - row[col_idx]) % k))
+            for j in range(m):
+                if (i >> j) & 1:
+                    count += 1
+                    subset_sum += row[j]
+                    elements.append(row[j])
             
-            row_dp[(col_idx, picks, row_rem)] = res
-            return res
+            if count <= max_elements:
+                max_val = max(max_val, max_sum_divisible_by_k(row_index + 1, current_sum + subset_sum))
 
-        for num_picks in range(1, max_picks + 1):
-            for row_rem in range(k):
-                row_sum = get_row_dp(0, num_picks, row_rem)
-                max_sum = max(max_sum, row_sum + get_dp(row_idx + 1, (rem - row_rem) % k))
+        dp[(row_index, current_sum)] = max_val
+        return max_val
 
-        dp[(row_idx, rem)] = max_sum
-        return max_sum
-    
-    print(get_dp(0, 0))
+    result = max_sum_divisible_by_k(0, 0)
+    print(result)
 
 solve()

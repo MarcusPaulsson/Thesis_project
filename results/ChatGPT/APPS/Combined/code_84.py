@@ -1,40 +1,42 @@
 def can_color_string(n, s):
-    # Create a list to represent the coloring
-    coloring = ['0'] * n
-    
-    # Dictionary to count occurrences of each character
-    char_count = {}
-    
-    # Count occurrences of each character
-    for char in s:
-        char_count[char] = char_count.get(char, 0) + 1
-    
-    # Check if any character appears more than 2 times
-    if any(count > 2 for count in char_count.values()):
-        return "NO"
-    
-    # Assign colors based on character positions
-    color_toggle = {}
+    # Initialize a list to hold the color assignment
+    color = ['0'] * n
+    last_positions = {}
+
+    # Track last positions of each character
     for i in range(n):
         char = s[i]
-        if char not in color_toggle:
-            color_toggle[char] = 0  # Start with color '0'
-        coloring[i] = str(color_toggle[char])
-        # Toggle the color for the next occurrence of the same character
-        color_toggle[char] = 1 - color_toggle[char]
-    
-    return "YES", ''.join(coloring)
+        if char in last_positions:
+            last_positions[char].append(i)
+        else:
+            last_positions[char] = [i]
 
-# Read input
-n = int(input().strip())
+    # Check the possibility to color the string
+    for positions in last_positions.values():
+        for i in range(1, len(positions)):
+            if positions[i] - positions[i - 1] == 1:
+                continue
+            if color[positions[i]] == color[positions[i - 1]]:
+                return "NO", ""
+
+    # Color the string based on sorted order
+    color_map = {}
+    for i in range(n):
+        char = s[i]
+        if char not in color_map:
+            color_map[char] = '0' if len(color_map) % 2 == 0 else '1'
+        color[i] = color_map[char]
+    
+    return "YES", ''.join(color)
+
+# Input handling
+n = int(input())
 s = input().strip()
 
 # Get the result
-result = can_color_string(n, s)
+result, coloring = can_color_string(n, s)
 
-# Print output
-if result == "NO":
-    print(result)
-else:
-    print(result[0])
-    print(result[1])
+# Output the result
+print(result)
+if result == "YES":
+    print(coloring)

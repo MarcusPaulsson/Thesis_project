@@ -3,7 +3,6 @@ def solve():
     a = list(map(int, input().split()))
     
     distances = []
-    
     for i in range(n):
         min_dist = float('inf')
         for j in range(n):

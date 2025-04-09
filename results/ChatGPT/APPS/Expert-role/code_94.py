@@ -1,41 +1,67 @@
-def construct_binary_string(a, b, x):
-    # Start with an empty string
+a, b, x = map(int, input().split())
+
+# Determine how many transitions we need to create.
+# Each transition requires at least one '0' and one '1'.
+# We need to ensure we have enough to satisfy the request.
+if x % 2 == 0:
+    # Even number of transitions
+    zeros = a
+    ones = b
     s = []
     
-    # Determine the initial character based on the maximum count
-    if a > b:
-        current_char = '0'
+    # Start with a 0 or 1 based on availability and x
+    start_with_one = ones >= zeros
+    if start_with_one:
+        s.append('1')
+        ones -= 1
     else:
-        current_char = '1'
+        s.append('0')
+        zeros -= 1
     
-    # The number of transitions we need to create
-    transitions = min(x, a + b - 1)
+    for i in range(x // 2):
+        if start_with_one:
+            s.append('0')
+            s.append('1')
+            zeros -= 1
+            ones -= 1
+        else:
+            s.append('1')
+            s.append('0')
+            ones -= 1
+            zeros -= 1
     
-    # Create a sequence that ensures we have the desired number of transitions
-    for i in range(transitions + 1):
-        s.append(current_char)
-        # Toggle between '0' and '1'
-        current_char = '1' if current_char == '0' else '0'
-    
-    # Count how many we've added
-    added_zeros = s.count('0')
-    added_ones = s.count('1')
-    
-    # Fill in the remaining zeros or ones
-    if current_char == '0':
-        remaining = a - added_zeros
-        s += ['0'] * remaining
-        remaining = b - added_ones
-        s += ['1'] * remaining
+    # Now we add the remaining characters
+    if start_with_one:
+        s += ['1'] * ones + ['0'] * zeros
     else:
-        remaining = b - added_ones
-        s += ['1'] * remaining
-        remaining = a - added_zeros
-        s += ['0'] * remaining
-    
-    # Join the list into a string and print it
-    print(''.join(s))
+        s += ['0'] * zeros + ['1'] * ones
 
-# Read input
-a, b, x = map(int, input().split())
-construct_binary_string(a, b, x)
+else:
+    # Odd number of transitions
+    if a < b:
+        s = ['0']  # start with 0, then alternate
+        zeros = a - 1
+        ones = b
+    else:
+        s = ['1']  # start with 1, then alternate
+        ones = b - 1
+        zeros = a
+    
+    for i in range(x // 2):
+        s.append('1' if s[-1] == '0' else '0')
+        if s[-1] == '1':
+            ones -= 1
+        else:
+            zeros -= 1
+    
+    # Add one more transition
+    s.append('1' if s[-1] == '0' else '0')
+    if s[-1] == '1':
+        ones -= 1
+    else:
+        zeros -= 1
+    
+    # Now add the remaining characters
+    s += ['1'] * ones + ['0'] * zeros
+
+print(''.join(s))

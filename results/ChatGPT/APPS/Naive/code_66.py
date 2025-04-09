@@ -1,8 +1,8 @@
-def construct_string(n, k, t):
-    # Find the longest suffix of t that is also a prefix
-    for i in range(n - 1, -1, -1):
-        if t[:i] == t[n - i:]:
-            overlap_length = i
+def minimum_length_string(n, k, t):
+    # Find the longest prefix which is also a suffix
+    for length in range(n-1, 0, -1):
+        if t[:length] == t[-length:]:
+            overlap_length = length
             break
     else:
         overlap_length = 0
@@ -11,10 +11,10 @@ def construct_string(n, k, t):
     result = t + (t[overlap_length:] * (k - 1))
     return result
 
-# Read input
+# Input reading
 n, k = map(int, input().split())
 t = input().strip()
 
 # Get the result and print it
-result = construct_string(n, k, t)
+result = minimum_length_string(n, k, t)
 print(result)

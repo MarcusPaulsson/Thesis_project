@@ -1,27 +1,28 @@
 def solve():
-    n = int(input())
-    strings = []
-    for _ in range(n):
-        strings.append(input())
+  n, k = map(int, input().split())
+  a = list(map(int, input().split()))
 
-    def is_substring(a, b):
-        return a in b
+  l = 0
+  r = n - 1
+  count = 0
 
-    def check_order(order):
-        for i in range(1, len(order)):
-            for j in range(i):
-                if not is_substring(order[j], order[i]):
-                    return False
-        return True
+  while l <= r:
+    if a[l] <= k:
+      count += 1
+      l += 1
+    elif a[r] <= k:
+      count += 1
+      r -= 1
+    else:
+      break
+            
+    if l > r and a[l-1] <=k:
+        break
 
-    import itertools
-    for permutation in itertools.permutations(strings):
-        if check_order(list(permutation)):
-            print("YES")
-            for s in permutation:
-                print(s)
-            return
+    if l == r and a[l] <= k:
+        
+        break
     
-    print("NO")
+  print(count)
 
 solve()

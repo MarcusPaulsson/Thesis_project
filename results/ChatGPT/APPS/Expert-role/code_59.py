@@ -1,24 +1,15 @@
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# We need to ensure that the last y digits are 0s and the digit at position y (counting from 0) is 1
-# The last x digits should be 0s except for the y-th digit which should be 1
+# We need to check the last x digits of the number
+target = ['0'] * x
+target[y] = '1'  # We want to set the y-th digit to 1
+target = ''.join(target)
 
-# Count the number of changes needed
-changes = 0
+# Get the last x digits from the number
+current = number[-x:]
 
-# Check the last y digits for 0s
-for i in range(y):
-    if number[n - 1 - i] != '0':
-        changes += 1
-
-# Check the y-th digit for 1
-if number[n - 1 - y] != '1':
-    changes += 1
-
-# Check the remaining (x - y - 1) digits for 0s
-for i in range(y + 1, x):
-    if number[n - 1 - i] != '0':
-        changes += 1
+# Count the number of changes required
+changes = sum(1 for i in range(x) if current[i] != target[i])
 
 print(changes)

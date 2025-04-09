@@ -1,54 +1,70 @@
 from collections import defaultdict, deque
 
-def bfs(start, graph):
-    visited = [-1] * (n + 1)
-    visited[start] = 0
+def bfs(start, graph, n):
+    dist = [-1] * (n + 1)
+    dist[start] = 0
     queue = deque([start])
     farthest_node = start
     
     while queue:
         node = queue.popleft()
         for neighbor in graph[node]:
-            if visited[neighbor] == -1:
-                visited[neighbor] = visited[node] + 1
+            if dist[neighbor] == -1:
+                dist[neighbor] = dist[node] + 1
                 queue.append(neighbor)
-                if visited[neighbor] > visited[farthest_node]:
+                if dist[neighbor] > dist[farthest_node]:
                     farthest_node = neighbor
-    return farthest_node, visited
+                    
+    return farthest_node, dist
 
-n = int(input().strip())
-graph = defaultdict(list)
+def main():
+    n = int(input().strip())
+    graph = defaultdict(list)
+    
+    for _ in range(n - 1):
+        u, v = map(int, input().strip().split())
+        graph[u].append(v)
+        graph[v].append(u)
+    
+    # Find the farthest node from an arbitrary start node (node 1)
+    farthest_from_start, _ = bfs(1, graph, n)
+    # Find the farthest node from the previous farthest node
+    farthest_from_far, dist_from_far = bfs(farthest_from_start, graph, n)
+    
+    # Get the farthest distance and nodes involved
+    max_distance_node = farthest_from_far
+    diameter_length = dist_from_far[max_distance_node]
 
-for _ in range(n - 1):
-    a, b = map(int, input().strip().split())
-    graph[a].append(b)
-    graph[b].append(a)
-
-# Step 1: Find the farthest node from an arbitrary node (node 1)
-farthest_node, _ = bfs(1, graph)
-
-# Step 2: Find the farthest node from the farthest node found
-other_farthest_node, dist_from_first = bfs(farthest_node, graph)
-
-# Step 3: Use the path from farthest_node to other_farthest_node to find the maximum
-path = []
-current = other_farthest_node
-while current != farthest_node:
-    path.append(current)
-    for neighbor in graph[current]:
-        if dist_from_first[neighbor] == dist_from_first[current] - 1:
-            current = neighbor
+    # To find three vertices a, b, c, we can use the two endpoints of the diameter
+    # and one other node that maximizes the edges in the paths
+    # We can choose the middle point of the diameter path or any leaf
+    
+    # Let's get the diameter path
+    path = []
+    current = max_distance_node
+    while current != farthest_from_start:
+        path.append(current)
+        for neighbor in graph[current]:
+            if dist_from_far[neighbor] == dist_from_far[current] - 1:
+                current = neighbor
+                break
+    path.append(farthest_from_start)
+    path.reverse()
+    
+    # Choosing a, b from the diameter ends, and c as a leaf or any node not in the path
+    a = path[0]
+    b = path[-1]
+    c = -1
+    
+    for node in range(1, n + 1):
+        if node not in path:
+            c = node
             break
-path.append(farthest_node)
-path.reverse()
 
-# Step 4: Choose three distinct vertices a, b, c from the path
-a = path[0]
-b = path[len(path) // 2]  # Middle of the path
-c = path[-1]
+    # The maximum number of edges in the union of paths
+    max_edges = diameter_length + 1 + (len(graph[a]) - 1) + (len(graph[b]) - 1)
+    print(max_edges)
+    print(a, b, c)
 
-# Step 5: The number of edges in the union of paths is |E| = |V| - 1 + |V| - 1 + |V| - 1 - 3 = 3*len(path) - 3
-res = len(path) - 1 + len(path) - 1 + len(path) - 1 - 3
-
-print(res)
-print(a, b, c)
+if __name__ == "__main__":
+    main()

@@ -1,30 +1,47 @@
 def generate_string(n, s, t):
-    # Create a string containing n 'a's, n 'b's, and n 'c's
-    chars = 'a' * n + 'b' * n + 'c' * n
-    
-    # Check if we can create a valid string
-    for i in range(len(chars) - 1):
-        if chars[i:i + 2] == s or chars[i:i + 2] == t:
-            # If we find s or t, we need to rearrange
-            chars = list(chars)  # Convert to a list to manipulate
-            # Swap the last two characters to avoid the substring
-            chars[i], chars[i + 1] = chars[i + 1], chars[i]
-            break
-    else:
-        # If we never found a conflict, just return the string
-        return ''.join(chars)
-    
-    # Check the string again for the presence of s and t
-    if s in ''.join(chars) or t in ''.join(chars):
-        return "NO"
-    
-    return "YES\n" + ''.join(chars)
+    # Initialize the counts for 'a', 'b', and 'c'
+    count_a = count_b = count_c = n
 
-# Read input
+    # Create a list to hold the result characters
+    res = []
+
+    # Helper function to check if the last two characters form the substring
+    def ends_with(sub):
+        return len(res) >= 2 and ''.join(res[-2:]) == sub
+
+    # Fill the result while avoiding substrings s and t
+    for _ in range(3 * n):
+        for char in 'abc':
+            if char == 'a' and count_a > 0:
+                if not (ends_with(s) or ends_with(t)):
+                    res.append(char)
+                    count_a -= 1
+                    break
+            elif char == 'b' and count_b > 0:
+                if not (ends_with(s) or ends_with(t)):
+                    res.append(char)
+                    count_b -= 1
+                    break
+            elif char == 'c' and count_c > 0:
+                if not (ends_with(s) or ends_with(t)):
+                    res.append(char)
+                    count_c -= 1
+                    break
+        else:
+            # If we can't add any character, return "NO"
+            return "NO", ""
+
+    return "YES", ''.join(res)
+
+
+# Read input values
 n = int(input().strip())
 s = input().strip()
 t = input().strip()
 
-# Generate and print the result
+# Generate the result
 result = generate_string(n, s, t)
-print(result)
+# Print the result
+print(result[0])
+if result[0] == "YES":
+    print(result[1])

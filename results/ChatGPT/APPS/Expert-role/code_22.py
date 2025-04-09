@@ -1,16 +1,22 @@
 def is_s_palindrome(s):
-    mirror_chars = {'A': 'A', 'b': 'd', 'd': 'b', 'H': 'H', 'I': 'I', 'M': 'M', 'O': 'O', 
-                    'o': 'o', 'p': 'q', 'q': 'p', 'R': 'R', 'S': 'S', 'T': 'T', 'U': 'U', 
-                    'v': 'v', 'V': 'V', 'w': 'w', 'W': 'W', 'x': 'x', 'Y': 'Y'}
+    # Define the mirror mapping for characters
+    mirror = {
+        'A': 'A', 'B': '', 'C': '', 'D': '', 'E': '', 'F': '', 'G': '',
+        'H': 'H', 'I': 'I', 'J': '', 'K': '', 'L': '', 'M': 'M', 'N': '',
+        'O': 'O', 'P': '', 'Q': '', 'R': '', 'S': '', 'T': 'T', 'U': 'U',
+        'V': 'V', 'W': 'W', 'X': 'X', 'Y': 'Y', 'Z': '',
+        'a': 'a', 'b': '', 'c': '', 'd': '', 'e': '', 'f': '', 'g': '',
+        'h': 'h', 'i': 'i', 'j': '', 'k': '', 'l': '', 'm': 'm', 'n': '',
+        'o': 'o', 'p': '', 'q': '', 'r': '', 's': '', 't': 't', 'u': 'u',
+        'v': 'v', 'w': 'w', 'x': 'x', 'y': 'y', 'z': ''
+    }
     
     n = len(s)
-    for i in range((n + 1) // 2):
-        left_char = s[i]
-        right_char = s[n - 1 - i]
-        if left_char not in mirror_chars or mirror_chars[left_char] != right_char:
-            print("NIE")
-            return
-    print("TAK")
+    for i in range(n // 2):
+        if mirror.get(s[i], '') != s[n - 1 - i] or mirror.get(s[n - 1 - i], '') != s[i]:
+            return "NIE"
+    
+    return "TAK"
 
 s = input().strip()
-is_s_palindrome(s)
+print(is_s_palindrome(s))

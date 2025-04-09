@@ -1,16 +1,18 @@
 def next_lucky_year(n):
-    # Increment the year until we find a lucky year
+    # Function to check if a year is lucky
+    def is_lucky(year):
+        non_zero_digits = [digit for digit in str(year) if digit != '0']
+        return len(non_zero_digits) <= 1
+
+    # Start checking from the next year
+    years_waited = 0
     while True:
         n += 1
-        # Convert the year to a string to check its digits
-        digits = str(n)
-        # Count non-zero digits
-        non_zero_count = sum(1 for digit in digits if digit != '0')
-        # Check if the year is lucky
-        if non_zero_count <= 1:
-            return n - (n - 1)  # Return the difference between the current year and the next lucky year
+        years_waited += 1
+        if is_lucky(n):
+            return years_waited
 
-# Read input
-current_year = int(input())
-# Output the result
-print(next_lucky_year(current_year))
+# Input
+n = int(input().strip())
+# Output
+print(next_lucky_year(n))

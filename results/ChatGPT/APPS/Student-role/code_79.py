@@ -1,47 +1,38 @@
 def min_moves_to_divisible_by_25(n):
     s = str(n)
-    len_s = len(s)
+    length = len(s)
+    moves = float('inf')
     
-    # To form a number divisible by 25, we need the last two digits to be 00, 25, 50, or 75
-    targets = ['00', '25', '50', '75']
-    
-    min_moves = float('inf')
-    
-    for target in targets:
-        # The last two digits we want
+    # Check for all pairs of digits that can form 00, 25, 50, 75
+    for target in ["00", "25", "50", "75"]:
         last_digit = target[1]
         second_last_digit = target[0]
         
-        # Find the position of the last digit from the end
-        last_digit_index = -1
-        for i in range(len_s - 1, -1, -1):
+        # Find the position of the last digit first
+        last_position = -1
+        for i in range(length - 1, -1, -1):
             if s[i] == last_digit:
-                last_digit_index = i
+                last_position = i
                 break
         
-        # If we couldn't find the last digit, continue to the next target
-        if last_digit_index == -1:
+        if last_position == -1:
             continue
         
-        # Now we need to find the second last digit before the last digit
-        second_last_digit_index = -1
-        for i in range(last_digit_index - 1, -1, -1):
+        # Now find the second last digit before the last digit found
+        second_last_position = -1
+        for i in range(last_position - 1, -1, -1):
             if s[i] == second_last_digit:
-                second_last_digit_index = i
+                second_last_position = i
                 break
         
-        # If we couldn't find the second last digit, continue to the next target
-        if second_last_digit_index == -1:
-            continue
-        
-        # Calculate moves to bring second last digit to the position before last digit
-        moves = (last_digit_index - second_last_digit_index) + (last_digit_index - (second_last_digit_index + 1))
-        
-        min_moves = min(min_moves, moves)
+        # If we found both digits
+        if second_last_position != -1:
+            # The number of moves to bring them to the end
+            move_count = (last_position - second_last_position) + (length - 1 - last_position)
+            moves = min(moves, move_count)
     
-    return min_moves if min_moves != float('inf') else -1
+    return moves if moves != float('inf') else -1
 
-# Input
+# Input reading
 n = int(input().strip())
-# Output
 print(min_moves_to_divisible_by_25(n))

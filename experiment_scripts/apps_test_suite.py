@@ -125,7 +125,7 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
             print(f"\n--- Running Test {i + 1} of {total_tests} ---")
             json_data = json.loads(task)
             inputs, outputs = json_data["inputs"], json_data["outputs"]
-            max_numb_test, placeholder = 1, 1
+            max_numb_test, placeholder = 5, 5
             output_list = []
             for test_i, item in enumerate(inputs):
                 if max_numb_test:

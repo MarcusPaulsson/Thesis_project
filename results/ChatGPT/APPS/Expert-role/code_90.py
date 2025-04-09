@@ -1,27 +1,38 @@
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
 
-# Initialize the river cells with zeros
-a = [0] * n
-
-# Calculate the total length of platforms
+# Calculate the total length of all platforms
 total_length = sum(c)
 
-# Check if we can reach n + 1
-if total_length + (m - 1) * d < n:
-    print("NO")
-else:
-    print("YES")
-    
-    # Place platforms in the array
+# If the max jump distance d is greater than or equal to n, we can always reach the end
+if d >= n:
+    result = [0] * n
     position = 0
     for i in range(m):
-        # Set the platform index in the cells
         for j in range(c[i]):
-            a[position] = i + 1
+            result[position] = i + 1
             position += 1
-        # Move the position by d after each platform, if not the last platform
+    print("YES")
+    print(" ".join(map(str, result)))
+else:
+    # Try to place the platforms
+    result = [0] * n
+    position = 0
+    
+    for i in range(m):
+        # If the current platform can fit within the jump distance
+        if position + c[i] - 1 <= n and (i == 0 or position - (c[i-1] if i > 0 else 0) <= d):
+            for j in range(c[i]):
+                result[position] = i + 1
+                position += 1
+        else:
+            print("NO")
+            exit(0)
+        
+        # Move the position to the next platform start
         if i < m - 1:
-            position += d
-            
-    print(' '.join(map(str, a)))
+            position += d - c[i]
+            position = max(position, sum(c[:i+1])) # Ensure we don't overlap
+    
+    print("YES")
+    print(" ".join(map(str, result)))

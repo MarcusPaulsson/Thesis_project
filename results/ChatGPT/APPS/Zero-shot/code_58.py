@@ -3,25 +3,35 @@ a = list(map(int, input().split()))
 
 from collections import defaultdict
 
-# Store the indices of each unique number
-index_map = defaultdict(list)
-for idx, value in enumerate(a):
-    index_map[value].append(idx)
+# Dictionary to store the indices of each number
+num_indices = defaultdict(list)
+for i in range(n):
+    num_indices[a[i]].append(i)
 
-# If we have more unique numbers than colors, it's impossible
-if len(index_map) > k:
+# Check if there are more unique numbers than colors
+if len(num_indices) > k:
     print("NO")
     exit()
 
-# Prepare the result array
-result = [0] * n
-color = 1
+# Prepare the color assignment
+color_assignment = [0] * n
+current_color = 1
 
-# Assign colors to elements
-for indices in index_map.values():
-    for i, idx in enumerate(indices):
-        result[idx] = (i % k) + 1
+# Assign colors
+for indices in num_indices.values():
+    for index in indices:
+        color_assignment[index] = current_color
+        current_color += 1
+        if current_color > k:
+            current_color = 1
 
-# Output result
+# If we have filled all colors, we can just distribute the remaining colors
+for i in range(n):
+    if color_assignment[i] == 0:
+        color_assignment[i] = current_color
+        current_color += 1
+        if current_color > k:
+            current_color = 1
+
 print("YES")
-print(" ".join(map(str, result)))
+print(" ".join(map(str, color_assignment)))

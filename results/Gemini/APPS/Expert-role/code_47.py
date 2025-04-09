@@ -1,11 +1,24 @@
 def solve():
-    n, m = map(int, input().split())
-    
-    count = 0
-    for x in range(1, n + 1):
-        for y in range(1, m + 1):
-            if (x + y) % 5 == 0:
-                count += 1
-    print(count)
+  n, x = map(int, input().split())
+  a = list(map(int, input().split()))
+  
+  ans = 0
+  for i in range(n + 1):
+    for j in range(i, n + 1):
+      temp_a = a[:]
+      for k in range(i, j):
+        temp_a[k] *= x
+        
+      curr_max = 0
+      max_so_far = 0
+      for k in range(n):
+        curr_max += temp_a[k]
+        if curr_max < 0:
+          curr_max = 0
+        max_so_far = max(max_so_far, curr_max)
+      
+      ans = max(ans, max_so_far)
+      
+  print(ans)
 
 solve()

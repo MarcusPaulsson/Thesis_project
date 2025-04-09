@@ -2,59 +2,52 @@ def solve():
     s = input()
     n = len(s)
     
-    max_len = -1
-    
+    first_bracket = -1
     for i in range(n):
-        for j in range(i + 3, n):
+        if s[i] == '[':
+            first_bracket = i
+            break
+    
+    if first_bracket == -1:
+        print(-1)
+        return
+    
+    last_bracket = -1
+    for i in range(n - 1, -1, -1):
+        if s[i] == ']':
+            last_bracket = i
+            break
+    
+    if last_bracket == -1 or last_bracket <= first_bracket:
+        print(-1)
+        return
+    
+    first_colon = -1
+    for i in range(first_bracket + 1, n):
+        if s[i] == ':':
+            first_colon = i
+            break
+    
+    if first_colon == -1 or first_colon >= last_bracket:
+        print(-1)
+        return
+    
+    second_colon = -1
+    for i in range(last_bracket - 1, -1, -1):
+        if s[i] == ':':
+            second_colon = i
+            break
             
-            sub = ""
-            
-            
-            first_bracket_index = -1
-            for k in range(n):
-                if s[k] == '[':
-                    first_bracket_index = k
-                    break
-                    
-            last_bracket_index = -1
-            for k in range(n-1, -1, -1):
-                if s[k] == ']':
-                    last_bracket_index = k
-                    break
-                    
-            if first_bracket_index == -1 or last_bracket_index == -1 or first_bracket_index >= last_bracket_index:
-                continue
-            
-            
-            first_colon_index = -1
-            for k in range(first_bracket_index + 1, n):
-                if s[k] == ':':
-                    first_colon_index = k
-                    break
-                    
-            last_colon_index = -1
-            for k in range(last_bracket_index - 1, -1, -1):
-                if s[k] == ':':
-                    last_colon_index = k
-                    break
-            
-            
-            if first_colon_index == -1 or last_colon_index == -1 or first_colon_index >= last_colon_index:
-                continue
-                
-            
-            
-            num_pipes = 0
-            for k in range(first_colon_index + 1, last_colon_index):
-                if s[k] == '|':
-                    num_pipes += 1
-                    
-            
-            curr_len = 4 + num_pipes
-            
-            if curr_len > max_len and first_bracket_index < first_colon_index and first_colon_index < last_colon_index and last_colon_index < last_bracket_index:
-                max_len = curr_len
+    if second_colon == -1 or second_colon <= first_colon:
+        print(-1)
+        return
+    
 
-    print(max_len)
+    count = 0
+    for i in range(first_colon + 1, second_colon):
+        if s[i] == '|':
+            count += 1
+            
+    print(4 + count)
 
 solve()

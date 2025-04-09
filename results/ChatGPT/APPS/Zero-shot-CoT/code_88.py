@@ -1,53 +1,60 @@
-def create_palindromic_matrix(n, elements):
+def is_palindromic_matrix_possible(n, nums):
     from collections import Counter
 
-    count = Counter(elements)
+    count = Counter(nums)
+    
+    # Check for the number of odd-count elements
     odd_count = sum(1 for v in count.values() if v % 2 != 0)
-
-    # Check if it's possible to create a palindromic matrix
+    
+    # For even n, we should have no odd-count elements
+    # For odd n, we can have at most one odd-count element
     if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
-        return "NO"
+        return False
+    
+    return True
 
-    # Preparing the matrix
+def construct_palindromic_matrix(n, nums):
+    from collections import Counter
+
+    count = Counter(nums)
     matrix = [[0] * n for _ in range(n)]
     
-    # Fill the matrix with the elements
-    half = n // 2
-    center = (n - 1) // 2
-    sorted_elements = sorted(count.items(), key=lambda x: -x[1])
+    # Fill the center of the matrix for odd n if needed
+    if n % 2 == 1:
+        for num, c in count.items():
+            if c % 2 == 1:
+                matrix[n // 2][n // 2] = num
+                count[num] -= 1
+                break
+
+    # Fill the remaining positions
+    pairs = []
+    for num, c in count.items():
+        for _ in range(c // 2):
+            pairs.append(num)
     
-    for value, freq in sorted_elements:
-        while freq > 0:
-            if n % 2 == 1 and freq >= 1 and odd_count == 1:
-                matrix[center][center] = value
-                freq -= 1
-                odd_count -= 1
-                continue
-
-            # Fill the quadrants
-            for i in range(half + 1):
-                for j in range(half + 1):
-                    if freq > 0:
-                        if matrix[i][j] == 0:
-                            matrix[i][j] = value
-                            matrix[i][n - 1 - j] = value
-                            matrix[n - 1 - i][j] = value
-                            matrix[n - 1 - i][n - 1 - j] = value
-                            freq -= 4
-                            if freq < 0:
-                                return "NO"
+    # Flatten pairs into coordinates
+    pairs = pairs * 4  # Because we will need to place them in 4 quadrants
     
-    return "YES", matrix
+    idx = 0
+    for i in range((n + 1) // 2):
+        for j in range((n + 1) // 2):
+            if idx < len(pairs):
+                matrix[i][j] = pairs[idx]
+                matrix[i][n - j - 1] = pairs[idx]
+                matrix[n - i - 1][j] = pairs[idx]
+                matrix[n - i - 1][n - j - 1] = pairs[idx]
+                idx += 1
+    
+    return matrix
 
-# Input handling
-n = int(input().strip())
-elements = list(map(int, input().strip().split()))
+n = int(input())
+nums = list(map(int, input().split()))
 
-result = create_palindromic_matrix(n, elements)
-
-if result == "NO":
-    print(result)
+if not is_palindromic_matrix_possible(n, nums):
+    print("NO")
 else:
-    print(result[0])
-    for row in result[1]:
+    print("YES")
+    matrix = construct_palindromic_matrix(n, nums)
+    for row in matrix:
         print(" ".join(map(str, row)))

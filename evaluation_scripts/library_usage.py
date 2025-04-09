@@ -309,105 +309,107 @@ if __name__ == "__main__":
     results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_APPS))
     results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_classEval))
 
-    print("\nTotal Standard and Public Library Call Counts per prompt technique:")
-    gemini_calls = {  # Split call count calculation by technique
-        "Zero-shot": 0,
-        "Zero-shot-CoT": 0,
-        "Expert-role": 0,
-        "Student-role": 0,
-        "Meta": 0,
-        "Naive": 0,
-        "Iterative": 0,
-        "Combined": 0,
-    }
+    # print("\nTotal Standard and Public Library Call Counts per prompt technique:")
+    # gemini_calls = {  # Split call count calculation by technique
+    #     "Zero-shot": 0,
+    #     "Zero-shot-CoT": 0,
+    #     "Expert-role": 0,
+    #     "Student-role": 0,
+    #     "Meta": 0,
+    #     "Naive": 0,
+    #     "Iterative": 0,
+    #     "Combined": 0,
+    # }
 
-    chatgpt_calls = {
-        "Zero-shot": 0,
-        "Zero-shot-CoT": 0,
-        "Expert-role": 0,
-        "Student-role": 0,
-        "Meta": 0,
-        "Naive": 0,
-        "Iterative": 0,
-        "Combined": 0,
-    }
+    # chatgpt_calls = {
+    #     "Zero-shot": 0,
+    #     "Zero-shot-CoT": 0,
+    #     "Expert-role": 0,
+    #     "Student-role": 0,
+    #     "Meta": 0,
+    #     "Naive": 0,
+    #     "Iterative": 0,
+    #     "Combined": 0,
+    # }
 
-    gemma_calls = {
-        "Zero-shot": 0,
-        "Zero-shot-CoT": 0,
-        "Expert-role": 0,
-        "Student-role": 0,
-        "Meta": 0,
-        "Naive": 0,
-        "Iterative": 0,
-        "Combined": 0,
-    }
+    # gemma_calls = {
+    #     "Zero-shot": 0,
+    #     "Zero-shot-CoT": 0,
+    #     "Expert-role": 0,
+    #     "Student-role": 0,
+    #     "Meta": 0,
+    #     "Naive": 0,
+    #     "Iterative": 0,
+    #     "Combined": 0,
+    # }
 
-    for folder, total_calls in results_gemini.items():
-        if "Zero-shot" in folder and "CoT" not in folder:
-            gemini_calls["Zero-shot"] += total_calls
-        elif "Zero-shot-CoT" in folder:
-            gemini_calls["Zero-shot-CoT"] += total_calls
-        elif "Expert-role" in folder:
-            gemini_calls["Expert-role"] += total_calls
-        elif "Student-role" in folder:
-            gemini_calls["Student-role"] += total_calls
-        elif "Meta" in folder:
-            gemini_calls["Meta"] += total_calls
-        elif "Naive" in folder:
-            gemini_calls["Naive"] += total_calls
-        elif "Iterative" in folder:
-            gemini_calls["Iterative"] += total_calls
-        elif "Combined" in folder:
-            gemini_calls["Combined"] += total_calls
+    # for folder, total_calls in results_gemini.items():
+    #     if "Zero-shot" in folder and "CoT" not in folder:
+    #         gemini_calls["Zero-shot"] += total_calls
+    #     elif "Zero-shot-CoT" in folder:
+    #         gemini_calls["Zero-shot-CoT"] += total_calls
+    #     elif "Expert-role" in folder:
+    #         gemini_calls["Expert-role"] += total_calls
+    #     elif "Student-role" in folder:
+    #         gemini_calls["Student-role"] += total_calls
+    #     elif "Meta" in folder:
+    #         gemini_calls["Meta"] += total_calls
+    #     elif "Naive" in folder:
+    #         gemini_calls["Naive"] += total_calls
+    #     elif "Combined" in folder:
+    #         gemini_calls["Combined"] += total_calls
+    #     elif "Iterative" in folder:
+    #         gemini_calls["Iterative"] += total_calls
+        
 
-    for folder, total_calls in results_chatgpt.items():
-        if "Zero-shot" in folder and "CoT" not in folder:
-            chatgpt_calls["Zero-shot"] += total_calls
-        elif "Zero-shot-CoT" in folder:
-            chatgpt_calls["Zero-shot-CoT"] += total_calls
-        elif "Expert-role" in folder:
-            chatgpt_calls["Expert-role"] += total_calls
-        elif "Student-role" in folder:
-            chatgpt_calls["Student-role"] += total_calls
-        elif "Meta" in folder:
-            chatgpt_calls["Meta"] += total_calls
-        elif "Naive" in folder:
-            chatgpt_calls["Naive"] += total_calls
-        elif "Iterative" in folder:
-            chatgpt_calls["Iterative"] += total_calls
-        elif "Combined" in folder:
-            gemini_calls["Combined"] += total_calls
+    # for folder, total_calls in results_chatgpt.items():
+    #     if "Zero-shot" in folder and "CoT" not in folder:
+    #         chatgpt_calls["Zero-shot"] += total_calls
+    #     elif "Zero-shot-CoT" in folder:
+    #         chatgpt_calls["Zero-shot-CoT"] += total_calls
+    #     elif "Expert-role" in folder:
+    #         chatgpt_calls["Expert-role"] += total_calls
+    #     elif "Student-role" in folder:
+    #         chatgpt_calls["Student-role"] += total_calls
+    #     elif "Meta" in folder:
+    #         chatgpt_calls["Meta"] += total_calls
+    #     elif "Naive" in folder:
+    #         chatgpt_calls["Naive"] += total_calls
+    #     elif "Iterative" in folder:
+    #         chatgpt_calls["Iterative"] += total_calls
+    #     elif "Combined" in folder:
+    #         gemini_calls["Combined"] += total_calls
 
-    for folder, total_calls in results_gemma.items():
-        if "Zero-shot" in folder and "CoT" not in folder:
-            gemma_calls["Zero-shot"] += total_calls
-        elif "Zero-shot-CoT" in folder:
-            gemma_calls["Zero-shot-CoT"] += total_calls
-        elif "Expert-role" in folder:
-            gemma_calls["Expert-role"] += total_calls
-        elif "Student-role" in folder:
-            gemma_calls["Student-role"] += total_calls
-        elif "Meta" in folder:
-            gemma_calls["Meta"] += total_calls
-        elif "Naive" in folder:
-            gemma_calls["Naive"] += total_calls
-        elif "Iterative" in folder:
-            gemma_calls["Iterative"] += total_calls
-        elif "Combined" in folder:
-            gemini_calls["Combined"] += total_calls
+    # for folder, total_calls in results_gemma.items():
+    #     if "Zero-shot" in folder and "CoT" not in folder:
+    #         gemma_calls["Zero-shot"] += total_calls
+    #     elif "Zero-shot-CoT" in folder:
+    #         gemma_calls["Zero-shot-CoT"] += total_calls
+    #     elif "Expert-role" in folder:
+    #         gemma_calls["Expert-role"] += total_calls
+    #     elif "Student-role" in folder:
+    #         gemma_calls["Student-role"] += total_calls
+    #     elif "Meta" in folder:
+    #         gemma_calls["Meta"] += total_calls
+    #     elif "Naive" in folder:
+    #         gemma_calls["Naive"] += total_calls
+    #     elif "Iterative" in folder:
+    #         gemma_calls["Iterative"] += total_calls
+    #     elif "Combined" in folder:
+    #         print("here")
+    #         gemini_calls["Combined"] += total_calls
 
-    print("Gemini Total Standard and Public Library Calls:")
-    for technique, count in gemini_calls.items():
-        print(f"  {technique}: {count}")
+    # print("Gemini Total Standard and Public Library Calls:")
+    # for technique, count in gemini_calls.items():
+    #     print(f"  {technique}: {count}")
 
-    print("\nChatGPT Total Standard and Public Library Calls:")
-    for technique, count in chatgpt_calls.items():
-        print(f"  {technique}: {count}")
+    # print("\nChatGPT Total Standard and Public Library Calls:")
+    # for technique, count in chatgpt_calls.items():
+    #     print(f"  {technique}: {count}")
 
-    print("\nGemma3 Total Standard and Public Library Calls:")
-    for technique, count in gemma_calls.items():
-        print(f"  {technique}: {count}")
+    # print("\nGemma3 Total Standard and Public Library Calls:")
+    # for technique, count in gemma_calls.items():
+    #     print(f"  {technique}: {count}")
 
 
     print("\nTotal Standard and Public Library Calls per Folder:")

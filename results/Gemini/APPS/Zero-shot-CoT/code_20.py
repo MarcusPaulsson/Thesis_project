@@ -1,24 +1,25 @@
-def is_palindrome(time):
-  return time[0] == time[4] and time[1] == time[3]
-
 def solve():
-  time_str = input()
-  hh = int(time_str[:2])
-  mm = int(time_str[3:])
+    s = input()
+    hh = int(s[0:2])
+    mm = int(s[3:5])
 
-  minutes_slept = 0
-  while True:
-    if is_palindrome(f"{hh:02}:{mm:02}"):
-      print(minutes_slept)
-      return
+    def is_palindrome(h, m):
+        h_str = str(h).zfill(2)
+        m_str = str(m).zfill(2)
+        return h_str == m_str[::-1]
 
-    mm += 1
-    if mm == 60:
-      mm = 0
-      hh += 1
-      if hh == 24:
-        hh = 0
-    
-    minutes_slept += 1
+    minutes = 0
+    while True:
+        if is_palindrome(hh, mm):
+            print(minutes)
+            return
+        
+        mm += 1
+        if mm == 60:
+            mm = 0
+            hh += 1
+            if hh == 24:
+                hh = 0
+        minutes += 1
 
 solve()

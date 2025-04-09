@@ -1,56 +1,45 @@
 def solve():
     n, k = map(int, input().split())
     p = list(map(int, input().split()))
-    
+
     used = set(p)
     remaining = []
     for i in range(n, 0, -1):
         if i not in used:
             remaining.append(i)
-    
-    p += remaining
+
+    p = p + remaining
     
     def is_stack_sortable(arr):
-        s = []
+        stack = []
         b = []
-        a = arr[:]
         
-        i = 0
-        while i < 2 * n:
-            if len(a) > 0:
-                if len(s) == 0 or a[0] < s[-1]:
-                    s.append(a.pop(0))
-                    i += 1
-                else:
-                    if len(s) > 0:
-                        b.append(s.pop())
-                        i += 1
-                    else:
+        def can_sort(a, s, b):
+            if not a and not s:
+                for i in range(len(b) - 1):
+                    if b[i] > b[i+1]:
                         return False
-            else:
-                if len(s) > 0:
-                    b.append(s.pop())
-                    i += 1
-                else:
-                    break
-
-        if len(s) > 0:
+                return True
+            
+            if a:
+                new_s = s + [a[0]]
+                new_a = a[1:]
+                if can_sort(new_a, new_s, b):
+                    return True
+            
+            if s:
+                new_b = b + [s[-1]]
+                new_s = s[:-1]
+                if can_sort(a, new_s, new_b):
+                    return True
             
             return False
         
-        for i in range(len(b) - 1):
-            if b[i] > b[i+1]:
-                
-                return False
-        return True
-        
-    
-    
-    
+        return can_sort(arr, [], [])
+
     if is_stack_sortable(p):
         print(*p)
     else:
         print(-1)
-    
 
 solve()

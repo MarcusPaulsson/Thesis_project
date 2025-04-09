@@ -1,5 +1,5 @@
-def is_palindrome(time):
-    return time == time[::-1]
+def is_palindrome(time_str):
+    return time_str == time_str[::-1]
 
 def next_palindrome_time(hh, mm):
     minutes_passed = 0
@@ -11,16 +11,15 @@ def next_palindrome_time(hh, mm):
             if hh == 24:
                 hh = 0
         minutes_passed += 1
-        current_time = f"{hh:02}:{mm:02}"
-        if is_palindrome(current_time):
+        
+        time_str = f"{hh:02}:{mm:02}"
+        if is_palindrome(time_str):
             return minutes_passed
 
-# Read input
-input_time = input().strip()
-hh, mm = map(int, input_time.split(':'))
+def min_minutes_to_palindrome(time):
+    hh, mm = map(int, time.split(':'))
+    return next_palindrome_time(hh, mm)
 
-# Get the result
-result = next_palindrome_time(hh, mm)
-
-# Output the result
-print(result)
+# Sample input
+time_input = input().strip()
+print(min_minutes_to_palindrome(time_input))

@@ -2,36 +2,42 @@ def solve():
     n, k = map(int, input().split())
 
     if k * (k + 1) // 2 > n:
-        print(-1)
+        print("-1")
         return
 
-    best_gcd = -1
+    best_gcd = 0
     best_seq = []
 
     for gcd in range(int(n**0.5), 0, -1):
         if n % gcd == 0:
             divisors = [gcd, n // gcd]
-            for d in divisors:
-                if (n // d) >= k * (k + 1) // 2:
-                    remaining = (n // d) - k * (k + 1) // 2
+            for q in divisors:
+                if q >= k * (k + 1) // 2:
+                    remaining_sum = q - k * (k + 1) // 2
                     seq = [i + 1 for i in range(k)]
+                    seq[-1] += remaining_sum
                     
-                    base_addition = remaining // k
-                    remainder_addition = remaining % k
+                    valid = True
+                    for i in range(k - 1):
+                        if seq[i] >= seq[i+1]:
+                            valid = False
+                            break
+                    
+                    if valid:
+                        current_gcd = n // q
+                        seq = [x * current_gcd for x in seq]
+                        
+                        if best_gcd == 0 or current_gcd > best_gcd:
+                            best_gcd = current_gcd
+                            best_seq = seq
+                            
 
-                    for i in range(k):
-                        seq[i] += base_addition
-                    
-                    for i in range(k - 1, k - 1 - remainder_addition, -1):
-                        seq[i] += 1
-                    
-                    seq = [x * d for x in seq]
-                    
-                    is_strictly_increasing = all(seq[i] < seq[i+1] for i in range(len(seq)-1))
-                    if is_strictly_increasing:
-                        print(*seq)
-                        return
-
-    print(-1)
+    if best_gcd == 0:
+        if n == 1 and k == 1:
+            print(1)
+        else:
+            print("-1")
+    else:
+        print(*best_seq)
 
 solve()

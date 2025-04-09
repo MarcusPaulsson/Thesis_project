@@ -1,55 +1,59 @@
-from collections import deque, defaultdict
+from collections import defaultdict, deque
+import sys
 
 def find_course_order(n, k, main_courses, dependencies):
-    # Create an adjacency list and an in-degree counter
     graph = defaultdict(list)
-    in_degree = [0] * (n + 1)
+    indegree = [0] * (n + 1)
+
+    # Build the graph and calculate indegrees
+    for course in range(1, n + 1):
+        for dep in dependencies[course - 1]:
+            graph[dep].append(course)
+            indegree[course] += 1
+
+    # Initialize queue with courses that have no prerequisites
+    queue = deque(course for course in range(1, n + 1) if indegree[course] == 0)
     
-    # Build the graph and in-degree array
-    for course_id in range(1, n + 1):
-        for dep in dependencies[course_id - 1]:
-            graph[dep].append(course_id)
-            in_degree[course_id] += 1
-
-    # Queue for courses with no dependencies
-    queue = deque(course_id for course_id in range(1, n + 1) if in_degree[course_id] == 0)
-
-    passed_courses = []
-    main_courses_set = set(main_courses)
-    main_courses_passed = set()
+    course_order = []
     
     while queue:
-        current_course = queue.popleft()
-        passed_courses.append(current_course)
+        current = queue.popleft()
+        course_order.append(current)
         
-        # If the current course is a main course, mark it as passed
-        if current_course in main_courses_set:
-            main_courses_passed.add(current_course)
-        
-        # Process all courses dependent on the current course
-        for neighbor in graph[current_course]:
-            in_degree[neighbor] -= 1
-            if in_degree[neighbor] == 0:
+        for neighbor in graph[current]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
                 queue.append(neighbor)
 
-    # Check if all main courses are passed
-    if main_courses_passed != main_courses_set:
-        return -1
-    
-    return len(passed_courses), passed_courses
+    # Check if all main courses can be completed
+    required_courses = set(main_courses)
+    taken_courses = set(course_order)
 
-# Input reading
-n, k = map(int, input().split())
-main_courses = list(map(int, input().split()))
-dependencies = [list(map(int, input().split()))[1:] for _ in range(n)]
+    if not required_courses.issubset(taken_courses):
+        return -1
+
+    # Gather the courses that need to be taken
+    result_order = []
+    for course in course_order:
+        if course in required_courses or any(dep in taken_courses for dep in dependencies[course - 1]):
+            result_order.append(course)
+
+    return len(result_order), result_order
+
+# Read input
+input = sys.stdin.read
+data = input().splitlines()
+n, k = map(int, data[0].split())
+main_courses = list(map(int, data[1].split()))
+dependencies = [list(map(int, line.split()[1:])) for line in data[2:2 + n]]
 
 # Get the result
 result = find_course_order(n, k, main_courses, dependencies)
 
-# Output
+# Output the result
 if result == -1:
     print(-1)
 else:
     m, order = result
     print(m)
-    print(" ".join(map(str, order)))
+    print(' '.join(map(str, order)))

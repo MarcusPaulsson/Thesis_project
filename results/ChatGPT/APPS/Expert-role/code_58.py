@@ -1,31 +1,36 @@
 def color_array(n, k, a):
     from collections import defaultdict
 
-    # Map to keep track of the occurrences of each number
-    occurrence = defaultdict(list)
+    # Dictionary to keep track of the frequency of each number
+    freq = defaultdict(int)
+    for num in a:
+        freq[num] += 1
 
-    # Fill the occurrence map
-    for index, value in enumerate(a):
-        occurrence[value].append(index)
-
-    # Check if we can color the array
-    if len(occurrence) > k:
+    # If we have any number that appears more than k times, it's impossible
+    if any(count > k for count in freq.values()):
         print("NO")
         return
 
-    # Prepare the result array
+    # Prepare to store the result colors
     result = [0] * n
-    color = 1
+    color_assignments = defaultdict(list)
 
-    # Assign colors
-    for numbers in occurrence.values():
-        for i, index in enumerate(numbers):
-            result[index] = (i % k) + 1
+    # Assign colors while maintaining the frequency
+    for i in range(n):
+        num = a[i]
+        # Find the next color for this number
+        color = len(color_assignments[num]) % k + 1
+        color_assignments[num].append(color)
+        result[i] = color
 
-    print("YES")
-    print(' '.join(map(str, result)))
+    # Check if we have at least one of each color
+    if len(set(result)) < k:
+        print("NO")
+    else:
+        print("YES")
+        print(' '.join(map(str, result)))
 
-# Example usage with input reading
+# Input reading
 n, k = map(int, input().split())
 a = list(map(int, input().split()))
 color_array(n, k, a)

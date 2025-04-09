@@ -1,32 +1,28 @@
-def fill_gifts(n, f):
-    # Identify givers and takers
-    givers = set(range(1, n + 1)) - set(filter(lambda x: x != 0, f))
-    takers = set(filter(lambda x: x != 0, f))
+def fill_gift_preferences(n, f):
+    # Track who has received a gift
+    gift_received = set(f_i for f_i in f if f_i != 0)
     
-    # Find the friends who do not have a recipient (f_i = 0)
-    zero_indices = [i for i in range(n) if f[i] == 0]
+    # Friends who don't know whom to give the gift to
+    unknown_givers = [i + 1 for i in range(n) if f[i] == 0]
     
-    # Prepare a list for the final output
-    nf = f[:]
+    # Friends who are not receiving gifts
+    all_friends = set(range(1, n + 1))
+    not_giving_gifts = all_friends - gift_received
     
-    # Assign gifts to friends who have f_i = 0
-    for i in zero_indices:
-        # Find a suitable gift recipient
-        for recipient in givers:
-            if recipient not in takers and recipient != (i + 1):
-                nf[i] = recipient
-                givers.remove(recipient)
-                takers.add(recipient)
+    # Create a list of pairs of unknown givers and not giving gifts
+    result = f[:]
+    
+    for giver in unknown_givers:
+        for receiver in not_giving_gifts:
+            if giver != receiver:  # Ensure no one gives a gift to themselves
+                result[giver - 1] = receiver
+                not_giving_gifts.remove(receiver)  # Remove the receiver from available ones
                 break
 
-    return nf
+    print(" ".join(map(str, result)))
 
 # Input reading
-n = int(input().strip())
-f = list(map(int, input().strip().split()))
+n = int(input())
+f = list(map(int, input().split()))
 
-# Fill in the gifts
-result = fill_gifts(n, f)
-
-# Output the result
-print(' '.join(map(str, result)))
+fill_gift_preferences(n, f)

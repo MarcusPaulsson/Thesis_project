@@ -1,23 +1,18 @@
-def can_construct_symmetric_square(t, test_cases):
+def can_construct_symmetric_square(test_cases):
     results = []
-    for case in test_cases:
-        n, m, tiles = case
+    for n, m, tiles in test_cases:
         if m % 2 != 0:
             results.append("NO")
             continue
+
+        top_left_values = set()
+        bottom_right_values = set()
         
-        # To construct a symmetric m x m square, we need to check if we have
-        # at least one tile type that can fulfill the symmetry requirement.
-        found = False
         for tile in tiles:
-            # tile is a tuple of tuples: ((a, b), (c, d))
-            a, b = tile[0]
-            c, d = tile[1]
-            if b == c:
-                found = True
-                break
-        
-        if found:
+            top_left_values.add(tile[0][0])
+            bottom_right_values.add(tile[1][1])
+
+        if top_left_values & bottom_right_values:
             results.append("YES")
         else:
             results.append("NO")
@@ -30,14 +25,14 @@ test_cases = []
 for _ in range(t):
     n, m = map(int, input().split())
     tiles = []
-    for __ in range(n):
-        top = tuple(map(int, input().split()))
-        bottom = tuple(map(int, input().split()))
-        tiles.append((top, bottom))
+    for _ in range(n):
+        top_row = list(map(int, input().split()))
+        bottom_row = list(map(int, input().split()))
+        tiles.append((top_row, bottom_row))
     test_cases.append((n, m, tiles))
 
-# Get results
-results = can_construct_symmetric_square(t, test_cases)
+# Process each test case
+results = can_construct_symmetric_square(test_cases)
 
 # Print results
 for result in results:

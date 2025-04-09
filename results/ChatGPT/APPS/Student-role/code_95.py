@@ -1,22 +1,40 @@
 def generate_string(n, s, t):
-    # Create a base string with n 'a's, n 'b's, and n 'c's
-    base_string = 'a' * n + 'b' * n + 'c' * n
-    # Check for forbidden substrings and try to rearrange
-    from itertools import permutations
+    # Create a list that will hold the result
+    res = []
+    
+    # Characters count
+    count = {'a': n, 'b': n, 'c': n}
+    
+    # Function to check if last two characters form a forbidden substring
+    def is_forbidden(last_two):
+        return last_two == s or last_two == t
+    
+    # Fill the result string
+    for _ in range(3 * n):
+        for char in 'abc':
+            if count[char] > 0:
+                # Check if adding this character would create a forbidden substring
+                if len(res) >= 2 and is_forbidden(res[-2] + char):
+                    continue
+                # Append the character and decrease the count
+                res.append(char)
+                count[char] -= 1
+                break
+        else:
+            # If we couldn't add any character, then it means it's impossible
+            return "NO", ""
+    
+    return "YES", ''.join(res)
 
-    # Generate all permutations of the base string
-    for perm in set(permutations(base_string)):
-        candidate = ''.join(perm)
-        if s not in candidate and t not in candidate:
-            return "YES\n" + candidate
-            
-    return "NO"
-
-# Read input
+# Input reading
 n = int(input())
 s = input().strip()
 t = input().strip()
 
-# Generate and print result
+# Generate the result
 result = generate_string(n, s, t)
-print(result)
+
+# Output the result
+print(result[0])
+if result[0] == "YES":
+    print(result[1])

@@ -1,31 +1,50 @@
-def can_solve_problems(n, k):
-    # Calculate the minimum and maximum sums based on the conditions
-    min_required = k * (k + 1) // 2
-    max_possible = sum(2 ** i for i in range(k))
+def solve_polycarps_problem(n, k):
+    # Calculate the minimum and maximum number of problems that can be solved
+    min_sum = k * (k + 1) // 2  # Minimum problems: 1 + 2 + ... + k
+    max_sum = 0
+    current_day_problems = 1
 
-    # Check if it's possible to distribute problems
-    if n < min_required or n > max_possible:
+    # Calculate the maximum sum using the doubling strategy
+    for _ in range(k):
+        max_sum += current_day_problems
+        current_day_problems = min(current_day_problems * 2, current_day_problems + 1)
+
+    # Check if the number of problems can be satisfied
+    if n < min_sum or n > max_sum:
         print("NO")
         return
 
-    # Start with the minimum configuration
-    a = list(range(1, k + 1))
-    remaining_problems = n - min_required
+    result = [0] * k
+    current_day_problems = 1
+    remaining_problems = n
 
-    # Distribute the remaining problems from the end of the list
+    # Assign the minimum required problems for each day
+    for i in range(k):
+        result[i] = current_day_problems
+        remaining_problems -= current_day_problems
+        current_day_problems += 1
+
+    # Distribute the remaining problems respecting the constraints
     for i in range(k - 1, -1, -1):
-        # Calculate the maximum increase for a[i]
-        max_increase = (1 << (k - 1 - i)) - 1
-        increase = min(remaining_problems, max_increase)
-        a[i] += increase
-        remaining_problems -= increase
+        while remaining_problems > 0:
+            if (i < k - 1 and result[i] < result[i + 1] and result[i] * 2 >= result[i + 1]):
+                result[i] += 1
+                remaining_problems -= 1
+            elif i == k - 1:
+                result[i] += 1
+                remaining_problems -= 1
+            else:
+                break
 
-        if remaining_problems <= 0:
+        if remaining_problems == 0:
             break
 
-    print("YES")
-    print(' '.join(map(str, a)))
+    if remaining_problems > 0:
+        print("NO")
+    else:
+        print("YES")
+        print(" ".join(map(str, result)))
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
-can_solve_problems(n, k)
+solve_polycarps_problem(n, k)

@@ -1,17 +1,14 @@
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# Calculate the target remainder which is 10^y
+# We want the last x digits of the number to be '0' * (x - y - 1) + '1' + '0' * y
 target = ['0'] * x
 target[y] = '1'
 
-# We need to compare the last x digits of the number with the target
-current = number[-x:]
-
-# Count the number of operations needed
-operations = 0
+# Count the number of changes needed
+changes = 0
 for i in range(x):
-    if current[i] != target[i]:
-        operations += 1
+    if number[n - 1 - i] != target[x - 1 - i]:
+        changes += 1
 
-print(operations)
+print(changes)

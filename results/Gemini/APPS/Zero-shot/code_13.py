@@ -5,22 +5,20 @@ def solve():
     main_courses = list(map(int, input().split()))
     dependencies = []
     for _ in range(n):
-        line = list(map(int, input().split()))
-        dependencies.append(line[1:])
+        dependencies.append(list(map(int, input().split()))[1:])
 
-    in_degree = [0] * (n + 1)
+    indegree = [0] * (n + 1)
     adj = [[] for _ in range(n + 1)]
-    
     for i in range(n):
         for dep in dependencies[i]:
             adj[dep].append(i + 1)
-            in_degree[i + 1] += 1
-    
+            indegree[i + 1] += 1
+
     q = deque()
     for i in range(1, n + 1):
-        if in_degree[i] == 0:
+        if indegree[i] == 0:
             q.append(i)
-            
+
     order = []
     count = 0
     
@@ -28,89 +26,92 @@ def solve():
         u = q.popleft()
         order.append(u)
         count += 1
-        
         for v in adj[u]:
-            in_degree[v] -= 1
-            if in_degree[v] == 0:
+            indegree[v] -= 1
+            if indegree[v] == 0:
                 q.append(v)
 
     if count != n:
-        print("-1")
+        print(-1)
         return
 
     
-    q = deque()
-    visited = [False] * (n + 1)
-    
-    for course in main_courses:
-        q.append(course)
-        visited[course] = True
+    necessary = set(main_courses)
+    for i in range(1,n+1):
+      for j in main_courses:
+        if j in adj[i]:
+          necessary.add(i)
 
+    
+    
+    
+    
     result = []
-
-    while q:
-        u = q.popleft()
-        result.append(u)
-        
-        for i in range(1, n + 1):
-            if i not in result:
-                can_add = True
-                for dep in dependencies[i-1]:
-                    if dep not in result:
-                        can_add = False
-                        break
-                if can_add:
-                    if not visited[i]:
-                        q.append(i)
-                        visited[i] = True
-
-    final_result = []
-    visited = [False] * (n + 1)
+    visited = [False] * (n+1)
     
-    def dfs(course):
-        if visited[course]:
+    def dfs(node):
+        if visited[node]:
             return
-        visited[course] = True
-        
-        for dep in dependencies[course-1]:
-            dfs(dep)
-        
-        final_result.append(course)
+        visited[node] = True
+        for dep in dependencies[node-1]:
+            if not visited[dep]:
+                dfs(dep)
+        result.append(node)
 
     for course in main_courses:
         if not visited[course]:
-            dfs(course)
-
-    result = []
-    for i in range(1, n + 1):
-        if i in final_result or i in main_courses:
-           pass
+          dfs(course)
     
-    q = deque()
-    visited = [False] * (n + 1)
+    
+    
+    result.reverse()
+    
+    final_result = []
+    seen = set()
+    
+    for course in result:
+      if course not in seen:
+        final_result.append(course)
+        seen.add(course)
+
+    
+    
+    
+    
+    
+    
+    valid = True
+    needed_courses = set(main_courses)
+    
+    temp_seen = set()
+    for course in final_result:
+      temp_seen.add(course)
     
     for course in main_courses:
-        q.append(course)
-        visited[course] = True
-
-    result = []
-
-    while q:
-        u = q.popleft()
-        result.append(u)
-        
-        for i in range(1, n + 1):
-            if i not in result:
-                can_add = True
-                for dep in dependencies[i-1]:
-                    if dep not in result:
-                        can_add = False
-                        break
-                if can_add:
-                    if not visited[i]:
-                        q.append(i)
-                        visited[i] = True
-    print(len(result))
-    print(*result)
+      if course not in temp_seen:
+        valid = False
+        break
     
+    for course in final_result:
+      
+      
+      can_take = True
+      
+      for dep in dependencies[course-1]:
+        if dep not in temp_seen:
+          can_take = False
+          break
+      
+      if not can_take:
+        valid = False
+        break
+      
+    if not valid:
+      print(-1)
+      return
+        
+    
+    print(len(final_result))
+    print(*final_result)
+
 solve()

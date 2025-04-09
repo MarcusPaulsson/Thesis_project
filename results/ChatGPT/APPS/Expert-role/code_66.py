@@ -1,20 +1,22 @@
-def construct_string(n, k, t):
+def minimum_string(n, k, t):
     # Find the longest suffix of t that is also a prefix
-    for i in range(n - 1, -1, -1):
-        if t[:i] == t[-i:]:
-            overlap_length = i
+    # This will help in minimizing the length of the resulting string
+    longest_overlap = 0
+    for i in range(1, n):
+        if t[:n - i] == t[i:]:
+            longest_overlap = n - i
             break
-    else:
-        overlap_length = 0
-
-    # Construct the result string
-    result = t + (t[overlap_length:] * (k - 1))
+    
+    # Construct the result
+    result = t + (t[longest_overlap:] * (k - 1))
     return result
 
-# Read input
+# Input reading
 n, k = map(int, input().split())
 t = input().strip()
 
-# Get the result and print it
-result = construct_string(n, k, t)
+# Get the minimum string
+result = minimum_string(n, k, t)
+
+# Output the result
 print(result)

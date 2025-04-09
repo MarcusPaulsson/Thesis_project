@@ -11,7 +11,7 @@ def count_reachable_numbers(n):
     while current not in reachable:
         reachable.add(current)
         current = f(current)
-        
+    
     return len(reachable)
 
 n = int(input())

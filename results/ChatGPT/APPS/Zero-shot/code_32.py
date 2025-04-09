@@ -1,29 +1,28 @@
-def is_valid_journey(n, journey):
-    current_position = 0  # 0 represents the North Pole, 20000 represents the South Pole
-    for t, direction in journey:
-        if current_position == 0 and direction != "South":
-            return "NO"  # At North Pole, can only go South
-        if current_position == 20000 and direction != "North":
-            return "NO"  # At South Pole, can only go North
-        
-        if direction == "South":
-            current_position += t
-        elif direction == "North":
-            current_position -= t
-        # West and East do not change the position in terms of latitude
-        # but we need to ensure that we don't go beyond the poles
-        if current_position < 0 or current_position > 20000:
-            return "NO"
-    
-    if current_position != 0:
-        return "NO"  # Journey must end at the North Pole
-    return "YES"
+n = int(input())
+position = 0  # Position in kilometers from North Pole (0 at North Pole, 20000 at South Pole)
 
-# Input reading
-n = int(input().strip())
-journey = [input().strip().split() for _ in range(n)]
-journey = [(int(t), dir) for t, dir in journey]
+valid = True
 
-# Checking the validity of the journey
-result = is_valid_journey(n, journey)
-print(result)
+for _ in range(n):
+    t, direction = input().split()
+    t = int(t)
+
+    if direction == "South":
+        if position == 0 or position + t > 20000:
+            valid = False
+            break
+        position += t
+    elif direction == "North":
+        if position == 20000 or position - t < 0:
+            valid = False
+            break
+        position -= t
+    elif direction in ["West", "East"]:
+        if position == 0 or position == 20000:
+            valid = False
+            break
+
+if valid and position == 0:
+    print("YES")
+else:
+    print("NO")

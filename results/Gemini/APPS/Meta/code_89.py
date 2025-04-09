@@ -5,13 +5,13 @@ def solve():
         projects.append(list(map(int, input().split())))
 
     def check(order):
-        rating = r
+        current_rating = r
         for i in order:
             a, b = projects[i]
-            if rating < a:
+            if current_rating < a:
                 return False
-            rating += b
-            if rating < 0:
+            current_rating += b
+            if current_rating < 0:
                 return False
         return True
 

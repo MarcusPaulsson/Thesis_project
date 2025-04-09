@@ -2,57 +2,77 @@ def solve():
     n = input()
     n_len = len(n)
     
-    ans = float('inf')
+    def calculate_moves(s):
+        moves = 0
+        for i in range(len(s)):
+            if s[i] == '0':
+                for j in range(i, 0, -1):
+                    s[j], s[j-1] = s[j-1], s[j]
+                    moves += 1
+                break
+        return moves, s
     
-    for suffix in ["00", "25", "50", "75"]:
+    def remove_leading_zeros(s):
+        first_digit_index = -1
+        for i in range(len(s)):
+            if s[i] != '0':
+                first_digit_index = i
+                break
         
+        if first_digit_index == -1:
+            return -1, []
+        
+        return 0, s[first_digit_index:]
+    
+    
+    min_moves = float('inf')
+    
+    for suffix in ['00', '25', '50', '75']:
         temp_n = list(n)
         moves = 0
         
-        # Find the last digit of the suffix
-        
-        idx2 = -1
+        # Find last digit of suffix
+        last_digit = suffix[1]
+        last_digit_index = -1
         for i in range(n_len - 1, -1, -1):
-            if temp_n[i] == suffix[1]:
-                idx2 = i
+            if temp_n[i] == last_digit:
+                last_digit_index = i
                 break
         
-        if idx2 == -1:
+        if last_digit_index == -1:
             continue
         
-        moves += (n_len - 1 - idx2)
-        del temp_n[idx2]
+        # Move last digit to the end
+        for i in range(last_digit_index, n_len - 1):
+            temp_n[i], temp_n[i+1] = temp_n[i+1], temp_n[i]
+            moves += 1
         
-        # Find the first digit of the suffix
-        
-        idx1 = -1
-        for i in range(len(temp_n) - 1, -1, -1):
-            if temp_n[i] == suffix[0]:
-                idx1 = i
+        # Find second last digit of suffix
+        second_last_digit = suffix[0]
+        second_last_digit_index = -1
+        for i in range(n_len - 2, -1, -1):
+            if temp_n[i] == second_last_digit:
+                second_last_digit_index = i
                 break
         
-        if idx1 == -1:
+        if second_last_digit_index == -1:
             continue
         
-        moves += (len(temp_n) - 1 - idx1)
-        del temp_n[idx1]
-        
-        # Remove trailing zeros
-        
-        leading_zeros = 0
-        for i in range(len(temp_n)):
-            if temp_n[i] == '0':
-                leading_zeros += 1
-            else:
-                break
-                
-        moves += leading_zeros
-        
-        ans = min(ans, moves)
+        # Move second last digit to second last position
+        for i in range(second_last_digit_index, n_len - 2):
+            temp_n[i], temp_n[i+1] = temp_n[i+1], temp_n[i]
+            moves += 1
+            
+        # Remove leading zeroes
+        remove_zeroes_moves, remaining_digits = remove_leading_zeros(temp_n[:n_len-2])
+        if remove_zeroes_moves == -1 :
+            continue
+            
+        min_moves = min(min_moves, moves + remove_zeroes_moves)
     
-    if ans == float('inf'):
+    if min_moves == float('inf'):
         print("-1")
     else:
-        print(ans)
+        print(min_moves)
 
 solve()

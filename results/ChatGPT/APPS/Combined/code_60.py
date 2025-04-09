@@ -1,29 +1,37 @@
-def has_palindrome_subsequence(test_cases):
+def has_palindromic_subsequence(test_cases):
     results = []
     
     for n, a in test_cases:
-        seen = {}
-        found = False
+        last_occurrence = {}
+        found_palindrome = False
         
         for i in range(n):
-            if a[i] in seen and i - seen[a[i]] >= 2:
-                found = True
+            if a[i] in last_occurrence and i - last_occurrence[a[i]] >= 2:
+                found_palindrome = True
                 break
-            seen[a[i]] = i
+            last_occurrence[a[i]] = i
         
-        results.append("YES" if found else "NO")
+        results.append("YES" if found_palindrome else "NO")
     
     return results
 
 def main():
-    t = int(input())
-    test_cases = [(
-        int(input()),
-        list(map(int, input().split()))
-    ) for _ in range(t)]
+    import sys
+    input = sys.stdin.read
+    data = input().splitlines()
+    
+    t = int(data[0])
+    test_cases = []
+    
+    index = 1
+    for _ in range(t):
+        n = int(data[index])
+        a = list(map(int, data[index + 1].split()))
+        test_cases.append((n, a))
+        index += 2
 
-    results = has_palindrome_subsequence(test_cases)
-
+    results = has_palindromic_subsequence(test_cases)
+    
     print("\n".join(results))
 
 if __name__ == "__main__":

@@ -1,40 +1,33 @@
-def can_cross_river(n, m, d, c):
-    total_platform_length = sum(c)
-    # If the maximum jump distance is greater than or equal to the width of the river,
-    # we can directly reach the other side.
-    if d >= n + 1:
-        print("YES")
-        print("0 " * n + "1")  # All cells can be empty except the last one.
-        return
-
-    # We need to check if we can position the platforms such that we can jump across
-    # the gaps between them. We will attempt to place them as left as possible.
-    places = [0] * n
-    current_position = 0
-
-    for index in range(m):
-        platform_length = c[index]
-        if current_position + platform_length > n:
-            print("NO")
-            return
-        # Place the platform
-        for i in range(platform_length):
-            places[current_position + i] = index + 1
-        current_position += platform_length
-
-        # Leave a gap of d between the platforms if possible
-        if index < m - 1:  # No gap needed after the last platform
-            current_position += d
-    
-    # Check if we can reach the end (n + 1) after placing all platforms
-    if current_position > n:
-        print("NO")
-        return
-
-    print("YES")
-    print(" ".join(map(str, places)))
-
-# Read input
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
-can_cross_river(n, m, d, c)
+
+# Calculate the maximum distance we need to cover
+max_distance = n + 1
+
+# Calculate the total length of platforms
+total_length = sum(c)
+
+if total_length > n:
+    print("NO")
+    exit()
+
+# Initialize the river cells
+a = [0] * n
+
+# We will place platforms in a way that maximizes the distance between them
+position = 0
+for i in range(m):
+    # Place platform i at the current position
+    for j in range(c[i]):
+        a[position] = i + 1
+        position += 1
+    # Move position to the right to ensure platforms do not intersect
+    if i < m - 1:
+        position += d - c[i]  # Leave a gap of d between platforms
+
+# Check if we can reach n + 1
+if position > n:
+    print("NO")
+else:
+    print("YES")
+    print(" ".join(map(str, a)))

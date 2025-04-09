@@ -6,11 +6,10 @@ def solve():
             print("YES")
         else:
             print("NO")
-        return
-    
-    if (b - a) % c == 0 and (b - a) // c >= 0:
-        print("YES")
     else:
-        print("NO")
-        
+        if (b - a) % c == 0 and (b - a) // c >= 0:
+            print("YES")
+        else:
+            print("NO")
+
 solve()

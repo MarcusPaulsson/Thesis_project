@@ -1,23 +1,34 @@
 def min_operations(t, test_cases):
     results = []
     for a, b, c in test_cases:
-        min_ops = float('inf')
-        best_a, best_b, best_c = 0, 0, 0
+        min_moves = float('inf')
+        best_triple = (0, 0, 0)
         
-        # Loop through possible values for A
-        for A in range(1, a + 2):
-            # For a fixed A, calculate B and C that satisfy the conditions
+        for A in range(1, c + 1):
+            if A > a:
+                moves_a = A - a
+            else:
+                moves_a = a - A
+            
             if A > 0:
-                B = ((b + A - 1) // A) * A  # smallest B >= b and divisible by A
-                C = ((c + B - 1) // B) * B  # smallest C >= c and divisible by B
-                
-                ops = abs(A - a) + abs(B - b) + abs(C - c)
-                
-                if ops < min_ops:
-                    min_ops = ops
-                    best_a, best_b, best_c = A, B, C
+                # B should be a multiple of A
+                B = ((b + A - 1) // A) * A  # smallest multiple of A >= b
+                moves_b = abs(B - b)
+            else:
+                B = 1
+                moves_b = abs(B - b)
+            
+            # C should be a multiple of B
+            C = ((c + B - 1) // B) * B  # smallest multiple of B >= c
+            moves_c = abs(C - c)
+            
+            total_moves = moves_a + moves_b + moves_c
+            
+            if total_moves < min_moves:
+                min_moves = total_moves
+                best_triple = (A, B, C)
         
-        results.append((min_ops, best_a, best_b, best_c))
+        results.append((min_moves, best_triple))
     
     return results
 
@@ -25,10 +36,10 @@ def min_operations(t, test_cases):
 t = int(input())
 test_cases = [tuple(map(int, input().split())) for _ in range(t)]
 
-# Get results
+# Getting results
 results = min_operations(t, test_cases)
 
 # Output results
 for res in results:
     print(res[0])
-    print(res[1], res[2], res[3])
+    print(*res[1])

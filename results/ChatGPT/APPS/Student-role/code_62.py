@@ -1,29 +1,38 @@
-def min_operations(test_cases):
+def min_operations(t, test_cases):
     results = []
     for a, b, c in test_cases:
-        min_operations = float('inf')
-        best_triple = (a, b, c)
+        min_ops = float('inf')
+        best_triple = (0, 0, 0)
 
-        # Check all possible values for A, B, C
-        for A in range(1, 10001):
-            for B in range(A, 10001):
-                if B % A == 0:
-                    for C in range(B, 10001):
-                        if C % B == 0:
-                            operations = abs(A - a) + abs(B - b) + abs(C - c)
-                            if operations < min_operations:
-                                min_operations = operations
-                                best_triple = (A, B, C)
+        for A in range(1, a + 1):
+            for k in range(1, 10001):
+                B = A * k
+                if B < b:
+                    continue
+                if B > c:
+                    break
 
-        results.append((min_operations, best_triple))
+                C = B * (B // A)
+                if C < c:
+                    continue
 
+                ops = abs(A - a) + abs(B - b) + abs(C - c)
+                if ops < min_ops:
+                    min_ops = ops
+                    best_triple = (A, B, C)
+
+        results.append((min_ops, best_triple))
+    
     return results
 
-
+# Input reading
 t = int(input())
 test_cases = [tuple(map(int, input().split())) for _ in range(t)]
-results = min_operations(test_cases)
 
-for res in results:
-    print(res[0])
-    print(res[1][0], res[1][1], res[1][2])
+# Getting results
+results = min_operations(t, test_cases)
+
+# Output results
+for ops, (A, B, C) in results:
+    print(ops)
+    print(A, B, C)

@@ -1,62 +1,65 @@
-from collections import defaultdict, deque
-import sys
+from collections import deque, defaultdict
 
-input = sys.stdin.read
-data = input().splitlines()
+def topological_sort(n, dependencies):
+    indegree = [0] * (n + 1)
+    graph = defaultdict(list)
+    
+    for course, deps in dependencies.items():
+        for dep in deps:
+            graph[dep].append(course)
+            indegree[course] += 1
+    
+    queue = deque()
+    for i in range(1, n + 1):
+        if indegree[i] == 0:
+            queue.append(i)
+    
+    order = []
+    while queue:
+        course = queue.popleft()
+        order.append(course)
+        for neighbor in graph[course]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    return order
 
-n, k = map(int, data[0].split())
-main_courses = list(map(int, data[1].split()))
+def find_courses(n, k, main_courses, dependencies):
+    order = topological_sort(n, dependencies)
+    if len(order) < n:
+        return -1  # cycle detected or not all courses can be taken
+    
+    course_set = set(main_courses)
+    to_take = []
+    taken_courses = set()
+    
+    for course in order:
+        if course in course_set or any(dep in taken_courses for dep in dependencies[course]):
+            to_take.append(course)
+            taken_courses.add(course)
+            if course in course_set:
+                course_set.remove(course)
+    
+    if course_set:
+        return -1  # not all main courses can be taken
+    
+    return len(to_take), to_take
 
-# Dependency graph and in-degree count
-dependencies = defaultdict(list)
-in_degree = [0] * (n + 1)
+# Input reading
+n, k = map(int, input().split())
+main_courses = list(map(int, input().split()))
+dependencies = {}
 
-# Read course dependencies
-for i in range(2, n + 2):
-    line = list(map(int, data[i].split()))
-    t_i = line[0]
-    for j in range(1, t_i + 1):
-        dependencies[line[j]].append(i - 1)  # course i-2 depends on line[j]
-        in_degree[i - 1] += 1  # Increase in-degree for course i-2
-
-# Topological sorting using Kahn's algorithm
-queue = deque()
-order = []
-passed_courses = set()
-
-# Start with courses with no dependencies
 for i in range(1, n + 1):
-    if in_degree[i - 1] == 0:
-        queue.append(i)
+    data = list(map(int, input().split()))
+    dependencies[i] = data[1:]  # skip the first number which is the count of dependencies
 
-while queue:
-    course = queue.popleft()
-    order.append(course)
-    passed_courses.add(course)
+result = find_courses(n, k, main_courses, dependencies)
 
-    # Reduce in-degree of dependent courses
-    for dependent in dependencies[course]:
-        in_degree[dependent] -= 1
-        if in_degree[dependent] == 0:
-            queue.append(dependent + 1)
-
-# Check if all main courses can be passed
-if not all(course in passed_courses for course in main_courses):
+if result == -1:
     print(-1)
 else:
-    # We need to ensure we pass the main courses in the order needed
-    result = []
-    for course in order:
-        if course in main_courses:
-            result.append(course)
-            main_courses.remove(course)
-        if not main_courses:
-            break
-
-    # Include other passed courses if required
-    for course in order:
-        if course not in result and len(result) < len(passed_courses):
-            result.append(course)
-
-    print(len(result))
-    print(" ".join(map(str, result)))
+    m, courses = result
+    print(m)
+    print(' '.join(map(str, courses)))

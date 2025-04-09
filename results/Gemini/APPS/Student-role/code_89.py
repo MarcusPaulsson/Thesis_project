@@ -1,26 +1,26 @@
 def solve():
-  n, r = map(int, input().split())
-  projects = []
-  for _ in range(n):
-    projects.append(list(map(int, input().split())))
+    n, r = map(int, input().split())
+    projects = []
+    for _ in range(n):
+        projects.append(list(map(int, input().split())))
 
-  import itertools
-  for perm in itertools.permutations(projects):
-    current_rating = r
-    possible = True
-    for project in perm:
-      a, b = project
-      if current_rating < a:
-        possible = False
-        break
-      current_rating += b
-      if current_rating < 0:
-        possible = False
-        break
-    if possible:
-      print("YES")
-      return
-  
-  print("NO")
+    def check(order):
+        rating = r
+        for i in order:
+            a, b = projects[i]
+            if rating < a:
+                return False
+            rating += b
+            if rating < 0:
+                return False
+        return True
+
+    import itertools
+    for order in itertools.permutations(range(n)):
+        if check(order):
+            print("YES")
+            return
+
+    print("NO")
 
 solve()

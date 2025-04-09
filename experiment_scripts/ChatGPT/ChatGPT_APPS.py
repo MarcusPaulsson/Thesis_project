@@ -16,7 +16,7 @@ import prompt_technique_templates as prompt
 
 def extract_apps_tasks(json_file_path):
     """
-    Extracts 'question' fields from each line in a JSON file, handling potential errors.
+    Extracts 'question' and 'test' fields from each line in a JSON file.
     """
     tasks = []
     try:
@@ -25,7 +25,24 @@ def extract_apps_tasks(json_file_path):
                 line = line.strip()
                 try:
                     data = json.loads(line)
-                    if "question" in data:
+                    if "question" in data and "input_output" in data:
+                        current_task = data["question"]
+                        extra_prompt = "\n Here is some of the test cases: " 
+                        test_cases =  data["input_output"]
+                        temp = json.loads(test_cases)
+                        max_numb_test = 5
+                        list_of_input = temp["inputs"][:max_numb_test]
+                        list_of_outputs = temp["outputs"][:max_numb_test]
+                        test_string = "inputs:\n"
+                        test_string = extra_prompt + test_string
+                        for i in range(len(list_of_input)):
+                            test_string += list_of_input[i]
+                        test_string += "  Outputs:\n"
+                        for i in range(len(list_of_input)):
+                            test_string += list_of_outputs[i]
+                        tasks.append(current_task + test_string)
+                  
+                    elif "question" in data:
                         tasks.append(data["question"])
                 except json.JSONDecodeError:
                     print(f"Warning: Skipping invalid JSON line: {line[:50]}...")

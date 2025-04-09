@@ -1,39 +1,39 @@
-def count_integers(a1, b1, a2, b2, L, R):
+def count_common_terms(a1, b1, a2, b2, L, R):
     from math import gcd
 
-    # Calculate the step size and the offset
-    step = abs(a1 * a2 // gcd(a1, a2))
-    
-    # Calculate the starting points for both sequences
-    start1 = (L - b1 + a1 - 1) // a1 * a1 + b1
-    start2 = (L - b2 + a2 - 1) // a2 * a2 + b2
+    if a1 == a2:
+        if b1 == b2:
+            # Both sequences are the same
+            start = max(L, b1)
+            end = min(R, b1 + ((R - b1) // a1) * a1)
+            return (end - start) // a1 + 1 if start <= end else 0
+        else:
+            # Different sequences with the same step
+            return 0
 
-    # Calculate the first common point that is >= L
-    if start1 < L:
-        start1 += a1
-    if start2 < L:
-        start2 += a2
+    # Ensure a1 < a2 for simplicity
+    if a1 > a2:
+        a1, b1, a2, b2 = a2, b2, a1, b1
 
-    # Find the first common value
-    if start1 == start2:
-        first_common = start1
-    else:
-        first_common = max(start1, start2)
-        while (first_common - b1) % a1 != 0 or (first_common - b2) % a2 != 0:
-            first_common += step
+    # Calculate the difference and gcd
+    D = a2 - a1
+    G = gcd(a1, D)
 
-    # Now we need to find the last common value within [L, R]
-    if first_common > R:
-        return 0
+    # Find the range for valid x
+    result = 0
 
-    last_common = first_common + ((R - first_common) // step) * step
+    # Check for the start point
+    for k in range(0, (R - b1) // a1 + 1):
+        x = a1 * k + b1
+        if x > R:
+            break
+        if x >= L:
+            # Check if (x - b2) is a multiple of a2
+            if (x - b2) % a2 == 0:
+                result += 1
 
-    # Calculate the number of integers
-    return (last_common - first_common) // step + 1
+    return result
 
 # Read input
 a1, b1, a2, b2, L, R = map(int, input().split())
-# Get the result
-result = count_integers(a1, b1, a2, b2, L, R)
-# Print the result
-print(result)
+print(count_common_terms(a1, b1, a2, b2, L, R))

@@ -6,54 +6,34 @@ def solve():
 
     dp = {}
 
-    def get_dp(row_idx, rem):
-        if (row_idx, rem) in dp:
-            return dp[(row_idx, rem)]
-
+    def get_max_sum(row_idx, current_sum):
         if row_idx == n:
-            if rem == 0:
-                return 0
+            if current_sum % k == 0:
+                return current_sum
             else:
-                return float('-inf')
+                return -float('inf')
+
+        if (row_idx, current_sum % k) in dp:
+            return dp[(row_idx, current_sum % k)]
 
         max_elements = m // 2
-        row = a[row_idx]
+        max_sum_for_row = -float('inf')
 
-        row_dp = {}
+        for i in range(1 << m):
+            count = 0
+            row_sum = 0
+            for j in range(m):
+                if (i >> j) & 1:
+                    count += 1
+                    row_sum += a[row_idx][j]
 
-        def get_row_dp(col_idx, count, current_rem):
-            if (col_idx, count, current_rem) in row_dp:
-                return row_dp[(col_idx, count, current_rem)]
+            if count <= max_elements:
+                max_sum_for_row = max(max_sum_for_row, get_max_sum(row_idx + 1, current_sum + row_sum))
 
-            if col_idx == m:
-                if current_rem == 0:
-                    return 0
-                else:
-                    return float('-inf')
+        dp[(row_idx, current_sum % k)] = max_sum_for_row
+        return max_sum_for_row
 
-            res = get_row_dp(col_idx + 1, count, current_rem)
-
-            if count < max_elements:
-                new_rem = (current_rem + row[col_idx]) % k
-                res = max(res, row[col_idx] + get_row_dp(col_idx + 1, count + 1, new_rem))
-
-            row_dp[(col_idx, count, current_rem)] = res
-            return res
-
-        max_row_sum = get_row_dp(0, 0, 0)
-
-        ans = float('-inf')
-        for row_rem in range(k):
-            row_sum = get_row_dp(0, 0, row_rem)
-            next_rem = (rem - row_rem) % k
-            next_sum = get_dp(row_idx + 1, next_rem)
-            if next_sum != float('-inf') and row_sum != float('-inf'):
-                ans = max(ans, next_sum + row_sum)
-
-        dp[(row_idx, rem)] = ans
-        return ans
-
-    print(get_dp(0, 0))
-
+    result = get_max_sum(0, 0)
+    print(result)
 
 solve()

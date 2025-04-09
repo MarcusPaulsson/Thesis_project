@@ -6,31 +6,34 @@ def solve():
         return
 
     best_gcd = 0
+    best_seq = []
+
     for gcd in range(int(n**0.5), 0, -1):
         if n % gcd == 0:
-            if n // gcd >= k * (k + 1) // 2:
-                best_gcd = gcd
-                break
-            if gcd >= k * (k + 1) // 2:
-                best_gcd = n // gcd
-                break
+            
+            q = n // gcd
+            if q >= k * (k + 1) // 2:
+                
+                seq = [gcd * i for i in range(1, k)]
+                seq.append(n - sum(seq))
+                
+                if all(seq[i] < seq[i+1] for i in range(len(seq) - 1)):
+                  
+                  print(*seq)
+                  return
 
-    if best_gcd == 0:
-        print(-1)
-        return
+            
+            if gcd != q:
+              if gcd >= k * (k + 1) // 2:
 
-    result = []
-    sum_so_far = 0
-    for i in range(1, k):
-        result.append(best_gcd * i)
-        sum_so_far += best_gcd * i
-
-    result.append(n - sum_so_far)
-
-    if result[-1] <= result[-2]:
-        print(-1)
-        return
-
-    print(*result)
+                  seq = [q * i for i in range(1, k)]
+                  seq.append(n - sum(seq))
+                  
+                  if all(seq[i] < seq[i+1] for i in range(len(seq) - 1)):
+                    
+                    print(*seq)
+                    return
+    
+    print(-1)
 
 solve()

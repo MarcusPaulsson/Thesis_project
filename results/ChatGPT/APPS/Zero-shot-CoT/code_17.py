@@ -4,5 +4,5 @@ if t <= k:
     print(t)
 elif t <= n:
     print(k)
-else:
+elif t <= n + k:
     print(n + k - t)

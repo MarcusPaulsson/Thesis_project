@@ -7,13 +7,12 @@ def f(x):
 def solve():
     n = int(input())
     reachable = {n}
-    q = [n]
-    while q:
-        curr = q.pop(0)
-        next_val = f(curr)
-        if next_val not in reachable:
-            reachable.add(next_val)
-            q.append(next_val)
+    curr = n
+    while True:
+        curr = f(curr)
+        if curr in reachable:
+            break
+        reachable.add(curr)
     print(len(reachable))
-    
+
 solve()

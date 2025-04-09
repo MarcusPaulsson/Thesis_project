@@ -3,46 +3,52 @@ def solve():
     a = []
     for _ in range(n):
         a.append(list(map(int, input().split())))
-
+    
     dp = {}
 
-    def get_dp(row_idx, rem):
-        if (row_idx, rem) in dp:
-            return dp[(row_idx, rem)]
+    def row_max_sum(row, max_elements, current_sum, index, chosen_count, cache):
+        if (index, chosen_count, current_sum % k) in cache:
+            return cache[(index, chosen_count, current_sum % k)]
+        
+        if index == len(row):
+            return current_sum if current_sum % k == 0 else -float('inf')
 
-        if row_idx == n:
-            if rem == 0:
-                return 0
-            else:
-                return float('-inf')
-        
-        max_sum_row = [[float('-inf')] * k for _ in range(m // 2 + 1)]
-        max_sum_row[0][0] = 0
-        
-        for col_idx in range(m):
-            val = a[row_idx][col_idx]
-            for count in range(m // 2, 0, -1):
-                for prev_rem in range(k):
-                    new_rem = (prev_rem + val) % k
-                    max_sum_row[count][new_rem] = max(max_sum_row[count][new_rem], max_sum_row[count-1][prev_rem] + val)
-        
-        best_row_sum = float('-inf')
-        for count in range(m // 2 + 1):
-            best_row_sum = max(best_row_sum, max_sum_row[count][rem])
+        if chosen_count == max_elements:
+            return row_max_sum(row, max_elements, current_sum, index + 1, chosen_count, cache)
 
-        dp[(row_idx, rem)] = max(get_dp(row_idx + 1, rem), best_row_sum + get_dp(row_idx + 1, 0))
         
-        for i in range(1, k):
-            
-            new_rem = (rem - i + k) %k
-            best_row_sum_i = float('-inf')
-            for count in range(m // 2 + 1):
-                best_row_sum_i = max(best_row_sum_i, max_sum_row[count][i])
-                
-            dp[(row_idx, rem)] = max(dp[(row_idx, rem)], best_row_sum_i + get_dp(row_idx + 1, new_rem))
-        
-        return dp[(row_idx, rem)]
+        take = row_max_sum(row, max_elements, current_sum + row[index], index + 1, chosen_count+1, cache)
+        dont_take = row_max_sum(row, max_elements, current_sum, index + 1, chosen_count, cache)
 
-    print(get_dp(0, 0))
+        cache[(index, chosen_count, current_sum % k)] = max(take, dont_take)
+        return cache[(index, chosen_count, current_sum % k)]
+    
+    
+    overall_dp = {}
+    
+    def overall_max_sum(row_index, current_sum, cache):
+        if row_index == n:
+            return current_sum if current_sum % k == 0 else -float('inf')
+        
+        if (row_index, current_sum % k) in cache:
+            return cache[(row_index, current_sum % k)]
+
+        row = a[row_index]
+        max_elements = m // 2
+        
+        row_cache = {}
+        max_row_sum = row_max_sum(row, max_elements, 0, 0, 0, row_cache)
+        
+        next_sum = overall_max_sum(row_index + 1, current_sum + max_row_sum, cache)
+        
+        
+        cache[(row_index, current_sum % k)] = next_sum
+        
+        return cache[(row_index, current_sum % k)]
+        
+    
+    result = overall_max_sum(0, 0, overall_dp)
+    print(result)
+
 
 solve()

@@ -1,32 +1,25 @@
-def min_colors_to_sort(n, s):
-    # Create a list to store the coloring
-    colors = [0] * n
-    color = 1
-    last_seen = {}
-    
-    for i in range(n):
-        char = s[i]
-        # If this character has been seen before and is not adjacent
-        if char in last_seen and last_seen[char] != i - 1:
-            colors[i] = color + 1
-            color += 1
-        else:
-            colors[i] = color
-        
-        last_seen[char] = i  # Update last seen position
-    
-    # The number of colors used
-    res = max(colors)
-    
-    return res, colors
-
-# Input reading
 n = int(input())
-s = input().strip()
+s = input()
 
-# Get the result
-res, coloring = min_colors_to_sort(n, s)
+# Create a list to store colors for each character in the string
+colors = [0] * n
+color_count = 0
 
-# Output the result
-print(res)
-print(" ".join(map(str, coloring)))
+# A dictionary to track the last used color for each character
+last_color = {}
+
+# Iterate through the string and assign colors
+for i in range(n):
+    char = s[i]
+    # If the character has been seen before, use the last assigned color
+    if char in last_color:
+        colors[i] = last_color[char]
+    else:
+        # Assign a new color
+        color_count += 1
+        last_color[char] = color_count
+        colors[i] = color_count
+
+# Output the results
+print(color_count)
+print(' '.join(map(str, colors)))

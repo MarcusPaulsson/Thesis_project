@@ -2,23 +2,23 @@ n = int(input().strip())
 a = input().strip()
 f = list(map(int, input().strip().split()))
 
-max_a = list(a)
+# Convert digits in a to their mapped values using f
+mapped_a = [str(f[int(d) - 1]) for d in a]
 
-# Flag to indicate if we are in the process of replacing
-replacing = False
+# Initialize the result as the original number
+result = a
 
+# Find maximum by trying to replace segments
 for i in range(n):
-    original_digit = int(a[i])
-    new_digit = f[original_digit - 1]
-    
-    if new_digit > original_digit:
-        # Start replacing
-        max_a[i] = str(new_digit)
-        replacing = True
-    elif new_digit < original_digit and replacing:
-        # Stop replacing if we encounter a smaller digit
-        break
-    elif not replacing:
-        max_a[i] = str(original_digit)
+    # Start replacing from index i
+    current = list(a)
+    for j in range(i, n):
+        # Replace current digit with its mapped value
+        current[j] = str(f[int(a[j]) - 1])
+        # Create the new number after replacement
+        new_number = ''.join(current)
+        # Update the result if the new number is greater
+        if new_number > result:
+            result = new_number
 
-print(''.join(max_a))
+print(result)

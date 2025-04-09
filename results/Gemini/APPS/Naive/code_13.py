@@ -1,3 +1,5 @@
+from collections import deque
+
 def solve():
     n, k = map(int, input().split())
     main_courses = list(map(int, input().split()))
@@ -5,102 +7,110 @@ def solve():
     for _ in range(n):
         line = list(map(int, input().split()))
         dependencies.append(line[1:])
-
-    indegree = [0] * (n + 1)
+    
+    in_degree = [0] * (n + 1)
     adj = [[] for _ in range(n + 1)]
-
+    
     for i in range(n):
         for dep in dependencies[i]:
             adj[dep].append(i + 1)
-            indegree[i + 1] += 1
-
-    q = []
+            in_degree[i + 1] += 1
+            
+    q = deque()
     for i in range(1, n + 1):
-        if indegree[i] == 0:
+        if in_degree[i] == 0:
             q.append(i)
-
-    order = []
+            
+    result = []
     count = 0
     
     while q:
-        u = q.pop(0)
-        order.append(u)
+        u = q.popleft()
+        result.append(u)
         count += 1
         
         for v in adj[u]:
-            indegree[v] -= 1
-            if indegree[v] == 0:
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
                 q.append(v)
-
+                
     if count != n:
-        print(-1)
+        print("-1")
         return
-
-    
-    required = set(main_courses)
-    
-    reachable = set()
-    
-    def dfs(course):
-        reachable.add(course)
-        for i in range(n):
-            if course in dependencies[i]:
-                if i + 1 not in reachable:
-                    dfs(i+1)
-
-    for course in main_courses:
-        dfs(course)
         
     
-    
-    path = []
-    visited = [False] * (n+1)
-    
-    def find_path(start_nodes):
-      
-      q = []
-      
-      for node in start_nodes:
-        q.append( ([node],set([node])) )
+    def find_path(start, end, dependencies):
+      q = deque([(start, [start])])
+      visited = set()
 
-      shortest_path = None
-      
       while q:
-        curr_path, visited_nodes = q.pop(0)
-        
-        last_node = curr_path[-1]
-        
-        is_complete = True
-        for course in main_courses:
-          if course not in visited_nodes:
-            is_complete = False
-            break
-            
-        if is_complete:
-           if shortest_path is None or len(curr_path) < len(shortest_path):
-              shortest_path = curr_path
-        
-        for next_node in adj[last_node]:
-          if next_node not in visited_nodes:
-            new_path = curr_path + [next_node]
-            new_visited_nodes = visited_nodes.copy()
-            new_visited_nodes.add(next_node)
-            q.append((new_path, new_visited_nodes))
-            
-      return shortest_path
-            
-    start_nodes = []
-    for i in range(1,n+1):
-        if indegree[i] == 0:
-            start_nodes.append(i)
-            
+          node, path = q.popleft()
+          if node == end:
+              return path
+
+          visited.add(node)
+
+          for i in range(1,n+1):
+              if i not in adj[node]:
+                  continue
+              
+              neighbor = i
+              if neighbor not in visited:
+                  q.append((neighbor, path + [neighbor]))
+
+      return None
+
     
-    final_path = find_path(start_nodes)
+    required_courses = set(main_courses)
     
-    if final_path is None:
-        print(-1)
-    else:
-        print(len(final_path))
-        print(*final_path)
+    for i in range(1, n + 1):
+        if i in main_courses:
+            continue
+        
+        path_to_main = False
+        for main_course in main_courses:
+            path = find_path(i, main_course, dependencies)
+            if path:
+                path_to_main = True
+                break
+        
+        if path_to_main:
+            required_courses.add(i)
     
+    
+    in_degree = [0] * (n + 1)
+    adj = [[] for _ in range(n + 1)]
+    
+    for i in range(n):
+        for dep in dependencies[i]:
+            if i+1 in required_courses and dep in required_courses:
+                adj[dep].append(i + 1)
+                in_degree[i + 1] += 1
+    
+    q = deque()
+    for i in required_courses:
+        if in_degree[i] == 0:
+            q.append(i)
+            
+    result = []
+    count = 0
+    
+    while q:
+        u = q.popleft()
+        result.append(u)
+        count += 1
+        
+        for v in adj[u]:
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
+                q.append(v)
+                
+    if count != len(required_courses):
+        print("-1")
+        return
+        
+    print(len(result))
+    print(*result)
+    
+
 solve()

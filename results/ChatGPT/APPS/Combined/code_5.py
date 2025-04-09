@@ -1,23 +1,24 @@
-def minimum_seconds_to_close_tabs(n, pos, l, r):
-    # If no tabs need to be closed, return 0
+def min_seconds_to_close_tabs(n, pos, l, r):
     if l == 1 and r == n:
-        return 0
+        return 0  # No tabs to close
 
     seconds = 0
 
-    # Determine if cursor needs to move to the leftmost or rightmost tab of the segment
     if pos < l:
-        seconds += (l - pos) + 1  # Move to l and close tabs to the left
+        # Move to l and close left tabs, then move to r and close right tabs
+        seconds += (l - pos) + 1 + (r - l) + 1
     elif pos > r:
-        seconds += (pos - r) + 1  # Move to r and close tabs to the right
+        # Move to r and close right tabs, then move to l and close left tabs
+        seconds += (pos - r) + 1 + (r - l) + 1
     else:
-        # If the cursor is within the segment
-        left_closing = (l - 1) - pos + 1 if l > 1 else 0  # Close left if needed
-        right_closing = pos - (r + 1) + 1 if r < n else 0  # Close right if needed
-        seconds += min(left_closing, right_closing) + (1 if left_closing or right_closing else 0)
+        # pos is between l and r
+        if l > 1:
+            seconds += (pos - l) + 1  # Move to l and close left tabs
+        if r < n:
+            seconds += (r - pos) + 1  # Move to r and close right tabs
 
     return seconds
 
-# Read input and output the result
-n, pos, l, r = map(int, input().strip().split())
-print(minimum_seconds_to_close_tabs(n, pos, l, r))
+# Example usage
+n, pos, l, r = map(int, input().split())
+print(min_seconds_to_close_tabs(n, pos, l, r))

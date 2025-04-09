@@ -1,34 +1,31 @@
-def can_color_sort(n, s):
-    color = ['0'] * n
-    last_pos = {}
-    
-    for i in range(n):
-        char = s[i]
-        if char in last_pos:
-            # If the same character appears again, we check the last position
-            if last_pos[char] is not None:
-                # Check if the character before the last occurrence is different
-                if s[last_pos[char]] != char:
-                    # Color it differently
-                    color[i] = '1' if color[last_pos[char]] == '0' else '0'
-                # Update last position
-                last_pos[char] = i
-            else:
-                last_pos[char] = i
-        else:
-            last_pos[char] = i
-    
-    # Check for any conflicts while coloring
-    for i in range(n - 1):
-        if s[i] == s[i + 1] and color[i] != color[i + 1]:
-            print("NO")
-            return
-    
+n = int(input().strip())
+s = input().strip()
+
+# Create a dictionary to count occurrences of each character
+from collections import defaultdict
+
+char_count = defaultdict(int)
+for char in s:
+    char_count[char] += 1
+
+# Check if we can color the string
+max_count = max(char_count.values())
+
+# If any character appears more than (n + 1) // 2 times, it's impossible to color
+if max_count > (n + 1) // 2:
+    print("NO")
+else:
     print("YES")
-    print(''.join(color))
+    coloring = []
+    color = 0
+    for char in s:
+        # Assign color based on the current character's count
+        if char_count[char] > 0:
+            coloring.append(str(color))
+            char_count[char] -= 1
+            # Toggle color for next character
+            color ^= 1
+        else:
+            coloring.append(str(color ^ 1))  # Alternate color if this character is exhausted
 
-# Input reading
-n = int(input())
-s = input()
-
-can_color_sort(n, s)
+    print(''.join(coloring))

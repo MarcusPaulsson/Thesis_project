@@ -1,27 +1,12 @@
 def solve():
-    n, l = map(int, input().split())
-    kefa = list(map(int, input().split()))
-    sasha = list(map(int, input().split()))
-
-    for start_diff in range(l):
-        possible = True
-        for i in range(n):
-            kefa_dist = kefa[i]
-            sasha_dist = (sasha[0] + start_diff) % l
-            
-            found = False
-            for j in range(n):
-                if (sasha[j] + start_diff) % l == kefa[i]:
-                    found = True
-                    break
-            if not found:
-                possible = False
-                break
-        
-        if possible:
-            print("YES")
-            return
-    
-    print("NO")
+    s = input()
+    n = len(s)
+    max_len = 0
+    for i in range(n):
+        for j in range(i, n):
+            sub = s[i:j+1]
+            if sub != sub[::-1]:
+                max_len = max(max_len, len(sub))
+    print(max_len)
 
 solve()

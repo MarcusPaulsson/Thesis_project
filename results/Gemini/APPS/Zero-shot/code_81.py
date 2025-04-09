@@ -7,24 +7,22 @@ def solve():
     def is_substring(a, b):
         return a in b
 
-    import itertools
-
-    for perm in itertools.permutations(strings):
-        valid = True
-        for i in range(1, n):
+    def check_order(order):
+        for i in range(1, len(order)):
             for j in range(i):
-                if not is_substring(perm[j], perm[i]):
-                    valid = False
-                    break
-            if not valid:
-                break
-        
-        if valid:
+                if not is_substring(order[j], order[i]):
+                    return False
+        return True
+
+    import itertools
+    
+    for permutation in itertools.permutations(strings):
+        if check_order(list(permutation)):
             print("YES")
-            for s in perm:
+            for s in permutation:
                 print(s)
             return
-
+    
     print("NO")
 
 solve()

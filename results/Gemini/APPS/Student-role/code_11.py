@@ -1,39 +1,28 @@
 def solve():
-    s = input()
-    n = len(s)
+    n, a, b, p, q = map(int, input().split())
     
-    def calculate_area(commands):
-        x, y = 0, 0
-        min_x, max_x, min_y, max_y = 0, 0, 0, 0
+    red_count = n // a
+    blue_count = n // b
+    
+    lcm = (a * b) // gcd(a, b)
+    
+    common_count = n // lcm
+    
+    red_only = red_count - common_count
+    blue_only = blue_count - common_count
+    
+    total_chocolates = red_only * p + blue_only * q
+    
+    if p > q:
+        total_chocolates += common_count * p
+    else:
+        total_chocolates += common_count * q
         
-        for cmd in commands:
-            if cmd == 'W':
-                y -= 1
-            elif cmd == 'S':
-                y += 1
-            elif cmd == 'A':
-                x -= 1
-            elif cmd == 'D':
-                x += 1
-            
-            min_x = min(min_x, x)
-            max_x = max(max_x, x)
-            min_y = min(min_y, y)
-            max_y = max(max_y, y)
-        
-        width = max_x - min_x + 1
-        height = max_y - min_y + 1
-        return width * height
+    print(total_chocolates)
     
-    min_area = calculate_area(s)
-    
-    for i in range(n + 1):
-        for cmd in ['W', 'A', 'S', 'D']:
-            new_s = s[:i] + cmd + s[i:]
-            min_area = min(min_area, calculate_area(new_s))
-    
-    print(min_area)
+def gcd(a, b):
+    if b == 0:
+        return a
+    return gcd(b, a % b)
 
-t = int(input())
-for _ in range(t):
-    solve()
+solve()

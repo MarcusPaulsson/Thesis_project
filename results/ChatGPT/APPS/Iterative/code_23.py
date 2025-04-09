@@ -1,26 +1,26 @@
 from itertools import permutations
 
-def max_permutation_not_exceeding(a, b):
+def max_permutation(a, b):
     a_str = str(a)
     b_str = str(b)
     
     # Generate all unique permutations of the digits of a
-    perm = sorted(set(permutations(a_str)), reverse=True)
+    perm_set = set(permutations(a_str))
+    
+    max_num = -1
+    for perm in perm_set:
+        # Join the permutation tuple to form a string, then convert to integer
+        num = int(''.join(perm))
+        
+        # Check if the number is valid: less than or equal to b and same length as a
+        if num <= b and len(str(num)) == len(a_str) and str(num)[0] != '0':
+            max_num = max(max_num, num)
+    
+    return max_num
 
-    for p in perm:
-        # Join the tuple of characters to form a number
-        num_str = ''.join(p)
-        # Skip permutations that lead with '0' or don't match the length of a
-        if num_str[0] != '0' and len(num_str) == len(a_str):
-            num = int(num_str)
-            # Check if it is less than or equal to b
-            if num <= b:
-                return num
-
-# Input reading
+# Input
 a = int(input().strip())
 b = int(input().strip())
 
-# Get and print the result
-result = max_permutation_not_exceeding(a, b)
-print(result)
+# Output
+print(max_permutation(a, b))

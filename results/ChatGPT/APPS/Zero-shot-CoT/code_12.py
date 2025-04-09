@@ -1,43 +1,41 @@
-def max_beauty_with_swap(n, trophies):
-    max_length = 0
-    current_length = 0
+def max_beauty(n, trophies):
+    # Count the lengths of segments of golden trophies
     segments = []
-
-    # Calculate current segments of G's
+    current_length = 0
     for trophy in trophies:
         if trophy == 'G':
             current_length += 1
         else:
             if current_length > 0:
                 segments.append(current_length)
-                max_length = max(max_length, current_length)
             current_length = 0
     if current_length > 0:
         segments.append(current_length)
-        max_length = max(max_length, current_length)
 
-    # If there are no G's
-    if max_length == 0:
+    # If there are no golden trophies, return 0
+    if not segments:
         return 0
 
-    # If we can swap one S with a G
-    if len(segments) > 1:
-        # We can connect two segments of G's with one S in between
-        for i in range(len(segments) - 1):
-            max_length = max(max_length, segments[i] + segments[i + 1])
+    # Calculate the initial maximum length of golden segments
+    max_length = max(segments)
     
-    # If there is at least one S, we can potentially increase the max length by 1
-    if 'S' in trophies:
-        max_length += 1
+    # If there is only one segment of golden trophies, no need to swap
+    if len(segments) == 1:
+        return max_length
 
-    return max_length
+    # Consider swapping a silver trophy with a golden one
+    max_possible_length = max_length
+    for i in range(len(segments) - 1):
+        # Check if we can connect two segments by swapping one silver trophy
+        if segments[i + 1] > 0:  # There must be a silver trophy between segments
+            combined_length = segments[i] + segments[i + 1]  # Combine segments
+            max_possible_length = max(max_possible_length, combined_length)
 
-# Read input
+    return max_possible_length
+
+# Input reading
 n = int(input().strip())
 trophies = input().strip()
 
-# Get the result
-result = max_beauty_with_swap(n, trophies)
-
-# Print the result
-print(result)
+# Output the result
+print(max_beauty(n, trophies))

@@ -1,55 +1,50 @@
 def solve():
-    n = int(input())
-    s = input()
+  n = int(input())
+  s = input()
+  
+  colors = [0] * n
+  
+  def check(num_colors):
+    assigned_colors = [0] * n
+    tails = ['z' for _ in range(num_colors)]
     
-    def check(colors):
-        colored_string = ""
-        color_arr = []
-        for i in range(n):
-            color_arr.append(0)
-        
-        for i in range(n):
-            color_arr[i] = colors[i]
-            colored_string += s[i]
-        
-        
-        
-        def can_sort(arr, colors):
-            
-            n = len(arr)
-            
-            
-            
-            def bubble_sort(arr, colors):
-                
-                
-                swapped = True
-                while swapped:
-                    swapped = False
-                    for i in range(n - 1):
-                        if arr[i] > arr[i + 1] and colors[i] != colors[i + 1]:
-                            arr[i], arr[i + 1] = arr[i + 1], arr[i]
-                            colors[i], colors[i + 1] = colors[i + 1], colors[i]
-                            swapped = True
-                return arr
-                
-            sorted_arr = bubble_sort(list(arr), list(colors))
-
-            return sorted_arr == sorted(arr)
-
-        return can_sort(list(s), color_arr), color_arr
+    for i in range(n):
+      found_color = False
+      for color in range(num_colors):
+        if s[i] >= tails[color]:
+          assigned_colors[i] = color + 1
+          tails[color] = s[i]
+          found_color = True
+          break
+      if not found_color:
+        return False
     
-    for num_colors in range(1, n + 1):
-        
-        import itertools
-        
-        for colors_tuple in itertools.product(range(1,num_colors+1), repeat=n):
-            colors = list(colors_tuple)
-            can_be_sorted, color_arr = check(colors)
-            
-            if can_be_sorted:
-                print(num_colors)
-                print(*color_arr)
-                return
+    
+    colored_chars = []
+    for i in range(n):
+      colored_chars.append((s[i], assigned_colors[i]))
 
+    return assigned_colors
+  
+  
+  low = 1
+  high = n
+  ans = -1
+  ans_colors = None
+  
+  while low <= high:
+    mid = (low + high) // 2
+    
+    colors_result = check(mid)
+    
+    if colors_result:
+      ans = mid
+      ans_colors = colors_result
+      high = mid - 1
+    else:
+      low = mid + 1
+      
+  print(ans)
+  print(*ans_colors)
+  
 solve()

@@ -1,31 +1,29 @@
 def solve():
     a, b, x = map(int, input().split())
-    
-    result = ""
-    
+
     if a > b:
-        start_with_zero = True
+        start = 0
     else:
-        start_with_zero = False
-        
-    while x > 1:
-        if start_with_zero:
-            result += "0"
+        start = 1
+
+    s = ""
+    for i in range(x):
+        if start == 0:
+            s += "0"
             a -= 1
-            start_with_zero = False
+            start = 1
         else:
-            result += "1"
+            s += "1"
             b -= 1
-            start_with_zero = True
-        x -= 1
-        
-    if start_with_zero:
-        result += "0" * a
-        result += "1" * b
+            start = 0
+
+    if start == 0:
+        s += "0" * a
+        s += "1" * b
     else:
-        result += "1" * b
-        result += "0" * a
-            
-    print(result)
+        s += "1" * b
+        s += "0" * a
+
+    print(s)
 
 solve()

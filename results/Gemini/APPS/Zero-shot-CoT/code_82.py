@@ -1,30 +1,28 @@
 def solve():
-    n = int(input())
-    strings = []
-    for _ in range(n):
-        strings.append(input())
-
-    def is_substring(a, b):
-        return a in b
-
-    import itertools
+    n, k = map(int, input().split())
+    a = list(map(int, input().split()))
     
-    for perm in itertools.permutations(strings):
-        valid = True
-        for i in range(1, len(perm)):
-            for j in range(i):
-                if not is_substring(perm[j], perm[i]):
-                    valid = False
-                    break
-            if not valid:
-                break
-        
-        if valid:
-            print("YES")
-            for s in perm:
-                print(s)
-            return
+    solved_count = 0
+    left = 0
+    right = n - 1
     
-    print("NO")
+    while left <= right:
+        if a[left] <= k:
+            solved_count += 1
+            left += 1
+        elif a[right] <= k:
+            solved_count += 1
+            right -= 1
+        else:
+            break
+            
+        while left <= right and a[left] <= k:
+            solved_count += 1
+            left += 1
+        while left <= right and a[right] <= k:
+            solved_count += 1
+            right -= 1
+            
+    print(solved_count)
 
 solve()

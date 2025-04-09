@@ -1,52 +1,39 @@
 def solve():
     n, k = map(int, input().split())
     s = input()
-
+    
     dp = [[0] * (n + 1) for _ in range(n + 1)]
     dp[0][0] = 1
-
+    
     for i in range(1, n + 1):
         for j in range(i + 1):
             dp[i][j] = dp[i-1][j]
             if j > 0:
                 dp[i][j] += dp[i-1][j-1]
-            
-    total_subsequences = sum(dp[n])
+            dp[i][j] = min(dp[i][j], k)
+    
+    total_subsequences = 0
+    for i in range(n + 1):
+        total_subsequences += dp[n][i]
+    
+    total_subsequences = min(total_subsequences, k)
     
     if total_subsequences < k:
-        print("-1")
+        print(-1)
         return
-
-    ans = 0
-    curr_len = n
     
-    dp = [[0] * (n + 1) for _ in range(n + 1)]
-    dp[0][0] = 1
+    cost = 0
+    current_len = n
     
-    for i in range(1, n + 1):
-        last_occurrence = {}
-        for j in range(1, n + 1):
-            dp[i][j] = dp[i-1][j]
-            dp[i][j] += dp[i-1][j-1]
-            
-            if s[i-1] in last_occurrence:
-                dp[i][j] -= dp[last_occurrence[s[i-1]] - 1][j-1]
-        
-        last_occurrence[s[i-1]] = i
-    
-    curr_len = n
-    
-    for length in range(n, -1, -1):
-        num_subsequences = dp[n][length]
-        
-        if k > num_subsequences:
-            ans += (n - length) * num_subsequences
-            k -= num_subsequences
-        else:
-            ans += (n - length) * k
+    while k > 0:
+        if dp[n][current_len] >= k:
+            cost += (n - current_len) * k
             k = 0
-            break
-    
-    print(ans)
+        else:
+            cost += (n - current_len) * dp[n][current_len]
+            k -= dp[n][current_len]
+        current_len -= 1
+        
+    print(cost)
 
 solve()

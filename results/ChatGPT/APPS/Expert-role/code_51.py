@@ -1,30 +1,24 @@
 from collections import Counter
+import math
 
 def find_x_y(n, divisors):
     counter = Counter(divisors)
+    common_divisors = [d for d, count in counter.items() if count > 1]
+
     gcd = 1
-    
-    # Finding the GCD of the numbers that appear twice
-    for d in counter:
-        if counter[d] == 2:
-            gcd *= d
-    
+    for d in common_divisors:
+        gcd = math.gcd(gcd, d)
+
     x = gcd
     y = 1
-    
-    # Finding the other number using the divisors
-    for d in counter:
-        if counter[d] == 1:
-            y *= d
+    for d in divisors:
+        if d % x == 0:
+            y *= d // x
 
-    return x, y
+    return (x, y)
 
-# Read input
-n = int(input())
-divisors = list(map(int, input().split()))
+n = int(input().strip())
+divisors = list(map(int, input().strip().split()))
 
-# Get x and y
 x, y = find_x_y(n, divisors)
-
-# Print output
 print(x, y)

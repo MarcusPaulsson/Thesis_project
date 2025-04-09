@@ -1,76 +1,59 @@
 from collections import defaultdict, deque
 
-def bfs(start, graph, n):
-    distances = [-1] * (n + 1)
-    distances[start] = 0
+def bfs(start, graph):
+    visited = [-1] * (n + 1)
     queue = deque([start])
+    visited[start] = 0
     farthest_node = start
 
     while queue:
         node = queue.popleft()
         for neighbor in graph[node]:
-            if distances[neighbor] == -1:  # not visited
-                distances[neighbor] = distances[node] + 1
+            if visited[neighbor] == -1:
+                visited[neighbor] = visited[node] + 1
                 queue.append(neighbor)
-                if distances[neighbor] > distances[farthest_node]:
+                if visited[neighbor] > visited[farthest_node]:
                     farthest_node = neighbor
 
-    return farthest_node, distances
+    return farthest_node, visited
 
-def find_max_edges_in_paths(n, edges):
-    # Create adjacency list for the tree
-    graph = defaultdict(list)
-    for a, b in edges:
-        graph[a].append(b)
-        graph[b].append(a)
+def find_farthest_nodes(graph):
+    # Start from an arbitrary node (1)
+    farthest_from_start, _ = bfs(1, graph)
+    # Find the farthest node from that node
+    farthest_node, distances = bfs(farthest_from_start, graph)
+    return farthest_from_start, farthest_node, distances
 
-    # Step 1: Find the farthest node from an arbitrary starting point (1)
-    farthest_from_start, _ = bfs(1, graph, n)
-    
-    # Step 2: Find the farthest node from that farthest node (this gives us one end of the diameter)
-    opposite_end, distances_from_first = bfs(farthest_from_start, graph, n)
-    
-    # Step 3: Find the farthest node from the opposite end (this gives us the other end of the diameter)
-    _, distances_from_second = bfs(opposite_end, graph, n)
-    
-    # Step 4: Find the two nodes which are the farthest from the diameter ends
-    max_distance = 0
-    a, b = -1, -1
-    for i in range(1, n + 1):
-        if distances_from_first[i] + distances_from_second[i] > max_distance:
-            max_distance = distances_from_first[i] + distances_from_second[i]
-            a = farthest_from_start
-            b = opposite_end
-    
-    # Step 5: Find the third vertex to maximize edges
-    # The third vertex should be chosen from the farthest points from the two endpoints
-    candidates = []
-    for i in range(1, n + 1):
-        if i != a and i != b:
-            candidates.append(i)
-    
-    # Find the candidate which maximizes the distance to both a and b
-    c = candidates[0]
-    max_additional_distance = 0
-    
-    for candidate in candidates:
-        additional_distance = min(distances_from_first[candidate], distances_from_second[candidate])
-        if additional_distance > max_additional_distance:
-            max_additional_distance = additional_distance
-            c = candidate
+def get_paths(a, b, c, distances):
+    # The total number of distinct edges in paths a-b, b-c, and a-c
+    return len(set(distances[a]) | set(distances[b]) | set(distances[c]))
 
-    # The final result is the max number of edges in the paths
-    res = max_distance + 1  # +1 because edges are one less than the number of vertices
+n = int(input().strip())
+graph = defaultdict(list)
 
-    return res, a, b, c
+for _ in range(n - 1):
+    a, b = map(int, input().strip().split())
+    graph[a].append(b)
+    graph[b].append(a)
 
-# Input Reading
-n = int(input())
-edges = [tuple(map(int, input().split())) for _ in range(n - 1)]
+# Find two farthest nodes in the tree
+u, v, distances_u = find_farthest_nodes(graph)
+# Get distances from u
+_, distances_v = bfs(v, graph)
 
-# Function Call
-result, a, b, c = find_max_edges_in_paths(n, edges)
+# Find the maximum number of distinct edges
+max_edges = 0
+best_triplet = (1, 2, 3)
 
-# Output Result
-print(result)
-print(a, b, c)
+for a in range(1, n + 1):
+    for b in range(a + 1, n + 1):
+        if a != b:
+            for c in range(b + 1, n + 1):
+                if a != c and b != c:
+                    edges_count = get_paths(a, b, c, distances_u)
+                    if edges_count > max_edges:
+                        max_edges = edges_count
+                        best_triplet = (a, b, c)
+
+print(max_edges)
+print(*best_triplet)

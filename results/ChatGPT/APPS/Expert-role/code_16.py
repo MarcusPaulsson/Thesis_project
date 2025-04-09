@@ -1,23 +1,19 @@
-cnt1 = int(input().strip())
-cnt2 = int(input().strip())
-cnt3 = int(input().strip())
-cnt4 = int(input().strip())
+cnt_1 = int(input())
+cnt_2 = int(input())
+cnt_3 = int(input())
+cnt_4 = int(input())
 
 # A regular bracket sequence can be formed if:
-# 1. The number of closing brackets must not exceed the number of opening brackets at any point.
-# 2. At the end, the total number of opening brackets must equal the total number of closing brackets.
+# The number of opening brackets can match the closing brackets
+# The number of opening brackets must be at least as many as the closing brackets at any point in the sequence.
 
-# The total opening brackets from ( and ) pairs
-total_opening = cnt1 + cnt2
-# The total closing brackets from ) and ( pairs
-total_closing = cnt3 + cnt4
+# Count the total number of opening and closing brackets
+total_open = cnt_1 + cnt_2
+total_close = cnt_2 + cnt_4
 
-# The count of unbalanced opening and closing brackets
-needed_opening = cnt3
-needed_closing = cnt1
-
-# Check if we can balance the brackets
-if needed_opening <= total_opening and needed_closing <= total_closing and (total_opening - needed_opening) >= needed_closing:
+# To be a regular bracket sequence, the total number of open brackets must equal the total number of close brackets,
+# and at any point, the number of closing brackets must not exceed the number of opening brackets.
+if total_open >= total_close and (cnt_1 + cnt_2 >= cnt_3 + cnt_4):
     print(1)
 else:
     print(0)

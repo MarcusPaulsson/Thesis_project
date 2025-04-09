@@ -1,35 +1,40 @@
 def construct_tree(n, d, k):
-    if d > 2 * k or (d == 1 and n > 2) or (n > k + 1 and d == 1):
+    if d > 2 * (k - 1) + 1:
         return "NO"
     
+    if d == 1 and n > 2:
+        return "NO"
+    
+    if n == 1:
+        return "YES\n"
+    
     edges = []
-    # Create a path of length d
-    for i in range(d):
-        edges.append((i + 1, i + 2))
     
-    # Number of vertices already used
-    used = d + 1
+    # Create the main path for the diameter
+    for i in range(1, d + 1):
+        edges.append((i, i + 1))
     
-    # Now, attach remaining vertices to the first vertex of the path
-    # if we can still add more vertices without exceeding the degree limit
-    if used < n:
-        for i in range(used, n):
-            if len([v for u, v in edges if u == 1]) < k:
-                edges.append((1, i + 1))
-            else:
-                # Find a vertex that can accommodate more connections
-                for j in range(1, used):
-                    if len([v for u, v in edges if u == j]) < k:
-                        edges.append((j, i + 1))
-                        break
-            used += 1
+    # Create a list of nodes that are part of the main path
+    last_node = d + 1
     
-    result = ["YES"]
-    for u, v in edges:
-        result.append(f"{u} {v}")
+    # For each node in the main path, add remaining nodes
+    for i in range(1, d + 1):
+        if last_node >= n:
+            break
+        while len([x for x, y in edges if x == i]) < k - 1 and last_node < n:
+            edges.append((i, last_node))
+            last_node += 1
     
-    return "\n".join(result)
+    # If there are still nodes left, we need to attach them
+    if last_node <= n:
+        return "NO"
+    
+    result = "YES\n" + "\n".join(f"{u} {v}" for u, v in edges)
+    return result
+
 
 # Read input
 n, d, k = map(int, input().split())
+
+# Construct tree and print the result
 print(construct_tree(n, d, k))

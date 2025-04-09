@@ -2,16 +2,19 @@ n = int(input())
 a1, a2, a3 = map(int, input().split())
 b1, b2, b3 = map(int, input().split())
 
-# Maximum wins for Alice
+# Calculate maximum wins for Alice
 max_wins = min(a1, b3) + min(a2, b1) + min(a3, b2)
 
-# Minimum wins for Alice
-# To minimize Alice's wins, we can maximize Bob's wins.
-# Bob wins with his rocks against Alice's scissors,
-# Bob wins with his scissors against Alice's paper,
-# Bob wins with his paper against Alice's rock.
+# Calculate minimum wins for Alice
+# The minimum wins can be calculated by assuming the worst-case scenario
+# where Alice loses as many rounds as possible.
+min_wins = 0
+# Bob's winning pairs
+min_wins += max(0, b1 - a3)  # Bob's rock vs Alice's paper
+min_wins += max(0, b2 - a1)  # Bob's scissors vs Alice's rock
+min_wins += max(0, b3 - a2)  # Bob's paper vs Alice's scissors
 
-alice_loses = min(a2, b1) + min(a3, b2) + min(a1, b3)
-min_wins = n - alice_loses
+# Total losses for Alice is the minimum wins calculated
+min_wins = n - min_wins
 
 print(min_wins, max_wins)

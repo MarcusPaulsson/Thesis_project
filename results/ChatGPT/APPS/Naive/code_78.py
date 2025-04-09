@@ -1,55 +1,44 @@
-def count_regular_bracket_sequences(n, s):
-    MOD = 10**9 + 7
+MOD = 10**9 + 7
+
+def count_regular_sequences(n, s):
     m = len(s)
-    
-    # Precompute the dp array for regular bracket sequences
-    dp = [[0] * (n + 1) for _ in range(n + 1)]
-    dp[0][0] = 1  # Base case: 0 pairs
-    
-    for i in range(n + 1):
-        for j in range(n + 1):
-            if j > 0:
-                dp[i][j] = (dp[i][j] + dp[i][j - 1]) % MOD  # Add a closing bracket
-            if i < n:
-                dp[i + 1][j] = (dp[i + 1][j] + dp[i][j]) % MOD  # Add an opening bracket
+    min_balance = 0
+    current_balance = 0
 
-    # Helper function to check if a sequence is valid
-    def is_valid_sequence(seq):
-        balance = 0
-        for char in seq:
-            if char == '(':
-                balance += 1
-            else:
-                balance -= 1
-            if balance < 0:
-                return False
-        return balance == 0
-
-    # Check the balance of the substring s
-    balance_s = 0
-    min_balance_s = 0
     for char in s:
         if char == '(':
-            balance_s += 1
+            current_balance += 1
         else:
-            balance_s -= 1
-        min_balance_s = min(min_balance_s, balance_s)
+            current_balance -= 1
+        min_balance = min(min_balance, current_balance)
 
-    if balance_s < 0 or balance_s > 0 or (n * 2 - m < 0) or (min_balance_s < 0):
+    if current_balance + n < 0 or current_balance > n:
         return 0
 
-    result = 0
-    for i in range(n - (m - 1) // 2):
-        open_needed = (n - (m - 1) // 2) - i
-        close_needed = n - open_needed
-        if open_needed >= 0 and close_needed >= 0:
-            result = (result + dp[open_needed][close_needed]) % MOD
+    total_open_needed = (n - current_balance) // 2
+    total_close_needed = n - total_open_needed
 
-    return result
+    if total_open_needed < 0 or total_close_needed < 0:
+        return 0
 
-# Input reading
-n = int(input().strip())
-s = input().strip()
+    if min_balance < 0:
+        return 0
 
-# Calculate and print result
-print(count_regular_bracket_sequences(n, s))
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    dp[0][0] = 1
+
+    for i in range(n):
+        for j in range(i + 1):
+            dp[i + 1][j + 1] = (dp[i + 1][j + 1] + dp[i][j]) % MOD
+            dp[i + 1][j] = (dp[i + 1][j] + dp[i][j] * (j + 1)) % MOD
+
+    return dp[n][0]
+
+def main():
+    n = int(input().strip())
+    s = input().strip()
+    result = count_regular_sequences(n, s)
+    print(result)
+
+if __name__ == "__main__":
+    main()

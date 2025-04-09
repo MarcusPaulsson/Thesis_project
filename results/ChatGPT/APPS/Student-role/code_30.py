@@ -1,23 +1,11 @@
 def minimum_traps(m, x):
-    # Since GCD(x, m) = 1, the x-mouse will visit all rooms by moving through them
-    # The number of distinct rooms visited corresponds to Euler's Totient function φ(m)
-    # which is the count of numbers up to m that are coprime to m.
-    
-    # To find the number of traps needed, we can just consider the number of rooms
-    # that will be visited in one cycle.
-    
-    visited_rooms = 0
-    room = 0
-    
-    while True:
-        visited_rooms += 1
-        room = (room * x) % m
-        if room == 0:
-            break
-            
-    return visited_rooms
+    # Since GCD(x, m) = 1, the x-mouse will visit all rooms
+    # in the cycle of length m. We can catch the x-mouse by
+    # placing traps at every room that is visited in one full cycle.
+    return m
 
 # Read input
 m, x = map(int, input().split())
-# Output the result
+
+# Output the minimum number of traps needed
 print(minimum_traps(m, x))

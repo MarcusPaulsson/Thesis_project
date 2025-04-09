@@ -1,40 +1,29 @@
 def solve():
     n, m, d = map(int, input().split())
     c = list(map(int, input().split()))
-    
-    total_length = sum(c)
-    
-    if d > n + 1:
-        arr = [0] * n
-        pos = n - c[0]
-        for i in range(c[0]):
-            arr[pos + i] = 1
-        print("YES")
-        print(*arr)
-        return
 
-    min_space = (m - 1) * (d - 1) + m
-    if total_length + (m - 1) * (d - 1) > n:
-        print("NO")
-        return
+    total_length = sum(c)
+    min_empty = m - 1
+    max_empty = n - total_length
+    
+    if d * (m + 1) <= n + 1:
+      print("NO")
+      return
     
     arr = [0] * n
-    
-    curr_pos = 0
-    start_pos = 0
-    
+    pos = 0
     for i in range(m):
-        
-        needed_space = n - (total_length - sum(c[:i]) + (m-1 - i) * (d-1))
-        start_pos = n- needed_space
+      if pos + c[i] >= n - (sum(c[i+1:]) + (m - 1 - i)*1):
         
         
-        for j in range(c[i]):
-            arr[start_pos + j] = i + 1
-            
-        n = start_pos
+        arr[n - sum(c[i:]) - (m-1 -i) : n - sum(c[i+1:]) - (m-1-i)] = [i+1] * c[i]
+      else:
+        arr[pos: pos + c[i]] = [i+1] * c[i]
+        pos += c[i] + 1
         
-
+    
+    
     print("YES")
     print(*arr)
+
 solve()

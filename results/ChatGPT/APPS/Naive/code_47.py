@@ -1,34 +1,36 @@
-def max_beauty_with_subarray(n, x, a):
+def max_beauty_with_multiplier(n, x, a):
+    # Function to calculate the maximum subarray sum using Kadane's algorithm
     def kadane(arr):
-        max_ending_here = max_so_far = 0
-        for num in arr:
-            max_ending_here = max(0, max_ending_here + num)
-            max_so_far = max(max_so_far, max_ending_here)
-        return max_so_far
+        max_sum, current_sum = 0, 0
+        for value in arr:
+            current_sum = max(0, current_sum + value)
+            max_sum = max(max_sum, current_sum)
+        return max_sum
 
+    # Calculate the base beauty (maximum sum of any subarray without modification)
     base_beauty = kadane(a)
 
-    if x == 0:
-        return base_beauty
+    # To store the maximum beauty after multiplying a subarray by x
+    max_beauty = base_beauty
 
-    max_beauty_after_modification = base_beauty
-
-    for start in range(n):
-        current_sum = 0
-        for end in range(start, n):
-            current_sum += a[end]
+    # Try to find the maximum beauty after multiplying any subarray by x
+    for i in range(n):
+        current_sum = 0  # Sum of the current subarray
+        for j in range(i, n):
+            current_sum += a[j]
+            # Calculate the beauty with the subarray a[i:j+1] multiplied by x
             modified_sum = current_sum * x
-            new_beauty = kadane(a[:start] + [modified_sum] + a[end+1:])
-            max_beauty_after_modification = max(max_beauty_after_modification, new_beauty)
+            new_total = modified_sum + kadane(a[:i]) + kadane(a[j + 1:])
+            max_beauty = max(max_beauty, new_total)
 
-    return max_beauty_after_modification
+    return max_beauty
 
-# Read input
+# Reading input
 n, x = map(int, input().split())
 a = list(map(int, input().split()))
 
-# Get the maximum beauty
-result = max_beauty_with_subarray(n, x, a)
+# Getting the maximum beauty after applying the operation
+result = max_beauty_with_multiplier(n, x, a)
 
-# Print the result
+# Output the result
 print(result)

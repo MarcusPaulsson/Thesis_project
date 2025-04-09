@@ -1,4 +1,6 @@
 x = float(input())
-a = int((x * 10) // 1)
-b = int((x * 10) % 1 * 10)
+a = int(x * 2.0 + 0.5)
+b = int(x * 3.0 + 0.5)
+a = min(10, max(1, a))
+b = min(10, max(1, b))
 print(a, b)

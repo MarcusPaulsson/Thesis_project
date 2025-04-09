@@ -1,13 +1,17 @@
-def minimum_instability(n, a):
+def min_instability(n, a):
+    # Sort the array to easily find the max and min after removing one element
     a.sort()
-    # Remove first or last element to minimize instability
-    instability1 = a[-1] - a[1]  # Remove the first element
-    instability2 = a[-2] - a[0]  # Remove the last element
-    return min(instability1, instability2)
 
-# Input reading
+    # The instability after removing the first or last element
+    instability_remove_first = a[-1] - a[1]
+    instability_remove_last = a[-2] - a[0]
+
+    # The minimum instability will be the minimum of the two calculated values
+    return min(instability_remove_first, instability_remove_last)
+
+# Read input
 n = int(input())
 a = list(map(int, input().split()))
 
-# Calculate and print the result
-print(minimum_instability(n, a))
+# Calculate and print the minimum possible instability
+print(min_instability(n, a))

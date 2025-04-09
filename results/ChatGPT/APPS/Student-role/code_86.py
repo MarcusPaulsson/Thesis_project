@@ -1,31 +1,36 @@
-def solve_training(n, k):
-    # Minimum required problems to satisfy the conditions
-    min_problems = (k * (k + 1)) // 2
-    max_problems = 0
-    a = []
-
-    if n < min_problems:
+def solve_problems(n, k):
+    # Minimum problems needed to satisfy the conditions
+    min_sum = k * (k + 1) // 2
+    if n < min_sum:
         print("NO")
         return
 
-    # Start with the minimum possible problems per day
-    for i in range(1, k + 1):
-        a.append(i)
-        max_problems += i
+    # Maximum problems we can solve on the first day with increasing conditions
+    max_first_day = n // k + (1 if n % k != 0 else 0)
 
-    # Calculate the extra problems we can distribute
-    extra_problems = n - max_problems
+    a = [0] * k
+    for i in range(k):
+        # We start with the minimum required problems for each day
+        a[i] = i + 1
 
-    # Distribute the extra problems
+    # Calculate the current sum of problems solved
+    current_sum = sum(a)
+
+    # We need to distribute the remaining problems
+    remaining = n - current_sum
+
+    # Start distributing from the last day backwards
     for i in range(k - 1, -1, -1):
-        if extra_problems <= 0:
-            break
-        # The maximum we can add to a[i] is capped by the rules
-        max_increase = min(extra_problems, (a[i] * 2) - a[i])
-        a[i] += max_increase
-        extra_problems -= max_increase
+        # The maximum we can add to a[i] while respecting the conditions
+        max_add = min(remaining, 2 * a[i] - a[i])
+        if max_add > 0:
+            a[i] += max_add
+            remaining -= max_add
 
-    # Check if we have distributed exactly n problems
+        if remaining <= 0:
+            break
+
+    # Final check if we managed to distribute all problems
     if sum(a) == n:
         print("YES")
         print(" ".join(map(str, a)))
@@ -34,4 +39,4 @@ def solve_training(n, k):
 
 # Read input
 n, k = map(int, input().split())
-solve_training(n, k)
+solve_problems(n, k)

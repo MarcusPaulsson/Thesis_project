@@ -5,7 +5,8 @@ def solve():
 
     def check(res, s, t):
         for i in range(len(res) - 1):
-            if res[i:i+2] == s or res[i:i+2] == t:
+            sub = res[i:i+2]
+            if sub == s or sub == t:
                 return False
         return True
 

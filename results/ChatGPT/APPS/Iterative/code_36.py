@@ -1,40 +1,50 @@
-def hexagonal_spiral(n):
+def hexagon_coordinates(n):
     if n == 0:
         return (0, 0)
     
     layer = 0
-    while n > 6 * layer:
-        n -= 6 * layer
+    moves_in_layer = 0
+    
+    # Finding which layer the n-th move falls into
+    while moves_in_layer <= n:
         layer += 1
+        moves_in_layer += 6 * layer
     
-    x, y = layer, 0
+    # Adjusting layer and moves_in_layer to the last valid layer
+    layer -= 1
+    moves_in_layer -= 6 * layer
     
-    if n == 0:
+    # Calculate position within the identified layer
+    position_in_layer = n - moves_in_layer
+    x, y = layer, 0  # Starting point of the layer in the coordinate system
+    
+    if position_in_layer == 0:
         return (x, y)
     
-    # Determine the position in the current layer
-    segment_length = layer
-    if n <= segment_length:
-        x -= n
-        y += 0
-    elif n <= 2 * segment_length:
-        x -= segment_length
-        y += n - segment_length
-    elif n <= 3 * segment_length:
-        x += n - 2 * segment_length
-        y += segment_length
-    elif n <= 4 * segment_length:
-        x += segment_length
-        y -= n - 3 * segment_length
-    elif n <= 5 * segment_length:
-        x += n - 4 * segment_length
-        y -= segment_length
-    else:
-        x -= segment_length
-        y -= n - 5 * segment_length
+    direction = position_in_layer // layer
+    steps = position_in_layer % layer
+
+    # Move according to the calculated direction and steps
+    if direction == 0:  # Right
+        x += steps
+    elif direction == 1:  # Up-right
+        x += layer
+        y += steps
+    elif direction == 2:  # Up-left
+        x += layer - steps
+        y += layer
+    elif direction == 3:  # Left
+        x -= steps
+        y += layer
+    elif direction == 4:  # Down-left
+        x -= layer
+        y -= steps
+    elif direction == 5:  # Down-right
+        x -= layer - steps
+        y -= layer
     
     return (x, y)
 
-n = int(input())
-x, y = hexagonal_spiral(n)
+n = int(input().strip())
+x, y = hexagon_coordinates(n)
 print(x, y)

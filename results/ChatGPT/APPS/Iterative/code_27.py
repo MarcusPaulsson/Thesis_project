@@ -1,11 +1,14 @@
 n = int(input())
-s = input().strip()
+s = input()
 
-min_operations = n  # Start with the assumption that we will type all characters one by one
+# The minimum operations needed to type the string
+min_operations = n
 
-for i in range(1, n // 2 + 1):  # Check up to half the length of the string
-    if s[:i] == s[i:2*i]:  # Check if we can copy the first i characters
-        operations = i + 1 + (n - 2 * i)  # i (initial characters) + 1 (copy operation) + remaining characters
+# Check for possible prefixes to copy
+for i in range(1, n // 2 + 1):
+    if s[:i] == s[i:2*i]:  # Check if the prefix matches the next segment
+        # Calculate operations: type prefix + copy + remaining characters
+        operations = i + 1 + (n - 2 * i)
         min_operations = min(min_operations, operations)
 
 print(min_operations)

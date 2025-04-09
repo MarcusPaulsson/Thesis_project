@@ -1,24 +1,21 @@
 n = int(input())
 a = list(map(int, input().split()))
 
-# Initialize the distance array with a large number
+# Initialize the distance array with a large value
 distances = [float('inf')] * n
 
-# First pass: from left to right
-last_zero = -1
+# First pass: left to right
 for i in range(n):
     if a[i] == 0:
-        last_zero = i
         distances[i] = 0
-    elif last_zero != -1:
-        distances[i] = i - last_zero
+    elif i > 0:
+        distances[i] = distances[i - 1] + 1
 
-# Second pass: from right to left
-last_zero = -1
+# Second pass: right to left
 for i in range(n - 1, -1, -1):
     if a[i] == 0:
-        last_zero = i
-    elif last_zero != -1:
-        distances[i] = min(distances[i], last_zero - i)
+        distances[i] = 0
+    elif i < n - 1:
+        distances[i] = min(distances[i], distances[i + 1] + 1)
 
-print(' '.join(map(str, distances)))
+print(" ".join(map(str, distances)))

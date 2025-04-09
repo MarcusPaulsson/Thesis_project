@@ -1,41 +1,29 @@
-def solve():
-    s = input()
-    n = len(s)
+def gcd(a, b):
+  if b == 0:
+    return a
+  return gcd(b, a % b)
 
-    def calculate_grid_area(seq):
-        x, y = 0, 0
-        min_x, max_x = 0, 0
-        min_y, max_y = 0, 0
-        
-        for move in seq:
-            if move == 'W':
-                y -= 1
-            elif move == 'S':
-                y += 1
-            elif move == 'A':
-                x -= 1
-            elif move == 'D':
-                x += 1
-            
-            min_x = min(min_x, x)
-            max_x = max(max_x, x)
-            min_y = min(min_y, y)
-            max_y = max(max_y, y)
-        
-        width = max_x - min_x + 1
-        height = max_y - min_y + 1
-        return width * height
+def lcm(a, b):
+  return (a * b) // gcd(a, b)
 
-    min_area = calculate_grid_area(s)
+n, a, b, p, q = map(int, input().split())
 
-    for i in range(n + 1):
-        for char in ['W', 'A', 'S', 'D']:
-            new_s = s[:i] + char + s[i:]
-            min_area = min(min_area, calculate_grid_area(new_s))
+red_count = n // a
+blue_count = n // b
+common_count = n // lcm(a, b)
 
-    print(min_area)
+red_only = red_count - common_count
+blue_only = blue_count - common_count
 
+total_chocolates = 0
 
-t = int(input())
-for _ in range(t):
-    solve()
+if p > q:
+  total_chocolates += red_only * p
+  total_chocolates += common_count * p
+  total_chocolates += blue_only * q
+else:
+  total_chocolates += blue_only * q
+  total_chocolates += common_count * q
+  total_chocolates += red_only * p
+  
+print(total_chocolates)

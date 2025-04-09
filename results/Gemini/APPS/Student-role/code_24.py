@@ -4,28 +4,28 @@ def solve():
         board.append(list(input()))
 
     def check_win(board):
-        # Check horizontal
+        # Check rows
         for i in range(10):
             for j in range(6):
-                if all(board[i][j+k] == 'X' for k in range(5)):
+                if all(board[i][j + k] == 'X' for k in range(5)):
                     return True
 
-        # Check vertical
+        # Check columns
         for j in range(10):
             for i in range(6):
-                if all(board[i+k][j] == 'X' for k in range(5)):
+                if all(board[i + k][j] == 'X' for k in range(5)):
                     return True
 
-        # Check diagonal (top-left to bottom-right)
+        # Check diagonals (top-left to bottom-right)
         for i in range(6):
             for j in range(6):
-                if all(board[i+k][j+k] == 'X' for k in range(5)):
+                if all(board[i + k][j + k] == 'X' for k in range(5)):
                     return True
 
-        # Check diagonal (top-right to bottom-left)
+        # Check diagonals (top-right to bottom-left)
         for i in range(6):
             for j in range(4, 10):
-                if all(board[i+k][j-k] == 'X' for k in range(5)):
+                if all(board[i + k][j - k] == 'X' for k in range(5)):
                     return True
 
         return False

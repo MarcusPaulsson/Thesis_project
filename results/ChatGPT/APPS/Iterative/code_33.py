@@ -1,37 +1,59 @@
-def count_intersection(a1, b1, a2, b2, L, R):
+def count_common_integers(a1, b1, a2, b2, L, R):
     from math import gcd
 
-    # Adjust b1 and b2 for the equations
-    b1 = b1 % a1
-    b2 = b2 % a2
+    def generate_ap(a, b, start, end):
+        if a == 0:
+            return [b] if start <= b <= end else []
+        
+        if a > 0:
+            first = (start - b + a - 1) // a
+            last = (end - b) // a
+        else:
+            first = (end - b) // a
+            last = (start - b + a - 1) // a
 
-    # Calculate the step size (lcm) and the gcd
-    g = gcd(a1, a2)
-    step = (a1 // g) * a2  # lcm(a1, a2)
+        first_value = a * first + b
+        last_value = a * last + b
+        
+        if first_value > end or last_value < start:
+            return []
+        return list(range(first_value, last_value + a, a))
 
-    # Determine the values of x that satisfy both equations
-    diff = (b2 - b1) % a2
-    inv_a1 = pow(a1 // g, -1, a2 // g)  # Modular inverse
-    t = (diff * inv_a1) % (a2 // g)
+    d = b2 - b1
+    a = a1
+    b = -a2
 
-    # Particular solution x0
-    x0 = b1 + a1 * t
+    g = gcd(a, -b)
+    if d % g != 0:
+        print(0)
+        return
 
-    # Adjust x0 to be within the bounds [L, R]
-    if x0 < L:
-        x0 += ((L - x0 + step - 1) // step) * step
-    elif x0 > R:
-        return 0  # No valid solution if x0 is beyond R
+    a //= g
+    b //= g
+    d //= g
 
-    # Count the number of valid solutions in the range [L, R]
-    last_valid = R - (R - x0) % step
+    def extended_gcd(a, b):
+        if b == 0:
+            return a, 1, 0
+        g, x1, y1 = extended_gcd(b, a % b)
+        return g, y1, x1 - (a // b) * y1
 
-    if last_valid < x0:
-        return 0
+    g, x0, y0 = extended_gcd(a, b)
+    x0 *= d
+    y0 *= d
 
-    return (last_valid - x0) // step + 1
+    k_min = (L - b1) // a1
+    k_max = (R - b1) // a1
 
-# Input reading
-a1, b1, a2, b2, L, R = map(int, input().split())
-# Output the result
-print(count_intersection(a1, b1, a2, b2, L, R))
+    t_min = (x0 - k_max * b) // a if b != 0 else (x0 // a)
+    t_max = (x0 - k_min * b) // a if b != 0 else (x0 // a)
+
+    t_start = (t_min + (b - 1)) // b if b > 0 else (t_min // b)
+    t_end = t_max // b
+
+    count = max(0, t_end - t_start + 1)
+    print(count)
+
+# Example input
+count_common_integers(2, 0, 3, 3, 5, 21)
+count_common_integers(2, 4, 3, 0, 6, 17)

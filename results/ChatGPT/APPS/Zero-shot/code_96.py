@@ -1,24 +1,19 @@
 n = int(input())
 q = list(map(int, input().split()))
 
-# Initialize the permutation array
+# Initialize p array and calculate the prefix sums
 p = [0] * n
-p[0] = 0  # Start from an arbitrary point, we will adjust later
+p[0] = 0  # Let's assume p_1 = 0 for convenience
 
-# Build the prefix sums based on q
 for i in range(1, n):
     p[i] = p[i - 1] + q[i - 1]
 
-# Find the minimum value in p to adjust to a valid permutation
+# Normalize p to make it a permutation of 1 to n
 min_p = min(p)
+p = [x - min_p + 1 for x in p]
 
-# Adjust all elements to ensure the smallest value is 1
-adjustment = 1 - min_p
-for i in range(n):
-    p[i] += adjustment
-
-# Check if the adjusted array is a valid permutation
-if len(set(p)) == n and all(1 <= x <= n for x in p):
+# Check if p is a valid permutation
+if sorted(p) == list(range(1, n + 1)):
     print(' '.join(map(str, p)))
 else:
     print(-1)

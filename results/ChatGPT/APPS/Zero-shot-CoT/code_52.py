@@ -1,27 +1,27 @@
 def max_sum_divisible_by_k(n, m, k, matrix):
     from itertools import combinations
     
-    max_choose = m // 2
-    total_max_sum = 0
+    max_sum = 0
     
     for row in matrix:
-        best_mod_sums = [0] * k
+        # Limit the number of elements we can choose in each row
+        limit = m // 2
         
-        # Check all combinations of choosing elements in the row
-        for r in range(max_choose + 1):
-            for comb in combinations(row, r):
-                current_sum = sum(comb)
-                best_mod_sums[current_sum % k] = max(best_mod_sums[current_sum % k], current_sum)
-        
-        # Update the total max sum considering the best choices for each row
-        total_max_sum += max(best_mod_sums)
+        # Generate all combinations of elements we can select from the row
+        for r in range(limit + 1):
+            for combo in combinations(row, r):
+                current_sum = sum(combo)
+                if current_sum % k == 0:
+                    max_sum = max(max_sum, current_sum)
     
-    return total_max_sum
+    return max_sum
 
-# Input handling
-n, m, k = map(int, input().split())
-matrix = [list(map(int, input().split())) for _ in range(n)]
+# Input reading
+n, m, k = map(int, input().strip().split())
+matrix = [list(map(int, input().strip().split())) for _ in range(n)]
 
-# Get the result and print it
+# Get the result
 result = max_sum_divisible_by_k(n, m, k, matrix)
+
+# Output the result
 print(result)

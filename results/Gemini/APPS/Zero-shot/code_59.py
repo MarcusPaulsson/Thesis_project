@@ -10,7 +10,7 @@ def solve():
         else:
             if s[i] == '1':
                 count += 1
-    
+                
     print(count)
 
 solve()

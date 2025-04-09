@@ -1,68 +1,60 @@
 from collections import deque, defaultdict
 
-def find_course_order(n, k, main_courses, dependencies):
-    # Create an adjacency list for dependencies and a list for in-degrees
-    adj_list = defaultdict(list)
+def find_courses(n, k, main_courses, dependencies):
+    # Create a graph and a degree count
+    graph = defaultdict(list)
     in_degree = [0] * (n + 1)
     
-    # Build the graph
-    for i in range(1, n + 1):
-        dep = dependencies[i - 1]
-        for dep_course in dep:
-            adj_list[dep_course].append(i)
-            in_degree[i] += 1
-            
-    # Queue for courses that can be taken (in-degree 0)
-    queue = deque()
+    # Populate the graph and in-degree
     for course in range(1, n + 1):
-        if in_degree[course] == 0:
-            queue.append(course)
+        dep = dependencies[course - 1]
+        for prereq in dep:
+            graph[prereq].append(course)
+            in_degree[course] += 1
+            
+    # Queue for courses that can be taken (in_degree == 0)
+    queue = deque()
+    for i in range(1, n + 1):
+        if in_degree[i] == 0:
+            queue.append(i)
     
+    # List to keep track of the courses taken
     order = []
-    courses_taken = set()
+    taken_courses = set()
     
+    # Process the courses
     while queue:
-        course = queue.popleft()
-        order.append(course)
-        courses_taken.add(course)
+        current = queue.popleft()
+        order.append(current)
+        # If current is a main course, mark it as taken
+        if current in main_courses:
+            taken_courses.add(current)
         
-        # Reduce in-degree for dependent courses
-        for next_course in adj_list[course]:
-            in_degree[next_course] -= 1
-            if in_degree[next_course] == 0:
-                queue.append(next_course)
+        # Update the in-degree of the dependent courses
+        for neighbor in graph[current]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
     
-    # Check if all main courses can be taken
-    required_courses = set(main_courses)
-    all_courses = set(order)
-
-    if not required_courses.issubset(all_courses):
+    # Check if all main courses are taken
+    if len(taken_courses) < len(main_courses):
         return -1
     
-    # Include all necessary courses
-    result = []
-    for course in order:
-        if course in required_courses or any(dep in courses_taken for dep in dependencies[course - 1]):
-            result.append(course)
-    
-    return len(result), result
+    # Result is the total number of courses taken
+    return len(order), order
 
-# Input reading
+# Input handling
 n, k = map(int, input().split())
-main_courses = list(map(int, input().split()))
-dependencies = []
-
-for _ in range(n):
-    dep_info = list(map(int, input().split()))
-    dependencies.append(dep_info[1:])  # Only take the dependencies, ignore the first number
+main_courses = set(map(int, input().split()))
+dependencies = [list(map(int, input().split()[1:])) for _ in range(n)]
 
 # Get the result
-result = find_course_order(n, k, main_courses, dependencies)
+result = find_courses(n, k, main_courses, dependencies)
 
-# Print the result
+# Output the result
 if result == -1:
     print(-1)
 else:
-    m, course_order = result
+    m, order = result
     print(m)
-    print(' '.join(map(str, course_order)))
+    print(' '.join(map(str, order)))

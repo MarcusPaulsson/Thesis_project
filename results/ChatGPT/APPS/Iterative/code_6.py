@@ -1,40 +1,25 @@
 def min_blows_to_defeat(t, queries):
     results = []
     
-    for i in range(t):
-        n, x = queries[i][0], queries[i][1]
-        blows = queries[i][2]
-        
-        min_blow = float('inf')
-        max_effective_d = 0
-        
-        for d, h in blows:
-            if d >= x:
-                # If d is greater than or equal to x, it can defeat Zmei in one blow
-                min_blow = 1
-                break
+    for query in queries:
+        n, x, blows = query
+        min_blows = float('inf')
+
+        for d_i, h_i in blows:
+            if d_i >= x:
+                min_blows = min(min_blows, 1)
             else:
-                # Calculate the effective reduction in heads
-                effective_d = d - h
-                if effective_d > 0:
-                    max_effective_d = max(max_effective_d, effective_d)
-        
-        if min_blow == 1:
-            results.append(1)
-            continue
-        
-        if max_effective_d <= 0:
-            results.append(-1)
-            continue
-        
-        # Calculate the number of blows needed
-        blows_needed = (x - max_effective_d + max_effective_d - 1) // max_effective_d
-        
-        results.append(blows_needed + 1)  # +1 for the blow that will take it to zero
-    
+                effective_heads_lost = d_i - h_i
+                if effective_heads_lost <= 0:
+                    continue
+                blows_needed = (x - d_i + effective_heads_lost - 1) // effective_heads_lost + 1
+                min_blows = min(min_blows, blows_needed)
+
+        results.append(min_blows if min_blows != float('inf') else -1)
+
     return results
 
-# Input reading and function call
+# Input reading
 t = int(input())
 queries = []
 for _ in range(t):
@@ -42,6 +27,7 @@ for _ in range(t):
     blows = [tuple(map(int, input().split())) for _ in range(n)]
     queries.append((n, x, blows))
 
+# Process and output results
 results = min_blows_to_defeat(t, queries)
 for result in results:
     print(result)

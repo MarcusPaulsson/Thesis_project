@@ -1,46 +1,51 @@
-def count_regular_sequences(n, s):
-    MOD = 1000000007
+MOD = 10**9 + 7
+
+def count_regular_bracket_sequences(n, s):
     m = len(s)
     
-    # Precompute Catalan numbers up to 2n
-    catalan = [0] * (n + 1)
-    catalan[0] = 1
-    for i in range(1, n + 1):
-        catalan[i] = 0
-        for j in range(i):
-            catalan[i] += catalan[j] * catalan[i - 1 - j]
-            catalan[i] %= MOD
-            
-    # Check validity of s
-    balance = 0
-    for char in s:
-        if char == '(':
-            balance += 1
-        else:
-            balance -= 1
-        if balance < 0:
-            return 0
-            
-    if balance + (n - (m - balance)) < 0:
+    # Precompute factorials and inverse factorials for combinations
+    fact = [1] * (2 * n + 1)
+    for i in range(2, 2 * n + 1):
+        fact[i] = fact[i - 1] * i % MOD
+    
+    def modinv(x):
+        return pow(x, MOD - 2, MOD)
+    
+    if n < m // 2 or n < (m + 1) // 2:  # Not enough pairs to accommodate s
         return 0
     
-    # Count valid sequences by placing s in various positions
-    result = 0
-    for start in range(n - (m // 2) + 1):
-        left_needed = (m // 2) + start
-        right_needed = n - left_needed
-        if left_needed < 0 or right_needed < 0:
-            continue
-            
-        result += (catalan[left_needed] * catalan[right_needed]) % MOD
-        result %= MOD
-        
-    return result
+    # Count the number of '(' and ')' in s
+    open_s = s.count('(')
+    close_s = s.count(')')
+    
+    # Check if s can be part of a valid sequence
+    if open_s < close_s:
+        return 0
+    
+    # Calculate the number of valid sequences
+    total_open = n - open_s
+    total_close = n - close_s
+    
+    if total_open < 0 or total_close < 0:
+        return 0
+    
+    # Count valid sequences that can be formed with remaining brackets
+    def count_sequences(open_needed, close_needed):
+        if open_needed < 0 or close_needed < 0 or open_needed > close_needed:
+            return 0
+        return (fact[open_needed + close_needed] * modinv(fact[open_needed]) % MOD) * modinv(fact[close_needed]) % MOD
+    
+    # Count valid sequences before s
+    before_s = count_sequences(n - open_s, n - close_s)
+    
+    # Count valid sequences after s
+    after_s = count_sequences(total_open, total_close)
+    
+    return before_s * after_s % MOD
 
-# Read input
-n = int(input())
+# Input
+n = int(input().strip())
 s = input().strip()
 
-# Get the result and print it
-result = count_regular_sequences(n, s)
-print(result)
+# Output the result
+print(count_regular_bracket_sequences(n, s))

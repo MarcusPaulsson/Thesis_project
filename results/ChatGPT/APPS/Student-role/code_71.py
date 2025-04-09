@@ -1,3 +1,3 @@
 a = int(input())
-output = (a - 1).bit_length()
+output = (a - 1) // 6 + 1
 print(output)

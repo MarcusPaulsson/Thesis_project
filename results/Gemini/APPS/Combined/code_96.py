@@ -2,24 +2,29 @@ def solve():
     n = int(input())
     q = list(map(int, input().split()))
 
+    def check_permutation(arr):
+        if len(arr) != n:
+            return False
+        seen = set()
+        for x in arr:
+            if not (1 <= x <= n):
+                return False
+            if x in seen:
+                return False
+            seen.add(x)
+        return True
+
     for first_element in range(1, n + 1):
         p = [first_element]
+        valid = True
         for i in range(n - 1):
-            p.append(p[-1] + q[i])
-
-        if len(set(p)) != n or any(x < 1 or x > n for x in p):
-            continue
+            next_element = p[-1] + q[i]
+            p.append(next_element)
         
-        permutation = sorted(p)
-        is_permutation = True
-        for i in range(n):
-            if permutation[i] != i + 1:
-                is_permutation = False
-                break
-        if is_permutation:
+        if check_permutation(p):
             print(*p)
             return
-
-    print(-1)
+    
+    print("-1")
 
 solve()

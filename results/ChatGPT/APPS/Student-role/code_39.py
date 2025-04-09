@@ -1,13 +1,18 @@
 def is_palindrome(s):
     return s == s[::-1]
 
-s = input().strip()
+def longest_non_palindrome_substring(s):
+    n = len(s)
+    
+    if not is_palindrome(s):
+        return n
+    
+    for length in range(n - 1, 0, -1):
+        for start in range(n - length + 1):
+            if not is_palindrome(s[start:start + length]):
+                return length
+    
+    return 0
 
-if not is_palindrome(s):
-    print(len(s))
-else:
-    # Check if all characters are the same
-    if all(c == s[0] for c in s):
-        print(0)
-    else:
-        print(len(s) - 1)
+s = input().strip()
+print(longest_non_palindrome_substring(s))

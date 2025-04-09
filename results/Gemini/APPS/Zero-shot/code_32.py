@@ -1,7 +1,7 @@
 def solve():
     n = int(input())
     
-    current_pos = 0  # 0 is north pole, 20000 is south pole
+    current_pos = 0 
     
     for _ in range(n):
         t, direction = input().split()
@@ -18,13 +18,11 @@ def solve():
                 return
             current_pos -= t
         else:
-            if direction == "North":
-                current_pos -= t
-            elif direction == "South":
+            if direction == "South":
                 current_pos += t
-            else:
-                pass # West or East, doesn't change north-south position
-        
+            elif direction == "North":
+                current_pos -= t
+            
         if current_pos < 0 or current_pos > 20000:
             print("NO")
             return
@@ -33,5 +31,6 @@ def solve():
         print("YES")
     else:
         print("NO")
+        
 
 solve()

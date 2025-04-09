@@ -4,13 +4,15 @@ def f(x):
         x //= 10
     return x
 
-def count_reachable(n):
+def reachable_count(n):
     reachable = set()
     current = n
+    
     while current not in reachable:
         reachable.add(current)
         current = f(current)
+    
     return len(reachable)
 
-n = int(input().strip())
-print(count_reachable(n))
+n = int(input())
+print(reachable_count(n))

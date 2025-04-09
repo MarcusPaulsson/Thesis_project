@@ -1,38 +1,41 @@
-def minimum_colors_to_sort(n, s):
-    from collections import defaultdict
-
-    last_position = {}
+def min_colors_to_sort(n, s):
+    color_count = 1
     colors = [0] * n
-    color_count = 0
+    last_position = {}
 
-    # Step 1: Determine the last position of each character
     for i in range(n):
-        last_position[s[i]] = i
-
-    # Step 2: Assign colors based on the last known position of characters
-    for i in range(n):
-        if i == 0:
-            color_count += 1
-            colors[i] = color_count
-        else:
-            # If the current character is the same as the previous one, keep the same color
-            if s[i] == s[i - 1]:
-                colors[i] = colors[i - 1]
-            else:
-                # If we encounter a new character, we need to check the last position
-                if last_position[s[i - 1]] < i:
-                    color_count += 1
+        char = s[i]
+        if char in last_position:
+            # If the character was seen before, check if we need a new color
+            if last_position[char] != -1:
+                for j in range(last_position[char] + 1, i):
+                    if s[j] < char and colors[j] == 0:
+                        # If we find a character that is less than the current character
+                        # and is not yet colored, we need a new color
+                        color_count += 1
+                        break
                 colors[i] = color_count
+            else:
+                colors[i] = colors[last_position[char]]
+        else:
+            colors[i] = color_count
+        
+        last_position[char] = i
+
+    # Assign colors based on the previous assignments
+    for i in range(n):
+        if colors[i] == 0:
+            colors[i] = color_count
 
     return color_count, colors
 
-# Input reading
-n = int(input().strip())
+# Read input
+n = int(input())
 s = input().strip()
 
 # Get the result
-res, coloring = minimum_colors_to_sort(n, s)
+res, coloring = min_colors_to_sort(n, s)
 
-# Output the result
+# Print output
 print(res)
 print(' '.join(map(str, coloring)))

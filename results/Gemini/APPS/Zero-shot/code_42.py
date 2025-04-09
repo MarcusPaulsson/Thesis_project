@@ -3,6 +3,8 @@ def solve():
     s = input()
     
     count = 0
+    distinct_strings = set()
+    
     for i in range(2**n):
         binary_string = bin(i)[2:].zfill(n)
         
@@ -14,8 +16,10 @@ def solve():
                 break
         
         if is_substring:
-            count += 1
-            
+            if binary_string not in distinct_strings:
+                count += 1
+                distinct_strings.add(binary_string)
+    
     print(count)
 
 solve()

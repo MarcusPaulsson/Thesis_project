@@ -1,111 +1,66 @@
 def solve():
     n = int(input())
     s = input()
+    len_s = len(s)
     mod = 10**9 + 7
-    
-    def is_regular(seq):
-        balance = 0
-        for char in seq:
-            if char == '(':
-                balance += 1
+
+    dp = {}
+
+    def count_regular_sequences(length, balance, contains_s):
+        if length == 2 * n:
+            if balance == 0 and contains_s:
+                return 1
             else:
-                balance -= 1
-            if balance < 0:
-                return False
-        return balance == 0
+                return 0
 
-    def count_sequences(n, s):
+        if (length, balance, contains_s) in dp:
+            return dp[(length, balance, contains_s)]
+
         count = 0
-        for i in range(1 << (2 * n)):
-            seq = ""
-            for j in range(2 * n):
-                if (i >> j) & 1:
-                    seq += "("
-                else:
-                    seq += ")"
+        
+        # Add '('
+        if balance + 1 <= n:
+            new_contains_s = contains_s
+            temp_seq = ""
+            if length < len_s:
+                temp_seq = '(' + s[length+1:] if length + 1 < len_s else '('
+                if len(temp_seq) > 0 and s[:length+1] == temp_seq[:length+1]:
+                  new_contains_s = True
+            else:
+              
+                new_contains_s = contains_s
             
-            if is_regular(seq) and s in seq:
-                count += 1
-        return count % mod
+            
+            seq = ('(' + s[length+1:]) if length + 1 < len_s else '('
+            if not contains_s and len_s <= 2 * n and length < len_s and len(seq) > 0 and s.startswith(seq):
+                new_contains_s = True
 
-    #print(count_sequences(n, s))
+            count = (count + count_regular_sequences(length + 1, balance + 1, new_contains_s)) % mod
+        
+        # Add ')'
+        if balance > 0:
+            new_contains_s = contains_s
+            temp_seq = ""
+            if length < len_s:
+                temp_seq = ')' + s[length+1:]  if length + 1 < len_s else ')'
+                if len(temp_seq) > 0 and s[:length+1] == temp_seq[:length+1]:
+                  new_contains_s = True
+            else:
+                new_contains_s = contains_s
+
+            seq = (')' + s[length+1:]) if length + 1 < len_s else ')'
+            if not contains_s and len_s <= 2 * n and length < len_s and len(seq) > 0 and s.startswith(seq):
+                new_contains_s = True
+            
+            count = (count + count_regular_sequences(length + 1, balance - 1, new_contains_s)) % mod
+
+        dp[(length, balance, contains_s)] = count
+        return count
+
+    contains_s = False
+    if len_s == 0:
+      contains_s = True
     
-    
-    def count_regular_bracket_sequences(n, sub):
-        m = len(sub)
-        dp = {}
-        
-        def solve_recursive(index, balance, contains_sub):
-            if (index, balance, contains_sub) in dp:
-                return dp[(index, balance, contains_sub)]
-            
-            if index == 2 * n:
-                if balance == 0 and contains_sub:
-                    return 1
-                else:
-                    return 0
-            
-            count = 0
-            
-            # Option 1: Add '('
-            new_balance = balance + 1
-            new_contains_sub = contains_sub
-            
-            temp_seq = "("
-            if index-m+1 >= 0:
-                temp_seq = ""
-                for k in range(index-m+1, index):
-                    if (i >> k) & 1:
-                        temp_seq += "("
-                    else:
-                        temp_seq += ")"
-                temp_seq += "("
-            
-            if sub in temp_seq:
-                new_contains_sub = True
-            
-            if new_balance <= n:
-                
-                
-                i = 0
-                
-                count = (count + solve_recursive(index + 1, new_balance, contains_sub or (temp_seq.endswith(sub) and len(temp_seq) >= len(sub)))) % mod
-
-                
-            # Option 2: Add ')'
-            new_balance = balance - 1
-            new_contains_sub = contains_sub
-            
-            temp_seq = ")"
-            if index-m+1 >= 0:
-                temp_seq = ""
-                for k in range(index-m+1, index):
-                    if (i >> k) & 1:
-                        temp_seq += "("
-                    else:
-                        temp_seq += ")"
-                temp_seq += ")"
-            
-            
-            if sub in temp_seq:
-                new_contains_sub = True
-            
-            if new_balance >= 0:
-
-                i = 0
-                
-                
-                count = (count + solve_recursive(index + 1, new_balance, contains_sub or (temp_seq.endswith(sub) and len(temp_seq) >= len(sub)))) % mod
-            
-            
-            dp[(index, balance, contains_sub)] = count
-            return count
-        
-        
-        i = 0
-        print(solve_recursive(0, 0, False))
-        
-        
-    count_regular_bracket_sequences(n, s)
+    print(count_regular_sequences(0, 0, False))
 
 solve()

@@ -1,14 +1,13 @@
 k = int(input())
 
-length = 1
+digits = 1
 count = 9
-while k > length * count:
-    k -= length * count
-    length += 1
-    count *= 10
+while k > digits * count:
+  k -= digits * count
+  digits += 1
+  count *= 10
 
-start = 10 ** (length - 1)
-number = start + (k - 1) // length
-index = (k - 1) % length
+num = 10**(digits - 1) + (k - 1) // digits
+index = (k - 1) % digits
 
-print(str(number)[index])
+print(str(num)[index])

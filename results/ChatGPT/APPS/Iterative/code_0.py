@@ -1,21 +1,41 @@
-def max_accordion_length(s):
-    # Initialize positions for the required characters
-    left_bracket_pos = s.find('[')
-    first_colon_pos = s.find(':', left_bracket_pos + 1)
-    second_colon_pos = s.find(':', first_colon_pos + 1)
-    right_bracket_pos = s.find(']', second_colon_pos + 1)
+def max_acc_length(s):
+    n = len(s)
+    l_bracket = -1
+    r_bracket = -1
 
-    # Check if all required characters were found in the correct order
-    if left_bracket_pos == -1 or first_colon_pos == -1 or second_colon_pos == -1 or right_bracket_pos == -1:
+    # Find the last opening bracket '['
+    for i in range(n):
+        if s[i] == '[':
+            l_bracket = i
+
+    # Find the first closing bracket ']'
+    for i in range(n - 1, -1, -1):
+        if s[i] == ']':
+            r_bracket = i
+
+    # Check for valid brackets
+    if l_bracket == -1 or r_bracket == -1 or l_bracket >= r_bracket:
         return -1
 
-    # Calculate the number of vertical lines '|' between the two colons
-    vertical_lines_count = s[first_colon_pos + 1:second_colon_pos].count('|')
+    # Find the first ':' after the opening bracket
+    first_colon = s.find(':', l_bracket + 1, r_bracket)
+    if first_colon == -1:
+        return -1
 
-    # The length of the accordion is 4 (for the brackets and colons) plus the vertical lines
-    return 4 + vertical_lines_count
+    # Find the last ':' before the closing bracket
+    second_colon = s.rfind(':', l_bracket, r_bracket)
+    if second_colon == -1 or second_colon <= first_colon:
+        return -1
 
-# Input reading
+    # Count the number of '|' between the colons
+    vertical_lines_count = s.count('|', first_colon + 1, second_colon)
+
+    # Calculate the length of the accordion
+    accordion_length = 4 + vertical_lines_count
+    return accordion_length
+
+
+# Input
 s = input().strip()
-# Output the maximum accordion length
-print(max_accordion_length(s))
+# Output
+print(max_acc_length(s))

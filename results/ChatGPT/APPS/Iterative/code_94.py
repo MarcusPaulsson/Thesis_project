@@ -1,37 +1,52 @@
 def construct_binary_string(a, b, x):
-    # Initialize the string
-    s = []
+    result = []
     
     # Determine the starting character
-    if a > b:
-        s.append('0')
-        a -= 1
+    if x % 2 == 0:
+        start_with_zero = True
     else:
-        s.append('1')
-        b -= 1
-
-    # Current segments of different characters
-    current_segments = 1
-
-    # Add alternating characters until we reach x
-    while current_segments < x and (a > 0 or b > 0):
-        if s[-1] == '0' and b > 0:
-            s.append('1')
-            b -= 1
-        elif s[-1] == '1' and a > 0:
-            s.append('0')
+        start_with_zero = False
+    
+    # Initialize the result based on starting character
+    if start_with_zero:
+        if a > 0:
+            result.append('0')
             a -= 1
-        current_segments += 1
+        else:
+            result.append('1')
+            b -= 1
+    else:
+        if b > 0:
+            result.append('1')
+            b -= 1
+        else:
+            result.append('0')
+            a -= 1
 
-    # Fill the remaining with the last character
-    last_char = s[-1]
-    remaining_count = a if last_char == '0' else b
-    s.extend([last_char] * remaining_count)
-    s.extend(['1' if last_char == '0' else '0'] * (b if last_char == '0' else a))
+    # Alternate between 0 and 1 for x transitions
+    for _ in range(x):
+        if result[-1] == '0' and b > 0:
+            result.append('1')
+            b -= 1
+        elif result[-1] == '1' and a > 0:
+            result.append('0')
+            a -= 1
+            
+    # Fill the rest with the last character
+    last_char = result[-1]
+    while a > 0 or b > 0:
+        if last_char == '0' and b > 0:
+            result.append('1')
+            b -= 1
+            last_char = '1'
+        elif last_char == '1' and a > 0:
+            result.append('0')
+            a -= 1
+            last_char = '0'
 
-    return ''.join(s)
+    return ''.join(result)
 
 # Read input values
 a, b, x = map(int, input().split())
-# Generate and print the binary string
+# Print the result
 print(construct_binary_string(a, b, x))

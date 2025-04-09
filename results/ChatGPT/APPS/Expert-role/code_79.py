@@ -1,35 +1,24 @@
 def min_moves_to_divisible_by_25(n):
     s = str(n)
     length = len(s)
-    best_moves = float('inf')
     
-    # Check for valid pairs (00, 25, 50, 75)
-    targets = ['00', '25', '50', '75']
+    # Check for pairs of digits that make the number divisible by 25
+    possible_pairs = [(0, 5), (2, 5), (5, 0), (7, 5)]
+    found = False
+    min_moves = float('inf')
     
-    for target in targets:
-        last_digit = target[1]
-        second_last_digit = target[0]
-        
-        # Find the positions of the last and second last digits
-        last_index = -1
-        second_last_index = -1
-        
-        for i in range(length-1, -1, -1):
-            if s[i] == last_digit and last_index == -1:
-                last_index = i
-            elif s[i] == second_last_digit and last_index != -1:
-                second_last_index = i
-                # We can stop once we found both digits
-                break
-        
-        if last_index != -1 and second_last_index != -1:
-            # Calculate moves: 
-            # We need to bring second_last_index to just before last_index
-            moves = (length - 1 - last_index) + (last_index - second_last_index - 1)
-            best_moves = min(best_moves, moves)
+    for i in range(length):
+        for j in range(i + 1, length):
+            if (s[i], s[j]) in possible_pairs:
+                if s[j] != '0' or (j == length - 1):
+                    # Calculate moves to bring s[i] to the correct position
+                    # and s[j] to the position after s[i]
+                    moves = (j - i) + (length - 1 - j)
+                    min_moves = min(min_moves, moves)
+                    found = True
     
-    return best_moves if best_moves != float('inf') else -1
+    return min_moves if found else -1
 
-# Input reading
+# Input
 n = int(input().strip())
 print(min_moves_to_divisible_by_25(n))

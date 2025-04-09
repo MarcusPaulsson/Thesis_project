@@ -1,56 +1,63 @@
 def solve():
-    a, b, x = map(int, input().split())
+  a, b, x = map(int, input().split())
+  
+  s = ""
+  
+  if a > b:
+    start = 0
+  else:
+    start = 1
     
-    s = ""
+  
+  if x % 2 == 0:
     
-    if a > b:
-        start = 0
+    for i in range(x):
+      if i % 2 == 0:
+        if start == 0:
+          s += "0"
+          a -= 1
+        else:
+          s += "1"
+          b -= 1
+      else:
+        if start == 0:
+          s += "1"
+          b -= 1
+        else:
+          s += "0"
+          a -= 1
+
+    if start == 0:
+      s += "0" * a
+      s += "1" * b
     else:
-        start = 1
-    
-    
-    
-    diffs = 0
-    
+      s += "1" * b
+      s += "0" * a
+
+  else:
+    for i in range(x):
+      if i % 2 == 0:
+        if start == 0:
+          s += "0"
+          a -= 1
+        else:
+          s += "1"
+          b -= 1
+      else:
+        if start == 0:
+          s += "1"
+          b -= 1
+        else:
+          s += "0"
+          a -= 1
     
     if start == 0:
-        s += "0"
-        a -= 1
+        s += "1" * b
+        s += "0" * a
     else:
-        s += "1"
-        b -= 1
-        
-    
-    
-    
-    
-    while diffs < x - 1:
-        if s[-1] == '0':
-            if b > 0:
-                s += '1'
-                b -=1
-                diffs += 1
-            else:
-                s += '0'
-                a -= 1
-                diffs += 1
-        else:
-            if a > 0:
-                s += '0'
-                a -= 1
-                diffs += 1
-            else:
-                s += '1'
-                b -= 1
-                diffs += 1
-    
-    if s[-1] == '0':
-        s += '0' * a
-        s += '1' * b
-    else:
-        s += '1'*b
-        s += '0'*a
-    
-    print(s)
+        s += "0" * a
+        s += "1" * b
+  print(s)
+  
 
 solve()

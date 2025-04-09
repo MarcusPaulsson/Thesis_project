@@ -1,21 +1,14 @@
-def solve():
-    d, k, a, b, t = map(int, input().split())
+d, k, a, b, t = map(int, input().split())
 
-    if d <= k:
-        print(d * a)
+if d <= k:
+  print(d * a)
+else:
+  if k * a + t >= k * b:
+    print(k * a + (d - k) * b)
+  else:
+    num_breaks = (d - 1) // k
+    
+    if num_breaks * t + d * a < k * a + (d - k) * b + (num_breaks - 1 )*t:
+        print(num_breaks * t + d * a)
     else:
-        ans = k * a
-        remaining_distance = d - k
-        
-        if k * b <= t + k * a:
-            ans += remaining_distance * b
-        else:
-            num_breaks = remaining_distance // k
-            ans += num_breaks * (t + k * a)
-            remaining_distance %= k
-            
-            ans += min(remaining_distance * b, t + remaining_distance * a)
-        
-        print(ans)
-
-solve()
+        print(k * a + (d - k) * b + num_breaks * t)

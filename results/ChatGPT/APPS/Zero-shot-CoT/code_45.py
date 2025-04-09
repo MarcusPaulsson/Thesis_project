@@ -1,32 +1,22 @@
 def find_sequence(n, k):
-    # Minimum sum of first k natural numbers is k * (k + 1) / 2
-    min_sum = k * (k + 1) // 2
-    
-    if n < min_sum:
-        return -1  # Not enough to create the sequence
-    
-    # The greatest common divisor can be at most n // k
-    gcd = (n - min_sum) // k + 1  # This is the maximum we can use for gcd
-    
-    # Calculate the base sequence
-    base_sequence = [i for i in range(1, k + 1)]
-    
-    # Calculate the adjustment needed
-    adjustment = gcd * k
-    
-    # Final sequence
-    result_sequence = [x + adjustment for x in base_sequence]
-    
-    # Check if the sum is equal to n
-    if sum(result_sequence) == n:
-        return result_sequence
-    else:
+    if n < (k * (k + 1)) // 2:
         return -1
+
+    # The maximum possible gcd we can have is n // k
+    max_gcd = n // k
+
+    # The resulting sequence
+    sequence = [(i + 1) * max_gcd for i in range(k)]
+    
+    # Adjust the last element to make sure the sum equals to n
+    sequence[-1] += n - sum(sequence)
+
+    return sequence
 
 # Read input
 n, k = map(int, input().split())
 
-# Get the result
+# Find the sequence
 result = find_sequence(n, k)
 
 # Print the result

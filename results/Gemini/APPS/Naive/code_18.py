@@ -1,46 +1,32 @@
 def solve():
     s = input()
     n = len(s)
-    t = []
+    
     u = ""
+    t = ""
     
-    min_suffixes = [""] * (n + 1)
-    min_suffixes[n] = ""
+    suffix_min = [0] * n
+    suffix_min[-1] = s[-1]
+    for i in range(n - 2, -1, -1):
+        suffix_min[i] = min(s[i], suffix_min[i+1])
     
-    for i in range(n - 1, -1, -1):
-        if min_suffixes[i + 1] == "" or s[i] < min_suffixes[i + 1][0]:
-            min_suffixes[i] = s[i]
-        elif s[i] == min_suffixes[i + 1][0]:
-            min_suffixes[i] = s[i] + min_suffixes[i + 1]
-        else:
-            min_suffixes[i] = min_suffixes[i + 1]
     
-    min_suffixes[0] = s[0] + min_suffixes[1]
-
-    
-    for i in range(n):
-        if not s:
-            while t:
-                u += t.pop()
-            break
-        
+    i = 0
+    while i < n:
         if not t:
-            t.append(s[0])
-            s = s[1:]
+            t += s[i]
+            i += 1
+        elif i < n and suffix_min[i] < t[-1]:
+            t += s[i]
+            i += 1
         else:
-            if s[0] <= min_suffixes[len(s)]:
-                t.append(s[0])
-                s = s[1:]
-            else:
-                while t and t[-1] <= min_suffixes[len(s)][0]:
-                    u += t.pop()
-                if not t or s[0] <= t[-1]:
-                  t.append(s[0])
-                  s = s[1:]
-                else:
-                  u += t.pop()
+            u += t[-1]
+            t = t[:-1]
+    
     while t:
-        u += t.pop()
+        u += t[-1]
+        t = t[:-1]
+        
     print(u)
 
 solve()

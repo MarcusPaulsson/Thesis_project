@@ -1,27 +1,19 @@
-def has_palindromic_subsequence(test_cases):
+def has_palindrome_subsequence(t, test_cases):
     results = []
     for n, a in test_cases:
         found = False
-        # Use a dictionary to track the first occurrence of each number
-        first_occurrence = {}
+        index_map = {}
         for i in range(n):
-            if a[i] in first_occurrence:
-                # If we find a number that has appeared before
-                # and the distance between their indices is at least 2
-                if i - first_occurrence[a[i]] >= 2:
+            if a[i] in index_map:
+                if i - index_map[a[i]] >= 2:
                     found = True
                     break
-            else:
-                first_occurrence[a[i]] = i
+            index_map[a[i]] = i
+        results.append("YES" if found else "NO")
         
-        if found:
-            results.append("YES")
-        else:
-            results.append("NO")
-    
     return results
 
-# Reading input
+# Read input
 t = int(input())
 test_cases = []
 for _ in range(t):
@@ -29,7 +21,9 @@ for _ in range(t):
     a = list(map(int, input().split()))
     test_cases.append((n, a))
 
-# Getting results and printing
-results = has_palindromic_subsequence(test_cases)
+# Get results
+results = has_palindrome_subsequence(t, test_cases)
+
+# Print results
 for result in results:
     print(result)

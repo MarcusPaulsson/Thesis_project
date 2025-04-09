@@ -2,6 +2,7 @@ def solve():
     n = int(input())
     s = input()
     mod = 10**9 + 7
+    len_s = len(s)
     
     def is_regular(seq):
         balance = 0
@@ -13,13 +14,14 @@ def solve():
             if balance < 0:
                 return False
         return balance == 0
-    
-    def count_regular_substring(n, s):
+
+    def count_regular_sequences(n, s):
         count = 0
-        for i in range(1 << (2 * n)):
+        for i in range(2**(2*n)):
             seq = ""
-            for j in range(2 * n):
-                if (i >> j) & 1:
+            binary = bin(i)[2:].zfill(2*n)
+            for bit in binary:
+                if bit == '0':
                     seq += '('
                 else:
                     seq += ')'
@@ -27,7 +29,7 @@ def solve():
             if is_regular(seq) and s in seq:
                 count = (count + 1) % mod
         return count
-    
-    print(count_regular_substring(n, s))
+
+    print(count_regular_sequences(n, s))
 
 solve()

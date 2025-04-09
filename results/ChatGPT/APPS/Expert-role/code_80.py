@@ -1,41 +1,40 @@
 def min_colors_to_sort(n, s):
-    # To hold the color assignments
-    colors = [0] * n
+    from collections import defaultdict
+
+    # Create a list of positions for each character
+    positions = defaultdict(list)
+    for index, char in enumerate(s):
+        positions[char].append(index)
     
-    # To track the last index of each character
-    last_index = {}
-    
-    # Assign initial colors based on the last occurrence of each character
+    # Determine the number of colors needed
+    max_color = 1
+    coloring = [0] * n
+    color_map = {}
+
+    for char in sorted(positions.keys()):  # Process characters in alphabetical order
+        indices = positions[char]
+        current_color = max_color
+
+        for idx in indices:
+            if coloring[idx] == 0:  # If not colored yet
+                coloring[idx] = current_color
+                
+        max_color += 1  # Increment color for the next character
+
+    # We need to adjust the colors to ensure we can sort via swaps
+    color_to_use = [0] * (max_color - 1)
     for i in range(n):
-        char = s[i]
-        if char not in last_index:
-            last_index[char] = []
-        last_index[char].append(i)
-    
-    # The maximum number of colors needed
-    max_colors = 1
-    
-    # Now we will assign colors based on the segments of characters
-    for indices in last_index.values():
-        # If there are multiple indices for the same character
-        for j in range(len(indices)):
-            if j == 0:
-                colors[indices[j]] = max_colors
-            else:
-                # Check if we need a new color
-                if indices[j] > indices[j - 1] + 1:
-                    max_colors += 1
-                colors[indices[j]] = max_colors
-    
-    return max_colors, colors
+        color_to_use[coloring[i] - 1] = max(color_to_use[coloring[i] - 1], coloring[i])
 
-# Read input
-n = int(input())
-s = input()
+    # Finalize the coloring
+    final_color = []
+    for i in range(n):
+        final_color.append(color_to_use[coloring[i] - 1])
 
-# Get the result
-res, color_assignment = min_colors_to_sort(n, s)
+    print(max_color - 1)
+    print(' '.join(map(str, final_color)))
 
-# Print output
-print(res)
-print(" ".join(map(str, color_assignment)))
+# Example inputs
+n = int(input().strip())
+s = input().strip()
+min_colors_to_sort(n, s)

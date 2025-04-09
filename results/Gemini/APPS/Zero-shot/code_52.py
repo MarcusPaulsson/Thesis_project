@@ -4,31 +4,40 @@ def solve():
     for _ in range(n):
         a.append(list(map(int, input().split())))
 
-    dp = [[-1] * k for _ in range(n + 1)]
-    dp[0][0] = 0
+    dp = {}
 
-    for i in range(n):
-        row = a[i]
-        max_choices = m // 2
-        
-        row_dp = [[-1] * k for _ in range(max_choices + 1)]
-        row_dp[0][0] = 0
-        
-        for val in row:
-            for count in range(max_choices, 0, -1):
-                for rem in range(k):
-                    if row_dp[count-1][rem] != -1:
-                        new_rem = (rem + val) % k
-                        row_dp[count][new_rem] = max(row_dp[count][new_rem], row_dp[count-1][rem] + val)
-        
-        for prev_rem in range(k):
-            if dp[i][prev_rem] != -1:
-                for count in range(max_choices + 1):
-                    for row_rem in range(k):
-                        if row_dp[count][row_rem] != -1:
-                            new_rem = (prev_rem + row_rem) % k
-                            dp[i+1][new_rem] = max(dp[i+1][new_rem], dp[i][prev_rem] + row_dp[count][row_rem])
+    def get_max_sum(row_index, current_sum):
+        if row_index == n:
+            if current_sum % k == 0:
+                return current_sum
+            else:
+                return -float('inf')
 
-    print(dp[n][0])
+        if (row_index, current_sum) in dp:
+            return dp[(row_index, current_sum)]
+
+        max_val = -float('inf')
+        
+        
+        num_elements_to_choose = min(m // 2, m) 
+        
+        for i in range(1 << m):
+            count = 0
+            subset_sum = 0
+            subset_indices = []
+            for j in range(m):
+                if (i >> j) & 1:
+                    count += 1
+                    subset_sum += a[row_index][j]
+                    subset_indices.append(j)
+
+            if count <= m // 2:
+                max_val = max(max_val, get_max_sum(row_index + 1, current_sum + subset_sum))
+
+        dp[(row_index, current_sum)] = max_val
+        return max_val
+
+    result = get_max_sum(0, 0)
+    print(result)
 
 solve()

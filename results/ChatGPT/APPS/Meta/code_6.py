@@ -1,45 +1,49 @@
-def min_blows_to_defeat_zmei(t, queries):
+def min_blows_to_defeat_monster(t, queries):
     results = []
-    for i in range(t):
-        n, x = queries[i][0]
-        blows = queries[i][1]
+    
+    for query in queries:
+        n, x, blows = query
+        min_blows = float('inf')
         
-        # Initialize variables to track the best blow options
-        max_d = 0
-        min_h = float('inf')
-        
+        # Calculate effective damage and head growth
+        effective_blows = []
         for d, h in blows:
-            max_d = max(max_d, d)
-            if d < x:  # Only consider blows that can be useful when current heads are > d
-                min_h = min(min_h, h)
-
-        # If we can't cut off more heads than we have, we need to check the growth
-        if max_d < min_h:
-            results.append(-1)
-            continue
+            if d >= x:  # Can defeat the monster in one blow
+                effective_blows.append((x, 0))  # One blow to defeat
+            else:  # Not enough to defeat, calculate net effect
+                effective_blows.append((d, h))
         
-        # Calculate the minimum number of blows required
-        blows_count = 0
-        while x > 0:
-            if max_d >= x:
-                blows_count += 1  # One blow to defeat
-                break
-            else:
-                blows_count += 1
-                x = x - max_d + min_h
-            
-        results.append(blows_count)
+        # Find the best blow combination
+        for d, h in effective_blows:
+            if h < d:  # If the heads grown back are less than the damage dealt
+                # Calculate how many blows are necessary to reach zero heads
+                blows_needed = (x + (d - h) - 1) // (d - h)  # ceil(x / (d - h))
+                min_blows = min(min_blows, blows_needed)
+            elif h == d:
+                # If growth is equal to damage, we can only defeat if we can deal full damage
+                if x % d == 0:
+                    blows_needed = x // d
+                    min_blows = min(min_blows, blows_needed)
+        
+        # Check if there's a blow that can defeat the monster immediately
+        if min_blows == float('inf'):
+            results.append(-1)
+        else:
+            results.append(min_blows)
     
     return results
 
-# Example usage:
-t = 3
-queries = [
-    ((3, 10), [(6, 3), (8, 2), (1, 4)]),
-    ((4, 10), [(4, 1), (3, 2), (2, 6), (1, 100)]),
-    ((1, 100), [(2, 15), (10, 11), (14, 100)])
-]
+# Read input
+t = int(input())
+queries = []
+for _ in range(t):
+    n, x = map(int, input().split())
+    blows = [tuple(map(int, input().split())) for _ in range(n)]
+    queries.append((n, x, blows))
 
-results = min_blows_to_defeat_zmei(t, queries)
-for res in results:
-    print(res)
+# Get results
+results = min_blows_to_defeat_monster(t, queries)
+
+# Print results
+for result in results:
+    print(result)

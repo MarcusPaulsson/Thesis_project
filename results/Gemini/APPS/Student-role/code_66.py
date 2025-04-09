@@ -2,31 +2,19 @@ def solve():
     n, k = map(int, input().split())
     t = input()
     
-    def count_occurrences(s, t):
-        count = 0
-        for i in range(len(s) - len(t) + 1):
-            if s[i:i+len(t)] == t:
-                count += 1
-        return count
+    if n == 1:
+        print(t * k)
+        return
     
-    best_s = ""
-    min_len = float('inf')
+    overlap = 0
+    for i in range(1, n):
+        if t[:n-i] == t[i:]:
+            overlap = n - i
+            break
     
-    for overlap in range(n):
-        s = t
-        for _ in range(k - 1):
-            if overlap > 0:
-                if t[overlap:] == t[:n-overlap]:
-                    s += t[n-overlap:]
-                else:
-                    s += t
-            else:
-                s += t
-        
-        if count_occurrences(s, t) == k:
-            if len(s) < min_len:
-                min_len = len(s)
-                best_s = s
-    print(best_s)
+    if k == 1:
+        print(t)
+    else:
+        print(t + t[overlap:] * (k - 1))
 
 solve()

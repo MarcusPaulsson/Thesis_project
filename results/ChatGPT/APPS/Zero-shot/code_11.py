@@ -1,22 +1,19 @@
 def max_chocolates(n, a, b, p, q):
-    # Count tiles that can be painted Red
-    count_red = n // a
-    # Count tiles that can be painted Blue
-    count_blue = n // b
-    # Count tiles that can be painted both Red and Blue
-    count_both = n // (a * b // gcd(a, b))
+    count_a = n // a
+    count_b = n // b
+    count_ab = n // (a * b // gcd(a, b))  # Using LCM to find common multiples
+
+    # Calculate the maximum chocolates by choosing the best option for overlap
+    red_chocolates = (count_a - count_ab) * p + count_ab * max(p, q)
+    blue_chocolates = (count_b - count_ab) * q + count_ab * max(p, q)
     
-    # Calculate chocolates
-    total_chocolates = (count_red * p) + (count_blue * q) - (count_both * min(p, q))
-    
-    return total_chocolates
+    return max(red_chocolates, blue_chocolates)
 
 def gcd(x, y):
     while y:
         x, y = y, x % y
     return x
 
-# Read input
+# Input reading
 n, a, b, p, q = map(int, input().split())
-# Print the result
 print(max_chocolates(n, a, b, p, q))

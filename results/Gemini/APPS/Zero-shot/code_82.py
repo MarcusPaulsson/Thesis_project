@@ -16,6 +16,14 @@ def solve():
         else:
             break
             
+        if l > r:
+            break
+            
+        
+        if a[l-1] > k and a[r+1] > k and l <= r:
+            break
+            
+        
     print(count)
 
 solve()

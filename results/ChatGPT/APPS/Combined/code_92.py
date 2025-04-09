@@ -1,14 +1,20 @@
-def find_integer_pair(x):
-    target_product = round(x * 10)
-    
+def find_integers(x):
+    # Iterate over possible integer pairs (a, b) where 1 <= a, b <= 10
     for a in range(1, 11):
         for b in range(1, 11):
-            if a * b == target_product:
+            # Calculate the value of a * b / (a + b) and compare with x
+            if abs(a * b / (a + b) - x) < 1e-6:  # Tolerance for floating-point comparison
                 return a, b
 
-# Read input and convert to float
-x = float(input().strip())
-a, b = find_integer_pair(x)
+def main():
+    # Read input
+    x = float(input().strip())
+    
+    # Find integers
+    a, b = find_integers(x)
+    
+    # Print output
+    print(a, b)
 
-# Print the result
-print(a, b)
+if __name__ == "__main__":
+    main()

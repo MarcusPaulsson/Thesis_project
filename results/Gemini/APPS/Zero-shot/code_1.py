@@ -1,16 +1,26 @@
-x = int(input())
-s = str(x)
-n = len(s)
-ans = x
-max_sum = sum(int(d) for d in s)
-for i in range(n):
-    if s[i] == '0':
-        continue
-    num = int(s[:i] + str(int(s[i]) - 1) + '9' * (n - i - 1))
-    sum_digits = sum(int(d) for d in str(num))
-    if sum_digits > max_sum:
-        max_sum = sum_digits
-        ans = num
-    elif sum_digits == max_sum and num > ans:
-        ans = num
-print(ans)
+def solve():
+    x = int(input())
+    s = str(x)
+    n = len(s)
+    
+    best_num = x
+    best_sum = sum(int(digit) for digit in s)
+    
+    for i in range(n):
+        if s[i] == '0':
+            continue
+        
+        num_str = s[:i] + str(int(s[i]) - 1) + '9' * (n - i - 1)
+        num = int(num_str)
+        
+        if num <= x:
+            current_sum = sum(int(digit) for digit in num_str)
+            if current_sum > best_sum:
+                best_sum = current_sum
+                best_num = num
+            elif current_sum == best_sum and num > best_num:
+                best_num = num
+                
+    print(best_num)
+
+solve()

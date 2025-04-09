@@ -1,21 +1,21 @@
 def find_kth_digit(k):
-    digit_length = 1
+    length = 1
     count = 9
     start = 1
-
-    # Determine the range in which the k-th digit falls
-    while k > digit_length * count:
-        k -= digit_length * count
-        digit_length += 1
+    
+    # Determine the range in which the k-th digit resides
+    while k > length * count:
+        k -= length * count
+        length += 1
         count *= 10
         start *= 10
+    
+    # Calculate the actual number containing the k-th digit
+    start += (k - 1) // length
+    num_str = str(start)
+    
+    # Return the specific digit from the number
+    return int(num_str[(k - 1) % length])
 
-    # Find the actual number that contains the k-th digit
-    number = start + (k - 1) // digit_length
-    digit_index = (k - 1) % digit_length
-
-    # Extract the specific digit from the number
-    return str(number)[digit_index]
-
-k = int(input())
+k = int(input().strip())
 print(find_kth_digit(k))

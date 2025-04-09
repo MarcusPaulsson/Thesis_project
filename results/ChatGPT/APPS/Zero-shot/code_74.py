@@ -1,31 +1,26 @@
 def min_cost_to_obtain_set(n, k, s):
-    # Generate all unique subsequences using a set
-    subsequences = set()
+    # Unique subsequences set
+    unique_subsequences = set()
     
-    # Function to generate subsequences using recursion
-    def generate_subsequences(prefix, index):
-        if index == n:
-            if prefix:
-                subsequences.add(prefix)
-            return
-        # Include current character
-        generate_subsequences(prefix + s[index], index + 1)
-        # Exclude current character
-        generate_subsequences(prefix, index + 1)
-
-    # Start generating subsequences from the first character
-    generate_subsequences("", 0)
+    # Generate all possible subsequences
+    for i in range(1 << n):
+        subsequence = ""
+        for j in range(n):
+            if i & (1 << j):
+                subsequence += s[j]
+        unique_subsequences.add(subsequence)
     
-    # Check if we have enough unique subsequences
-    if len(subsequences) < k:
+    # If the number of unique subsequences is less than k, return -1
+    if len(unique_subsequences) < k:
         return -1
+
+    # List of lengths of all unique subsequences
+    lengths = sorted([len(subseq) for subseq in unique_subsequences])
     
-    # Calculate the total minimum cost
-    # Sort subsequences by their lengths
-    sorted_subsequences = sorted(subsequences, key=len)
+    # Calculate minimum cost
     total_cost = 0
     for i in range(k):
-        total_cost += n - len(sorted_subsequences[i])
+        total_cost += n - lengths[i]
     
     return total_cost
 
@@ -33,6 +28,6 @@ def min_cost_to_obtain_set(n, k, s):
 n, k = map(int, input().split())
 s = input().strip()
 
-# Get the result and print it
+# Get result and print it
 result = min_cost_to_obtain_set(n, k, s)
 print(result)

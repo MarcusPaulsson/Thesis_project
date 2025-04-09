@@ -1,50 +1,42 @@
-def maximal_intersection_after_removal(n, segments):
-    # Separate left and right endpoints
+def max_intersection_length(n, segments):
+    # Extract the left and right endpoints of the segments
     lefts = [seg[0] for seg in segments]
     rights = [seg[1] for seg in segments]
-    
-    # Calculate prefix and suffix max and min
-    prefix_max_right = [0] * n
-    suffix_max_right = [0] * n
-    prefix_min_left = [0] * n
-    suffix_min_left = [0] * n
-    
-    prefix_max_right[0] = rights[0]
-    prefix_min_left[0] = lefts[0]
-    
+
+    # Precompute the maximum left endpoint and minimum right endpoint
+    max_left = [0] * n
+    min_right = [0] * n
+
+    max_left[0] = lefts[0]
     for i in range(1, n):
-        prefix_max_right[i] = max(prefix_max_right[i-1], rights[i])
-        prefix_min_left[i] = min(prefix_min_left[i-1], lefts[i])
-    
-    suffix_max_right[n-1] = rights[n-1]
-    suffix_min_left[n-1] = lefts[n-1]
-    
-    for i in range(n-2, -1, -1):
-        suffix_max_right[i] = max(suffix_max_right[i+1], rights[i])
-        suffix_min_left[i] = min(suffix_min_left[i+1], lefts[i])
-    
+        max_left[i] = max(max_left[i - 1], lefts[i])
+
+    min_right[n - 1] = rights[n - 1]
+    for i in range(n - 2, -1, -1):
+        min_right[i] = min(min_right[i + 1], rights[i])
+
+    # Calculate the maximum possible length of the intersection after removing one segment
     max_length = 0
-    
     for i in range(n):
         if i == 0:
-            max_right = suffix_max_right[1]
-            min_left = suffix_min_left[1]
+            l = max_left[1]
+            r = min_right[1]
         elif i == n - 1:
-            max_right = prefix_max_right[n - 2]
-            min_left = prefix_min_left[n - 2]
+            l = max_left[n - 2]
+            r = min_right[n - 2]
         else:
-            max_right = max(prefix_max_right[i-1], suffix_max_right[i+1])
-            min_left = min(prefix_min_left[i-1], suffix_min_left[i+1])
-        
-        intersection_length = max(0, max_right - min_left)
-        max_length = max(max_length, intersection_length)
-    
+            l = max(max_left[i - 1], lefts[i + 1])
+            r = min(min_right[i + 1], rights[i - 1])
+
+        if r >= l:
+            max_length = max(max_length, r - l)
+
     return max_length
 
-# Read input
+# Input reading
 n = int(input())
 segments = [tuple(map(int, input().split())) for _ in range(n)]
 
 # Get the result and print it
-result = maximal_intersection_after_removal(n, segments)
+result = max_intersection_length(n, segments)
 print(result)

@@ -5,37 +5,46 @@ def solve():
         a.append(list(map(int, input().split())))
 
     dp = {}
-
-    def calculate_max_sum(row_index, current_sum):
-        if row_index == n:
-            if current_sum % k == 0:
-                return current_sum
+    def get_dp(row_idx, rem):
+        if row_idx == n:
+            if rem == 0:
+                return 0
             else:
                 return -float('inf')
 
-        if (row_index, current_sum) in dp:
-            return dp[(row_index, current_sum)]
-        
-        max_sum_for_row = -float('inf')
-        
-        # Iterate through all possible combinations of elements in the current row
-        for i in range(1 << m):
-            count = 0
-            row_sum = 0
-            elements = []
-            for j in range(m):
-                if (i >> j) & 1:
-                    count += 1
-                    row_sum += a[row_index][j]
-                    elements.append(a[row_index][j])
+        if (row_idx, rem) in dp:
+            return dp[(row_idx, rem)]
+
+        max_sum = get_dp(row_idx + 1, rem)
+
+        row = a[row_idx]
+        max_elements = m // 2
+
+        row_dp = {}
+        def get_row_dp(col_idx, num_elements, row_rem):
+            if col_idx == m:
+                if num_elements <= max_elements:
+                    return 0
+                else:
+                    return -float('inf')
             
-            if count <= m // 2:
-                max_sum_for_row = max(max_sum_for_row, calculate_max_sum(row_index + 1, current_sum + row_sum))
+            if (col_idx, num_elements, row_rem) in row_dp:
+                return row_dp[(col_idx, num_elements, row_rem)]
 
-        dp[(row_index, current_sum)] = max_sum_for_row
-        return max_sum_for_row
+            res = get_row_dp(col_idx + 1, num_elements, row_rem)
+            if num_elements < max_elements:
+                res = max(res, get_row_dp(col_idx + 1, num_elements + 1, (row_rem + row[col_idx]) % k) + row[col_idx])
+            
+            row_dp[(col_idx, num_elements, row_rem)] = res
+            return res
+        
+        for row_rem in range(k):
+            row_max_sum = get_row_dp(0, 0, row_rem)
+            max_sum = max(max_sum, get_dp(row_idx + 1, (rem - row_rem) % k) + row_max_sum)
+            
+        dp[(row_idx, rem)] = max_sum
+        return max_sum
 
-    result = calculate_max_sum(0, 0)
-    print(result)
+    print(get_dp(0, 0))
 
 solve()

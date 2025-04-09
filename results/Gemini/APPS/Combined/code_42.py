@@ -1,7 +1,6 @@
 def solve():
     n = int(input())
     s = input()
-    len_s = len(s)
     
     count = 0
     

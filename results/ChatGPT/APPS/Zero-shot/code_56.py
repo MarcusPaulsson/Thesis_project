@@ -4,23 +4,15 @@ def f(x):
         x //= 10
     return x
 
-def reachable_count(n):
+def count_reachable(n):
     reachable = set()
-    queue = [n]
+    current = n
     
-    while queue:
-        current = queue.pop()
-        if current not in reachable:
-            reachable.add(current)
-            next_value = f(current)
-            if next_value not in reachable:
-                queue.append(next_value)
-            for i in range(1, 10):
-                next_to_add = current - i
-                if next_to_add > 0 and next_to_add not in reachable:
-                    queue.append(next_to_add)
+    while current not in reachable:
+        reachable.add(current)
+        current = f(current)
     
     return len(reachable)
 
-n = int(input())
-print(reachable_count(n))
+n = int(input().strip())
+print(count_reachable(n))

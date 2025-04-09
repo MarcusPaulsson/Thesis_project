@@ -5,65 +5,61 @@ def solve():
     counts = {}
     for x in a:
         counts[x] = counts.get(x, 0) + 1
-
+    
     matrix = [[0] * n for _ in range(n)]
     
-    def is_palindromic(mat):
-        for i in range(n):
-            for j in range(n):
-                if mat[i][j] != mat[n-1-i][j] or mat[i][j] != mat[i][n-1-j]:
-                    return False
-        return True
+    def find_solution():
+        
+        def is_valid():
+            for i in range(n):
+                for j in range(n):
+                    if matrix[i][j] != matrix[n-1-i][j] or matrix[i][j] != matrix[i][n-1-j]:
+                        return False
+            return True
 
-    def backtrack(row, col):
-        if row == n:
-            return is_palindromic(matrix)
-        
-        if col == n:
-            return backtrack(row + 1, 0)
-        
-        if matrix[row][col] != 0:
-            return backtrack(row, col + 1)
-        
-        for num in list(counts.keys()):
-            if counts[num] > 0:
-                
-                required = 1
-                
-                r1, c1 = row, col
-                r2, c2 = n - 1 - row, col
-                r3, c3 = row, n - 1 - col
-                r4, c4 = n - 1 - row, n - 1 - col
-                
-                coords = [(r1, c1)]
-                if r1 != r2 or c1 != c2:
-                    coords.append((r2, c2))
-                    required += 1
-                if (r1 != r3 or c1 != c3) and (r2 != r3 or c2 != c3):
-                    coords.append((r3, c3))
-                    required += 1
-                if (r1 != r4 or c1 != c4) and (r2 != r4 or c2 != c4) and (r3 != r4 or c3 != c4):
-                    coords.append((r4, c4))
-                    required += 1
-                
-                if counts[num] >= required:
-                    counts[num] -= required
-                    for r, c in coords:
-                        matrix[r][c] = num
-
-                    if backtrack(row, col + 1):
-                        return True
+        def solve_recursive(row, col):
+            if row == (n + 1) // 2:
+                return is_valid()
+            
+            if col == (n + 1) // 2:
+                return solve_recursive(row + 1, 0)
+            
+            for val in sorted(list(counts.keys())):
+                if counts[val] > 0:
                     
-                    counts[num] += required
-                    for r, c in coords:
-                        matrix[r][c] = 0
-        
-        return False
+                    need = 1
+                    if row != n - 1 - row:
+                        need += 1
+                    if col != n - 1 - col:
+                        need += 1
+                    if row != n - 1 - row and col != n - 1 - col:
+                        need += 1
+                    
+                    if counts[val] >= need:
+                        
+                        matrix[row][col] = val
+                        matrix[n-1-row][col] = val
+                        matrix[row][n-1-col] = val
+                        matrix[n-1-row][n-1-col] = val
+                        
+                        counts[val] -= need
 
-    if backtrack(0, 0):
+                        if solve_recursive(row, col + 1):
+                            return True
+
+                        counts[val] += need
+                        matrix[row][col] = 0
+                        matrix[n-1-row][col] = 0
+                        matrix[row][n-1-col] = 0
+                        matrix[n-1-row][n-1-col] = 0
+            return False
+
+        return solve_recursive(0, 0)
+
+    if find_solution():
         print("YES")
-        for r in matrix:
-            print(*r)
+        for row in matrix:
+            print(*row)
     else:
         print("NO")
 

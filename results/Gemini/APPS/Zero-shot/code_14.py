@@ -1,68 +1,51 @@
 def solve():
-  n, k = map(int, input().split())
-  p = list(map(int, input().split()))
-  
-  used = set(p)
-  remaining = []
-  for i in range(n, 0, -1):
-    if i not in used:
-      remaining.append(i)
-  
-  p += remaining
-  
-  def is_stack_sortable(arr):
-    a = arr[:]
-    s = []
-    b = []
-    
-    i = 0
-    while i < 2 * n:
-      if len(a) > 0 and (len(s) == 0 or a[0] < s[-1]):
-        s.append(a[0])
-        a.pop(0)
-        i += 1
-      elif len(s) > 0:
-        b.append(s[-1])
-        s.pop()
-        i += 1
-      else:
-        return False
-    
-    for i in range(len(b) - 1):
-      if b[i] > b[i+1]:
-        return False
-    return True
+    n, k = map(int, input().split())
+    p = list(map(int, input().split()))
 
-  
-  def find_lexicographically_maximal(arr):
-      
-    used_init = set(arr[:k])
-    remaining_init = []
-    for i in range(n, 0, -1):
-        if i not in used_init:
-            remaining_init.append(i)
+    available = set(range(1, n + 1))
+    for x in p:
+        available.remove(x)
 
-    
-    import itertools
-    
-    best_arr = None
-
-    for perm in itertools.permutations(remaining_init):
-        curr_arr = arr[:k] + list(perm)
-        if is_stack_sortable(curr_arr):
-            if best_arr is None:
-                best_arr = curr_arr
+    def is_stack_sortable(arr):
+        stack = []
+        b = []
+        i = 0
+        while i < len(arr) or stack:
+            if i < len(arr):
+                stack.append(arr[i])
+                i += 1
             else:
-                if curr_arr > best_arr:
-                    best_arr = curr_arr
+                
+                b.append(stack.pop())
+                continue
 
-    return best_arr
-  
-  
-  result = find_lexicographically_maximal(p[:])
-  if result is None:
-    print(-1)
-  else:
-    print(*result)
+            while stack and stack[-1] == min(stack):
+                b.append(stack.pop())
+        
+        return all(b[i] <= b[i+1] for i in range(len(b)-1))
+
+    def find_permutation(current_permutation, remaining_available):
+        if len(current_permutation) == n:
+            if is_stack_sortable(current_permutation):
+                return current_permutation
+            else:
+                return None
+
+        for val in sorted(list(remaining_available), reverse=True):
+            new_permutation = current_permutation + [val]
+            new_available = remaining_available - {val}
+            result = find_permutation(new_permutation, new_available)
+            if result:
+                return result
+
+        return None
+
+    remaining_available = available
+    result = find_permutation(p, remaining_available)
+
+    if result:
+        print(*result)
+    else:
+        print(-1)
 
 solve()

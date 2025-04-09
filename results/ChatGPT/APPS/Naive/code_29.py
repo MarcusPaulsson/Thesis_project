@@ -1,41 +1,36 @@
 def min_replacements_to_lucky_ticket(ticket):
-    # Split the ticket into two halves
-    first_half = list(map(int, ticket[:3]))
-    second_half = list(map(int, ticket[3:]))
+    first_half = ticket[:3]
+    second_half = ticket[3:]
 
-    # Calculate the sums of both halves
-    sum_first = sum(first_half)
-    sum_second = sum(second_half)
+    sum_first = sum(int(digit) for digit in first_half)
+    sum_second = sum(int(digit) for digit in second_half)
 
-    # Calculate the difference
-    difference = sum_first - sum_second
-    # If the difference is zero, the ticket is already lucky
-    if difference == 0:
+    if sum_first == sum_second:
         return 0
 
-    # We need to make the sums equal, work with the absolute value of difference
-    difference = abs(difference)
+    # Calculate the difference
+    diff = abs(sum_first - sum_second)
+    
+    # Create a list of possible changes
+    changes = []
+    for digit in first_half:
+        changes.append(9 - int(digit))  # max change if we change this digit to 9
+    for digit in second_half:
+        changes.append(int(digit))  # max change if we change this digit to 0
+    
+    # Sort the changes in descending order
+    changes.sort(reverse=True)
 
-    # Create lists of potential changes for both halves
-    first_half_changes = sorted([9 - digit for digit in first_half], reverse=True)
-    second_half_changes = sorted([digit for digit in second_half], reverse=True)
-
-    # Combine changes and sort them in descending order
-    changes = sorted(first_half_changes + second_half_changes, reverse=True)
-
-    # Calculate the minimum number of replacements needed
+    # Count the minimum number of changes needed
     replacements = 0
     for change in changes:
-        difference -= change
+        diff -= change
         replacements += 1
-        if difference <= 0:
-            return replacements
+        if diff <= 0:
+            break
 
-    # If we exhaust all changes and still have a difference, it means we need more changes
     return replacements
 
-# Input
+# Input reading and function call
 ticket = input().strip()
-
-# Output
 print(min_replacements_to_lucky_ticket(ticket))

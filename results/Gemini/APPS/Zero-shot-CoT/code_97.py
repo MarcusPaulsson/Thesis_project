@@ -4,6 +4,7 @@ def solve():
     
     odd_count = 0
     even_count = 0
+    
     for val in x:
         if val % 2 == 0:
             even_count += 1

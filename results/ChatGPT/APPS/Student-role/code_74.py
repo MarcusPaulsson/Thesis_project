@@ -1,32 +1,28 @@
-def min_cost_to_obtain_set(n, k, s):
+def min_cost_to_form_set(n, k, s):
     unique_subsequences = set()
+    total_cost = 0
     
-    # Generate all unique subsequences using a bitmask approach
-    for i in range(1 << n):
+    # Generate all possible subsequences
+    for i in range(1 << n):  # There are 2^n possible subsequences
         subsequence = []
         for j in range(n):
             if i & (1 << j):
                 subsequence.append(s[j])
-        unique_subsequences.add(''.join(subsequence))
-    
-    # If the number of unique subsequences is less than k, return -1
+        subsequence_str = ''.join(subsequence)
+        if subsequence_str not in unique_subsequences:
+            unique_subsequences.add(subsequence_str)
+            total_cost += (n - len(subsequence_str))
+        
+        if len(unique_subsequences) >= k:
+            break
+            
     if len(unique_subsequences) < k:
         return -1
-    
-    # Calculate the minimum cost
-    costs = []
-    for subseq in unique_subsequences:
-        cost = n - len(subseq)
-        costs.append(cost)
-    
-    # Sort costs and take the sum of the smallest k costs
-    costs.sort()
-    return sum(costs[:k])
+    return total_cost
 
-# Read input
+# Input reading
 n, k = map(int, input().split())
 s = input().strip()
 
-# Calculate and print the result
-result = min_cost_to_obtain_set(n, k, s)
-print(result)
+# Output the result
+print(min_cost_to_form_set(n, k, s))

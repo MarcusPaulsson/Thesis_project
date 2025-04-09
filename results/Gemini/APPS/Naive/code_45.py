@@ -1,45 +1,36 @@
 def solve():
     n, k = map(int, input().split())
 
-    if k > 100000:
-        print("-1")
+    if k * (k + 1) // 2 > n:
+        print(-1)
         return
-    
-    best_gcd = 0
-    best_seq = []
 
-    for gcd in range(int(n**0.5), 0, -1):
+    best_gcd = 1
+    for gcd in range(1, int(n**0.5) + 1):
         if n % gcd == 0:
-            
-            rem = n // gcd
-            if rem >= k * (k + 1) // 2:
-                seq = [gcd * i for i in range(1, k)]
-                seq.append(n - sum(seq))
-                
-                is_increasing = all(seq[i] < seq[i+1] for i in range(len(seq)-1))
-                
-                if is_increasing:
-                    best_gcd = gcd
-                    best_seq = seq
-                    break
+            if n // gcd >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, gcd)
+            if gcd >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, n // gcd)
 
-            rem = gcd
-            if rem >= k * (k + 1) // 2:
-                
-                gcd2 = n // gcd
-                seq = [gcd2 * i for i in range(1, k)]
-                seq.append(n - sum(seq))
-                
-                is_increasing = all(seq[i] < seq[i+1] for i in range(len(seq)-1))
-                
-                if is_increasing:
-                    best_gcd = n // gcd
-                    best_seq = seq
-                    break
+    if best_gcd == 1 and k * (k + 1) // 2 > n:
+      print(-1)
+      return
+
     
-    if best_gcd == 0:
-        print("-1")
-    else:
-        print(*best_seq)
+    
+    sequence_sum = n // best_gcd
+    sequence = []
+    for i in range(1, k):
+        sequence.append(i)
+        sequence_sum -= i
+    sequence.append(sequence_sum)
+
+    if sequence[-1] <= sequence[-2]:
+        print(-1)
+        return
+
+    result = [x * best_gcd for x in sequence]
+    print(*result)
 
 solve()

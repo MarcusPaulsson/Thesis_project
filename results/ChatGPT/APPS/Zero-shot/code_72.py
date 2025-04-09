@@ -1,49 +1,38 @@
-def max_intersection_length(n, segments):
-    # Separate the left and right endpoints
-    lefts = [l for l, r in segments]
-    rights = [r for l, r in segments]
-
-    # Calculate the overall max and min of lefts and rights
-    max_left = max(lefts)
-    min_right = min(rights)
-
-    # Prepare to find the maximum length of intersection when one segment is removed
-    max_length = 0
-
-    # Calculate the second maximum left and second minimum right
-    if n == 2:
-        return max(0, min_right - max_left)
-
-    # Initialize second max and min values
-    second_max_left = -float('inf')
-    second_min_right = float('inf')
-
-    for l in lefts:
-        if l > second_max_left and l < max_left:
-            second_max_left = l
-
-    for r in rights:
-        if r < second_min_right and r > min_right:
-            second_min_right = r
-
-    # Calculate the intersection lengths when removing each segment
+def maximal_intersection_length(n, segments):
+    left = [0] * n
+    right = [0] * n
+    
     for i in range(n):
-        l_i, r_i = segments[i]
-        
-        if l_i == max_left:
-            new_left = second_max_left
+        left[i] = segments[i][0]
+        right[i] = segments[i][1]
+    
+    max_left = [0] * n
+    min_right = [0] * n
+    
+    max_left[0] = left[0]
+    for i in range(1, n):
+        max_left[i] = max(max_left[i - 1], left[i])
+    
+    min_right[n - 1] = right[n - 1]
+    for i in range(n - 2, -1, -1):
+        min_right[i] = min(min_right[i + 1], right[i])
+    
+    max_length = 0
+    
+    for i in range(n):
+        if i > 0:
+            current_left = max_left[i - 1]
         else:
-            new_left = max_left
-            
-        if r_i == min_right:
-            new_right = second_min_right
-        else:
-            new_right = min_right
+            current_left = left[1]
         
-        # Calculate the length of the intersection
-        length = max(0, new_right - new_left)
-        max_length = max(max_length, length)
-
+        if i < n - 1:
+            current_right = min_right[i + 1]
+        else:
+            current_right = right[n - 2]
+        
+        intersection_length = max(0, current_right - current_left)
+        max_length = max(max_length, intersection_length)
+    
     return max_length
 
 # Input reading
@@ -51,4 +40,4 @@ n = int(input())
 segments = [tuple(map(int, input().split())) for _ in range(n)]
 
 # Output the result
-print(max_intersection_length(n, segments))
+print(maximal_intersection_length(n, segments))

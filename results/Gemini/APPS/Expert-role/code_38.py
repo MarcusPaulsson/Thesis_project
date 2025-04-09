@@ -1,12 +1,15 @@
 def solve():
-    a, b, c = map(int, input().split())
-    
-    for i in range(c // a + 1):
-        remaining_damage = c - i * a
-        if remaining_damage >= 0 and remaining_damage % b == 0:
-            print("Yes")
+    n, L = map(int, input().split())
+    kefa = list(map(int, input().split()))
+    sasha = list(map(int, input().split()))
+
+    for shift in range(L):
+        shifted_sasha = [(x + shift) % L for x in sasha]
+        shifted_sasha.sort()
+        if kefa == shifted_sasha:
+            print("YES")
             return
     
-    print("No")
+    print("NO")
 
 solve()

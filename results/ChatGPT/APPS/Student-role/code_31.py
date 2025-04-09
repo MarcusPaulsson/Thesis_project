@@ -1,36 +1,37 @@
-def gcd(x, y):
-    while y:
-        x, y = y, x % y
-    return x
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
 
-def probability_of_shared_birthday(n, k):
-    days = 2 ** n
-    if k > days:
-        return 1, 1  # Guaranteed at least one shared birthday
+def mod_inverse(a, p):
+    return pow(a, p - 2, p)
 
-    # Calculate the probability of no shared birthdays
-    num = 1
-    denom = days ** k
-    for i in range(k):
-        num *= (days - i)
-    
-    # The probability of at least two having the same birthday
-    A = denom - num
-    B = denom
-
-    # Reduce A and B by their gcd
-    common_gcd = gcd(A, B)
-    A //= common_gcd
-    B //= common_gcd
-    
-    # Take modulo
+def birthday_paradox(n, k):
     mod = 10**6 + 3
-    A %= mod
-    B %= mod
-    
-    return A, B
+    days = 2 ** n
 
-# Read input
-n, k = map(int, input().split())
-A, B = probability_of_shared_birthday(n, k)
-print(A, B)
+    if k > days:
+        return (1, 1)
+
+    numerator = 1
+    denominator = 1
+
+    for i in range(k):
+        numerator *= (days - i) % mod
+        denominator *= days % mod
+        numerator %= mod
+        denominator %= mod
+
+    numerator = (denominator - numerator) % mod
+    denominator = denominator % mod
+
+    common_gcd = gcd(numerator, denominator)
+    numerator //= common_gcd
+    denominator //= common_gcd
+
+    return (numerator, denominator)
+
+if __name__ == "__main__":
+    n, k = map(int, input().split())
+    A, B = birthday_paradox(n, k)
+    print(A, B)

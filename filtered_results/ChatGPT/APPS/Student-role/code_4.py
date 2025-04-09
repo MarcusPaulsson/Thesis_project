@@ -1,17 +1,33 @@
 def is_lucky(hh, mm):
     return '7' in f"{hh:02d}{mm:02d}"
 
-def minutes_before(hh, mm, x, y):
-    total_minutes = hh * 60 + mm - y * x
-    if total_minutes < 0:
-        total_minutes += 24 * 60  # wrap around to the previous day
-    return total_minutes // 60, total_minutes % 60
+def time_to_minutes(hh, mm):
+    return hh * 60 + mm
 
+def minutes_to_time(total_minutes):
+    hh = (total_minutes // 60) % 24
+    mm = total_minutes % 60
+    return hh, mm
+
+# Input
 x = int(input())
 hh, mm = map(int, input().split())
 
-y = 0
-while not is_lucky(*minutes_before(hh, mm, x, y)):
-    y += 1
+# Calculate the target time in minutes
+target_time = time_to_minutes(hh, mm)
 
-print(y)
+# Initialize the snooze count
+snooze_count = 0
+
+# Check for lucky times
+while True:
+    current_time = target_time - snooze_count * x
+    if current_time < 0:
+        current_time += 24 * 60  # Wrap around to the previous day
+    current_hh, current_mm = minutes_to_time(current_time)
+    
+    if is_lucky(current_hh, current_mm):
+        print(snooze_count)
+        break
+    
+    snooze_count += 1

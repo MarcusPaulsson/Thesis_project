@@ -1,47 +1,44 @@
 def max_days(a, b, c):
-    # Full week consumption
-    week_consumption = [2, 1, 1]  # fish, rabbit, chicken for Mon, Tue, Wed, Thu, Fri, Sat, Sun
-    week_days = 7
-
-    # Calculate full weeks we can sustain
-    full_weeks = min(a // week_consumption[0], b // week_consumption[1], c // week_consumption[2])
-    days = full_weeks * week_days
-
-    # Remaining food after full weeks
-    a -= full_weeks * week_consumption[0]
-    b -= full_weeks * week_consumption[1]
-    c -= full_weeks * week_consumption[2]
-
-    # Check starting from each day of the week to maximize days
-    max_additional_days = 0
-    for start_day in range(week_days):
-        remaining_a, remaining_b, remaining_c = a, b, c
-        additional_days = 0
-        for day in range(week_days):
-            current_day = (start_day + day) % week_days
-            if current_day in [0, 3, 6]:  # Fish food days
-                if remaining_a > 0:
-                    remaining_a -= 1
-                    additional_days += 1
+    # Calculate the maximum full weeks that can be fed
+    full_weeks = min(a // 3, b // 2, c // 2)
+    a -= full_weeks * 3
+    b -= full_weeks * 2
+    c -= full_weeks * 2
+    
+    max_days = full_weeks * 7
+    
+    # Check each starting day of the week
+    for start_day in range(7):
+        days = 0
+        food = [a, b, c]
+        week_pattern = [0, 0, 1, 0, 0, 1, 0]  # 0: fish, 1: rabbit, 2: chicken
+        
+        for i in range(7):
+            day = (start_day + i) % 7
+            if day in (0, 3, 6):  # Fish days
+                if food[0] > 0:
+                    food[0] -= 1
+                    days += 1
                 else:
                     break
-            elif current_day in [1, 5]:  # Rabbit stew days
-                if remaining_b > 0:
-                    remaining_b -= 1
-                    additional_days += 1
+            elif day in (1, 5):  # Rabbit days
+                if food[1] > 0:
+                    food[1] -= 1
+                    days += 1
                 else:
                     break
-            else:  # Chicken stake days
-                if remaining_c > 0:
-                    remaining_c -= 1
-                    additional_days += 1
+            else:  # Chicken days
+                if food[2] > 0:
+                    food[2] -= 1
+                    days += 1
                 else:
                     break
-
-        max_additional_days = max(max_additional_days, additional_days)
-
-    return days + max_additional_days
+        
+        max_days = max(max_days, days)
+    
+    return max_days
 
 # Read input
 a, b, c = map(int, input().split())
+# Print output
 print(max_days(a, b, c))

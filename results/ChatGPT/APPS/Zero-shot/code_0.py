@@ -1,32 +1,47 @@
-def max_accordion_length(s):
-    first_colon = -1
-    last_colon = -1
-    opening_bracket = -1
-    closing_bracket = -1
-
-    for i in range(len(s)):
-        if s[i] == '[' and opening_bracket == -1:
-            opening_bracket = i
-        elif s[i] == ':' and first_colon == -1:
-            first_colon = i
-        elif s[i] == ':' and opening_bracket != -1:
-            last_colon = i
-        elif s[i] == ']' and opening_bracket != -1:
-            closing_bracket = i
-
-    if opening_bracket == -1 or first_colon == -1 or last_colon == -1 or closing_bracket == -1:
+def max_length_accordion(s):
+    n = len(s)
+    left_bracket_index = -1
+    right_bracket_index = -1
+    
+    for i in range(n):
+        if s[i] == '[':
+            left_bracket_index = i
+            break
+            
+    for i in range(n - 1, -1, -1):
+        if s[i] == ']':
+            right_bracket_index = i
+            break
+            
+    if left_bracket_index == -1 or right_bracket_index == -1 or left_bracket_index >= right_bracket_index:
         return -1
-
-    if first_colon < opening_bracket or last_colon < first_colon or closing_bracket < last_colon:
+    
+    # Now we need to check for colons and vertical bars between the brackets
+    colon_count = 0
+    pipe_count = 0
+    found_first_colon = False
+    
+    for i in range(left_bracket_index + 1, right_bracket_index):
+        if s[i] == ':':
+            if not found_first_colon:
+                found_first_colon = True
+                colon_count += 1
+            else:
+                if pipe_count > 0:
+                    # We found the second colon after some pipes
+                    colon_count += 1
+                    break
+        elif s[i] == '|':
+            if found_first_colon:
+                pipe_count += 1
+    
+    if colon_count < 2:
         return -1
-
-    # Count vertical lines between the first and last colon
-    vertical_lines = sum(1 for char in s[first_colon:last_colon] if char == '|')
-
-    # The length of the accordion will be 4 (for the brackets and colons) + vertical lines
-    return 4 + vertical_lines
+    
+    # The length of the accordion is the brackets and the colons plus the pipes
+    return 2 + colon_count + pipe_count
 
 # Read input
 s = input().strip()
-# Output the result
-print(max_accordion_length(s))
+# Calculate and print the result
+print(max_length_accordion(s))

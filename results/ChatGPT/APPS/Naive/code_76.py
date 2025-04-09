@@ -5,27 +5,20 @@ def can_construct_symmetric_square(t, test_cases):
         if m % 2 != 0:
             results.append("NO")
             continue
-        
-        # We need to find pairs of tiles that can form symmetric positions
-        possible = False
-        top_right_left_bottom = {}
-        
-        for tile in tiles:
-            a, b = tile[0]
-            c, d = tile[1]
-            # Store the pair (b, c) as a key to check for symmetry
-            top_right_left_bottom[(b, c)] = (a, d)
-        
-        # Now we need to check if we can find a symmetric pair
-        for (b, c), (a, d) in top_right_left_bottom.items():
-            if (c, b) in top_right_left_bottom:
-                possible = True
+
+        can_form = False
+        for i in range(n):
+            for j in range(n):
+                # Check if tiles i and j can form a symmetric matrix
+                if tiles[i][1][0] == tiles[j][0][0] and tiles[i][1][1] == tiles[j][0][1]:
+                    can_form = True
+                    break
+            if can_form:
                 break
-        
-        results.append("YES" if possible else "NO")
 
+        results.append("YES" if can_form else "NO")
+    
     return results
-
 
 # Read input
 t = int(input())
@@ -34,8 +27,8 @@ for _ in range(t):
     n, m = map(int, input().split())
     tiles = []
     for _ in range(n):
-        top = tuple(map(int, input().split()))
-        bottom = tuple(map(int, input().split()))
+        top = list(map(int, input().split()))
+        bottom = list(map(int, input().split()))
         tiles.append((top, bottom))
     test_cases.append((n, m, tiles))
 

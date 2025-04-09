@@ -1,34 +1,34 @@
-def max_accordion_length(s):
-    n = len(s)
-    left_bracket_index = -1
-    right_bracket_index = -1
-
-    for i in range(n):
-        if s[i] == '[':
-            left_bracket_index = i
-        elif s[i] == ']':
-            right_bracket_index = i
+def max_acordion_length(s):
+    # Initialize variables to track positions of key characters
+    open_bracket = -1
+    first_colon = -1
+    last_colon = -1
+    close_bracket = -1
     
-    if left_bracket_index == -1 or right_bracket_index == -1 or left_bracket_index >= right_bracket_index:
+    # Scan the string to find the positions of the required characters
+    for i, char in enumerate(s):
+        if char == '[' and open_bracket == -1:
+            open_bracket = i
+        elif char == ':' and open_bracket != -1 and first_colon == -1:
+            first_colon = i
+        elif char == ':' and first_colon != -1:
+            last_colon = i
+        elif char == ']' and last_colon != -1 and close_bracket == -1:
+            close_bracket = i
+            
+    # If we didn't find all required parts for an accordion, return -1
+    if open_bracket == -1 or first_colon == -1 or last_colon == -1 or close_bracket == -1:
         return -1
-
-    colon_index_left = -1
-    colon_index_right = -1
-
-    for i in range(left_bracket_index + 1, right_bracket_index):
-        if s[i] == ':':
-            if colon_index_left == -1:
-                colon_index_left = i
-            colon_index_right = i
     
-    if colon_index_left == -1 or colon_index_right == -1 or colon_index_left == colon_index_right:
-        return -1
-
-    vertical_lines_count = sum(1 for i in range(colon_index_left + 1, colon_index_right) if s[i] == '|')
-
-    return 4 + vertical_lines_count  # 4 for the fixed characters in the accordion
+    # Count vertical lines between the first and last colon
+    vertical_lines = s[first_colon + 1:last_colon].count('|')
+    
+    # Calculate the maximum length of the accordion
+    accordion_length = 4 + vertical_lines
+    
+    return accordion_length
 
 # Read input
 s = input().strip()
-# Output the result
-print(max_accordion_length(s))
+# Print the result
+print(max_acordion_length(s))

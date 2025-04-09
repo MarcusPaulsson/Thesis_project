@@ -1,51 +1,53 @@
 def solve():
     n = int(input())
     f = list(map(int, input().split()))
-
-    assigned = [False] * (n + 1)
-    for i in range(n):
-        if f[i] != 0:
-            assigned[f[i]] = True
-
-    unassigned_givers = []
-    unassigned_receivers = []
-
+    
+    f_copy = f[:]
+    
+    assigned = [False] * n
+    for val in f:
+        if val != 0:
+            assigned[val-1] = True
+    
+    unassigned = []
     for i in range(n):
         if f[i] == 0:
-            unassigned_givers.append(i)
-
-    for i in range(1, n + 1):
-        if not assigned[i]:
-            unassigned_receivers.append(i)
-
+            unassigned.append(i)
     
-    for i in range(len(unassigned_givers)):
-        giver_index = unassigned_givers[i]
+    available = []
+    for i in range(n):
+        if not assigned[i]:
+            available.append(i)
+    
+    for i in range(len(unassigned)):
+        f[unassigned[i]] = available[i] + 1
         
-        receiver = unassigned_receivers[i]
-        
-        if giver_index + 1 == receiver:
+    
+    
+    conflicts = []
+    for i in range(n):
+        if f[i] == i+1:
+            conflicts.append(i)
             
-            if i + 1 < len(unassigned_givers):
-                
-                f[giver_index] = unassigned_receivers[i+1]
-                f[unassigned_givers[i+1]] = receiver
-                unassigned_receivers[i], unassigned_receivers[i+1] = unassigned_receivers[i+1], unassigned_receivers[i]
-            else:
-                
-                
-                
-                temp = unassigned_receivers[0]
-                f[giver_index] = temp
-                f[unassigned_givers[0]] = receiver
-                unassigned_receivers[0] = receiver
-                
-                
-                
-                
+    
+    if len(conflicts) > 0:
+        if len(conflicts) == 1:
+            
+            for i in range(n):
+              if f_copy[i] == 0 and i != conflicts[0]:
+                temp = f[conflicts[0]]
+                f[conflicts[0]] = f[i]
+                f[i] = temp
+                break
         else:
-             f[giver_index] = receiver
-           
+            for i in range(0,len(conflicts)):
+                temp = f[conflicts[i]]
+                
+                f[conflicts[i]] = f[conflicts[(i+1)%len(conflicts)]]
+                f[conflicts[(i+1)%len(conflicts)]] = temp
+                    
+                    
+                
     print(*f)
 
 solve()

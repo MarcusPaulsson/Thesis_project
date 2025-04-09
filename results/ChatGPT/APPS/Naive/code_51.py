@@ -1,39 +1,27 @@
 from collections import Counter
-from math import gcd
+import sys
 
-# Function to find the divisors of a number
-def find_divisors(n):
-    divisors = []
-    for i in range(1, int(n**0.5) + 1):
-        if n % i == 0:
-            divisors.append(i)
-            if i != n // i:
-                divisors.append(n // i)
-    return divisors
+def find_x_and_y(divisors):
+    divisor_count = Counter(divisors)
+    
+    # The maximum divisor must be either x or y
+    max_divisor = max(divisor_count)
+    
+    # Find all possible pairs (x, y) using the divisors
+    for d in divisor_count:
+        if divisor_count[d] == 2:
+            # d could be a common divisor
+            x = d * (max_divisor // d)
+            y = max_divisor
+            if all((x % k == 0 or y % k == 0) for k in divisor_count):
+                return x, y
+    
+    # If no common divisor found, return default case
+    return max_divisor, max_divisor
 
-# Read input
-n = int(input())
-divisors_list = list(map(int, input().split()))
+# Input reading
+n = int(input().strip())
+divisors = list(map(int, input().strip().split()))
 
-# Count the occurrences of each divisor
-divisor_count = Counter(divisors_list)
-
-# Find the potential x and y
-potential_x = 1
-potential_y = 1
-
-# Iterate through the divisors and find x and y
-for d in divisor_count:
-    if divisor_count[d] == 2:
-        # d is a common divisor, multiply it to both x and y
-        potential_x *= d
-        potential_y *= d
-    elif divisor_count[d] == 1:
-        # d is a unique divisor, assign it to x or y
-        if potential_x < potential_y:
-            potential_x *= d
-        else:
-            potential_y *= d
-
-# Output the results
-print(potential_x, potential_y)
+x, y = find_x_and_y(divisors)
+print(x, y)

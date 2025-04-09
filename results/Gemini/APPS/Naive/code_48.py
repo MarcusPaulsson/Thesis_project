@@ -7,17 +7,17 @@ def solve():
             count += min(m, x // i)
         return count
 
-    low = 1
-    high = n * m
+    left = 1
+    right = n * m
     ans = 0
 
-    while low <= high:
-        mid = (low + high) // 2
+    while left <= right:
+        mid = (left + right) // 2
         if count_less_equal(mid) >= k:
             ans = mid
-            high = mid - 1
+            right = mid - 1
         else:
-            low = mid + 1
+            left = mid + 1
 
     print(ans)
 

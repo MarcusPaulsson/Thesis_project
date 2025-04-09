@@ -8,124 +8,82 @@ def solve():
         line = list(map(int, input().split()))
         dependencies.append(line[1:])
 
-    in_degree = [0] * n
-    adj = [[] for _ in range(n)]
+    in_degree = [0] * (n + 1)
+    adj = [[] for _ in range(n + 1)]
     for i in range(n):
         for dep in dependencies[i]:
-            adj[dep - 1].append(i)
-            in_degree[i] += 1
+            adj[dep].append(i + 1)
+            in_degree[i + 1] += 1
 
     q = deque()
-    for i in range(n):
+    for i in range(1, n + 1):
         if in_degree[i] == 0:
             q.append(i)
 
     order = []
-    visited = [False] * n
+    count = 0
     
-    def check_main_courses(current_order):
-        main_courses_passed = set()
-        for course in current_order:
-            if course + 1 in main_courses:
-                main_courses_passed.add(course + 1)
-        return len(main_courses_passed) == k
+    while q:
+        u = q.popleft()
+        order.append(u)
+        count += 1
 
-    def find_path():
-        q = deque()
-        for i in range(n):
-            if in_degree[i] == 0:
-                q.append([i])
+        for v in adj[u]:
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
+                q.append(v)
 
-        min_len = float('inf')
-        best_path = None
+    if count != n:
+        print(-1)
+        return
 
-        while q:
-            path = q.popleft()
-            last_node = path[-1]
-            
-            if check_main_courses(path):
-                if len(path) < min_len:
-                    min_len = len(path)
-                    best_path = path
-            
-            for neighbor in adj[last_node]:
-                if neighbor not in path:
-                    new_path = path + [neighbor]
-                    q.append(new_path)
-        
-        if best_path is None:
-            return None
-        else:
-            return best_path
     
+    required_courses = set(main_courses)
+    result = []
+    passed = set()
     
-    def topological_sort():
-        q = deque()
-        indegree = in_degree[:]
-        for i in range(n):
-            if indegree[i] == 0:
-                q.append(i)
-
-        count = 0
-        top_order = []
-
-        while q:
-            u = q.popleft()
-            top_order.append(u)
-            count += 1
-
-            for v in adj[u]:
-                indegree[v] -= 1
-                if indegree[v] == 0:
-                    q.append(v)
-
-        if count != n:
-            return None
-        else:
-            return top_order
-            
-    
-    
-    
-    
-    def find_min_courses():
-        
-        q = deque()
-        for i in range(n):
-            if in_degree[i] == 0:
-                q.append([i])
-        
-        min_len = float('inf')
-        best_path = None
+    def find_path(start_node):
+        q = deque([([start_node], {start_node})])
         
         while q:
-            path = q.popleft()
+            path, visited = q.popleft()
+            node = path[-1]
             
-            main_courses_passed = set()
-            for course in path:
-                if course + 1 in main_courses:
-                    main_courses_passed.add(course + 1)
+            if node in required_courses:
+                return path
             
-            if len(main_courses_passed) == k:
-                if len(path) < min_len:
-                    min_len = len(path)
-                    best_path = path
-            
-            last_node = path[-1]
-            for neighbor in adj[last_node]:
-                if neighbor not in path:
-                    new_path = path + [neighbor]
-                    q.append(new_path)
-        
-        return best_path
+            for pred in get_predecessors(node):
+                if pred not in visited:
+                    new_path = path + [pred]
+                    new_visited = visited | {pred}
+                    q.append((new_path, new_visited))
+        return None
+    
+    def get_predecessors(node):
+        predecessors = []
+        for i in range(1, n + 1):
+            if node in adj[i]:
+                predecessors.append(i)
+        return predecessors
     
     
-    result_path = find_min_courses() 
-    
-    if result_path is None:
-        print("-1")
-    else:
-        print(len(result_path))
-        print(*[x + 1 for x in result_path])
+    for course in main_courses:
+      
+        path = find_path(course)
 
+        if path is None:
+            print(-1)
+            return
+        
+        
+        for node in reversed(path):
+            if node not in passed:
+                result.append(node)
+                passed.add(node)
+    
+    
+    
+    print(len(result))
+    print(*result)
+    
 solve()

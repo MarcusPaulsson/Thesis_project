@@ -1,32 +1,42 @@
-def solve_problems(n, k):
-    # Minimum sum needed if we follow the rules
-    min_sum = (k * (k + 1)) // 2
+def solve_polycarp(n, k):
+    # Minimum sum of problems solved in k days
+    min_sum = k * (k + 1) // 2  # This is 1 + 2 + ... + k
     if n < min_sum:
         print("NO")
         return
     
-    # Maximum possible sum following the rules
-    # Start with the minimum valid sequence
+    # Maximum sum of problems based on the doubling rule
+    # If we start with 1, 2, ..., k, we can double it to get a maximum
+    max_sum = k * (2 * k + 1) // 2  # This is 1 + 2 + ... + k, then double it
+    if n > max_sum:
+        print("NO")
+        return
+    
+    # We can construct the solution
     a = list(range(1, k + 1))
     current_sum = sum(a)
-
-    # Increment the last element while observing the rules
+    
+    # We need to increase the sum to n
+    delta = n - current_sum
+    
+    # We will try to increase the last element as much as we can
     for i in range(k - 1, -1, -1):
-        # Maximum we can add to a[i] without breaking the rules
-        max_increment = min(n - current_sum, 2 * a[i] - a[i - 1] if i > 0 else float('inf'))
-        if max_increment > 0:
-            a[i] += max_increment
-            current_sum += max_increment
-        
-        if current_sum == n:
+        max_increase = a[i]  # We can increase a[i] to at most 2 * a[i]
+        increase = min(delta, max_increase)
+        a[i] += increase
+        delta -= increase
+        if delta <= 0:
             break
-
-    if current_sum == n:
+    
+    if delta > 0:
+        print("NO")
+    else:
         print("YES")
         print(" ".join(map(str, a)))
-    else:
-        print("NO")
 
-# Input reading
-n, k = map(int, input().split())
-solve_problems(n, k)
+# Example usage:
+solve_polycarp(26, 6)
+solve_polycarp(8, 3)
+solve_polycarp(1, 1)
+solve_polycarp(9, 4)
+solve_polycarp(7, 2)

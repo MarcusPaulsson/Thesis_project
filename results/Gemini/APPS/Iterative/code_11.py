@@ -10,11 +10,11 @@ n, a, b, p, q = map(int, input().split())
 
 red_count = n // a
 blue_count = n // b
-common_count = n // lcm(a, b)
+both_count = n // lcm(a, b)
 
 if p > q:
-    total_chocolates = red_count * p + (blue_count - common_count) * q
+    total_chocolates = red_count * p + (blue_count - both_count) * q
 else:
-    total_chocolates = blue_count * q + (red_count - common_count) * p
+    total_chocolates = blue_count * q + (red_count - both_count) * p
 
 print(total_chocolates)

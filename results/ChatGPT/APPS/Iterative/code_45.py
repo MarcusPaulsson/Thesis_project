@@ -1,28 +1,33 @@
 def find_sequence(n, k):
-    # Check if it's possible to create such a sequence
+    # Minimum sum of first k positive integers
     min_sum = k * (k + 1) // 2
-    if min_sum > n:
+    
+    if n < min_sum:
         return -1
     
-    # The remaining value after using the first k natural numbers
-    remaining = n - min_sum
+    # Calculate the maximum possible GCD
+    max_gcd = n // k
+    while max_gcd > 0:
+        total = min_sum * max_gcd
+        
+        if total == n:
+            return [i * max_gcd for i in range(1, k + 1)]
+        elif total < n:
+            remainder = n - total
+            if remainder >= k * max_gcd:
+                # Distribute the remainder evenly
+                base_sequence = [i * max_gcd for i in range(1, k + 1)]
+                for i in range(k):
+                    base_sequence[i] += remainder // k
+                return base_sequence
+        
+        max_gcd -= 1
     
-    # The GCD can be maximized by adding the same value to each element
-    gcd = remaining // k
-    
-    # The base sequence is the first k natural numbers
-    sequence = [i + gcd for i in range(1, k + 1)]
-    
-    # Adjust the last element to ensure the sum is exactly n
-    sequence[-1] += (remaining % k)
-    
-    return sequence
+    return -1
 
-# Input
+# Input reading
 n, k = map(int, input().split())
 result = find_sequence(n, k)
-
-# Output
 if result == -1:
     print(-1)
 else:

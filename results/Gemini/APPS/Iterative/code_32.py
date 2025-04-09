@@ -1,35 +1,34 @@
 def solve():
     n = int(input())
     
-    current_pos = 0  # Distance from North Pole (0 to 20000)
+    curr_pos = 0  # 0 is North Pole, 20000 is South Pole
     
     for _ in range(n):
         t, direction = input().split()
         t = int(t)
         
-        if current_pos == 0:
-            if direction != "South":
-                print("NO")
-                return
-            current_pos += t
-        elif current_pos == 20000:
-            if direction != "North":
-                print("NO")
-                return
-            current_pos -= t
-        else:
-            if direction == "North":
-                current_pos -= t
-            elif direction == "South":
-                current_pos += t
-            elif direction == "West" or direction == "East":
-                pass
-        
-        if current_pos < 0 or current_pos > 20000:
+        if curr_pos == 0 and direction != "South":
             print("NO")
             return
-    
-    if current_pos == 0:
+        
+        if curr_pos == 20000 and direction != "North":
+            print("NO")
+            return
+        
+        if direction == "North":
+            curr_pos -= t
+            if curr_pos < 0:
+                print("NO")
+                return
+        elif direction == "South":
+            curr_pos += t
+            if curr_pos > 20000:
+                print("NO")
+                return
+        # West and East do not change the position between the North and South poles
+        
+
+    if curr_pos == 0:
         print("YES")
     else:
         print("NO")

@@ -3,40 +3,52 @@ def gcd(a, b):
         a, b = b, a % b
     return a
 
-def prob_birthday_paradox(n, k):
+def main():
+    import sys
+    input = sys.stdin.read
+    n, k = map(int, input().strip().split())
+
+    MOD = 1000003
     days = 1 << n  # 2^n
-    
+
     if k > days:
-        return 1, 1  # Guaranteed at least one shared birthday
+        print(1, 1)
+        return
+
+    # Calculate the probability of at least two having the same birthday
+    # P(at least two share a birthday) = 1 - P(no one shares a birthday)
     
-    # Calculate the probability of no shared birthdays
-    num = 1
-    den = days ** k
-    
+    # P(no one shares a birthday) = days / days * (days - 1) / days * ... * (days - k + 1) / days
+    # = (days * (days - 1) * ... * (days - k + 1)) / days^k
+    # = (days * (days - 1) * ... * (days - k + 1)) / (days^k)
+
+    P_no_shared = 1
     for i in range(k):
-        num *= (days - i)
-    
-    # Probability of at least one shared birthday
-    prob_not_shared = num / den
-    prob_shared = 1 - prob_not_shared
-    
-    # Convert to fraction A/B
-    A = den - num
-    B = den
-    
-    # Reduce A/B by their gcd
+        P_no_shared *= (days - i)
+        P_no_shared %= MOD
+
+    P_no_shared = (P_no_shared * pow(days, MOD - 2, MOD)) % MOD  # Modular inverse of days^k
+
+    # P(shared) = 1 - P(no shared)
+    P_shared = (1 - P_no_shared) % MOD
+
+    # P(shared) = A / B
+    A = P_shared
+    B = 1
+    # Find the denominator B
+    for i in range(k):
+        B *= days
+        B %= MOD
+
+    # A = B - P(no shared)
+    A = (B - P_no_shared + MOD) % MOD
+
+    # Reduce A and B by their gcd
     g = gcd(A, B)
     A //= g
     B //= g
-    
-    # Take modulo
-    mod = 10**6 + 3
-    A %= mod
-    B %= mod
-    
-    return A, B
 
-# Read input
-n, k = map(int, input().split())
-A, B = prob_birthday_paradox(n, k)
-print(A, B)
+    print(A, B)
+
+if __name__ == "__main__":
+    main()

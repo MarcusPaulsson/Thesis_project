@@ -6,47 +6,255 @@ def solve():
     chars = ['a', 'b', 'c']
 
     import itertools
+
     for perm in itertools.permutations(chars):
-        res = ""
+        res = (perm[0] * n) + (perm[1] * n) + (perm[2] * n)
         
+        s_found = False
+        t_found = False
         
-        res1 = ""
-        for _ in range(n):
-            res1 += perm[0]
-        for _ in range(n):
-            res1 += perm[1]
-        for _ in range(n):
-            res1 += perm[2]
-
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
         
-        is_valid1 = True
-        if s in res1 or t in res1:
-            is_valid1 = False
-            
-            
-        if is_valid1:
+        if not s_found and not t_found:
             print("YES")
-            print(res1)
-            return
-
-        res2 = ""
-
-        for _ in range(n):
-            res2 += perm[0]
-        for _ in range(n):
-            res2 += perm[2]
-        for _ in range(n):
-            res2 += perm[1]
-            
-        is_valid2 = True
-        if s in res2 or t in res2:
-            is_valid2 = False
-            
-        if is_valid2:
-            print("YES")
-            print(res2)
+            print(res)
             return
             
-    print("NO")
+    for perm in itertools.permutations(chars):
+        res = (perm[0] * n) + (perm[2] * n) + (perm[1] * n)
+        
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+
+    for perm in itertools.permutations(chars):
+        res = (perm[1] * n) + (perm[0] * n) + (perm[2] * n)
+        
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+
+    for perm in itertools.permutations(chars):
+        res = (perm[1] * n) + (perm[2] * n) + (perm[0] * n)
+        
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+
+    for perm in itertools.permutations(chars):
+        res = (perm[2] * n) + (perm[0] * n) + (perm[1] * n)
+        
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+
+    for perm in itertools.permutations(chars):
+        res = (perm[2] * n) + (perm[1] * n) + (perm[0] * n)
+        
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    if n == 1:
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        perm = ['a','b','c']
+        res = "".join(perm)
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+            
+            
+        perm = ['a','c','b']
+        res = "".join(perm)
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+            
+            
+            
+        perm = ['b','a','c']
+        res = "".join(perm)
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+            
+        perm = ['b','c','a']
+        res = "".join(perm)
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+            
+        perm = ['c','a','b']
+        res = "".join(perm)
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
+        
+        perm = ['c','b','a']
+        res = "".join(perm)
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
+            print("YES")
+            print(res)
+            return
 
 solve()

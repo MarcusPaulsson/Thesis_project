@@ -4,24 +4,20 @@ def solve():
     for _ in range(n):
         strings.append(input())
 
-    def is_substring(a, b):
-        return a in b
+    strings.sort(key=len)
 
-    def check_order(order):
-        for i in range(1, len(order)):
-            for j in range(i):
-                if not is_substring(order[j], order[i]):
-                    return False
-        return True
-
-    import itertools
-    for permutation in itertools.permutations(strings):
-        if check_order(list(permutation)):
-            print("YES")
-            for s in permutation:
-                print(s)
+    for i in range(1, n):
+        found = False
+        for j in range(i):
+            if strings[i-1] in strings[i]:
+                found = True
+                break
+        if not found:
+            print("NO")
             return
-    
-    print("NO")
+
+    print("YES")
+    for s in strings:
+        print(s)
 
 solve()

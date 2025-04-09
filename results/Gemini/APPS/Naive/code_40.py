@@ -1,15 +1,28 @@
 def solve():
-    n, l = map(int, input().split())
-    kefa = list(map(int, input().split()))
-    sasha = list(map(int, input().split()))
+    n = int(input())
+    ratings = []
+    for _ in range(n):
+        ratings.append(list(map(int, input().split())))
 
-    for shift in range(l):
-        shifted_sasha = [(x + shift) % l for x in sasha]
-        shifted_sasha.sort()
-        if kefa == shifted_sasha:
-            print("YES")
-            return
+    changed = False
+    for a, b in ratings:
+        if a != b:
+            changed = True
+            break
 
-    print("NO")
+    if changed:
+        print("rated")
+        return
+
+    sorted_flag = True
+    for i in range(n - 1):
+        if ratings[i][0] < ratings[i+1][0]:
+            sorted_flag = False
+            break
+
+    if not sorted_flag:
+        print("unrated")
+    else:
+        print("maybe")
 
 solve()

@@ -1,24 +1,22 @@
 def max_min_pieces(n, a, b):
-    low, high = 1, max(a, b)
-    result = 0
+    def can_distribute(x):
+        plates_from_a = a // x
+        plates_from_b = b // x
+        return plates_from_a + plates_from_b >= n
     
-    while low <= high:
-        mid = (low + high) // 2
-        
-        # Calculate the number of plates we can fill with at least mid pieces of each cake
-        plates_from_a = a // mid
-        plates_from_b = b // mid
-        
-        # Total plates filled must be at least n
-        if plates_from_a + plates_from_b >= n:
-            result = mid  # mid is a valid solution
-            low = mid + 1  # try for a bigger x
+    left, right = 1, max(a, b)
+    max_x = 0
+    
+    while left <= right:
+        mid = (left + right) // 2
+        if can_distribute(mid):
+            max_x = mid
+            left = mid + 1
         else:
-            high = mid - 1  # try for a smaller x
+            right = mid - 1
             
-    return result
+    return max_x
 
-# Read input
+# Input reading
 n, a, b = map(int, input().split())
-# Output the result
 print(max_min_pieces(n, a, b))

@@ -1,43 +1,44 @@
-def is_stack_sortable(permutation):
+def is_stack_sortable(n, k, p):
     stack = []
     b = []
-    for num in permutation:
-        stack.append(num)
-        while stack and (not b or stack[-1] <= b[-1]):
+    remaining = set(range(1, n + 1)) - set(p)
+
+    # Initialize the result array with the given first k elements
+    result = list(p)
+
+    # Process the given elements
+    for i in range(k):
+        while stack and (not remaining or stack[-1] > max(remaining)):
             b.append(stack.pop())
-    return b == sorted(permutation)
+        stack.append(p[i])
 
-def restore_permutation(n, k, given):
-    remaining = sorted(set(range(1, n + 1)) - set(given), reverse=True)
+    # Add remaining elements to the stack in descending order
+    for next_elem in sorted(remaining, reverse=True):
+        while stack and (not remaining or stack[-1] > max(remaining)):
+            b.append(stack.pop())
+        stack.append(next_elem)
 
-    # Check if the given part is stack-sortable
-    if not is_stack_sortable(given):
+    # Empty the stack into b
+    while stack:
+        b.append(stack.pop())
+
+    # Check if b is sorted
+    if b != sorted(b):
         return -1
 
-    result = given[:]
-    stack = []
+    # Fill the result array with b
+    result.extend(b)
+    return result
 
-    for num in given:
-        while remaining and (not stack or remaining[-1] >= stack[-1]):
-            stack.append(remaining.pop())
-        
-        while stack and (not result or stack[-1] <= result[-1]):
-            result.append(stack.pop())
-
-    while stack:
-        result.append(stack.pop())
-
-    return result if len(result) == n else -1
-
-# Read input
+# Input reading
 n, k = map(int, input().split())
-given = list(map(int, input().split()))
+p = list(map(int, input().split()))
 
 # Get the result
-result = restore_permutation(n, k, given)
+result = is_stack_sortable(n, k, p)
 
-# Print the result
+# Output the result
 if result == -1:
-    print(-1)
+    print(result)
 else:
     print(' '.join(map(str, result)))

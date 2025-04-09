@@ -10,25 +10,30 @@ def solve():
             dp[i][j] = dp[i-1][j]
             if j > 0:
                 dp[i][j] += dp[i-1][j-1]
-            dp[i][j] = min(dp[i][j], k + 1)
-    
     
     counts = [0] * (n + 1)
     for i in range(n + 1):
         counts[i] = dp[n][i]
-        
     
-    cost = 0
-    
+    total_cost = 0
     
     for length in range(n, -1, -1):
-        take = min(k, counts[length])
-        cost += take * (n - length)
-        k -= take
+        if k <= 0:
+            break
         
+        num_subsequences = counts[length]
+        
+        if num_subsequences <= k:
+            total_cost += num_subsequences * (n - length)
+            k -= num_subsequences
+        else:
+            total_cost += k * (n - length)
+            k = 0
+            break
+            
     if k > 0:
-        print(-1)
+        print("-1")
     else:
-        print(cost)
-
+        print(total_cost)
+        
 solve()

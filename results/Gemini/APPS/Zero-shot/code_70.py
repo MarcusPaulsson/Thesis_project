@@ -1,57 +1,12 @@
-def solve():
-  n, m, D = map(int, input().split())
-  edges = []
-  for _ in range(m):
-    edges.append(list(map(int, input().split())))
+h1, m1 = map(int, input().replace(':', ' ').split())
+h2, m2 = map(int, input().replace(':', ' ').split())
 
-  def check_degree(tree_edges):
-    degree = 0
-    for u, v in tree_edges:
-      if u == 1 or v == 1:
-        degree += 1
-    return degree
+start_minutes = h1 * 60 + m1
+end_minutes = h2 * 60 + m2
 
-  def is_connected(tree_edges):
-    if not tree_edges:
-      return False
+mid_minutes = (start_minutes + end_minutes) // 2
 
-    adj = [[] for _ in range(n + 1)]
-    for u, v in tree_edges:
-      adj[u].append(v)
-      adj[v].append(u)
+h3 = mid_minutes // 60
+m3 = mid_minutes % 60
 
-    visited = [False] * (n + 1)
-    q = [1]
-    visited[1] = True
-    count = 0
-    while q:
-      u = q.pop(0)
-      count += 1
-      for v in adj[u]:
-        if not visited[v]:
-          visited[v] = True
-          q.append(v)
-    return count == n
-
-  def find_spanning_tree(edges, D):
-    import itertools
-    for i in range(1 << m):
-      tree_edges = []
-      for j in range(m):
-        if (i >> j) & 1:
-          tree_edges.append(edges[j])
-
-      if len(tree_edges) == n - 1 and is_connected(tree_edges) and check_degree(tree_edges) == D:
-        return tree_edges
-    return None
-
-  spanning_tree = find_spanning_tree(edges, D)
-
-  if spanning_tree:
-    print("YES")
-    for u, v in spanning_tree:
-      print(u, v)
-  else:
-    print("NO")
-
-solve()
+print(f"{h3:02d}:{m3:02d}")

@@ -1,42 +1,35 @@
 def max_subarray_sum(arr):
-    max_sum = 0
-    current_sum = 0
-    for num in arr:
-        current_sum = max(num, current_sum + num)
-        max_sum = max(max_sum, current_sum)
-    return max_sum
+    max_ending_here = max_so_far = 0
+    for x in arr:
+        max_ending_here = max(0, max_ending_here + x)
+        max_so_far = max(max_so_far, max_ending_here)
+    return max_so_far
 
-def max_beauty_with_multiplication(n, x, a):
+def max_beauty_with_operation(n, x, a):
+    # Calculate the beauty of the original array
     original_beauty = max_subarray_sum(a)
-    
-    if x == 1:
-        return original_beauty
-    
-    # Calculate prefix sums
-    prefix_sum = [0] * (n + 1)
-    for i in range(n):
-        prefix_sum[i + 1] = prefix_sum[i] + a[i]
 
+    # Calculate the beauty after multiplying a subarray by x
     max_gain = 0
-    
-    # We will consider every possible subarray [l, r]
-    for l in range(n):
-        for r in range(l, n):
-            # Subarray a[l:r+1] will be multiplied by x
-            subarray_sum = prefix_sum[r + 1] - prefix_sum[l]
-            new_subarray_sum = subarray_sum * x
-            # Gain from changing this subarray
-            gain = new_subarray_sum - subarray_sum
-            
-            # Update maximum gain
-            max_gain = max(max_gain, gain)
+    current_sum = 0
+    for i in range(n):
+        current_sum += a[i]
+        # Calculate the gain if we multiply the current prefix and the suffix
+        if i > 0:
+            max_gain = max(max_gain, current_sum * x - max_subarray_sum(a[:i]))
+        if i < n - 1:
+            max_gain = max(max_gain, current_sum * x - max_subarray_sum(a[i + 1:]))
+        
+        # Reset current sum if it goes negative
+        if current_sum < 0:
+            current_sum = 0
 
-    return original_beauty + max_gain
+    # Calculate the maximum possible beauty
+    return max(original_beauty, original_beauty + max_gain)
 
 # Read input
 n, x = map(int, input().split())
 a = list(map(int, input().split()))
 
-# Calculate and print the result
-result = max_beauty_with_multiplication(n, x, a)
-print(result)
+# Calculate and print the maximum beauty
+print(max_beauty_with_operation(n, x, a))

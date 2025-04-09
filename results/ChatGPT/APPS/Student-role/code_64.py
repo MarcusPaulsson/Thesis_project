@@ -1,35 +1,39 @@
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-# Initialize the schedule with zeros (rest days)
-schedule = [0] * n
+schedule = [0] * n  # Initialize schedule with rest days
+exam_days = [0] * n  # Initialize exam days tracker
 
-# To track the preparation days needed for each exam
-preparation_needed = [0] * m
-
-# Mark exam days in the schedule
 for i in range(m):
-    s_i, d_i, c_i = exams[i]
-    schedule[d_i - 1] = m + 1  # Mark the exam day
+    s, d, c = exams[i]
+    s -= 1  # Convert to 0-based index
+    d -= 1  # Convert to 0-based index
+    exam_days[d] = i + 1  # Mark exam day
 
-# Prepare for exams
+# Prepare a list to track preparation days
+prep_days = [0] * n
+
 for i in range(m):
-    s_i, d_i, c_i = exams[i]
-    days_to_prepare = []
+    s, d, c = exams[i]
+    s -= 1  # Convert to 0-based index
+    d -= 1  # Convert to 0-based index
+    count = 0
     
-    # Find available days for preparation
-    for j in range(s_i - 1, d_i - 1):
-        if schedule[j] == 0 and len(days_to_prepare) < c_i:
-            days_to_prepare.append(j)
-    
-    # Check if we have enough days to prepare
-    if len(days_to_prepare) < c_i:
+    # Try to assign preparation days
+    for j in range(s, d):
+        if count < c and prep_days[j] == 0:  # If we still need to prepare and the day is free
+            prep_days[j] = i + 1  # Assign preparation for exam i
+            count += 1
+
+    if count < c:  # If we couldn't prepare enough
         print(-1)
         exit()
-    
-    # Mark preparation days in the schedule
-    for day in days_to_prepare:
-        schedule[day] = i + 1  # Mark preparation for exam i+1
 
-# Print the final schedule
+# Now fill the schedule with preparation and exam days
+for j in range(n):
+    if exam_days[j] != 0:
+        schedule[j] = exam_days[j]  # Assign exam day
+    elif prep_days[j] != 0:
+        schedule[j] = prep_days[j]  # Assign preparation day
+
 print(' '.join(map(str, schedule)))

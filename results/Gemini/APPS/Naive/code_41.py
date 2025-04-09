@@ -1,15 +1,39 @@
-def solve():
-    n, l = map(int, input().split())
-    kefa = list(map(int, input().split()))
-    sasha = list(map(int, input().split()))
+def nearest_zero(arr):
+    """
+    Calculates the distance to the nearest zero for each element in the array.
 
-    for shift in range(l):
-        shifted_sasha = [(x + shift) % l for x in sasha]
-        shifted_sasha.sort()
-        if kefa == shifted_sasha:
-            print("YES")
-            return
+    Args:
+        arr (list): A list of integers.
 
-    print("NO")
+    Returns:
+        list: A list of integers representing the distances to the nearest zero.
+    """
+    n = len(arr)
+    distances = [float('inf')] * n
 
-solve()
+    # Forward pass: find distances to the nearest zero from the left
+    last_zero = float('-inf')
+    for i in range(n):
+        if arr[i] == 0:
+            last_zero = i
+            distances[i] = 0
+        elif last_zero != float('-inf'):
+            distances[i] = min(distances[i], i - last_zero)
+
+    # Backward pass: find distances to the nearest zero from the right
+    last_zero = float('inf')
+    for i in range(n - 1, -1, -1):
+        if arr[i] == 0:
+            last_zero = i
+            distances[i] = 0
+        elif last_zero != float('inf'):
+            distances[i] = min(distances[i], last_zero - i)
+
+    return distances
+
+
+if __name__ == "__main__":
+    n = int(input())
+    arr = list(map(int, input().split()))
+    result = nearest_zero(arr)
+    print(*result)

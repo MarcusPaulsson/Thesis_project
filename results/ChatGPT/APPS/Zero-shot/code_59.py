@@ -1,14 +1,15 @@
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# We need the last x digits to be '000...010...0' where there are y zeros followed by a one
-target = ['0'] * x
-target[y] = '1'
+# Create the target suffix based on y
+target_suffix = ['0'] * x
+target_suffix[y] = '1'
+target_suffix = ''.join(target_suffix)
 
-# Count the number of changes needed
-changes = 0
-for i in range(x):
-    if number[n - 1 - i] != target[x - 1 - i]:
-        changes += 1
+# Get the current suffix from the number
+current_suffix = number[-x:]
 
-print(changes)
+# Calculate the number of operations needed
+min_operations = sum(1 for i in range(x) if current_suffix[i] != target_suffix[i])
+
+print(min_operations)

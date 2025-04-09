@@ -8,5 +8,5 @@ def solve():
       return
   
   print("No")
-  
+
 solve()

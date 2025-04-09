@@ -4,29 +4,25 @@ def solve():
     for _ in range(n):
         blows.append(list(map(int, input().split())))
 
-    max_damage = 0
+    max_d = 0
     for d, h in blows:
-        max_damage = max(max_damage, d)
+        max_d = max(max_d, d)
+
+    if max_d >= x:
+        print(1)
+        return
 
     max_diff = 0
     for d, h in blows:
         max_diff = max(max_diff, d - h)
-
-    if max_damage >= x:
-        print(1)
-        return
-
+    
     if max_diff <= 0:
-        if max_damage <= 0:
-            print(-1)
-        else:
-            print(-1)
+        print(-1)
         return
-    
-    remaining = x - max_damage
-    
-    ans = 1 + (remaining + max_diff - 1) // max_diff
-    
+
+    remaining = x - max_d
+    ans = 1
+    ans += (remaining + max_diff - 1) // max_diff
     print(ans)
 
 

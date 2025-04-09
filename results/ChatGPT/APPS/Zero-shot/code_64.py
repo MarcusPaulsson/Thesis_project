@@ -1,47 +1,33 @@
 def schedule_exams(n, m, exams):
-    # Create a schedule list initialized with rest days
-    schedule = [0] * n
-    
-    # Sort exams by their exam day for easier management
-    exams.sort(key=lambda x: x[1])  # Sort by exam day (d_i)
-    
-    # Prepare a list to track the preparation days needed
-    prep_needed = [0] * (n + 1)
-    
-    for i in range(m):
-        s_i, d_i, c_i = exams[i]
-        prep_needed[i + 1] = c_i  # Store the required preparation days for each exam
-    
-    # Attempt to fill the schedule
-    for i in range(m):
-        s_i, d_i, c_i = exams[i]
-        prep_days = 0
-        
-        # Try to allocate preparation days
-        for day in range(s_i - 1, d_i - 1):
-            if prep_needed[i + 1] > 0 and schedule[day] == 0:
-                schedule[day] = i + 1  # Mark preparation for exam i
-                prep_needed[i + 1] -= 1
-                prep_days += 1
+    days = [0] * n
+    preparation_days = [0] * m
+    exam_days = set()
 
-        # If we didn't manage to allocate enough preparation days
-        if prep_needed[i + 1] > 0:
+    for i, (s, d, c) in enumerate(exams):
+        exam_days.add(d - 1)
+        if preparation_days[i] < c:
+            for j in range(s - 1, d - 1):
+                if preparation_days[i] < c and days[j] == 0:
+                    days[j] = i + 1
+                    preparation_days[i] += 1
+    
+    for i in range(m):
+        if preparation_days[i] < exams[i][2]:
             return -1
 
-        # Now mark the day of the exam
-        schedule[d_i - 1] = m + 1  # Mark the exam day
+    for i in range(n):
+        if days[i] == 0 and i not in exam_days:
+            days[i] = 0
+        elif i in exam_days:
+            days[i] = m + 1
 
-    return schedule
+    return days
 
-# Read input
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
-
-# Get the result
 result = schedule_exams(n, m, exams)
 
-# Print the result
 if result == -1:
     print(-1)
 else:
-    print(' '.join(map(str, result)))
+    print(*result)

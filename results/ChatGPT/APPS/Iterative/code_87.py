@@ -1,23 +1,25 @@
 def max_projects(n, r, projects):
-    # Sort projects: first by required rating, then by rating change (negative changes come last)
-    projects.sort(key=lambda x: (x[0], x[1] if x[1] >= 0 else float('inf')))
-
+    projects.sort(key=lambda x: (x[0], -x[1]))  # Sort projects by required rating, then by rating change descending
     completed = 0
-    current_rating = r
-
-    for required, change in projects:
-        if current_rating >= required:
-            completed += 1
-            current_rating += change
-            if current_rating < 0:
-                break  # If rating goes below zero, stop
-        # There is no need for an else statement since we just skip to the next project
-
+    
+    while True:
+        progress = False
+        for i in range(len(projects)):
+            a, b = projects[i]
+            if a <= r:  # If current rating is enough to start the project
+                if r + b >= 0:  # After completing the project, rating must not drop below zero
+                    r += b
+                    completed += 1
+                    projects[i] = (float('inf'), 0)  # Mark project as completed
+                    progress = True
+        if not progress:  # No more projects can be completed
+            break
+            
     return completed
 
-# Input reading
+# Input reading section
 n, r = map(int, input().split())
 projects = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Output result
+# Output the result
 print(max_projects(n, r, projects))

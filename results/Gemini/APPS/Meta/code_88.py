@@ -8,59 +8,40 @@ def solve():
     
     matrix = [[0] * n for _ in range(n)]
     
-    def is_palindromic(mat):
+    def check():
         for i in range(n):
             for j in range(n):
-                if mat[i][j] != mat[n - 1 - i][j] or mat[i][j] != mat[i][n - 1 - j]:
+                if matrix[i][j] != matrix[n-1-i][j] or matrix[i][j] != matrix[i][n-1-j]:
                     return False
         return True
     
-    def can_fill(row, col):
-        return row >= 0 and row < n and col >= 0 and col < n and matrix[row][col] == 0
-    
     def backtrack(row, col):
-        if row >= (n + 1) // 2:
-            return is_palindromic(matrix)
-
-        if col >= (n + 1) // 2:
+        if row == n:
+            if check():
+                print("YES")
+                for r in matrix:
+                    print(*r)
+                return True
+            else:
+                return False
+        
+        if col == n:
             return backtrack(row + 1, 0)
         
         for num in list(counts.keys()):
             if counts[num] > 0:
-                counts[num] -= 1
-
                 matrix[row][col] = num
-                matrix[n - 1 - row][col] = num
-                matrix[row][n - 1 - col] = num
-                matrix[n - 1 - row][n - 1 - col] = num
-
-                needed = 1
-                if row != n - 1 - row:
-                    needed += 1
-                if col != n - 1 - col:
-                    needed += 1
-                if row != n - 1 - row and col != n - 1 - col:
-                    needed += 1
+                counts[num] -= 1
                 
+                if backtrack(row, col + 1):
+                    return True
                 
-                if counts[num] >= needed - 1:
-                    
-                    if backtrack(row, col + 1):
-                        return True
-                    
                 matrix[row][col] = 0
-                matrix[n - 1 - row][col] = 0
-                matrix[row][n - 1 - col] = 0
-                matrix[n - 1 - row][n - 1 - col] = 0
-                
                 counts[num] += 1
+        
         return False
     
-    if backtrack(0, 0):
-        print("YES")
-        for row in matrix:
-            print(*row)
-    else:
+    if not backtrack(0, 0):
         print("NO")
 
 solve()

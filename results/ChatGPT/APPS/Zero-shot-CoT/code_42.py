@@ -1,27 +1,28 @@
 def count_cyclic_strings(n, s):
     from itertools import product
-    
-    len_s = len(s)
-    count = 0
-    seen = set()
-    
-    # Generate all binary strings of length n
-    for bits in product('01', repeat=n):
-        t = ''.join(bits)
-        
-        # Check if s is a substring in any cyclic shift of t
-        if any(s in t[i:] + t[:i] for i in range(n)):
-            # Normalize t to account for cyclic shifts
-            min_rotation = min(t[i:] + t[:i] for i in range(n))
-            if min_rotation not in seen:
-                seen.add(min_rotation)
-                count += 1
 
-    return count
+    # Length of the substring to find
+    len_s = len(s)
+    
+    # All possible binary strings of length n
+    all_strings = set(''.join(p) for p in product('01', repeat=n))
+    
+    # Filter to find cyclic strings that contain s as a substring
+    valid_cyclic_strings = set()
+    
+    for t in all_strings:
+        # Check all cyclic shifts of t
+        cyclic_shifts = [t[i:] + t[:i] for i in range(n)]
+        for shift in cyclic_shifts:
+            if s in shift:
+                valid_cyclic_strings.add(t)
+                break
+                
+    return len(valid_cyclic_strings)
 
 # Input reading
-n = int(input().strip())
+n = int(input())
 s = input().strip()
 
-# Function call and output
+# Output the result
 print(count_cyclic_strings(n, s))

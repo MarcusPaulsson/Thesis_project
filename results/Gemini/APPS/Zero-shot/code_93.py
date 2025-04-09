@@ -1,57 +1,58 @@
 def solve():
-    n, d, k = map(int, input().split())
+  n, d, k = map(int, input().split())
 
-    if d >= n:
-        print("NO")
-        return
+  if d >= n:
+    print("NO")
+    return
 
-    if d == 1 and n > 2:
-        if k < 2:
-            print("NO")
-            return
-
-    if d > 1 and k == 1:
-        print("NO")
-        return
-
-    if d > 1 and n > d + 1 and k == 2:
-        print("NO")
-        return
-
-    edges = []
-    nodes = list(range(1, n + 1))
-
-    # Create the main path of length d
-    for i in range(d):
-        edges.append((nodes[i], nodes[i+1]))
-
-    # Add remaining nodes to the path
-    curr_node_idx = 0
-    node_idx = d + 1
+  if d == 1 and n > 2:
+    if k == 1:
+      print("NO")
+      return
     
-    degrees = [0] * n
-    
-    for i in range(d):
-        degrees[i] += 1
-    degrees[d] += 1
+  if d > 1 and k == 1:
+    print("NO")
+    return
 
-    while node_idx < n:
-        
-        added = False
-        for i in range(d+1):
-            if degrees[i] < k:
-                edges.append((nodes[i], nodes[node_idx]))
-                degrees[i] += 1
-                degrees[node_idx] = 1
-                node_idx += 1
-                added = True
-                break
-        if not added:
-            print("NO")
-            return
-                
-    print("YES")
-    for u, v in edges:
-        print(u, v)
+  edges = []
+  
+  # Create the diameter path
+  for i in range(d):
+    edges.append((i + 1, i + 2))
+  
+  degree = [0] * (n + 1)
+  for u, v in edges:
+    degree[u] += 1
+    degree[v] += 1
+  
+  next_node = d + 2
+  
+  # Add nodes to the diameter path
+  for i in range(1, d + 2):
+    while degree[i] < k and next_node <= n:
+      edges.append((i, next_node))
+      degree[i] += 1
+      degree[next_node] += 1
+      next_node += 1
+  
+  # Check if we used all nodes
+  if next_node <= n:
+    print("NO")
+    return
+  
+  # Check if the graph is connected
+  if len(edges) != n - 1:
+    print("NO")
+    return
+  
+  # Check if the degree is at most k
+  for i in range(1, n + 1):
+    if degree[i] > k:
+      print("NO")
+      return
+  
+  print("YES")
+  for u, v in edges:
+    print(u, v)
 
 solve()

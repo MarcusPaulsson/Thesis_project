@@ -1,23 +1,27 @@
-from collections import deque
-
-s = input().strip()
-t = deque()
-u = []
-
-for char in s:
-    t.append(char)
-
-while t:
-    # Check the smallest character in t and the remaining characters in s
-    min_char = min(t)
-    # If the front character in s is smaller or equal to min_char, we can add it to t
-    while s and (not t or s[0] <= min_char):
-        t.appendleft(s[0])
-        s = s[1:]
-        min_char = min(t)  # Update min_char after adding to t
+def lexicographically_minimal_string(s):
+    t = []
+    u = []
+    
+    for char in s:
+        # Move character from s to t
+        t.append(char)
         
-    # Extract the last character from t to append to u
-    u.append(t.pop())
+        # While t is not empty and we can pop from t to u
+        while t:
+            # If u is empty or the last character in u is less than or equal to the last in t
+            if not u or t[-1] >= u[-1]:
+                break
+            # Pop from t to u
+            u.append(t.pop())
+    
+    # After processing all characters in s, pop remaining characters from t to u
+    while t:
+        u.append(t.pop())
+    
+    # Convert list u back to string and return
+    return ''.join(u)
 
-# Join the list into a string and print the result
-print(''.join(u[::-1]))  # Reverse u to get the correct order
+# Input
+s = input().strip()
+# Output the result
+print(lexicographically_minimal_string(s))

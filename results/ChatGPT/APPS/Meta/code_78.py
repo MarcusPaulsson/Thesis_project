@@ -1,24 +1,11 @@
-MOD = 1000000007
+MOD = 10**9 + 7
 
-def count_regular_bracket_sequences(n, s):
+def count_regular_sequences(n, s):
     m = len(s)
     
-    # Precompute the number of valid bracket sequences of length 2*k
-    # dp[k] means the number of valid sequences of length 2*k
-    dp = [0] * (n + 1)
-    dp[0] = 1  # Base case: there's one valid sequence of length 0 (the empty sequence)
-
-    for k in range(1, n + 1):
-        for j in range(k):
-            dp[k] = (dp[k] + dp[j] * dp[k - 1 - j]) % MOD
-
-    # Check the required properties of the substring s
-    # We will check if the substring s can be a part of a valid sequence of length 2n
-    
-    # Balance array to check if part of the string is valid
+    # Check if s can be a valid substring in regular bracket sequences
     balance = 0
     min_balance = 0
-    
     for char in s:
         if char == '(':
             balance += 1
@@ -26,26 +13,48 @@ def count_regular_bracket_sequences(n, s):
             balance -= 1
         min_balance = min(min_balance, balance)
 
-    # If the total balance is not zero or the minimum balance is negative, it's invalid
-    if balance < 0 or (n * 2 - m) + balance < 0:
+    if balance < 0 or min_balance < 0:
         return 0
 
-    # Remaining open and close brackets we can place
-    remaining_open = n - (s.count('('))
-    remaining_close = n - (s.count(')'))
+    # dp[i][j] means the number of valid sequences of length i with balance j
+    dp = [[0] * (n + 1) for _ in range(2 * n + 1)]
+    dp[0][0] = 1
 
-    # If we take s as a valid sequence, we need to fill the remaining length
+    for i in range(1, 2 * n + 1):
+        for j in range(n + 1):
+            # Add '('
+            if j + 1 <= n:
+                dp[i][j + 1] = (dp[i][j + 1] + dp[i - 1][j]) % MOD
+            # Add ')'
+            if j - 1 >= 0:
+                dp[i][j - 1] = (dp[i][j - 1] + dp[i - 1][j]) % MOD
+
     total_sequences = 0
-
-    for k in range(remaining_open + 1):
-        if k <= remaining_close:
-            total_sequences = (total_sequences + dp[remaining_open + remaining_close - k]) % MOD
+    
+    # Now we need to count valid sequences that contain s as a substring
+    for start in range(2 * n - m + 1):
+        valid = True
+        temp_balance = 0
+        for i in range(m):
+            if s[i] == '(':
+                temp_balance += 1
+            else:
+                temp_balance -= 1
+            if temp_balance < 0:
+                valid = False
+                break
+        
+        if valid:
+            # Check remaining positions
+            remaining_length = 2 * n - (start + m)
+            left_balance = balance
+            right_balance = n - left_balance
+            
+            if remaining_length % 2 == 0 and left_balance <= n and right_balance <= n:
+                total_sequences = (total_sequences + dp[remaining_length][left_balance]) % MOD
 
     return total_sequences
 
-# Input reading
 n = int(input())
-s = input()
-
-# Output the result
-print(count_regular_bracket_sequences(n, s))
+s = input().strip()
+print(count_regular_sequences(n, s))

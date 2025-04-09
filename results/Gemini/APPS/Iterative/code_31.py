@@ -2,43 +2,39 @@ def solve():
     n, k = map(int, input().split())
     mod = 10**6 + 3
 
-    if n < 63 and k > (1 << n):
+    if n > 63 and k > 1:
         print(1, 1)
         return
 
-    def power(a, b, m):
-        res = 1
-        a %= m
-        while b > 0:
-            if b % 2 == 1:
-                res = (res * a) % m
-            a = (a * a) % m
-            b //= 2
-        return res
+    if k > 2**n:
+        print(1, 1)
+        return
 
-    def inverse(a, m):
-        return power(a, m - 2, m)
-
-    B = power(2, n % (mod - 1) * (k - 1) % (mod - 1), mod)
+    num = 1
+    den = 1
     
-    A_num = 1
-    for i in range(k):
-        A_num = (A_num * ((power(2, n % (mod - 1), mod) - i + mod) % mod)) % mod
+    for i in range(int(k)):
+        num = (num * (pow(2, n, mod) - i)) % mod
+        den = (den * pow(2, n, mod)) % mod
 
-    A = (B - A_num + mod) % mod
-    
+    a = (den - num + mod) % mod
+    b = den
 
     def gcd(a, b):
-        while b:
-            a, b = b, a % b
-        return a
-
-    gcd_val = gcd(A, B)
+        if b == 0:
+            return a
+        return gcd(b, a % b)
     
-    A = (A * inverse(gcd_val, mod)) % mod
-    B = (B * inverse(gcd_val, mod)) % mod
+    g = gcd(a, b)
+    a = a // g
+    b = b // g
     
+    def modinv(a, m):
+        return pow(a, m - 2, m)
 
-    print(A, B)
+    a = a % mod
+    b = b % mod
+        
+    print(a, b)
 
 solve()

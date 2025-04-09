@@ -1,29 +1,31 @@
 from collections import Counter
-import sys
+import math
 
-def find_x_y(divisors):
-    count = Counter(divisors)
-    
-    # The maximum divisor is either x or y
-    x = max(divisors)
-    # Start with x and find y
-    y = 1
-    
-    for d in count:
-        if d == x:
-            continue
-        # For each divisor d, we check if it can be part of y
-        if count[d] == 1:
+n = int(input())
+divisors = list(map(int, input().split()))
+
+# Count the occurrences of each divisor
+counter = Counter(divisors)
+
+# Find the possible candidates for x and y
+candidates = list(counter.keys())
+
+# Initialize x and y
+x = 1
+y = 1
+
+# The highest divisor is the product of the highest factors
+for d in candidates:
+    if counter[d] == 2:
+        # If the divisor appears twice, it must be a common divisor
+        x *= d
+        y *= d
+    else:
+        # Otherwise, assign to one of x or y
+        if x < y:
+            x *= d
+        else:
             y *= d
-    
-    return x, y
 
-# Input reading
-n = int(input().strip())
-divisors = list(map(int, input().strip().split()))
-
-# Finding x and y
-x, y = find_x_y(divisors)
-
-# Output
+# Print the results
 print(x, y)

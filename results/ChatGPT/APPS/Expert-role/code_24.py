@@ -1,39 +1,40 @@
-def can_alice_win(board):
-    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # right, down, diagonal down-right, diagonal down-left
-    size = 10
-    
-    def check_win(x, y):
-        for dx, dy in directions:
-            count = 1
-            
-            # Check in the positive direction
-            nx, ny = x + dx, y + dy
-            while 0 <= nx < size and 0 <= ny < size and board[nx][ny] == 'X':
-                count += 1
-                nx += dx
-                ny += dy
-            
-            # Check in the negative direction
-            nx, ny = x - dx, y - dy
-            while 0 <= nx < size and 0 <= ny < size and board[nx][ny] == 'X':
-                count += 1
-                nx -= dx
-                ny -= dy
-            
-            if count >= 5:
-                return True
-        return False
+def can_win(board):
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # horizontal, vertical, diagonal down-right, diagonal down-left
+    n = 10
 
-    for i in range(size):
-        for j in range(size):
+    for i in range(n):
+        for j in range(n):
             if board[i][j] == '.':
-                board[i][j] = 'X'  # Simulate Alice's move
-                if check_win(i, j):
-                    return "YES"
-                board[i][j] = '.'  # Undo the move
+                # Simulate placing 'X' at (i, j)
+                board[i][j] = 'X'
+                
+                # Check for winning conditions
+                for dx, dy in directions:
+                    count = 1  # Start with the current position
 
-    return "NO"
+                    # Check in the positive direction
+                    x, y = i + dx, j + dy
+                    while 0 <= x < n and 0 <= y < n and board[x][y] == 'X':
+                        count += 1
+                        x += dx
+                        y += dy
 
-# Read the input
+                    # Check in the negative direction
+                    x, y = i - dx, j - dy
+                    while 0 <= x < n and 0 <= y < n and board[x][y] == 'X':
+                        count += 1
+                        x -= dx
+                        y -= dy
+
+                    # If count reaches 5, Alice wins
+                    if count >= 5:
+                        return 'YES'
+                
+                # Reset the cell back to empty
+                board[i][j] = '.'
+
+    return 'NO'
+
+# Reading input
 board = [input().strip() for _ in range(10)]
-print(can_alice_win(board))
+print(can_win(board))

@@ -1,37 +1,41 @@
 def is_stack_sortable(n, k, p):
-    # Initialize the set of remaining elements
-    remaining = set(range(1, n + 1)) - set(p)
+    used = set(p)
+    remaining = [i for i in range(1, n + 1) if i not in used]
+    
+    # Create an empty stack
     stack = []
-    result = p[:]
+    b = []
     
-    # Process the first k elements
-    for num in p:
-        while stack and stack[-1] < num:
-            # If the top of the stack is less than the current number, we cannot continue
+    # Try to construct the lexicographically maximum permutation
+    idx = 0
+    for i in range(k):
+        while idx < len(remaining) and (not stack or stack[-1] < p[i]):
+            stack.append(remaining[idx])
+            idx += 1
+        # Now we can pop from the stack to form b
+        if stack and stack[-1] == p[i]:
+            b.append(stack.pop())
+        else:
+            # If we cannot match p[i], it's impossible
             return -1
-        stack.append(num)
     
-    # Fill in the remaining elements in reverse order to achieve lexicographical maximality
-    for num in sorted(remaining, reverse=True):
-        while stack and stack[-1] < num:
-            result.append(stack.pop())
-        stack.append(num)
+    # Push remaining elements from remaining to stack
+    while idx < len(remaining):
+        stack.append(remaining[idx])
+        idx += 1
     
-    # Empty the stack to get the final result
+    # Now, pop all elements from the stack to form b
     while stack:
-        result.append(stack.pop())
+        b.append(stack.pop())
     
-    return result
+    return p + b
 
 # Input reading
 n, k = map(int, input().split())
 p = list(map(int, input().split()))
 
-# Get the result
 result = is_stack_sortable(n, k, p)
-
-# Output the result
 if result == -1:
     print(-1)
 else:
-    print(" ".join(map(str, result)))
+    print(' '.join(map(str, result)))

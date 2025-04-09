@@ -23,7 +23,7 @@ def solve():
             elif direction == "South":
                 current_pos += t
             else:
-                pass  # West or East, no change in position
+                pass # ignore east or west
         
         if current_pos < 0 or current_pos > 20000:
             print("NO")

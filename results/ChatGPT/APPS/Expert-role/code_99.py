@@ -1,26 +1,16 @@
-def calculate_wins(n, a, b):
-    # Maximum wins calculation
-    max_wins = min(a[0], b[2]) + min(a[1], b[0]) + min(a[2], b[1])
-
-    # Minimum wins calculation
-    # First, calculate losses:
-    losses = 0
-    losses += max(0, b[0] - a[2])  # Bob's rock beats Alice's paper
-    losses += max(0, b[1] - a[0])  # Bob's scissors beat Alice's rock
-    losses += max(0, b[2] - a[1])  # Bob's paper beats Alice's scissors
-    
-    # Minimum wins is total rounds minus losses
-    min_wins = n - losses
-
-    return min_wins, max_wins
-
-# Input reading
 n = int(input())
-a = list(map(int, input().split()))
-b = list(map(int, input().split()))
+a_1, a_2, a_3 = map(int, input().split())
+b_1, b_2, b_3 = map(int, input().split())
 
-# Calculate results
-min_wins, max_wins = calculate_wins(n, a, b)
+# Maximum wins for Alice
+max_wins = min(a_1, b_2) + min(a_2, b_3) + min(a_3, b_1)
 
-# Output results
+# Minimum wins for Alice
+# Calculate total draws
+draws = min(a_1, b_1) + min(a_2, b_2) + min(a_3, b_3)
+# Remaining rounds after draws
+remaining_rounds = n - draws
+# Alice's minimum wins is the remaining rounds minus Bob's wins
+min_wins = max(0, remaining_rounds - (b_1 + b_2 + b_3 - (a_1 + a_2 + a_3)))
+
 print(min_wins, max_wins)

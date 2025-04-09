@@ -1,33 +1,36 @@
 def construct_tree(n, d, k):
-    if d > 2 * (k - 1) + 1 or (d > n - 1) or (n > k * (d // 2 + 1)):
-        return "NO"
-    
+    if d >= n or d * k < n - 1:
+        print("NO")
+        return
+
+    print("YES")
     edges = []
     
-    # Create the main path with length d
+    # Create a path of length d
     for i in range(1, d + 1):
         edges.append((i, i + 1))
     
-    # Now we have a path of length d, vertices are from 1 to d + 1
-    last_vertex = d + 2
+    # Current vertex where we can attach new vertices
+    current_vertex = d + 1
     
-    # Now we need to attach the remaining vertices
+    # Degree counts
+    degree = [0] * (n + 1)
+    
+    # Attach remaining vertices
     for i in range(1, d + 2):
-        if last_vertex > n:
-            break
-        while len([e for e in edges if e[0] == i or e[1] == i]) < k and last_vertex <= n:
-            edges.append((i, last_vertex))
-            last_vertex += 1
+        while degree[i] < k and current_vertex <= n:
+            edges.append((i, current_vertex))
+            degree[i] += 1
+            degree[current_vertex] += 1
+            current_vertex += 1
     
-    if last_vertex <= n:
-        return "NO"
+    if current_vertex <= n:
+        print("NO")
+        return
     
-    result = ["YES"]
     for u, v in edges:
-        result.append(f"{u} {v}")
-    
-    return "\n".join(result)
+        print(u, v)
 
-# Read input
+# Input reading
 n, d, k = map(int, input().split())
-print(construct_tree(n, d, k))
+construct_tree(n, d, k)

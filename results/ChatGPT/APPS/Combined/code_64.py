@@ -1,51 +1,45 @@
 def schedule_exams(n, m, exams):
-    days = [0] * n  # Initialize days with 0 (rest days)
-    preparation_needed = [0] * m  # Track preparation days needed for each exam
-    exam_days = set()  # To track exam days
-
-    # Populate exam days and needed preparation days
-    for i in range(m):
-        s, d, c = exams[i]
-        preparation_needed[i] = c
-        for day in range(s - 1, d - 1):  # Convert to 0-based index
-            exam_days.add(day)
-
-    # Check if we have enough days for preparation
-    total_preparation_days = sum(preparation_needed)
-    if total_preparation_days + m > n:  # Total days needed exceeds available days
-        return -1
-
-    # Prepare schedule
-    for i in range(m):
-        s, d, c = exams[i]
-        preparation_days_count = 0
-        
-        # Try to allocate preparation days
-        for day in range(s - 1, d - 1):  # Convert to 0-based index
-            if preparation_days_count < c and days[day] == 0:  # Only prepare if it's a rest day
-                days[day] = i + 1  # Mark day for preparation for exam i
-                preparation_days_count += 1
-        
-        # Check if we allocated enough preparation days
-        if preparation_days_count < c:
-            return -1
+    # Initialize the days array with zeros indicating rest days
+    days = [0] * n
+    exam_days = [0] * n  # To track the exam days
     
-    # Allocate exam days
-    for i in range(m):
-        d = exams[i][1]  # Get the exam day (1-based index)
-        days[d - 1] = m + 1  # Mark the exam day (0-based index)
+    # Prepare a list of exams with their respective indices for output
+    exam_list = [(s, d, c, idx + 1) for idx, (s, d, c) in enumerate(exams)]
+    
+    # Sort exams by their exam day
+    exam_list.sort(key=lambda x: x[1])
+    
+    # Allocate preparation days
+    for s, d, c, idx in exam_list:
+        available_days = [j for j in range(s - 1, d - 1) if days[j] == 0]  # Collect available rest days
+
+        # Check if there are enough available days for preparation
+        if len(available_days) < c:
+            return -1
+        
+        # Schedule the preparation days
+        for j in range(c):
+            days[available_days[j]] = idx
+
+        # Mark the exam day
+        exam_days[d - 1] = idx
+
+    # Fill exam days into the days array
+    for i in range(n):
+        if exam_days[i] != 0:
+            days[i] = m + 1  # Mark exam days with (m + 1)
 
     return days
 
-# Input reading
+# Read input
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-# Get the result
+# Get the schedule
 result = schedule_exams(n, m, exams)
 
-# Output result
+# Print result
 if result == -1:
     print(-1)
 else:
-    print(' '.join(map(str, result)))
+    print(" ".join(map(str, result)))

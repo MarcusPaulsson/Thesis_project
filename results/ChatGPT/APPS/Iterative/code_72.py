@@ -1,34 +1,37 @@
-def max_intersection_length(n, segments):
-    # Extract left and right endpoints
-    lefts = [l for l, r in segments]
-    rights = [r for l, r in segments]
-    
-    # Calculate the maximum and second maximum of lefts and rights
-    max_left = max(lefts)
-    second_max_left = sorted(lefts)[-2] if n > 2 else float('-inf')
-    
-    max_right = max(rights)
-    second_max_right = sorted(rights)[-2] if n > 2 else float('inf')
-    
-    max_length = 0
-    
-    for i in range(n):
-        l_i, r_i = segments[i]
-        
-        # Determine the effective left and right after removing segment i
-        effective_left = max(max_left if l_i != max_left else second_max_left, l_i)
-        effective_right = min(max_right if r_i != max_right else second_max_right, r_i)
-        
-        # Calculate the intersection length
-        intersection_length = max(0, effective_right - effective_left)
-        max_length = max(max_length, intersection_length)
-    
-    return max_length
-
-# Read input
 n = int(input())
 segments = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Get the result and print it
-result = max_intersection_length(n, segments)
-print(result)
+# Create lists to store the left and right endpoints
+lefts = [l for l, r in segments]
+rights = [r for l, r in segments]
+
+# Precompute the max left and min right while excluding each segment
+max_left = [0] * n
+min_right = [0] * n
+
+# Fill max_left
+max_left[0] = lefts[0]
+for i in range(1, n):
+    max_left[i] = max(max_left[i-1], lefts[i])
+
+# Fill min_right
+min_right[n-1] = rights[n-1]
+for i in range(n-2, -1, -1):
+    min_right[i] = min(min_right[i+1], rights[i])
+
+# Now calculate max intersection length when excluding each segment
+max_length = 0
+for i in range(n):
+    if i == 0:
+        current_left = max_left[1]
+        current_right = min_right[1]
+    elif i == n-1:
+        current_left = max_left[n-2]
+        current_right = min_right[n-2]
+    else:
+        current_left = max(max_left[i-1], lefts[i+1])
+        current_right = min(min_right[i+1], rights[i-1])
+    
+    max_length = max(max_length, max(0, current_right - current_left))
+
+print(max_length)

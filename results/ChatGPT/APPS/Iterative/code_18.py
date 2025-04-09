@@ -1,14 +1,16 @@
+def minimal_lexicographic_string(s):
+    t = []
+    u = []
+    
+    for char in s:
+        t.append(char)
+        while t:
+            if not u or t[-1] <= u[-1]:
+                u.append(t.pop())
+            else:
+                break
+    
+    return ''.join(u)
+
 s = input().strip()
-t = []
-u = []
-
-for char in s:
-    t.append(char)
-    while t and (not u or t[-1] <= u[-1]):
-        u.append(t.pop())
-
-# Append any remaining characters in t to u
-while t:
-    u.append(t.pop())
-
-print(''.join(u))
+print(minimal_lexicographic_string(s))

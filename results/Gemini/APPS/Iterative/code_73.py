@@ -10,10 +10,8 @@ def solve():
             stack.pop()
         else:
             stack.append(x)
-    
+            
     if not stack:
-        print("YES")
-    elif len(stack) == 1:
         print("YES")
     else:
         print("NO")

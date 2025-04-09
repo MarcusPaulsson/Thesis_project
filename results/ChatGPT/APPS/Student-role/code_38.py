@@ -1,14 +1,13 @@
 def can_tracks_coincide(n, L, kefa_distances, sasha_distances):
-    # Calculate the differences (gaps) between consecutive barriers and wrap around
-    kefa_gaps = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
-    sasha_gaps = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
+    # Calculate the distances between barriers for Kefa and Sasha
+    kefa_diffs = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
+    sasha_diffs = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
     
-    # Double the gaps for Kefa to handle circular comparison
-    doubled_kefa_gaps = kefa_gaps * 2
+    # Check if Sasha's differences can match Kefa's differences by cyclic rotation
+    double_kefa_diffs = kefa_diffs + kefa_diffs
     
-    # Check if sasha_gaps is a contiguous subsequence in doubled_kefa_gaps
-    for start in range(n):
-        if doubled_kefa_gaps[start:start + n] == sasha_gaps:
+    for i in range(n):
+        if double_kefa_diffs[i:i + n] == sasha_diffs:
             return "YES"
     
     return "NO"

@@ -1,53 +1,55 @@
-def count_common_ap(a1, b1, a2, b2, L, R):
-    # Function to find all values in the range [L, R] that can be expressed as both APs
-    def count_in_ap(a, b, L, R):
+def count_common_integers(a1, b1, a2, b2, L, R):
+    from math import gcd
+
+    def count_in_range(a, b, L, R):
         if a == 0:
             if b < L or b > R:
                 return 0
-            return (R - L) // a + 1 if L <= R else 0
-        
-        # Find the first term in the AP that is >= L
-        if b < L:
-            first = (L - b + a - 1) // a * a + b
-        else:
-            first = b
-        
-        # Find the last term in the AP that is <= R
-        if b > R:
-            last = (R - b) // a * a + b
-        else:
-            last = b
-        
-        if first > R or last < L:
-            return 0
-        
-        return (last - first) // a + 1
+            return R - L + 1
+        start = (L - b + a - 1) // a  # ceil((L - b) / a)
+        end = (R - b) // a            # floor((R - b) / a)
+        return max(0, end - start + 1)
+
+    # Calculate the gcd of the differences
+    g = gcd(a1, a2)
     
-    # Count terms for both APs
-    count_a1 = count_in_ap(a1, b1, L, R)
-    count_a2 = count_in_ap(a2, b2, L, R)
-    
-    # Use a set to collect common terms
-    common_terms = set()
-    
-    # Generate terms for the first AP
-    for k in range((R - b1) // a1 + 1):
-        term = a1 * k + b1
-        if L <= term <= R:
-            common_terms.add(term)
-    
-    # Count terms for the second AP and check commonality
-    count = 0
-    for l in range((R - b2) // a2 + 1):
-        term = a2 * l + b2
-        if L <= term <= R and term in common_terms:
-            count += 1
-    
-    return count
+    # Check if the equations can have common solutions
+    if (b2 - b1) % g != 0:
+        return 0
+
+    # Calculate the values for k and l
+    a1_g = a1 // g
+    a2_g = a2 // g
+    b_diff = b2 - b1
+    b_diff_g = b_diff // g
+
+    # Use the extended Euclidean algorithm to find a solution for modular equation
+    # a1 * x ≡ b_diff (mod a2)
+    def extended_gcd(a, b):
+        if b == 0:
+            return a, 1, 0
+        g, x1, y1 = extended_gcd(b, a % b)
+        x = y1
+        y = x1 - (a // b) * y1
+        return g, x, y
+
+    _, x0, y0 = extended_gcd(a1_g, a2_g)
+
+    # Scale the solution to the specific b_diff
+    x0 *= b_diff_g
+    y0 *= b_diff_g
+
+    # General solution
+    x0 = (x0 % (a2_g)) * (g) + b1
+    step = (a2_g * g)
+
+    # Count valid x in range [L, R]
+    count1 = count_in_range(step, x0, L, R)
+    count2 = count_in_range(step, x0 + step, L, R)
+
+    return count1 + count2
 
 # Read input
 a1, b1, a2, b2, L, R = map(int, input().split())
-# Get the result
-result = count_common_ap(a1, b1, a2, b2, L, R)
-# Print the output
-print(result)
+# Calculate and print the result
+print(count_common_integers(a1, b1, a2, b2, L, R))

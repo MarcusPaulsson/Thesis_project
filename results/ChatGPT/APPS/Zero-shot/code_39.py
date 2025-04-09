@@ -6,8 +6,8 @@ s = input().strip()
 if not is_palindrome(s):
     print(len(s))
 else:
-    n = len(s)
-    if s[0] != s[-1]:
-        print(n)
-    else:
+    # Check for any non-palindrome substring of length > 1
+    if len(set(s)) == 1:
         print(0)
+    else:
+        print(len(s) - 1)

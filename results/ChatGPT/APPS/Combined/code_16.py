@@ -1,18 +1,23 @@
-def can_form_regular_bracket_sequence(cnt_open_open, cnt_open_close, cnt_close_open, cnt_close_close):
-    # Calculate the total number of opening and closing brackets
-    total_opening = cnt_open_open + cnt_open_close  # Total opening brackets
-    total_closing = cnt_open_close + cnt_close_close  # Total closing brackets
+def can_form_regular_bracket_sequence(cnt1, cnt2, cnt3, cnt4):
+    # Calculate total counts of opening and closing brackets
+    opening_brackets = cnt1 + cnt2  # Total opening brackets
+    closing_brackets = cnt2 + cnt4   # Total closing brackets
 
-    # Ensure the number of opening brackets is at least equal to the number of closing brackets
-    if total_opening != total_closing or cnt_open_open < cnt_close_open:
+    # Check the balance of brackets
+    if opening_brackets < closing_brackets:
         return 0
+
+    # Check if we can maintain balance during the sequence
+    if cnt1 > cnt4 + cnt2:
+        return 0
+
     return 1
 
-# Read inputs
-cnt_open_open = int(input().strip())
-cnt_open_close = int(input().strip())
-cnt_close_open = int(input().strip())
-cnt_close_close = int(input().strip())
+# Read input
+cnt1 = int(input().strip())
+cnt2 = int(input().strip())
+cnt3 = int(input().strip())
+cnt4 = int(input().strip())
 
-# Print the result
-print(can_form_regular_bracket_sequence(cnt_open_open, cnt_open_close, cnt_close_open, cnt_close_close))
+# Output the result
+print(can_form_regular_bracket_sequence(cnt1, cnt2, cnt3, cnt4))

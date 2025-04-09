@@ -12,12 +12,14 @@ def solve():
     while not is_lucky(current_hh, current_mm):
         current_mm -= x
         if current_mm < 0:
-            current_mm += 60
             current_hh -= 1
+            current_mm += 60
             if current_hh < 0:
                 current_hh += 24
+        
         count += 1
 
     print(count)
 
-solve()
+if __name__ == "__main__":
+    solve()

@@ -1,28 +1,28 @@
-def fill_gift_choices(n, f):
-    # Find the indices of friends who don't know whom to give gifts to (f_i = 0)
-    unknown_indices = [i for i in range(n) if f[i] == 0]
+def distribute_gifts(n, f):
+    # Prepare a list for the final output
+    nf = f[:]
     
-    # Create a set of all possible friends (1 to n)
-    all_friends = set(range(1, n + 1))
-    
-    # Find the set of friends who already have a known gift target
-    known_gift_targets = set(f[i] for i in range(n) if f[i] != 0)
-    
-    # Find the remaining friends who need to receive gifts
-    remaining_friends = list(all_friends - known_gift_targets)
-    
-    # Fill in the unknowns
-    for i in range(len(unknown_indices)):
-        friend_idx = unknown_indices[i]
-        # Assign the gift target ensuring no one gives a gift to themselves
-        f[friend_idx] = remaining_friends[i]
+    # Identify friends who want to give gifts to someone
+    givers = set(i + 1 for i in range(n) if f[i] != 0)
+    # Identify friends who can receive gifts (those with f[i] == 0)
+    receivers = set(i + 1 for i in range(n) if f[i] == 0)
 
-    return f
+    # Friends who need to be filled in
+    need_to_fill = list(receivers - givers)
+
+    # Fill the unknown values
+    idx = 0
+    for i in range(n):
+        if nf[i] == 0:
+            # Find a suitable recipient that is not the current index + 1
+            while need_to_fill[idx] == i + 1:
+                idx += 1
+            nf[i] = need_to_fill[idx]
+            idx += 1
+
+    print(" ".join(map(str, nf)))
 
 # Input reading
 n = int(input())
 f = list(map(int, input().split()))
-
-# Process and output the result
-result = fill_gift_choices(n, f)
-print(" ".join(map(str, result)))
+distribute_gifts(n, f)

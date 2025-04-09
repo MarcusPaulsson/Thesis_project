@@ -1,3 +1,5 @@
+import math
+
 a = int(input())
-output = (a - 1).bit_length()
+output = math.floor(math.log2(a))
 print(output)

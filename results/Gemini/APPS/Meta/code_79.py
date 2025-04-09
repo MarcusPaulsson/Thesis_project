@@ -4,54 +4,53 @@ def solve():
     l = len(s)
     ans = float('inf')
 
-    for suffix in ["00", "25", "50", "75"]:
+    for suffix in ['00', '25', '50', '75']:
         temp_s = s[:]
-        
-        # Find last digit of suffix
-        last_digit_index = -1
-        for i in range(l - 1, -1, -1):
-            if temp_s[i] == suffix[1]:
-                last_digit_index = i
-                break
-        
-        if last_digit_index == -1:
-            continue
-        
         moves = 0
-        for i in range(last_digit_index, l - 1):
-            temp_s[i], temp_s[i+1] = temp_s[i+1], temp_s[i]
-            moves += 1
-        
-        # Find second to last digit of suffix
-        second_last_digit_index = -1
-        for i in range(l - 2, -1, -1):
-            if temp_s[i] == suffix[0]:
-                second_last_digit_index = i
-                break
-        
-        if second_last_digit_index == -1:
-            continue
+
+        # Find the last digit of the suffix
+        try:
+            idx1 = -1
+            for i in range(l - 1, -1, -1):
+                if temp_s[i] == suffix[1]:
+                    idx1 = i
+                    break
+            if idx1 == -1:
+                continue
+
+            moves += (l - 1 - idx1)
+            del temp_s[idx1]
+
+            # Find the second last digit of the suffix
+            idx2 = -1
+            for i in range(len(temp_s) - 1, -1, -1):
+                if temp_s[i] == suffix[0]:
+                    idx2 = i
+                    break
+
+            if idx2 == -1:
+                continue
+
+            moves += (len(temp_s) - 1 - idx2)
+            del temp_s[idx2]
             
-        for i in range(second_last_digit_index, l - 2):
-            temp_s[i], temp_s[i+1] = temp_s[i+1], temp_s[i]
-            moves += 1
+            # Remove leading zeros
+            leading_zeros = 0
+            for i in range(len(temp_s)):
+                if temp_s[i] == '0':
+                    leading_zeros += 1
+                else:
+                    break
+            
+            moves += leading_zeros
 
-        # Remove leading zeros
-        first_non_zero_index = -1
-        for i in range(l):
-            if temp_s[i] != '0':
-                first_non_zero_index = i
-                break
+            ans = min(ans, moves)
 
-        if first_non_zero_index == -1:
+        except ValueError:
             continue
-
-        moves += first_non_zero_index
-        
-        ans = min(ans, moves)
     
     if ans == float('inf'):
-        print("-1")
+        print(-1)
     else:
         print(ans)
 

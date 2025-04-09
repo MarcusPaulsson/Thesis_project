@@ -1,6 +1,6 @@
-def minimum_difference(n):
+def min_difference(n):
     total_sum = n * (n + 1) // 2
     return total_sum % 2
 
 n = int(input())
-print(minimum_difference(n))
+print(min_difference(n))
