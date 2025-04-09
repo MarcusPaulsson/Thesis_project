@@ -8,59 +8,89 @@ def solve():
     
     cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
     
-    def count_left(index):
-        count = 0
-        for i in range(d):
-            if i != index:
-                x1_i, y1_i, x2_i, y2_i = sofas[i]
-                x1, y1, x2, y2 = sofas[index]
-                
-                if min(x1_i, x2_i) < min(x1, x2) and \
-                   ((y1_i == y1 and y2_i == y2) or (y1_i == y2 and y2_i == y1)):
-                    count += 1
-        return count
+    def is_left(sofa1, sofa2):
+        x1_1, y1_1, x1_2, y1_2 = sofa1
+        x2_1, y2_1, x2_2, y2_2 = sofa2
+        
+        min_x1 = min(x1_1, x1_2)
+        max_x1 = max(x1_1, x1_2)
+        min_y1 = min(y1_1, y1_2)
+        max_y1 = max(y1_1, y1_2)
+        
+        min_x2 = min(x2_1, x2_2)
+        max_x2 = max(x2_1, x2_2)
+        min_y2 = min(y2_1, y2_2)
+        max_y2 = max(y2_1, y2_2)
+
+        
+        return max_x1 < min_x2
     
-    def count_right(index):
-        count = 0
-        for i in range(d):
-            if i != index:
-                x1_i, y1_i, x2_i, y2_i = sofas[i]
-                x1, y1, x2, y2 = sofas[index]
-                
-                if min(x1_i, x2_i) > min(x1, x2) and \
-                   ((y1_i == y1 and y2_i == y2) or (y1_i == y2 and y2_i == y1)):
-                    count += 1
-        return count
+    def is_right(sofa1, sofa2):
+        x1_1, y1_1, x1_2, y1_2 = sofa1
+        x2_1, y2_1, x2_2, y2_2 = sofa2
+        
+        min_x1 = min(x1_1, x1_2)
+        max_x1 = max(x1_1, x1_2)
+        min_y1 = min(y1_1, y1_2)
+        max_y1 = max(y1_1, y1_2)
+        
+        min_x2 = min(x2_1, x2_2)
+        max_x2 = max(x2_1, x2_2)
+        min_y2 = min(y2_1, y2_2)
+        max_y2 = max(y2_1, y2_2)
+
+        return max_x2 < min_x1
     
-    def count_top(index):
-        count = 0
-        for i in range(d):
-            if i != index:
-                x1_i, y1_i, x2_i, y2_i = sofas[i]
-                x1, y1, x2, y2 = sofas[index]
-                
-                if min(y1_i, y2_i) < min(y1, y2) and \
-                   ((x1_i == x1 and x2_i == x2) or (x1_i == x2 and x2_i == x1)):
-                    count += 1
-        return count
+    def is_top(sofa1, sofa2):
+        x1_1, y1_1, x1_2, y1_2 = sofa1
+        x2_1, y2_1, x2_2, y2_2 = sofa2
+        
+        min_x1 = min(x1_1, x1_2)
+        max_x1 = max(x1_1, x1_2)
+        min_y1 = min(y1_1, y1_2)
+        max_y1 = max(y1_1, y1_2)
+        
+        min_x2 = min(x2_1, x2_2)
+        max_x2 = max(x2_1, x2_2)
+        min_y2 = min(y2_1, y2_2)
+        max_y2 = max(y2_1, y2_2)
+
+        return max_y1 < min_y2
     
-    def count_bottom(index):
-        count = 0
-        for i in range(d):
-            if i != index:
-                x1_i, y1_i, x2_i, y2_i = sofas[i]
-                x1, y1, x2, y2 = sofas[index]
-                
-                if min(y1_i, y2_i) > min(y1, y2) and \
-                   ((x1_i == x1 and x2_i == x2) or (x1_i == x2 and x2_i == x1)):
-                    count += 1
-        return count
-    
+    def is_bottom(sofa1, sofa2):
+        x1_1, y1_1, x1_2, y1_2 = sofa1
+        x2_1, y2_1, x2_2, y2_2 = sofa2
+        
+        min_x1 = min(x1_1, x1_2)
+        max_x1 = max(x1_1, x1_2)
+        min_y1 = min(y1_1, y1_2)
+        max_y1 = max(y1_1, y1_2)
+        
+        min_x2 = min(x2_1, x2_2)
+        max_x2 = max(x2_1, x2_2)
+        min_y2 = min(y2_1, y2_2)
+        max_y2 = max(y2_1, y2_2)
+
+        return max_y2 < min_y1
+
     for i in range(d):
-        if (count_left(i) == cnt_l and
-            count_right(i) == cnt_r and
-            count_top(i) == cnt_t and
-            count_bottom(i) == cnt_b):
+        left_count = 0
+        right_count = 0
+        top_count = 0
+        bottom_count = 0
+        
+        for j in range(d):
+            if i != j:
+                if is_left(sofas[j], sofas[i]):
+                    left_count += 1
+                if is_right(sofas[j], sofas[i]):
+                    right_count += 1
+                if is_top(sofas[j], sofas[i]):
+                    top_count += 1
+                if is_bottom(sofas[j], sofas[i]):
+                    bottom_count += 1
+        
+        if left_count == cnt_l and right_count == cnt_r and top_count == cnt_t and bottom_count == cnt_b:
             print(i + 1)
             return
     

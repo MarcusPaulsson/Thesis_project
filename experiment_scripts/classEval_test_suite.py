@@ -11,20 +11,17 @@ import time
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(upper_dir)
 
+
 # Define folder paths in a dictionary
 folder_paths = {
-    "Gemini Zero-shot": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot')),
-    # ... other folder paths
-}
-# Define folder paths in a dictionary
-folder_paths = {
-"Gemini Zero-shot": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot')),
+ "Gemini Zero-shot": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot')),
   "Gemini Zero-shot-CoT": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Zero-shot-CoT')),
   "Gemini Student-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Student-role')),
   "Gemini Expert-role": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Expert-role')),
   "Gemini Meta": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Meta')),
- "Gemini Naive": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Naive')),
+  "Gemini Naive": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Naive')),
   "Gemini Iterative": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Iterative')),
+  "Gemini Combined": os.path.abspath(os.path.join('results', 'Gemini', 'classEval', 'Combined')),
 
  "ChatGPT Zero-shot": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Zero-shot')),
  "ChatGPT Zero-shot-CoT": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Zero-shot-CoT')),
@@ -33,14 +30,16 @@ folder_paths = {
  "ChatGPT Meta": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Meta')),
   "ChatGPT Naive": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Naive')),
   "ChatGPT Iterative": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Iterative')),
+  "ChatGPT Combined": os.path.abspath(os.path.join('results', 'ChatGPT', 'classEval', 'Combined')),
 
-# "Gemma3 Zero-shot": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Zero-shot')),
-#  "Gemma3 Zero-shot-CoT": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Zero-shot-CoT')),
-#  "Gemma3 Student-role": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Student-role')),
-#  "Gemma3 Expert-role": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Expert-role')),
-#  "Gemma3 Meta": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Meta')),
-# "Gemma3 Naive": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Naive')),
-#  "Gemma3 Iterative": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Iterative')),
+"Gemma3 Zero-shot": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Zero-shot')),
+ "Gemma3 Zero-shot-CoT": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Zero-shot-CoT')),
+ "Gemma3 Student-role": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Student-role')),
+ "Gemma3 Expert-role": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Expert-role')),
+ "Gemma3 Meta": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Meta')),
+"Gemma3 Naive": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Naive')),
+ "Gemma3 Iterative": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Iterative')),
+ "Gemma3 Combined": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Combined')),
 }
 
 test_data_path = os.path.abspath(os.path.join('data', 'ClassEval_data.json'))

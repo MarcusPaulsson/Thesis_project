@@ -115,9 +115,3 @@ class ZipFileProcessor:
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
             return False
-
-
-if __name__ == '__main__':
-    import unittest
-
-    unittest.main()

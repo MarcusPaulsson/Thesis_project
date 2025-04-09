@@ -1,5 +1,5 @@
 import re
-import unittest
+
 
 class NumericEntityUnescaper:
     """
@@ -39,40 +39,3 @@ class NumericEntityUnescaper:
         """
         return char.lower() in '0123456789abcdef'
 
-
-class NumericEntityUnescaperTestReplace(unittest.TestCase):
-    def setUp(self):
-        self.unescaper = NumericEntityUnescaper()
-
-    def test_replace_valid(self):
-        self.assertEqual(self.unescaper.replace("&#65;&#66;&#67;"), "ABC")
-        self.assertEqual(self.unescaper.replace("&#X65;&#66;&#67;"), "eBC")
-    
-    def test_replace_repeated(self):
-        self.assertEqual(self.unescaper.replace("&#65;&#65;&#65;"), "AAA")
-        self.assertEqual(self.unescaper.replace("&#66;&#66;&#66;"), "BBB")
-        self.assertEqual(self.unescaper.replace("&#67;&#67;&#67;"), "CCC")
-
-    def test_replace_empty(self):
-        self.assertEqual(self.unescaper.replace(""), "")
-        self.assertEqual(self.unescaper.replace("&#"), "")
-        self.assertEqual(self.unescaper.replace("&#X"), "")
-        
-    def test_replace_invalid(self):
-        self.assertEqual(self.unescaper.replace("&#???;&#66;&#67;"), "&#???;BC")
-        self.assertEqual(self.unescaper.replace("&#c1d;&#66;&#67;"), "")
-        self.assertEqual(self.unescaper.replace("&#67;&#67;&#67;;"), "CCC")
-
-
-class NumericEntityUnescaperTestIsHexChar(unittest.TestCase):
-    def test_is_hex_char(self):
-        unescaper = NumericEntityUnescaper()
-        self.assertTrue(unescaper.is_hex_char('0'))
-        self.assertTrue(unescaper.is_hex_char('F'))
-        self.assertFalse(unescaper.is_hex_char('G'))
-        self.assertFalse(unescaper.is_hex_char('X'))
-        self.assertFalse(unescaper.is_hex_char('Z'))
-
-
-if __name__ == '__main__':
-    unittest.main()

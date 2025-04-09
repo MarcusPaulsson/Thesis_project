@@ -24,7 +24,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
     client = genai.Client(api_key=config.GEMINI_API_KEY)
     model = "gemma-3-27b-it"
     user_prompt = system_prompt + " Use python to code. Give only the code.\n" + task_prompt
-    time.sleep(2)
+    time.sleep(4)
     contents = [
         types.Content(
             role="user",
@@ -58,6 +58,8 @@ def process_task_with_iterations(task_prompt):
     if result_iter1["error"]:
         return {"assistant_response": None, "error": f"Iteration 1 failed: {result_iter1['error']}"}
     assistant_response_iter1 = result_iter1["response"]
+    if assistant_response_iter1 == None:
+        return {"assistant_response": "", "error": None}
     result_iter2 = run_task_with_gemini_iter(assistant_response_iter1 + "\n" + task_prompt, prompt.SYSTEM_PROMPT[1])
     if result_iter2["error"]:
         return {"assistant_response": None, "error": f"Iteration 2 failed: {result_iter2['error']}"}
@@ -76,7 +78,7 @@ def extract_apps_tasks(json_file_path):
                     data = json.loads(line)
                     if "question" in data and "input_output" in data:
                         current_task = data["question"]
-                        extra_prompt = "\n Here is some more test cases the code shall pass: " 
+                        extra_prompt = "\n Here is some of the test cases: " 
                         test_cases =  data["input_output"]
                         temp = json.loads(test_cases)
                         max_numb_test = 5
@@ -136,8 +138,8 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 10 # Adjust to the number of tasks you want to run in parallel
-    max_workers = 1  # Adjust the number of parallel calls you want to make
+    end_index = 100 # Adjust to the number of tasks you want to run in parallel
+    max_workers = 3  # Adjust the number of parallel calls you want to make
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)

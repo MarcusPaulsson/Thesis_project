@@ -128,7 +128,7 @@ class DocFileHandler:
             return WD_PARAGRAPH_ALIGNMENT.RIGHT
         else:
             return WD_PARAGRAPH_ALIGNMENT.LEFT
-import unittest
+
 import os
 from docx import Document
 

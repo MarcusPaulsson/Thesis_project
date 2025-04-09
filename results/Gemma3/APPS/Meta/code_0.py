@@ -19,14 +19,13 @@ def solve():
                                             valid = False
                                             break
                                     
-                                    for m in range(k + 1, l):
+                                    for m in range(j + 1, k):
                                         if s[m] != '|':
                                             valid = False
                                             break
                                     
                                     if valid:
-                                        length = 4 + (j - i - 1) + (l - k - 1)
-                                        max_len = max(max_len, length)
+                                        max_len = max(max_len, l - i + 1)
     
     print(max_len)
 

@@ -51,39 +51,3 @@ class AreaCalculator:
         """
         return math.pi * (outer_radius ** 2 - inner_radius ** 2)
 
-
-# Testing code
-import unittest
-
-class AreaCalculatorTests(unittest.TestCase):
-
-    def test_calculate_circle_area(self):
-        areaCalculator = AreaCalculator(2)
-        self.assertAlmostEqual(12.57, areaCalculator.calculate_circle_area(), delta=0.01)
-
-    def test_calculate_sphere_area(self):
-        areaCalculator = AreaCalculator(2)
-        self.assertAlmostEqual(50.27, areaCalculator.calculate_sphere_area(), delta=0.01)
-
-    def test_calculate_cylinder_area(self):
-        areaCalculator = AreaCalculator(2)
-        self.assertAlmostEqual(50.27, areaCalculator.calculate_cylinder_area(2), delta=0.01)
-
-    def test_calculate_sector_area(self):
-        areaCalculator = AreaCalculator(2)
-        self.assertAlmostEqual(6.28, areaCalculator.calculate_sector_area(math.pi), delta=0.01)
-
-    def test_calculate_annulus_area(self):
-        areaCalculator = AreaCalculator(2)
-        self.assertAlmostEqual(25.13, areaCalculator.calculate_annulus_area(1, 3), delta=0.01)
-
-    def test_all_shapes(self):
-        areaCalculator = AreaCalculator(2)
-        self.assertAlmostEqual(12.57, areaCalculator.calculate_circle_area(), delta=0.01)
-        self.assertAlmostEqual(50.27, areaCalculator.calculate_sphere_area(), delta=0.01)
-        self.assertAlmostEqual(50.27, areaCalculator.calculate_cylinder_area(2), delta=0.01)
-        self.assertAlmostEqual(6.28, areaCalculator.calculate_sector_area(math.pi), delta=0.01)
-        self.assertAlmostEqual(25.13, areaCalculator.calculate_annulus_area(1, 3), delta=0.01)
-
-if __name__ == '__main__':
-    unittest.main()

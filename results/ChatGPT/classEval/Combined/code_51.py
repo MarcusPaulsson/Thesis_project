@@ -1,5 +1,5 @@
 import numpy as np
-import unittest
+
 
 class KappaCalculator:
     """
@@ -119,6 +119,3 @@ class KappaCalculatorTestFleissKappa(unittest.TestCase):
         for data, N, n, expected in test_cases:
             self.assertAlmostEqual(KappaCalculator.fleiss_kappa(data, N, n), expected)
 
-
-if __name__ == "__main__":
-    unittest.main()

@@ -113,4 +113,3 @@ class DocFileHandler:
             return WD_PARAGRAPH_ALIGNMENT.LEFT  # Default to left alignment
 
 import os
-import unittest

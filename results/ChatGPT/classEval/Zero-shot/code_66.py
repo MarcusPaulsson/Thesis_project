@@ -1,5 +1,5 @@
 import re
-import unittest
+
 
 class NumericEntityUnescaper:
     """

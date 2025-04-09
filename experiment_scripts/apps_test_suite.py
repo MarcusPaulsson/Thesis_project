@@ -16,6 +16,7 @@ Gemini_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemini
 Gemini_meta_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Meta'))
 Gemini_naive_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Naive'))
 Gemini_iterative_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Iterative'))
+Gemini_combined_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Combined'))
 
 # ChatGPT
 chatGPT_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Zero-shot'))
@@ -25,6 +26,7 @@ chatGPT_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatG
 chatGPT_meta_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Meta'))
 chatGPT_naive_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Naive'))
 chatGPT_iterative_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Iterative'))
+chatGPT_combined_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Combined'))
 
 # Gemma
 gemma_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Zero-shot'))
@@ -34,6 +36,7 @@ gemma_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3'
 gemma_meta_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Meta'))
 gemma_naive_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Naive'))
 gemma_iterative_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Iterative'))
+gemma_combined_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Combined'))
 
 # WizardCoder
 #wizardCoder_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'WizardCoder', 'APPS', 'Zero-shot'))
@@ -56,6 +59,7 @@ folder_paths = {
      "Gemini Meta": Gemini_meta_apps_folder,
      "Gemini Naive": Gemini_naive_apps_folder,
      "Gemini Iterative": Gemini_iterative_apps_folder,
+     "Gemini Combined": Gemini_combined_apps_folder,
 
      "ChatGPT Zero-shot": chatGPT_zero_shot_apps_folder,
      "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
@@ -64,14 +68,16 @@ folder_paths = {
      "ChatGPT Meta": chatGPT_meta_apps_folder,
      "ChatGPT Naive": chatGPT_naive_apps_folder,
      "ChatGPT Iterative": chatGPT_iterative_apps_folder,
+     "ChatGPT Combined": chatGPT_combined_apps_folder,
 
-    # "Gemma3 Zero-shot": gemma_zero_shot_apps_folder,
-    # "Gemma3 Zero-shot-CoT": gemma_zero_shot_CoT_apps_folder,
-    # "Gemma3 Student-role": gemma_student_role_apps_folder,
-    # "Gemma3 Expert-role": gemma_expert_role_apps_folder,
-    # "Gemma3 Meta": gemma_meta_apps_folder,
-    # "Gemma3 Naive": gemma_naive_apps_folder,
-    # "Gemma3 Iterative": gemma_iterative_apps_folder,
+    "Gemma3 Zero-shot": gemma_zero_shot_apps_folder,
+    "Gemma3 Zero-shot-CoT": gemma_zero_shot_CoT_apps_folder,
+    "Gemma3 Student-role": gemma_student_role_apps_folder,
+    "Gemma3 Expert-role": gemma_expert_role_apps_folder,
+    "Gemma3 Meta": gemma_meta_apps_folder,
+    "Gemma3 Naive": gemma_naive_apps_folder,
+    "Gemma3 Iterative": gemma_iterative_apps_folder,
+    "Gemma3 Combined": gemma_combined_apps_folder,
 
 }
 
@@ -119,7 +125,7 @@ def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
             print(f"\n--- Running Test {i + 1} of {total_tests} ---")
             json_data = json.loads(task)
             inputs, outputs = json_data["inputs"], json_data["outputs"]
-            max_numb_test, placeholder = 5, 5
+            max_numb_test, placeholder = 1, 1
             output_list = []
             for test_i, item in enumerate(inputs):
                 if max_numb_test:

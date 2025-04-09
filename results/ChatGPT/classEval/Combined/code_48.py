@@ -1,6 +1,6 @@
 import socket
 import re
-import unittest
+
 
 
 class IpUtil:
@@ -54,56 +54,3 @@ class IpUtil:
         except (socket.herror, socket.gaierror):
             return None
 
-
-class IpUtilTestIsValidIPv4(unittest.TestCase):
-    def test_is_valid_ipv4(self):
-        valid_ips = ['192.168.0.123', '10.10.10.10', '0.0.0.0']
-        invalid_ips = ['abc.168.0.123', '256.0.0.0']
-
-        for ip in valid_ips:
-            self.assertTrue(IpUtil.is_valid_ipv4(ip))
-        
-        for ip in invalid_ips:
-            self.assertFalse(IpUtil.is_valid_ipv4(ip))
-
-
-class IpUtilTestIsValidIPv6(unittest.TestCase):
-    def test_is_valid_ipv6(self):
-        valid_ips = ['2001:0db8:85a3:0000:0000:8a2e:0370:7334']
-        invalid_ips = [
-            '2001:0db8:85a3:::8a2e:0370:7334',
-            '2001:0db8:85a3:2001:llll:8a2e:0370:7334',
-            '2001:0db8:85a3:llll:llll:8a2e:0370:7334',
-            '2001:0db8:85a3::llll:8a2e:0370:7334'
-        ]
-
-        for ip in valid_ips:
-            self.assertTrue(IpUtil.is_valid_ipv6(ip))
-        
-        for ip in invalid_ips:
-            self.assertFalse(IpUtil.is_valid_ipv6(ip))
-
-
-class IpUtilTestGetHostname(unittest.TestCase):
-    def test_get_hostname(self):
-        test_cases = [
-            ('110.242.68.3', None),
-            ('10.0.0.1', None),
-            ('0.0.0.0', socket.gethostname()),
-            ('0.0.0.1', None),
-            ('0.0.0.2', None)
-        ]
-
-        for ip, expected in test_cases:
-            self.assertEqual(IpUtil.get_hostname(ip), expected)
-
-
-class IpUtilTest(unittest.TestCase):
-    def test_ip_util_methods(self):
-        self.assertTrue(IpUtil.is_valid_ipv4('192.168.0.123'))
-        self.assertTrue(IpUtil.is_valid_ipv6('2001:0db8:85a3:0000:0000:8a2e:0370:7334'))
-        self.assertIsNone(IpUtil.get_hostname('110.242.68.3'))
-
-
-if __name__ == '__main__':
-    unittest.main()

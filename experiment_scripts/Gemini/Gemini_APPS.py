@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     # Define the index interval for tasks
     start_index = 0
-    end_index = 10  # Adjust to the number of tasks you want to run.
+    end_index = 100  # Adjust to the number of tasks you want to run.
     max_workers = 1 # Adjust the number of parallel threads
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 

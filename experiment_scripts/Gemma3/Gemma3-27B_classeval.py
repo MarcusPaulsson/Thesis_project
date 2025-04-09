@@ -21,7 +21,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
     """
     Runs a single iteration of a task using the Gemini API.
     """
-    time.sleep(20)
+    time.sleep(15)
     client = genai.Client(api_key=config.GEMINI_API_KEY)
     model = "gemma-3-27b-it"
     user_prompt = system_prompt + " Use python to code. Give only the code.\n" + task_prompt
@@ -114,8 +114,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 10
-    end_index = 20  # Adjust to the number of tasks you want to run in parallel
+    start_index = 90
+    end_index = 91  # Adjust to the number of tasks you want to run in parallel
     max_workers = 1   # Adjust the number of parallel calls you want to make
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 

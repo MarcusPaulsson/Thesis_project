@@ -12,15 +12,16 @@ def solve():
                 painted[i] = True
         return sum(painted)
 
-    max_painted = 0
+    max_painted_sections = 0
     for i in range(q):
         for j in range(i + 1, q):
             selected_painters = []
             for k in range(q):
                 if k != i and k != j:
                     selected_painters.append(painters[k])
-            max_painted = max(max_painted, calculate_painted_sections(selected_painters))
+            
+            max_painted_sections = max(max_painted_sections, calculate_painted_sections(selected_painters))
 
-    print(max_painted)
+    print(max_painted_sections)
 
 solve()

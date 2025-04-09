@@ -1,6 +1,6 @@
 import random
 import re
-import unittest
+
 
 class TwentyFourPointGame:
     """
@@ -56,55 +56,3 @@ class TwentyFourPointGame:
         allowed_chars = set("0123456789+-*/() ")
         return (all(char in allowed_chars for char in expression) and
                 all(num in map(str, self.nums) for num in re.findall(r'\d+', expression)))
-
-# Unit tests
-class TwentyFourPointGameTest(unittest.TestCase):
-    def setUp(self):
-        self.game = TwentyFourPointGame()
-
-    def test_get_my_cards(self):
-        cards = self.game.get_my_cards()
-        self.assertEqual(len(cards), 4)
-        for card in cards:
-            self.assertIn(card, range(1, 10))
-
-    def test_answer_valid_expression(self):
-        self.game.nums = [4, 3, 6, 6]
-        result = self.game.answer('4*3+6+6')
-        self.assertTrue(result)
-
-    def test_answer_invalid_expression(self):
-        result = self.game.answer('1+1+1+1')
-        self.assertFalse(result)
-
-    def test_answer_invalid_syntax(self):
-        result = self.game.answer('1+')
-        self.assertFalse(result)
-
-    def test_answer_invalid_characters(self):
-        result = self.game.answer('abc')
-        self.assertFalse(result)
-
-    def test_answer_exceeding_numbers(self):
-        self.game.nums = [1, 1, 1, 1]
-        result = self.game.answer('1+1+1+2')
-        self.assertFalse(result)
-
-    def test_evaluate_expression(self):
-        result = self.game.evaluate_expression('4*3+6+6')
-        self.assertTrue(result)
-
-    def test_evaluate_expression_invalid(self):
-        result = self.game.evaluate_expression('1+1+1+1')
-        self.assertFalse(result)
-
-    def test_evaluate_expression_invalid_syntax(self):
-        result = self.game.evaluate_expression('1+')
-        self.assertFalse(result)
-
-    def test_evaluate_expression_invalid_characters(self):
-        result = self.game.evaluate_expression('abc')
-        self.assertFalse(result)
-
-if __name__ == "__main__":
-    unittest.main()

@@ -60,10 +60,11 @@ def solve():
         return count
 
     for i in range(d):
-        if (count_left(i) == cnt_l and
-            count_right(i) == cnt_r and
-            count_top(i) == cnt_t and
-            count_bottom(i) == cnt_b):
+        l = count_left(i)
+        r = count_right(i)
+        t = count_top(i)
+        b = count_bottom(i)
+        if l == cnt_l and r == cnt_r and t == cnt_t and b == cnt_b:
             print(i + 1)
             return
 
