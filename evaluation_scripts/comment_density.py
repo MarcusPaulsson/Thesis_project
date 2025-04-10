@@ -258,21 +258,21 @@ for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviat
 
 for folder, (avg_density, _) in results_gemma.items(): #ignore standard deviation from folder output
     if "Zero-shot" in folder and "CoT" not in folder:
-        chatgpt_densities["Zero-shot"].append(avg_density)
+        gemma_densities["Zero-shot"].append(avg_density)
     elif "Zero-shot-CoT" in folder:
-        chatgpt_densities["Zero-shot-CoT"].append(avg_density)
+        gemma_densities["Zero-shot-CoT"].append(avg_density)
     elif "Expert-role" in folder:
-        chatgpt_densities["Expert-role"].append(avg_density)
+        gemma_densities["Expert-role"].append(avg_density)
     elif "Student-role" in folder:
-        chatgpt_densities["Student-role"].append(avg_density)
+        gemma_densities["Student-role"].append(avg_density)
     elif "Meta" in folder:
-        chatgpt_densities["Meta"].append(avg_density)
+        gemma_densities["Meta"].append(avg_density)
     elif "Naive" in folder:
-        chatgpt_densities["Naive"].append(avg_density)
+        gemma_densities["Naive"].append(avg_density)
     elif "Iterative" in folder:
-        chatgpt_densities["Iterative"].append(avg_density)
+        gemma_densities["Iterative"].append(avg_density)
     elif "Combined" in folder:
-        chatgpt_densities["Combined"].append(avg_density)
+        gemma_densities["Combined"].append(avg_density)
 
 print("\nGemini Comment Density Averages:")
 for technique, densities in gemini_densities.items():
@@ -292,7 +292,7 @@ for technique, densities in chatgpt_densities.items():
     else:
         print(f"  {technique}: No data available.")
 
-print("\nChatGPT Comment Density Averages:")
+print("\nGemma3 Comment Density Averages:")
 for technique, densities in gemma_densities.items():
     if densities:
         avg_density = statistics.mean(densities)
