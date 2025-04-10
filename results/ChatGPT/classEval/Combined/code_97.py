@@ -16,18 +16,15 @@ class Words2Numbers:
         self.tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
         self.scales = ["hundred", "thousand", "million", "billion", "trillion"]
 
+        self.numwords = {word: (1, idx) for idx, word in enumerate(self.units)}
+        self.numwords.update({word: (1, idx * 10) for idx, word in enumerate(self.tens)})
         self.numwords["and"] = (1, 0)
-        self._initialize_numwords()
-        self.ordinal_words = {'first': 1, 'second': 2, 'third': 3, 'fifth': 5, 'eighth': 8, 'ninth': 9, 'twelfth': 12}
-        self.ordinal_endings = [('ieth', 'y'), ('th', '')]
+        self.numwords.update({word: (10 ** (idx * 3), 0) for idx, word in enumerate(self.scales)})
 
-    def _initialize_numwords(self):
-        for idx, word in enumerate(self.units):
-            self.numwords[word] = (1, idx)
-        for idx, word in enumerate(self.tens):
-            self.numwords[word] = (1, idx * 10)
-        for idx, word in enumerate(self.scales):
-            self.numwords[word] = (10 ** (idx * 3), 0)
+        self.ordinal_words = {
+            'first': 1, 'second': 2, 'third': 3, 'fifth': 5, 
+            'eighth': 8, 'ninth': 9, 'twelfth': 12
+        }
 
     def text2int(self, textnum):
         """
@@ -35,24 +32,19 @@ class Words2Numbers:
         :param textnum: string, the word string to be converted.
         :return: string, the final converted integer string.
         """
-        if not self.is_valid_input(textnum):
-            return ""
+        textnum = textnum.replace("-", " ")
+        parts = textnum.split()
 
-        textnum = textnum.replace("-", " ")  # Handle hyphenated words
         current = result = 0
-
-        for word in textnum.split():
-            if word in self.numwords:
-                scale, increment = self.numwords[word]
-                current += increment
-
-                if scale > 1:
-                    current *= scale
-                    result += current
-                    current = 0
-            else:
-                raise ValueError(f"Invalid word found: {word}")
-
+        for word in parts:
+            if word not in self.numwords:
+                raise ValueError(f"Invalid word: {word}")
+            scale, increment = self.numwords[word]
+            current += increment
+            if scale > 1:
+                current *= scale
+                result += current
+                current = 0
         return str(result + current)
 
     def is_valid_input(self, textnum):
@@ -61,8 +53,6 @@ class Words2Numbers:
         :param textnum: The input text containing words representing numbers.
         :return: True if input is valid, False otherwise.
         """
-        valid_words = set(self.numwords.keys())
-        for word in textnum.replace("-", " ").split():
-            if word not in valid_words:
-                return False
-        return True
+        textnum = textnum.replace("-", " ")
+        parts = textnum.split()
+        return all(word in self.numwords or word in self.ordinal_words for word in parts)

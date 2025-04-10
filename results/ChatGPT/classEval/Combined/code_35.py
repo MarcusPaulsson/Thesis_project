@@ -1,3 +1,6 @@
+from collections import deque
+import unittest
+
 class EightPuzzle:
     """
     This class implements the classic 8-puzzle game, including methods for finding the blank tile,
@@ -6,86 +9,115 @@ class EightPuzzle:
 
     def __init__(self, initial_state):
         """
-        Initializes the initial state of the Eight Puzzle Game, and sets the goal state.
-        
-        :param initial_state: A 3x3 list of integers representing the initial state.
+        Initializes the initial state of the Eight Puzzle Game and sets the goal state.
+        :param initial_state: a 3x3 list of integers representing the initial state.
         """
         self.initial_state = initial_state
         self.goal_state = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
 
     def find_blank(self, state):
         """
-        Finds the position of the blank tile (0) in the current state.
-        
-        :param state: A 3x3 list of integers representing the current state.
-        :return: Tuple (i, j) representing the coordinates of the blank tile, or None if not found.
+        Find the blank position of the current state, which is represented by the 0 element.
+        :param state: a 3x3 list of integers representing the current state.
+        :return: Tuple of (i, j) coordinates of the blank tile, or None if not found.
         """
         for i in range(3):
             for j in range(3):
                 if state[i][j] == 0:
-                    return i, j
+                    return (i, j)
         return None
 
     def move(self, state, direction):
         """
-        Moves the blank tile in the specified direction if possible.
-        
-        :param state: A 3x3 list of integers representing the state before moving.
-        :param direction: A string, one of 'up', 'down', 'left', 'right'.
-        :return: A new state after the move, or the original state if the move is invalid.
+        Move the blank tile in the specified direction.
+        :param state: a 3x3 list of integers representing the state before moving.
+        :param direction: str, one of 'up', 'down', 'left', 'right'.
+        :return: a new state after the move, or the original state if the move is invalid.
         """
-        i, j = self.find_blank(state)
-        new_state = [row[:] for row in state]  # Create a copy of the current state
+        new_state = [row[:] for row in state]  # Create a deep copy of the state
+        blank_i, blank_j = self.find_blank(state)
 
-        if direction == 'up' and i > 0:
-            new_state[i][j], new_state[i - 1][j] = new_state[i - 1][j], new_state[i][j]
-        elif direction == 'down' and i < 2:
-            new_state[i][j], new_state[i + 1][j] = new_state[i + 1][j], new_state[i][j]
-        elif direction == 'left' and j > 0:
-            new_state[i][j], new_state[i][j - 1] = new_state[i][j - 1], new_state[i][j]
-        elif direction == 'right' and j < 2:
-            new_state[i][j], new_state[i][j + 1] = new_state[i][j + 1], new_state[i][j]
-        else:
-            return state  # Invalid move
+        if direction == 'up' and blank_i > 0:
+            new_state[blank_i][blank_j], new_state[blank_i - 1][blank_j] = new_state[blank_i - 1][blank_j], new_state[blank_i][blank_j]
+        elif direction == 'down' and blank_i < 2:
+            new_state[blank_i][blank_j], new_state[blank_i + 1][blank_j] = new_state[blank_i + 1][blank_j], new_state[blank_i][blank_j]
+        elif direction == 'left' and blank_j > 0:
+            new_state[blank_i][blank_j], new_state[blank_i][blank_j - 1] = new_state[blank_i][blank_j - 1], new_state[blank_i][blank_j]
+        elif direction == 'right' and blank_j < 2:
+            new_state[blank_i][blank_j], new_state[blank_i][blank_j + 1] = new_state[blank_i][blank_j + 1], new_state[blank_i][blank_j]
 
         return new_state
 
     def get_possible_moves(self, state):
         """
-        Returns a list of possible moves based on the current state.
-        
-        :param state: A 3x3 list of integers representing the current state.
-        :return: A list of strings representing possible moves.
+        Get all possible moves for the current state.
+        :param state: a 3x3 list of integers representing the current state.
+        :return: a list of possible moving directions.
         """
         moves = []
-        i, j = self.find_blank(state)
-        if i > 0: moves.append('up')
-        if i < 2: moves.append('down')
-        if j > 0: moves.append('left')
-        if j < 2: moves.append('right')
+        blank_i, blank_j = self.find_blank(state)
+
+        if blank_i > 0:
+            moves.append('up')
+        if blank_i < 2:
+            moves.append('down')
+        if blank_j > 0:
+            moves.append('left')
+        if blank_j < 2:
+            moves.append('right')
+
         return moves
 
     def solve(self):
         """
-        Solves the puzzle using the breadth-first search (BFS) algorithm.
-        
-        :return: A list of strings representing the solution moves to reach the goal state.
+        Use BFS algorithm to find the path solution from the initial state to the goal state.
+        :return: list of string directions that leads to the goal state, or an empty list if unsolvable.
         """
-        from collections import deque
-
         open_list = deque([(self.initial_state, [])])
-        visited = set()
+        visited = {tuple(map(tuple, self.initial_state))}
 
         while open_list:
             current_state, path = open_list.popleft()
+
             if current_state == self.goal_state:
                 return path
 
-            visited.add(tuple(map(tuple, current_state)))
-
             for move_direction in self.get_possible_moves(current_state):
                 new_state = self.move(current_state, move_direction)
-                if tuple(map(tuple, new_state)) not in visited:
+                state_tuple = tuple(map(tuple, new_state))
+
+                if state_tuple not in visited:
+                    visited.add(state_tuple)
                     open_list.append((new_state, path + [move_direction]))
 
         return []
+
+
+class EightPuzzleTest(unittest.TestCase):
+    def test_find_blank(self):
+        state = [[2, 3, 4], [5, 8, 1], [6, 0, 7]]
+        puzzle = EightPuzzle(state)
+        self.assertEqual(puzzle.find_blank(state), (2, 1))
+
+    def test_move(self):
+        initial_state = [[2, 3, 4], [5, 0, 1], [6, 8, 7]]
+        puzzle = EightPuzzle(initial_state)
+        result = puzzle.move(initial_state, 'up')
+        expected = [[2, 0, 4], [5, 3, 1], [6, 8, 7]]
+        self.assertEqual(result, expected)
+
+    def test_get_possible_moves(self):
+        state = [[2, 3, 4], [5, 0, 1], [6, 8, 7]]
+        puzzle = EightPuzzle(state)
+        result = puzzle.get_possible_moves(state)
+        expected = ['up', 'down', 'left']
+        self.assertTrue(all(direction in expected for direction in result))
+
+    def test_solve(self):
+        puzzle = EightPuzzle([[1, 2, 3], [4, 0, 6], [7, 5, 8]])
+        result = puzzle.solve()
+        expected = ['down', 'right']
+        self.assertEqual(result, expected)
+
+if __name__ == '__main__':
+    unittest.main()

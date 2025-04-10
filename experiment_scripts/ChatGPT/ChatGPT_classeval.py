@@ -101,9 +101,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 5
+    start_index = 0
     end_index = 100
-    max_workers = 5 # Adjust the number of parallel threads
+    max_workers = 10 # Adjust the number of parallel threads
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)

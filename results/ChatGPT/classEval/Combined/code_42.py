@@ -1,75 +1,81 @@
 class Hotel:
     """
-    A class to manage the booking, check-in, check-out, and availability of rooms in a hotel.
+    A hotel management system that manages room booking, check-in, check-out, and room availability for various room types.
     """
 
     def __init__(self, name, rooms):
         """
-        Initialize the hotel management system.
-        :param name: str - the hotel name
-        :param rooms: dict - available rooms with their types and counts
+        Initialize the hotel with a name and a dictionary of available rooms.
+        
+        :param name: str, the hotel name.
+        :param rooms: dict, available rooms by type and quantity.
         """
         self.name = name
         self.available_rooms = rooms
         self.booked_rooms = {}
 
-    def book_room(self, room_type, room_number, guest_name):
+    def book_room(self, room_type, room_number, name):
         """
-        Book rooms of a specified type.
-        :param room_type: str - type of room to book
-        :param room_number: int - number of rooms to book
-        :param guest_name: str - name of the guest
-        :return: str or int or bool - booking status
+        Book a specified number of rooms of a certain type for a guest.
+        
+        :param room_type: str, the type of room to be booked.
+        :param room_number: int, the number of rooms to book.
+        :param name: str, the name of the guest booking the room.
+        :return: str or int or bool, booking status.
         """
         if room_type not in self.available_rooms:
             return False
-        
+
         available_count = self.available_rooms[room_type]
-        
-        if available_count >= room_number:
+        if room_number <= available_count:
             self.available_rooms[room_type] -= room_number
-            self.booked_rooms.setdefault(room_type, {}).setdefault(guest_name, 0)
-            self.booked_rooms[room_type][guest_name] += room_number
+            self.booked_rooms.setdefault(room_type, {})
+            self.booked_rooms[room_type][name] = self.booked_rooms[room_type].get(name, 0) + room_number
             return 'Success!'
         elif available_count > 0:
             return available_count
-        else:
+        return False
+
+    def check_in(self, room_type, room_number, name):
+        """
+        Check in a guest if their room is booked.
+        
+        :param room_type: str, the type of room.
+        :param room_number: int, the number of rooms to check in.
+        :param name: str, the name of the guest checking in.
+        :return: bool, check-in success status.
+        """
+        if room_type not in self.booked_rooms or name not in self.booked_rooms[room_type]:
             return False
 
-    def check_in(self, room_type, room_number, guest_name):
-        """
-        Check in a guest for the booked room.
-        :param room_type: str - type of room to check in
-        :param room_number: int - number of rooms to check in
-        :param guest_name: str - name of the guest
-        :return: bool - check-in status
-        """
-        if room_type not in self.booked_rooms or guest_name not in self.booked_rooms[room_type]:
-            return False
-        
-        booked_count = self.booked_rooms[room_type][guest_name]
-        
+        booked_count = self.booked_rooms[room_type][name]
         if room_number > booked_count:
             return False
+
+        if room_number == booked_count:
+            del self.booked_rooms[room_type][name]
+        else:
+            self.booked_rooms[room_type][name] -= room_number
         
-        self.booked_rooms[room_type][guest_name] -= room_number
-        if self.booked_rooms[room_type][guest_name] == 0:
-            del self.booked_rooms[room_type][guest_name]
         return True
 
     def check_out(self, room_type, room_number):
         """
-        Check out a guest and make rooms available again.
-        :param room_type: str - type of room to check out
-        :param room_number: int - number of rooms to check out
+        Check out a specified number of rooms and update availability.
+        
+        :param room_type: str, the type of room to check out.
+        :param room_number: int, the number of rooms to check out.
         """
-        self.available_rooms.setdefault(room_type, 0)
+        if room_type not in self.available_rooms:
+            self.available_rooms[room_type] = 0
+        
         self.available_rooms[room_type] += room_number
 
     def get_available_rooms(self, room_type):
         """
-        Get the number of available rooms of a specific type.
-        :param room_type: str - the room type to inquire about
-        :return: int - the count of available rooms
+        Get the count of available rooms of a specific type.
+        
+        :param room_type: str, the type of room.
+        :return: int, the number of available rooms.
         """
         return self.available_rooms.get(room_type, 0)

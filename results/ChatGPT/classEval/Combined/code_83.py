@@ -3,7 +3,8 @@ from contextlib import closing
 
 class StudentDatabaseProcessor:
     """
-    A class for managing student records in a SQLite database.
+    This class handles database operations for student information, 
+    including inserting, searching, and deleting student records.
     """
 
     def __init__(self, database_name):
@@ -16,7 +17,8 @@ class StudentDatabaseProcessor:
 
     def create_student_table(self):
         """
-        Creates a "students" table in the database if it does not exist.
+        Creates a "students" table in the database if it does not exist already.
+        :return: None
         """
         with sqlite3.connect(self.database_name) as conn:
             with closing(conn.cursor()) as cursor:
@@ -34,7 +36,8 @@ class StudentDatabaseProcessor:
     def insert_student(self, student_data):
         """
         Inserts a new student into the "students" table.
-        :param student_data: dict, a dictionary with student's information (name, age, gender, grade).
+        :param student_data: dict, a dictionary containing the student's information (name, age, gender, grade).
+        :return: None
         """
         with sqlite3.connect(self.database_name) as conn:
             with closing(conn.cursor()) as cursor:
@@ -46,9 +49,9 @@ class StudentDatabaseProcessor:
 
     def search_student_by_name(self, name):
         """
-        Searches for students by their name.
+        Searches for a student in the "students" table by their name.
         :param name: str, the name of the student to search for.
-        :return: list of tuples, the rows that match the search criteria.
+        :return: list of tuples, the rows from the "students" table that match the search criteria.
         """
         with sqlite3.connect(self.database_name) as conn:
             with closing(conn.cursor()) as cursor:
@@ -59,6 +62,7 @@ class StudentDatabaseProcessor:
         """
         Deletes a student from the "students" table by their name.
         :param name: str, the name of the student to delete.
+        :return: None
         """
         with sqlite3.connect(self.database_name) as conn:
             with closing(conn.cursor()) as cursor:

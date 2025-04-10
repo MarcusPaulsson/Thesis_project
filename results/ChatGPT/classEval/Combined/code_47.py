@@ -1,21 +1,19 @@
 class IPAddress:
     """
-    Class to process IP Addresses, including validation, retrieving octets, and obtaining the binary representation of a valid IP address.
+    A class to process IP addresses, including validating, retrieving octets, and obtaining binary representation.
     """
 
     def __init__(self, ip_address: str):
         """
-        Initialize the IP address with the specified address.
-        
-        :param ip_address: The IP address as a string.
+        Initialize the IP address to the specified address.
+        :param ip_address: string
         """
         self.ip_address = ip_address
 
     def is_valid(self) -> bool:
         """
-        Check if the IP address is valid: four decimal digits (0-255) separated by '.'.
-        
-        :return: True if valid, False otherwise.
+        Validate the IP address format: four decimal digits (0-255) separated by dots.
+        :return: bool
         """
         octets = self.ip_address.split('.')
         if len(octets) != 4:
@@ -27,18 +25,16 @@ class IPAddress:
 
     def get_octets(self) -> list:
         """
-        Return a list of octets if the IP address is valid, otherwise return an empty list.
-        
-        :return: List of octets or an empty list if invalid.
+        Return the list of decimal numbers constituting the IP address if valid; otherwise, return an empty list.
+        :return: list
         """
         return self.ip_address.split('.') if self.is_valid() else []
 
     def get_binary(self) -> str:
         """
-        Return the binary representation of the IP address if valid, otherwise return an empty string.
-        
-        :return: Binary string representation or an empty string if invalid.
+        Return the binary representation of the IP address if valid; otherwise, return an empty string.
+        :return: string
         """
         if self.is_valid():
-            return '.'.join(f"{int(octet):08b}" for octet in self.ip_address.split('.'))
+            return '.'.join(format(int(octet), '08b') for octet in self.ip_address.split('.'))
         return ''

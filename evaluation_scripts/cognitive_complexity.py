@@ -18,7 +18,7 @@ sys.path.append(upper_dir)
 # EVALUATING ALL RESULTS
 
 result_setting = "filtered_results" # "results"
-result_setting = "results" # "filtered_results"
+#result_setting = "results" # "filtered_results"
 
 # folder_paths_gemini_cli_games = {
 #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),

@@ -3,75 +3,56 @@ import datetime
 
 class AccessGatewayFilter:
     """
-    A filter for gateway access, focused on authentication and access logging.
+    This class filters incoming requests for authentication and access logging.
     """
 
+    VALID_PREFIXES = ["/api", "/login"]
+
     def __init__(self):
-        self.allowed_methods = {'GET', 'POST'}
-        self.valid_user_level = 3
-        self.prefixes = {'/api', '/login'}
+        self.logger = logging.getLogger(__name__)
 
     def filter(self, request):
         """
-        Filter the incoming request based on defined rules.
+        Filter the incoming request based on certain rules and conditions.
         :param request: dict, the incoming request details
-        :return: bool or None, True if the request is allowed, False if denied, None if no user info
+        :return: bool, True if the request is allowed, False otherwise
         """
-        if not self.is_start_with(request['path']):
-            return False
-        
-        if request['method'] not in self.allowed_methods:
-            return False
-        
-        user = self.get_jwt_user(request)
-        if user is None:
-            return None
-        
-        self.set_current_user_info_and_log(user)
-        return self.check_user_level(user)
+        if self._starts_with_valid_prefix(request.get('path', '')):
+            user = self._extract_jwt_user(request)
+            if user:
+                self._log_user_access(user)
+                return True
+        return False
 
-    def is_start_with(self, request_uri):
+    def _starts_with_valid_prefix(self, request_uri):
         """
-        Check if the request URI starts with any of the defined prefixes.
+        Check if the request URI starts with certain prefixes.
         :param request_uri: str, the URI of the request
-        :return: bool, True if the URI starts with defined prefixes
+        :return: bool, True if the URI starts with certain prefixes, False otherwise
         """
-        return any(request_uri.startswith(prefix) for prefix in self.prefixes)
+        return any(request_uri.startswith(prefix) for prefix in self.VALID_PREFIXES)
 
-    def get_jwt_user(self, request):
+    def _extract_jwt_user(self, request):
         """
-        Extract user information from the JWT token in the request.
+        Get the user information from the JWT token in the request.
         :param request: dict, the incoming request details
-        :return: dict or None, user information if token is valid, None otherwise
+        :return: dict or None, the user information if the token is valid, None otherwise
         """
         auth_header = request.get('headers', {}).get('Authorization', {})
+        jwt = auth_header.get('jwt')
         user = auth_header.get('user')
-        jwt_token = auth_header.get('jwt')
 
-        if user and jwt_token and self.is_valid_jwt(jwt_token, user['name']):
+        if jwt and user and jwt == f"{user['name']}{datetime.date.today()}":
             return user
         return None
 
-    def is_valid_jwt(self, jwt, username):
-        """
-        Validate JWT against the username.
-        :param jwt: str, the JWT token
-        :param username: str, the username to validate against
-        :return: bool, True if the JWT is valid
-        """
-        return jwt == f"{username}{datetime.date.today()}"
-
-    def check_user_level(self, user):
-        """
-        Verify if the user's access level meets the required level.
-        :param user: dict, the user information
-        :return: bool, True if user level is sufficient
-        """
-        return user.get('level', 0) >= self.valid_user_level
-
-    def set_current_user_info_and_log(self, user):
+    def _log_user_access(self, user):
         """
         Log the access of the current user.
         :param user: dict, the user information
+        :return: None
         """
-        logging.info(f"User {user['name']} accessed the system from {user.get('address', 'unknown')}")
+        address = user.get('address', 'unknown address')
+        self.logger.info(f"User accessed: {user['name']} from {address}")
+
+# Unit tests would follow here, as provided in the original prompt.

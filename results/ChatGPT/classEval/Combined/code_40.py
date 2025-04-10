@@ -1,26 +1,34 @@
 class FitnessTracker:
     """
-    A class to track fitness metrics, including BMI (Body Mass Index) and calorie intake,
-    based on user attributes: height, weight, age, and sex.
+    A class to track fitness metrics such as BMI (Body Mass Index) and calorie intake 
+    based on the user's height, weight, age, and sex.
     """
 
     def __init__(self, height: float, weight: float, age: int, sex: str) -> None:
         """
-        Initialize the FitnessTracker with height, weight, age, and sex.
+        Initialize the FitnessTracker with user's height, weight, age, and sex.
         
-        :param height: User's height in meters.
-        :param weight: User's weight in kilograms.
-        :param age: User's age in years.
-        :param sex: User's sex ('male' or 'female').
+        :param height: Height in meters (float)
+        :param weight: Weight in kilograms (float)
+        :param age: Age in years (int)
+        :param sex: Sex of the user ('male' or 'female') (str)
         """
         self.height = height
         self.weight = weight
         self.age = age
         self.sex = sex.lower()
+        self.validate_inputs()
+
+    def validate_inputs(self):
+        """ Validates the input parameters for correctness. """
+        if self.sex not in ["male", "female"]:
+            raise ValueError("Invalid sex. Please use 'male' or 'female'.")
+        if self.height <= 0 or self.weight <= 0 or self.age <= 0:
+            raise ValueError("Height, weight, and age must be positive values.")
 
     def get_BMI(self) -> float:
         """
-        Calculate and return the BMI based on height and weight.
+        Calculate the BMI based on height and weight.
         
         :return: BMI as a float.
         """
@@ -28,26 +36,36 @@ class FitnessTracker:
 
     def condition_judge(self) -> int:
         """
-        Determine the user's condition based on BMI standards.
+        Determine the user's weight condition based on BMI.
         
         :return: 1 if overweight, -1 if underweight, 0 if normal weight.
         """
         bmi = self.get_BMI()
         if self.sex == "male":
-            return 1 if bmi > 25 else -1 if bmi < 20 else 0
-        elif self.sex == "female":
-            return 1 if bmi > 24 else -1 if bmi < 19 else 0
-        return 0  # Default case for invalid sex input
+            if bmi < 20:
+                return -1  # Underweight
+            elif bmi > 25:
+                return 1   # Overweight
+            else:
+                return 0   # Normal weight
+        else:  # Female
+            if bmi < 19:
+                return -1  # Underweight
+            elif bmi > 24:
+                return 1   # Overweight
+            else:
+                return 0   # Normal weight
 
     def calculate_calorie_intake(self) -> float:
         """
-        Calculate daily calorie intake based on BMR and user's condition.
+        Calculate the recommended calorie intake based on BMR and weight condition.
         
         :return: Recommended calorie intake as a float.
         """
-        bmr = (10 * self.weight) + (6.25 * self.height * 100) - (5 * self.age) + (5 if self.sex == "male" else -161)
-        condition = self.condition_judge()
+        bmr = (10 * self.weight) + (6.25 * (self.height * 100)) - (5 * self.age)
+        bmr += 5 if self.sex == "male" else -161
         
+        condition = self.condition_judge()
         if condition == 1:  # Overweight
             return bmr * 1.2
         elif condition == -1:  # Underweight

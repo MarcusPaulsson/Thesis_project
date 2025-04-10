@@ -11,7 +11,8 @@ class NLPDataProcessor:
         """
         return ['a', 'an', 'the']
 
-    def remove_stop_words(self, string_list, stop_word_list):
+    @staticmethod
+    def remove_stop_words(string_list, stop_word_list):
         """
         Remove all the stop words from the list of strings.
         :param string_list: a list of strings

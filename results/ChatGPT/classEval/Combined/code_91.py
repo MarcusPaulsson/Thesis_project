@@ -1,15 +1,12 @@
-import urllib.parse
-
 class UrlPath:
     """
-    A utility class for encapsulating and manipulating the path component of a URL, 
-    including adding segments, parsing path strings, and building path strings with optional encoding.
+    A utility class for encapsulating and manipulating the path component of a URL,
+    including adding segments, parsing path strings, and fixing path strings.
     """
 
     def __init__(self):
         """
-        Initializes the UrlPath object with an empty list of segments and a flag 
-        indicating the presence of an end tag.
+        Initializes the UrlPath object with an empty list of segments and a flag for the presence of an end tag.
         """
         self.segments = []
         self.with_end_tag = False
@@ -27,9 +24,8 @@ class UrlPath:
         :param path: str, the path string to parse.
         :param charset: str, the character encoding of the path string.
         """
-        decoded_path = urllib.parse.unquote(path, encoding=charset)
-        stripped_path = self.fix_path(decoded_path)
-        self.segments = stripped_path.split('/')
+        fixed_path = self.fix_path(path)
+        self.segments = fixed_path.split('/') if fixed_path else []
         self.with_end_tag = path.endswith('/')
 
     @staticmethod
@@ -41,4 +37,41 @@ class UrlPath:
         """
         return path.strip('/')
 
-# Unit tests can be run with a testing framework like unittest.
+# The following tests can be used to validate the functionality of the UrlPath class.
+import unittest
+
+class UrlPathTestAdd(unittest.TestCase):
+    def test_add_segments(self):
+        url_path = UrlPath()
+        url_path.add('foo')
+        url_path.add('bar')
+        self.assertEqual(url_path.segments, ['foo', 'bar'])
+
+class UrlPathTestParse(unittest.TestCase):
+    def test_parse_path(self):
+        url_path = UrlPath()
+        url_path.parse('/foo/bar/', 'utf-8')
+        self.assertEqual(url_path.segments, ['foo', 'bar'])
+        self.assertTrue(url_path.with_end_tag)
+
+class UrlPathTestFixPath(unittest.TestCase):
+    def test_fix_path(self):
+        self.assertEqual(UrlPath.fix_path('/foo/bar/'), 'foo/bar')
+        self.assertEqual(UrlPath.fix_path(''), '')
+
+class UrlPathTest(unittest.TestCase):
+    def test_urlpath_operations(self):
+        url_path = UrlPath()
+        url_path.add('foo')
+        url_path.add('bar')
+        self.assertEqual(url_path.segments, ['foo', 'bar'])
+
+        url_path.parse('/foo/bar/', 'utf-8')
+        self.assertEqual(url_path.segments, ['foo', 'bar'])
+        self.assertTrue(url_path.with_end_tag)
+
+        fixed_path = UrlPath.fix_path('/foo/bar/')
+        self.assertEqual(fixed_path, 'foo/bar')
+
+if __name__ == '__main__':
+    unittest.main()

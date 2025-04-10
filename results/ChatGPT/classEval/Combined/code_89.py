@@ -1,28 +1,28 @@
 import random
-import re
-
+import ast
+import operator
+import unittest
 
 class TwentyFourPointGame:
     """
-    This is a game of twenty-four points, which generates four numbers
-    and checks whether a player's expression evaluates to 24.
+    This is a game of twenty-four points, which generates four numbers and checks whether a player's expression equals 24.
     """
 
     def __init__(self) -> None:
-        self.nums = []
+        self.nums = self._generate_cards()
 
     def _generate_cards(self):
         """
-        Generate four unique random numbers between 1 and 9 for the cards.
+        Generate four random numbers between 1 and 9 for the cards.
+        :return: list of integers, representing the player's cards
         """
-        self.nums = random.sample(range(1, 10), 4)
+        return [random.randint(1, 9) for _ in range(4)]
 
     def get_my_cards(self):
         """
         Get a list of four random numbers between 1 and 9 representing the player's cards.
         :return: list of integers, representing the player's cards
         """
-        self._generate_cards()
         return self.nums
 
     def answer(self, expression: str) -> bool:
@@ -49,10 +49,42 @@ class TwentyFourPointGame:
 
     def _is_valid_expression(self, expression: str) -> bool:
         """
-        Check if the expression is valid and only contains allowed numbers and operators.
+        Check if the expression contains only valid numbers and operators.
         :param expression: string, mathematical expression
         :return: bool, True if the expression is valid, False otherwise
         """
         allowed_chars = set("0123456789+-*/() ")
-        return (all(char in allowed_chars for char in expression) and
-                all(num in map(str, self.nums) for num in re.findall(r'\d+', expression)))
+        return all(char in allowed_chars for char in expression)
+
+
+# Unit tests
+class TwentyFourPointGameTest(unittest.TestCase):
+    
+    def test_get_my_cards(self):
+        game = TwentyFourPointGame()
+        cards = game.get_my_cards()
+        self.assertEqual(len(cards), 4)
+        for card in cards:
+            self.assertIn(card, range(1, 10))
+
+    def test_answer_valid_expression(self):
+        game = TwentyFourPointGame()
+        game.nums = [4, 3, 6, 6]
+        self.assertTrue(game.answer('4*3+6+6'))
+
+    def test_answer_invalid_expression(self):
+        game = TwentyFourPointGame()
+        self.assertFalse(game.answer('1+1+1+1'))
+        self.assertFalse(game.answer('1+'))
+        self.assertFalse(game.answer('abc'))
+
+    def test_evaluate_expression(self):
+        game = TwentyFourPointGame()
+        self.assertTrue(game.evaluate_expression('4*3+6+6'))
+        self.assertFalse(game.evaluate_expression('4+3+6+6'))
+        self.assertFalse(game.evaluate_expression('1+1+1+1'))
+        self.assertFalse(game.evaluate_expression('1+'))
+        self.assertFalse(game.evaluate_expression('abc'))
+
+if __name__ == '__main__':
+    unittest.main()

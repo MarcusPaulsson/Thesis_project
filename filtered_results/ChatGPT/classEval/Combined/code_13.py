@@ -1,45 +1,44 @@
 class BookManagement:
     """
-    A class to manage a book inventory system, allowing addition, removal, and querying of books.
+    A class that manages a simple book inventory system, allowing for adding and removing books,
+    viewing the inventory, and checking the quantity of specific titles.
     """
 
     def __init__(self):
-        """
-        Initialize the inventory of the Book Manager.
-        """
+        """Initialize the inventory for the Book Management system."""
         self.inventory = {}
 
-    def add_book(self, title: str, quantity: int = 1) -> None:
+    def add_book(self, title: str, quantity: int = 1):
         """
         Add books to the inventory.
-        
-        :param title: The title of the book to add
-        :param quantity: The number of copies to add, default is 1
-        :raises ValueError: If quantity is less than 1
+
+        :param title: str, the title of the book.
+        :param quantity: int, the number of copies to add (default is 1).
+        :raises ValueError: if quantity is less than 1.
         """
         if quantity < 1:
             raise ValueError("Quantity must be at least 1.")
         
         self.inventory[title] = self.inventory.get(title, 0) + quantity
 
-    def remove_book(self, title: str, quantity: int) -> None:
+    def remove_book(self, title: str, quantity: int):
         """
         Remove books from the inventory.
-        
-        :param title: The title of the book to remove
-        :param quantity: The number of copies to remove
-        :raises ValueError: If quantity is less than 1
-        :raises KeyError: If the book is not found in the inventory
-        :raises RuntimeError: If there are not enough copies to remove
+
+        :param title: str, the title of the book.
+        :param quantity: int, the number of copies to remove.
+        :raises ValueError: if quantity is less than 1.
+        :raises KeyError: if the book does not exist in the inventory.
+        :raises ValueError: if there are not enough copies to remove.
         """
         if quantity < 1:
             raise ValueError("Quantity must be at least 1.")
         
         if title not in self.inventory:
-            raise KeyError("Book not found in inventory.")
+            raise KeyError("Book does not exist in inventory.")
         
         if self.inventory[title] < quantity:
-            raise RuntimeError("Not enough copies to remove.")
+            raise ValueError("Not enough copies to remove.")
         
         self.inventory[title] -= quantity
         
@@ -49,16 +48,16 @@ class BookManagement:
     def view_inventory(self) -> dict:
         """
         Get the current inventory.
-        
-        :return: A dictionary of book titles and their quantities
+
+        :return: dict, a dictionary of books and their quantities.
         """
         return self.inventory.copy()
 
     def view_book_quantity(self, title: str) -> int:
         """
         Get the quantity of a specific book.
-        
-        :param title: The title of the book
-        :return: The quantity of the book, or 0 if it does not exist
+
+        :param title: str, the title of the book.
+        :return: int, the quantity of the book or 0 if not found.
         """
         return self.inventory.get(title, 0)

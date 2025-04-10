@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 class CalendarUtil:
     """
-    A utility class for managing calendar events, scheduling appointments, and performing conflict checks.
+    A utility class to manage calendar events, schedule appointments, and perform conflict checks.
     """
 
     def __init__(self):
@@ -12,27 +12,22 @@ class CalendarUtil:
     def add_event(self, event):
         """
         Add an event to the calendar.
-        :param event: The event to be added, dict containing 'date', 'start_time', 'end_time', and 'description'.
+        :param event: The event to be added to the calendar, dict.
         """
-        if not self.is_valid_event(event):
-            raise ValueError("Invalid event data.")
         self.events.append(event)
 
     def remove_event(self, event):
         """
         Remove an event from the calendar.
-        :param event: The event to be removed, dict.
+        :param event: The event to be removed from the calendar, dict.
         """
-        try:
-            self.events.remove(event)
-        except ValueError:
-            pass  # Event not found; do nothing
+        self.events = [e for e in self.events if e != event]
 
     def get_events(self, date):
         """
         Get all events on a given date.
         :param date: The date to get events for, datetime.
-        :return: A list of events on the given date.
+        :return: A list of events on the given date, list.
         """
         return [event for event in self.events if event['date'].date() == date.date()]
 
@@ -41,54 +36,38 @@ class CalendarUtil:
         Check if the calendar is available for a given time slot.
         :param start_time: The start time of the time slot, datetime.
         :param end_time: The end time of the time slot, datetime.
-        :return: True if available, False otherwise.
+        :return: True if the calendar is available for the given time slot, False otherwise, bool.
         """
-        for event in self.events:
-            if (start_time < event['end_time'] and end_time > event['start_time']):
-                return False
-        return True
+        return all(not (event['start_time'] < end_time and start_time < event['end_time']) for event in self.events)
 
     def get_available_slots(self, date):
         """
         Get all available time slots on a given date.
-        :param date: The date to check for available time slots, datetime.
-        :return: A list of available time slots on the given date.
+        :param date: The date to get available time slots for, datetime.
+        :return: A list of available time slots on the given date, list.
         """
         slots = []
-        day_start = datetime.combine(date, datetime.min.time())
-        day_end = datetime.combine(date, datetime.max.time())
-        current_start = day_start
-
-        for event in sorted(self.events, key=lambda x: x['start_time']):
-            if event['date'].date() == date.date():
-                if current_start < event['start_time']:
-                    slots.append((current_start, event['start_time']))
-                current_start = max(current_start, event['end_time'])
-
-        if current_start < day_end:
-            slots.append((current_start, day_end))
-
+        day_start = datetime.combine(date.date(), datetime.min.time())
+        day_end = datetime.combine(date.date(), datetime.max.time())
+        occupied_times = [(event['start_time'], event['end_time']) for event in self.get_events(date)]
+        
+        current_time = day_start
+        for start, end in sorted(occupied_times):
+            if current_time < start:
+                slots.append((current_time, start))
+            current_time = max(current_time, end)
+        
+        if current_time < day_end:
+            slots.append((current_time, day_end))
+        
         return slots
 
     def get_upcoming_events(self, num_events):
         """
-        Get the next n upcoming events.
-        :param num_events: The number of upcoming events to retrieve, int.
-        :return: A list of the next n upcoming events.
+        Get the next n upcoming events from the current date.
+        :param num_events: The number of upcoming events to get, int.
+        :return: A list of the next n upcoming events from the current date, list.
         """
         now = datetime.now()
-        upcoming_events = sorted(
-            [event for event in self.events if event['start_time'] > now],
-            key=lambda x: x['start_time']
-        )
-        return upcoming_events[:num_events]
-
-    @staticmethod
-    def is_valid_event(event):
-        """
-        Validate the event dictionary.
-        :param event: The event dictionary to validate.
-        :return: True if valid, False otherwise.
-        """
-        required_keys = {'date', 'start_time', 'end_time', 'description'}
-        return all(key in event for key in required_keys) and event['start_time'] < event['end_time']
+        upcoming_events = [event for event in self.events if event['start_time'] > now]
+        return sorted(upcoming_events, key=lambda x: x['start_time'])[:num_events]

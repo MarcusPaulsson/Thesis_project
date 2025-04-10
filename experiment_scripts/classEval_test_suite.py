@@ -42,6 +42,9 @@ folder_paths = {
  "Gemma3 Combined": os.path.abspath(os.path.join('results', 'Gemma3', 'classEval', 'Combined')),
 }
 
+
+
+
 test_data_path = os.path.abspath(os.path.join('data', 'ClassEval_data.json'))
 
 def load_classEval_tests(test_data_path):
@@ -150,7 +153,7 @@ def run_tests_on_code_snippets(tasks, folder_path, global_temp_dir):
     return {"passed": passed_tests, "total": total_tests, "passed_ids": passed_ids}
 
 tasks = load_classEval_tests(test_data_path)
-save_passed = True
+save_passed = False
 
 # Run tests for each folder, using a global temporary directory for temporary scripts
 if tasks:
@@ -161,29 +164,73 @@ if tasks:
             print(f"\n--- Running {folder_name} Tests ---")
             results[folder_name] = run_tests_on_code_snippets(tasks, folder_path, global_temp_dir)
 
-        # Print overall summary
+        # Print overall summary and collect individual pass/fail data
         print("\n--- Overall Test Summary ---")
         total_passed = 0
         total_all = 0
-        all_passed_ids = {}
+        individual_results = {}  # To store pass/fail for each task in each folder
         for folder, result in results.items():
             print(f"{folder}: Passed {result['passed']} of {result['total']}")
             total_passed += result['passed']
             total_all += result['total']
-            for id in result['passed_ids']:
-                if id in all_passed_ids:
-                    all_passed_ids[id] += 1
-                else:
-                    all_passed_ids[id] = 1
+            individual_results[folder] = {
+                'passed_ids': set(result['passed_ids']),
+                'failed_ids': set(range(1, result['total'] + 1)) - set(result['passed_ids']) # Assuming task IDs are 1 to total
+            }
 
         print(f"\nTotal Passed: {total_passed} of {total_all}")
 
-        # Find IDs that passed in all folders
-        passed_in_all = [id for id, count in all_passed_ids.items() if count == len(folder_paths)]
-        common_passed_code = sorted(passed_in_all)
-        print(f"\nPassed in all folders: {common_passed_code}")
+        # Find IDs for all Venn diagram subsets
+        folder_names = list(folder_paths.keys())
+        if len(folder_names) == 3:
+            folder1, folder2, folder3 = folder_names[0], folder_names[1], folder_names[2]
 
+            passed_in_all = sorted(list(individual_results[folder1]['passed_ids'] &
+                                       individual_results[folder2]['passed_ids'] &
+                                       individual_results[folder3]['passed_ids']))
+
+            passed_1_only = sorted(list(individual_results[folder1]['passed_ids'] -
+                                        individual_results[folder2]['passed_ids'] -
+                                        individual_results[folder3]['passed_ids']))
+
+            passed_2_only = sorted(list(individual_results[folder2]['passed_ids'] -
+                                        individual_results[folder1]['passed_ids'] -
+                                        individual_results[folder3]['passed_ids']))
+
+            passed_3_only = sorted(list(individual_results[folder3]['passed_ids'] -
+                                        individual_results[folder1]['passed_ids'] -
+                                        individual_results[folder2]['passed_ids']))
+
+            passed_1_and_2 = sorted(list((individual_results[folder1]['passed_ids'] &
+                                         individual_results[folder2]['passed_ids']) -
+                                        individual_results[folder3]['passed_ids']))
+
+            passed_1_and_3 = sorted(list((individual_results[folder1]['passed_ids'] &
+                                         individual_results[folder3]['passed_ids']) -
+                                        individual_results[folder2]['passed_ids']))
+
+            passed_2_and_3 = sorted(list((individual_results[folder2]['passed_ids'] &
+                                         individual_results[folder3]['passed_ids']) -
+                                        individual_results[folder1]['passed_ids']))
+
+            failed_in_all = sorted(list(individual_results[folder1]['failed_ids'] &
+                                       individual_results[folder2]['failed_ids'] &
+                                       individual_results[folder3]['failed_ids']))
+
+            print("\n--- Venn Diagram Data ---")
+            print(f"Passed in all ({folder1}, {folder2}, {folder3}): {passed_in_all}")
+            print(f"Passed in {folder1} only: {passed_1_only}")
+            print(f"Passed in {folder2} only: {passed_2_only}")
+            print(f"Passed in {folder3} only: {passed_3_only}")
+            print(f"Passed in {folder1} and {folder2} only: {passed_1_and_2}")
+            print(f"Passed in {folder1} and {folder3} only: {passed_1_and_3}")
+            print(f"Passed in {folder2} and {folder3} only: {passed_2_and_3}")
+            print(f"Failed in all ({folder1}, {folder2}, {folder3}): {failed_in_all}")
+        else:
+            print("\nWarning: To generate Venn diagram data, you need exactly three folders defined in 'folder_paths'.")
+
+        # The original saving logic for codes passed in all folders remains
         if save_passed:
-            extract_and_save_passed_code(common_passed_code)
+            extract_and_save_passed_code(passed_in_all)
 
     # The global temporary directory is cleaned up by the context manager
