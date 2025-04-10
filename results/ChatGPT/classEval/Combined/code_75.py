@@ -1,6 +1,6 @@
 class ShoppingCart:
     """
-    The class manages items, their prices, quantities, and allows for adding, removing, viewing items, and calculating the total price.
+    The class manages items, their prices, quantities, and allows to add, remove, view items, and calculate the total price.
     """
 
     def __init__(self):
@@ -11,15 +11,14 @@ class ShoppingCart:
 
     def add_item(self, item: str, price: float, quantity: int = 1) -> None:
         """
-        Add item information to the shopping list items, including price and quantity.
+        Add item information to the shopping list items, including price and quantity. The default quantity is 1.
         
-        :param item: str, Item to be added
-        :param price: float, The price of the item
-        :param quantity: int, The number of items, defaults to 1
-        :return: None
+        :param item: str, Item to be added.
+        :param price: float, The price of the item.
+        :param quantity: int, The number of items, defaults to 1.
         """
-        if quantity <= 0:
-            raise ValueError("Quantity must be positive.")
+        if quantity < 1:
+            raise ValueError("Quantity must be at least 1.")
         if item in self.items:
             self.items[item]['quantity'] += quantity
         else:
@@ -29,12 +28,11 @@ class ShoppingCart:
         """
         Subtract the specified quantity of item from the shopping list items.
         
-        :param item: str, Item to be subtracted in quantity
-        :param quantity: int, Quantity to be subtracted
-        :return: None
+        :param item: str, Item to be subtracted in quantity.
+        :param quantity: int, Quantity to be subtracted.
         """
-        if quantity <= 0:
-            raise ValueError("Quantity must be positive.")
+        if quantity < 1:
+            raise ValueError("Quantity must be at least 1.")
         if item in self.items:
             self.items[item]['quantity'] -= quantity
             if self.items[item]['quantity'] <= 0:
@@ -44,7 +42,7 @@ class ShoppingCart:
         """
         Return the current shopping list items.
         
-        :return: dict, the current shopping list items
+        :return: dict, the current shopping list items.
         """
         return self.items
 
@@ -52,6 +50,6 @@ class ShoppingCart:
         """
         Calculate the total price of all items in the shopping list.
         
-        :return: float, the total price of all items in the shopping list
+        :return: float, the total price of all items in the shopping list.
         """
         return sum(item['price'] * item['quantity'] for item in self.items.values())

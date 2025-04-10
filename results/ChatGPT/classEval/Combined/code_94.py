@@ -1,8 +1,7 @@
 class VendingMachine:
     """
-    A class to simulate a vending machine, including adding products, 
-    inserting coins, purchasing products, viewing balance, replenishing product 
-    inventory, and displaying product information.
+    This class simulates a vending machine, allowing the addition of products, insertion of coins,
+    purchasing products, viewing balance, replenishing inventory, and displaying product information.
     """
 
     def __init__(self):
@@ -10,15 +9,13 @@ class VendingMachine:
         self.inventory = {}
         self.balance = 0.0
 
-    def add_item(self, item_name: str, price: float, quantity: int):
+    def add_item(self, item_name: str, price: float, quantity: int) -> None:
         """
-        Adds a product to the vending machine's inventory.
+        Adds or updates a product in the vending machine's inventory.
         :param item_name: The name of the product to be added.
         :param price: The price of the product to be added.
         :param quantity: The quantity of the product to be added.
         """
-        if quantity <= 0:
-            raise ValueError("Quantity must be greater than zero.")
         if item_name in self.inventory:
             self.inventory[item_name]['quantity'] += quantity
         else:
@@ -28,18 +25,18 @@ class VendingMachine:
         """
         Inserts coins into the vending machine.
         :param amount: The amount of coins to be inserted.
-        :return: The balance of the vending machine after the coins are inserted.
+        :return: The updated balance after inserting coins.
         """
-        if amount <= 0:
-            raise ValueError("Inserted amount must be greater than zero.")
+        if amount < 0:
+            raise ValueError("Amount must be positive.")
         self.balance += amount
         return self.balance
 
-    def purchase_item(self, item_name: str):
+    def purchase_item(self, item_name: str) -> float or bool:
         """
         Purchases a product from the vending machine.
-        :param item_name: The name of the product to be purchased.
-        :return: If successful, returns the balance after the purchase, otherwise returns False.
+        :param item_name: The name of the product to purchase.
+        :return: The remaining balance if purchase is successful, otherwise False.
         """
         if item_name not in self.inventory:
             return False
@@ -49,29 +46,27 @@ class VendingMachine:
             item['quantity'] -= 1
             self.balance -= item['price']
             return self.balance
+        
         return False
 
     def restock_item(self, item_name: str, quantity: int) -> bool:
         """
-        Replenishes the inventory of a product already in the vending machine.
-        :param item_name: The name of the product to be replenished.
-        :param quantity: The quantity of the product to be replenished.
-        :return: If the product is already in the vending machine, returns True, otherwise, returns False.
+        Replenishes the inventory of a product in the vending machine.
+        :param item_name: The name of the product to be restocked.
+        :param quantity: The quantity of the product to be restocked.
+        :return: True if the product was restocked, otherwise False.
         """
-        if quantity <= 0:
-            raise ValueError("Restock quantity must be greater than zero.")
-        
         if item_name in self.inventory:
             self.inventory[item_name]['quantity'] += quantity
             return True
         return False
 
-    def display_items(self) -> str:
+    def display_items(self) -> str or bool:
         """
         Displays the products in the vending machine.
-        :return: If the vending machine is empty, returns False, otherwise returns a formatted string of products.
+        :return: A formatted string of the products, or False if the inventory is empty.
         """
         if not self.inventory:
             return False
-        return "\n".join(f"{item} - ${details['price']:.2f} [{details['quantity']}]" 
+        return "\n".join(f"{item} - ${details['price']} [{details['quantity']}]" 
                          for item, details in self.inventory.items())

@@ -7,6 +7,7 @@ class WeatherSystem:
     def __init__(self, city: str) -> None:
         """
         Initialize the weather system with a city name.
+        :param city: The name of the city for weather queries.
         """
         self.city = city
         self.temperature = None
@@ -14,48 +15,60 @@ class WeatherSystem:
 
     def query(self, weather_list: dict, tmp_units: str = 'celsius') -> tuple:
         """
-        Query the weather system for the weather and temperature of the city, and convert the temperature units based on the input parameter.
+        Query the weather system for the weather and temperature of the city, 
+        and convert the temperature units based on the input parameter.
         
         :param weather_list: A dictionary of weather information for different cities.
-        :param tmp_units: The temperature units to convert to, default is 'celsius'.
-        :return: A tuple of (temperature, weather) or False if the city is not found.
+        :param tmp_units: The temperature units to convert to, either 'celsius' or 'fahrenheit'.
+        :return: A tuple containing the temperature and weather of the city, or False if the city is not found.
         """
         city_weather = weather_list.get(self.city)
-
-        if city_weather is None:
+        if not city_weather:
             return False
 
-        temperature = city_weather['temperature']
-        if city_weather['temperature units'] != tmp_units:
-            temperature = self.convert_temperature(temperature, city_weather['temperature units'], tmp_units)
-
-        return temperature, city_weather['weather']
+        self.weather = city_weather['weather']
+        self.temperature = city_weather['temperature']
+        
+        if tmp_units.lower() == 'fahrenheit':
+            self.temperature = self.celsius_to_fahrenheit(self.temperature) if self.is_celsius(city_weather) else self.temperature
+        
+        return self.temperature, self.weather
 
     def set_city(self, city: str) -> None:
         """
-        Set the city for the weather system.
+        Set the city of the weather system.
         
         :param city: The city to set.
         """
         self.city = city
 
-    def convert_temperature(self, temperature: float, from_unit: str, to_unit: str) -> float:
+    def celsius_to_fahrenheit(self, celsius: float = None) -> float:
         """
-        Convert temperature between Celsius and Fahrenheit.
+        Convert the temperature from Celsius to Fahrenheit.
         
-        :param temperature: The temperature to convert.
-        :param from_unit: The current unit of the temperature.
-        :param to_unit: The unit to convert to.
-        :return: The converted temperature.
+        :param celsius: Temperature in Celsius. If None, uses the instance temperature.
+        :return: The temperature in Fahrenheit.
         """
-        if from_unit == to_unit:
-            return temperature
+        if celsius is None:
+            celsius = self.temperature
+        return (celsius * 9/5) + 32
+
+    def fahrenheit_to_celsius(self, fahrenheit: float = None) -> float:
+        """
+        Convert the temperature from Fahrenheit to Celsius.
         
-        if from_unit == 'celsius':
-            return (temperature * 9 / 5) + 32  # Celsius to Fahrenheit
-        elif from_unit == 'fahrenheit':
-            return (temperature - 32) * 5 / 9  # Fahrenheit to Celsius
+        :param fahrenheit: Temperature in Fahrenheit. If None, uses the instance temperature.
+        :return: The temperature in Celsius.
+        """
+        if fahrenheit is None:
+            fahrenheit = self.temperature
+        return (fahrenheit - 32) * 5/9
 
-        raise ValueError("Invalid temperature unit provided")
-
-# Note: The unittest cases provided in the original code can be used to test this implementation.
+    def is_celsius(self, city_weather: dict) -> bool:
+        """
+        Check if the temperature units of the city weather data is in Celsius.
+        
+        :param city_weather: The weather data dictionary for the city.
+        :return: True if the temperature is in Celsius, False otherwise.
+        """
+        return city_weather.get('temperature units', '').lower() == 'celsius'

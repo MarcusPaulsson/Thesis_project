@@ -81,6 +81,7 @@ folder_paths = {
 
 }
 
+
 test_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
 
 def load_apps_tests(json_file_path):
@@ -188,10 +189,10 @@ def extract_and_save_passed_code(passed_code_ids):
                 shutil.copy2(source_file_path, destination_file_path) # copy with metadata
 
 
-save_passed = True
+save_passed = False
 if tasks:
     results = {}
-    temp_dir = "tempfolder"
+    temp_dir = "tempfolder_apps"
     os.makedirs(temp_dir, exist_ok=True)
 
     for folder_name, folder_path in folder_paths.items():
@@ -201,26 +202,98 @@ if tasks:
     print("\n--- Overall Test Summary ---")
     total_passed = 0
     total_all = 0
-    all_passed_ids = {} # Change to dict for id count
+    model_passed_ids = {}
     for folder, result in results.items():
         print(f"{folder}: Passed {result['passed']} of {result['total']}")
         total_passed += result['passed']
         total_all += result['total']
-        for id in result['passed_ids']:
-            if id in all_passed_ids:
-                all_passed_ids[id] += 1
-            else:
-                all_passed_ids[id] = 1
+        model_name = folder.split()[0]
+        if model_name not in model_passed_ids:
+            model_passed_ids[model_name] = {}
+        model_passed_ids[model_name][folder] = set(result['passed_ids'])
 
     print(f"\nTotal Passed: {total_passed} of {total_all}")
 
-    # Find IDs that passed in all folders
-    passed_in_all = [id for id, count in all_passed_ids.items() if count == len(folder_paths)]
-    common_passed_code = sorted(passed_in_all)
-    print(f"\nPassed in all folders: {common_passed_code}")
+    venn_data = {}
+    all_task_ids = set(range(len(tasks)))
+
+    model_names = sorted(model_passed_ids.keys())
+
+    # Calculate intersections
+    if len(model_names) >= 3:
+        m1, m2, m3 = model_names[0], model_names[1], model_names[2]
+
+        # Passed by all prompt techniques for each model
+        passed_all_m1 = set.intersection(*[model_passed_ids[m1][f] for f in model_passed_ids[m1]]) if m1 in model_passed_ids else set()
+        passed_all_m2 = set.intersection(*[model_passed_ids[m2][f] for f in model_passed_ids[m2]]) if m2 in model_passed_ids else set()
+        passed_all_m3 = set.intersection(*[model_passed_ids[m3][f] for f in model_passed_ids[m3]]) if m3 in model_passed_ids else set()
+
+        # Intersection of all three
+        venn_data[f"{m1}_and_{m2}_and_{m3}"] = len(passed_all_m1.intersection(passed_all_m2, passed_all_m3))
+
+        # Intersection of each pair (exclusive of the third)
+        venn_data[f"{m1}_and_{m2}_only"] = len(passed_all_m1.intersection(passed_all_m2) - passed_all_m3)
+        venn_data[f"{m1}_and_{m3}_only"] = len(passed_all_m1.intersection(passed_all_m3) - passed_all_m2)
+        venn_data[f"{m2}_and_{m3}_only"] = len(passed_all_m2.intersection(passed_all_m3) - passed_all_m1)
+
+        # Only passed by each model (exclusive of the others)
+        venn_data[f"{m1}_only"] = len(passed_all_m1 - passed_all_m2 - passed_all_m3)
+        venn_data[f"{m2}_only"] = len(passed_all_m2 - passed_all_m1 - passed_all_m3)
+        venn_data[f"{m3}_only"] = len(passed_all_m3 - passed_all_m1 - passed_all_m2)
+
+        # Total passed by each model (across all techniques)
+        venn_data[f"total_passed_{m1}"] = len(passed_all_m1)
+        venn_data[f"total_passed_{m2}"] = len(passed_all_m2)
+        venn_data[f"total_passed_{m3}"] = len(passed_all_m3)
+
+        # Total non-passing (assuming 100 total tests)
+        total_passing = (
+            venn_data.get(f"{m1}_only", 0) +
+            venn_data.get(f"{m2}_only", 0) +
+            venn_data.get(f"{m3}_only", 0) +
+            venn_data.get(f"{m1}_and_{m2}_only", 0) +
+            venn_data.get(f"{m1}_and_{m3}_only", 0) +
+            venn_data.get(f"{m2}_and_{m3}_only", 0) +
+            venn_data.get(f"{m1}_and_{m2}_and_{m3}", 0)
+        )
+        venn_data["non_passing"] = 100 - total_passing
+        print("\n--- Venn Diagram Data (for the first 3 models) ---")
+        for key, value in venn_data.items():
+            print(f"{key}: {value}")
+    elif len(model_names) == 2:
+        m1, m2 = model_names[0], model_names[1]
+        passed_all_m1 = set.intersection(*[model_passed_ids[m1][f] for f in model_passed_ids[m1]]) if m1 in model_passed_ids else set()
+        passed_all_m2 = set.intersection(*[model_passed_ids[m2][f] for f in model_passed_ids[m2]]) if m2 in model_passed_ids else set()
+
+        venn_data[f"{m1}_and_{m2}"] = len(passed_all_m1.intersection(passed_all_m2))
+        venn_data[f"{m1}_only"] = len(passed_all_m1 - passed_all_m2)
+        venn_data[f"{m2}_only"] = len(passed_all_m2 - passed_all_m1)
+        venn_data[f"total_passed_{m1}"] = len(passed_all_m1)
+        venn_data[f"total_passed_{m2}"] = len(passed_all_m2)
+        venn_data["non_passing"] = 100 - (venn_data.get(f"{m1}_only", 0) + venn_data.get(f"{m2}_only", 0) + venn_data.get(f"{m1}_and_{m2}", 0))
+        print("\n--- Venn Diagram Data (for the first 2 models) ---")
+        for key, value in venn_data.items():
+            print(f"{key}: {value}")
+    elif len(model_names) == 1:
+        m1 = model_names[0]
+        passed_all_m1 = set.intersection(*[model_passed_ids[m1][f] for f in model_passed_ids[m1]]) if m1 in model_passed_ids else set()
+        venn_data[f"{m1}_only"] = len(passed_all_m1)
+        venn_data["non_passing"] = 100 - venn_data.get(f"{m1}_only", 0)
+        print("\n--- Venn Diagram Data (for the first model) ---")
+        for key, value in venn_data.items():
+            print(f"{key}: {value}")
+    else:
+        print("\n--- Not enough models to generate Venn diagram data ---")
+
     shutil.rmtree(temp_dir)
     if save_passed:
-        extract_and_save_passed_code(common_passed_code)
+        # Determine codes passed by all techniques of each model
+        for model in model_names:
+            if model in model_passed_ids:
+                passed_by_all_techniques = set.intersection(*[model_passed_ids[model][f] for f in model_passed_ids[model]])
+                if passed_by_all_techniques:
+                    print(f"\nSaving codes passed by all techniques of {model}: {sorted(list(passed_by_all_techniques))}")
+                    extract_and_save_passed_code(list(passed_by_all_techniques))
 
 
 

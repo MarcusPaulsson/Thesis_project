@@ -1,17 +1,18 @@
 class Warehouse:
     """
-    The class manages inventory and orders, including adding products, updating product quantities,
-    retrieving product quantities, creating orders, changing order statuses, and tracking orders.
+    The class manages inventory and orders, including adding products, 
+    updating product quantities, retrieving product quantities, creating orders, 
+    changing order statuses, and tracking orders.
     """
 
     def __init__(self):
-        """Initialize inventory and orders as empty dictionaries."""
-        self.inventory = {}  # Product ID: Product
-        self.orders = {}  # Order ID: Order
+        """Initialize inventory and orders."""
+        self.inventory = {}  # Product ID: {'name': str, 'quantity': int}
+        self.orders = {}     # Order ID: {'product_id': int, 'quantity': int, 'status': str}
 
-    def add_product(self, product_id: int, name: str, quantity: int) -> None:
+    def add_product(self, product_id, name, quantity):
         """
-        Add a product to the inventory or increase its quantity if it already exists.
+        Add a product to inventory or update its quantity if it already exists.
         :param product_id: int
         :param name: str, product name
         :param quantity: int, product quantity
@@ -21,59 +22,55 @@ class Warehouse:
         else:
             self.inventory[product_id] = {'name': name, 'quantity': quantity}
 
-    def update_product_quantity(self, product_id: int, quantity: int) -> None:
+    def update_product_quantity(self, product_id, quantity):
         """
-        Update the quantity of a product in inventory.
+        Update the quantity of the product based on product_id.
         :param product_id: int
-        :param quantity: int, the quantity to add (can be negative)
+        :param quantity: int, change in quantity (can be positive or negative)
         """
         if product_id in self.inventory:
-            self.inventory[product_id]['quantity'] += quantity
-            if self.inventory[product_id]['quantity'] <= 0:
-                del self.inventory[product_id]
+            new_quantity = max(0, self.inventory[product_id]['quantity'] + quantity)
+            self.inventory[product_id]['quantity'] = new_quantity
 
-    def get_product_quantity(self, product_id: int) -> int or bool:
+    def get_product_quantity(self, product_id):
         """
         Get the quantity of a specific product by product_id.
         :param product_id: int
-        :return: the quantity if the product_id is in inventory, otherwise False.
+        :return: int quantity or False if product_id not in inventory
         """
         return self.inventory.get(product_id, {}).get('quantity', False)
 
-    def create_order(self, order_id: int, product_id: int, quantity: int) -> bool:
+    def create_order(self, order_id, product_id, quantity):
         """
-        Create an order for a product if available in sufficient quantity.
+        Create an order with product information.
         :param order_id: int
         :param product_id: int
-        :param quantity: int, the quantity of product selected.
-        :return: False if product_id is not in inventory or quantity is not adequate, otherwise None.
+        :param quantity: int, quantity of product to order
+        :return: bool indicating success or failure
         """
         if product_id not in self.inventory or self.inventory[product_id]['quantity'] < quantity:
             return False
-
-        self.orders[order_id] = {
-            'product_id': product_id,
-            'quantity': quantity,
-            'status': 'Shipped'
-        }
+        
+        self.orders[order_id] = {'product_id': product_id, 'quantity': quantity, 'status': 'Shipped'}
         self.update_product_quantity(product_id, -quantity)
+        return True
 
-    def change_order_status(self, order_id: int, status: str) -> bool:
+    def change_order_status(self, order_id, status):
         """
-        Change the status of an order if the order_id exists.
+        Change the status of an order.
         :param order_id: int
-        :param status: str, the new status to set
-        :return: False if the order_id is not in self.orders, otherwise None.
+        :param status: str, new status
+        :return: bool indicating success or failure
         """
         if order_id in self.orders:
             self.orders[order_id]['status'] = status
             return True
         return False
 
-    def track_order(self, order_id: int) -> str or bool:
+    def track_order(self, order_id):
         """
         Get the status of a specific order.
         :param order_id: int
-        :return: the status if order_id is in self.orders, otherwise False.
+        :return: str status or False if order_id not in self.orders
         """
         return self.orders.get(order_id, {}).get('status', False)

@@ -42,7 +42,7 @@ def run_task_with_api_iter(task_prompt, system_prompt):
                 {"role": "user", "content": task_prompt + extra_message}
             ],
             response_format={"type": "text"},
-            temperature=0.7,
+            temperature=0.2,
             max_completion_tokens=2500,
             top_p=1,
         )
@@ -76,7 +76,7 @@ def process_tasks_parallel(tasks, start_index, end_index, max_workers=5, iterati
                 future = executor.submit(process_task_with_iterations, task_prompt)
             else:
                 
-                future = executor.submit(run_task_with_api_iter, task_prompt, prompt.SYSTEM_PROMPT[0]) # Run only first prompt if not iterative
+                future = executor.submit(run_task_with_api_iter, task_prompt, prompt.SYSTEM_PROMPT) # Run only first prompt if not iterative
             futures[future] = i
 
         for future in concurrent.futures.as_completed(futures):
@@ -101,15 +101,15 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 5
+    start_index = 0
     end_index = 100
-    max_workers = 5 # Adjust the number of parallel threads
+    max_workers = 10 # Adjust the number of parallel threads
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "ChatGPT", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "ChatGPT_test", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)  # Ensure the directory exists.
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
     save_results_to_json(results, json_file_path)

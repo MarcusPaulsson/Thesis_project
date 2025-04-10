@@ -7,31 +7,27 @@ class SplitSentence:
 
     def split_sentences(self, sentences_string):
         """
-        Split a string into a list of sentences. Sentences end with . or ? and have a space after that. 
-        'Mr.' also ends with . but is not treated as a sentence.
-        
-        :param sentences_string: str, string to split
-        :return: list, list of split sentences
+        Split a string into a list of sentences. Sentences end with . or ? and are not preceded by abbreviations like 'Mr.'.
+        :param sentences_string: string, string to split
+        :return: list, split sentence list
         """
-        sentences = re.split(r'(?<!Mr)(?<![A-Z]\.)[.?\s]+', sentences_string.strip())
-        return [s.strip() for s in sentences if s.strip()]
+        sentence_pattern = r'(?<!\bMr\.)(?<!\b[A-Z]\.[A-Z]\.)[^?.!]+[?.!](?=\s|$)'
+        return [sentence.strip() for sentence in re.findall(sentence_pattern, sentences_string)]
 
     def count_words(self, sentence):
         """
-        Count the number of words in a sentence. Words are separated by spaces and punctuation marks/numbers are not counted.
-        
-        :param sentence: str, sentence to be counted
+        Count the number of words in a sentence. Words are separated by spaces; punctuation marks and numbers are not counted.
+        :param sentence: string, sentence to be counted
         :return: int, number of words in the sentence
         """
-        words = re.findall(r'\b[a-zA-Z]+\b', sentence)
+        words = [word for word in sentence.split() if word.isalpha()]
         return len(words)
 
     def process_text_file(self, sentences_string):
         """
         Given a text, return the number of words in the longest sentence.
-        
-        :param sentences_string: str, undivided long sentence
-        :return: int, number of words in the longest sentence
+        :param sentences_string: string, undivided long sentence
+        :return: int, the number of words in the longest sentence
         """
         sentences = self.split_sentences(sentences_string)
         return max((self.count_words(sentence) for sentence in sentences), default=0)

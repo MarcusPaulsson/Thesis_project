@@ -1,95 +1,94 @@
 class NumberWordFormatter:
     """
-    A class that converts numbers into their corresponding English word representation,
-    handling both integer and decimal parts, and incorporating appropriate connectors and units.
+    This class converts numbers into their corresponding English word representation, including handling
+    both integer and decimal parts, and incorporating appropriate connectors and units.
     """
 
     def __init__(self):
         """
-        Initialize NumberWordFormatter object.
+        Initialize the NumberWordFormatter object with mappings for number words.
         """
         self.units = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"]
-        self.teens = ["TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN",
-                      "EIGHTEEN", "NINETEEN"]
+        self.teens = ["TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", 
+                      "SEVENTEEN", "EIGHTEEN", "NINETEEN"]
         self.tens = ["", "", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"]
-        self.magnitudes = ["", "THOUSAND", "MILLION", "BILLION"]
+        self.magnitude = ["", "THOUSAND", "MILLION", "BILLION"]
 
-    def format(self, x):
+    def format(self, number):
         """
         Converts a number into words format.
-        :param x: int or float, the number to be converted into words format
+        :param number: int or float, the number to be converted
         :return: str, the number in words format
         """
-        if x is None:
+        if number is None:
             return ""
-        elif x == 0:
-            return "ZERO ONLY"
+
+        if isinstance(number, float):
+            integer_part = int(number)
+            decimal_part = int(round((number - integer_part) * 100))
+            words = self.convert_integer_to_words(integer_part)
+            if decimal_part > 0:
+                words += f" AND CENTS {self.convert_two_digits_to_words(decimal_part)} ONLY"
+            else:
+                words += " ONLY"
+            return words
         
-        integer_part = int(x)
-        decimal_part = round((x - integer_part) * 100)
+        return self.convert_integer_to_words(int(number)) + " ONLY"
 
-        words = self.format_integer(integer_part)
-        if decimal_part > 0:
-            words += f" AND CENTS {self.trans_two(str(decimal_part))} ONLY"
-        else:
-            words += " ONLY"
-        return words
-
-    def format_string(self, x):
+    def format_string(self, number_str):
         """
         Converts a string representation of a number into words format.
-        :param x: str, the string representation of a number
+        :param number_str: str, the string representation of a number
         :return: str, the number in words format
         """
-        return self.format(float(x))
+        return self.format(float(number_str))
 
-    def trans_two(self, s):
+    def convert_integer_to_words(self, number):
         """
-        Converts a two-digit number into words format.
-        :param s: str, the two-digit number
+        Converts an integer into words format.
+        :param number: int, the integer to convert
         :return: str, the number in words format
         """
-        n = int(s)
-        if n < 10:
-            return self.units[n]
-        elif n < 20:
-            return self.teens[n - 10]
-        else:
-            return self.tens[n // 10] + ('' if n % 10 == 0 else ' ' + self.units[n % 10])
-
-    def trans_three(self, s):
-        """
-        Converts a three-digit number into words format.
-        :param s: str, the three-digit number
-        :return: str, the number in words format
-        """
-        n = int(s)
-        if n == 0:
-            return ""
-        elif n < 100:
-            return self.trans_two(s)
-        else:
-            return self.units[n // 100] + " HUNDRED" + ('' if n % 100 == 0 else ' AND ' + self.trans_two(str(n % 100)))
-
-    def format_integer(self, n):
-        """
-        Formats an integer into words.
-        :param n: int, the integer to be converted
-        :return: str, the number in words format
-        """
-        if n == 0:
+        if number == 0:
             return "ZERO"
 
-        parts = []
-        magnitude_index = 0
+        words = ""
+        if number >= 1000:
+            thousands = number // 1000
+            words += self.convert_three_digits_to_words(thousands) + " " + self.magnitude[1] + " "
+            number %= 1000
+        
+        if number > 0:
+            words += self.convert_three_digits_to_words(number)
+        
+        return words.strip()
 
-        while n > 0:
-            if n % 1000 != 0:
-                part = self.trans_three(str(n % 1000))
-                if magnitude_index > 0:
-                    part += " " + self.magnitudes[magnitude_index]
-                parts.append(part)
-            n //= 1000
-            magnitude_index += 1
+    def convert_two_digits_to_words(self, number):
+        """
+        Converts a two-digit number into words format.
+        :param number: int, the two-digit number
+        :return: str, the number in words format
+        """
+        if number < 10:
+            return self.units[number]
+        elif number < 20:
+            return self.teens[number - 10]
+        else:
+            ten = number // 10
+            one = number % 10
+            return self.tens[ten] + (" " + self.units[one] if one > 0 else "").strip()
 
-        return ' '.join(reversed(parts)).strip()
+    def convert_three_digits_to_words(self, number):
+        """
+        Converts a three-digit number into words format.
+        :param number: int, the three-digit number
+        :return: str, the number in words format
+        """
+        if number < 100:
+            return self.convert_two_digits_to_words(number)
+        
+        hundred = number // 100
+        remainder = number % 100
+        if remainder > 0:
+            return f"{self.units[hundred]} HUNDRED AND {self.convert_two_digits_to_words(remainder)}"
+        return f"{self.units[hundred]} HUNDRED"

@@ -3,8 +3,7 @@ import os
 
 class CookiesUtil:
     """
-    Utility class for managing and manipulating cookies, including methods 
-    for retrieving, saving, and setting cookie data.
+    A utility class for managing and manipulating cookies, including methods for retrieving, saving, and setting cookie data.
     """
 
     def __init__(self, cookies_file):
@@ -17,7 +16,7 @@ class CookiesUtil:
 
     def get_cookies(self, response):
         """
-        Retrieves cookies from the specified response and saves them to the cookies file.
+        Extracts cookies from the specified response and saves them to the cookies file.
         :param response: The response to get cookies from, dict.
         """
         self.cookies = response.get('cookies', {})
@@ -25,14 +24,12 @@ class CookiesUtil:
 
     def load_cookies(self):
         """
-        Loads the cookies from the cookies file into the cookies attribute.
+        Loads the cookies from the cookies file into the cookies data.
         :return: The cookies data, dict.
         """
-        if not os.path.exists(self.cookies_file):
-            return {}
-
-        with open(self.cookies_file, 'r') as file:
-            self.cookies = json.load(file)
+        if os.path.exists(self.cookies_file):
+            with open(self.cookies_file, 'r') as file:
+                self.cookies = json.load(file)
         return self.cookies
 
     def _save_cookies(self):
@@ -44,14 +41,12 @@ class CookiesUtil:
             with open(self.cookies_file, 'w') as file:
                 json.dump(self.cookies, file)
             return True
-        except IOError:
+        except Exception:
             return False
 
     def set_cookies(self, request):
         """
         Sets the cookies in the request.
-        :param request: The request to set cookies into, dict.
+        :param request: The request dictionary where cookies will be set.
         """
         request['cookies'] = self.cookies
-
-# Test cases should be run separately in a testing framework.

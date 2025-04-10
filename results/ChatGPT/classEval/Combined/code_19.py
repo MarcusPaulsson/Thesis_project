@@ -1,19 +1,21 @@
 class ChandrasekharSieve:
     """
-    This class uses the Chandrasekhar's Sieve method to find all prime numbers within a specified range.
+    This class implements the Chandrasekhar sieve method to find all prime numbers up to a given limit.
     """
 
     def __init__(self, n):
         """
-        Initialize the ChandrasekharSieve class with the given limit.
+        Initialize the ChandrasekharSieve class with the specified upper limit.
+        
         :param n: int, the upper limit for generating prime numbers
         """
         self.n = n
-        self.primes = self.generate_primes()
+        self.primes = self._generate_primes()
 
-    def generate_primes(self):
+    def _generate_primes(self):
         """
-        Generate prime numbers up to the specified limit using the Sieve of Eratosthenes algorithm.
+        Generate prime numbers up to the specified limit using the sieve algorithm.
+        
         :return: list, a list of prime numbers
         """
         if self.n < 2:
@@ -21,7 +23,7 @@ class ChandrasekharSieve:
 
         sieve = [True] * (self.n + 1)
         sieve[0], sieve[1] = False, False  # 0 and 1 are not prime numbers
-
+        
         for start in range(2, int(self.n**0.5) + 1):
             if sieve[start]:
                 for multiple in range(start * start, self.n + 1, start):
@@ -31,8 +33,8 @@ class ChandrasekharSieve:
 
     def get_primes(self):
         """
-        Get the list of generated prime numbers.
+        Retrieve the list of generated prime numbers.
+        
         :return: list, a list of prime numbers
         """
         return self.primes
-

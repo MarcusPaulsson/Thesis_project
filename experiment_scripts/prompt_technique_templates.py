@@ -19,13 +19,13 @@ user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PRO
 
 
 # Zero-shot prompting
-'''
+''''''
 PROMPT_TECHNIQUE_SETTING = "Zero-shot" # placeholder for storing content to correct result directory
 
 SYSTEM_PROMPT=""
 HEAD_PROMPT = ""
 TAIL_PROMPT=" Give only the code, no test cases."
-'''
+
 
 # Zero-shot Chain of thougths
 '''
@@ -88,7 +88,7 @@ TAIL_PROMPT="Give only the code, no test cases."
 '''
 
 # Combined Heuristic
-''''''
+'''
 PROMPT_TECHNIQUE_SETTING = "Combined" 
 
 SYSTEM_PROMPT="""You are an expert software developer, skilled in producing clean and well-structured code. Generate code that is clean, easy to read with low complexity, and uphold high software quality standards.
@@ -100,5 +100,5 @@ For the following coding task, solve it in the following steps:
 ""","Read the task description again and refine the provided code to be better and fix potential problems. Generate code that is clean, easy to read and with low complexity, and uphold high software quality standards."
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
-
+'''
 

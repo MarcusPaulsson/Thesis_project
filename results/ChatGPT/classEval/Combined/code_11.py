@@ -1,51 +1,48 @@
 class BitStatusUtil:
     """
-    A utility class providing methods for manipulating and checking status using bitwise operations.
+    A utility class for manipulating and checking status using bitwise operations.
     """
 
     @staticmethod
-    def add(states, stat):
+    def add(states: int, stat: int) -> int:
         """
-        Add a status to the current status, ensuring parameters are valid.
+        Add a status to the current status and validate parameters.
         :param states: Current status, int.
         :param stat: Status to be added, int.
-        :return: The updated status after adding the specified status, int.
+        :return: The status after adding the status, int.
         """
-        BitStatusUtil.check([stat])  # Validate the status
-        return states | stat  # Use bitwise OR to add the status
+        BitStatusUtil._validate_parameters(states, stat)
+        return states | stat
 
     @staticmethod
-    def has(states, stat):
+    def has(states: int, stat: int) -> bool:
         """
-        Check if the current status contains the specified status, ensuring parameters are valid.
+        Check if the current status contains the specified status and validate parameters.
         :param states: Current status, int.
         :param stat: Specified status, int.
         :return: True if the current status contains the specified status, otherwise False, bool.
         """
-        BitStatusUtil.check([stat])  # Validate the status
-        return (states & stat) == stat  # Use bitwise AND to check if the status is present
+        BitStatusUtil._validate_parameters(states, stat)
+        return (states & stat) == stat
 
     @staticmethod
-    def remove(states, stat):
+    def remove(states: int, stat: int) -> int:
         """
-        Remove the specified status from the current status, ensuring parameters are valid.
+        Remove the specified status from the current status and validate parameters.
         :param states: Current status, int.
         :param stat: Specified status, int.
-        :return: The updated status after removing the specified status, int.
+        :return: The status after removing the specified status, int.
         """
-        BitStatusUtil.check([stat])  # Validate the status
-        return states & ~stat  # Use bitwise AND NOT to remove the status
+        BitStatusUtil._validate_parameters(states, stat)
+        return states & ~stat
 
     @staticmethod
-    def check(args):
+    def _validate_parameters(*args: int) -> None:
         """
-        Validate that all provided arguments are non-negative and even.
-        :param args: Parameters to be checked, list.
-        :raises ValueError: If any argument is negative or odd.
+        Validate that all parameters are non-negative and even.
+        :param args: Parameters to be checked.
+        :raises ValueError: If any parameter is negative or not even.
         """
         for arg in args:
-            if arg < 0:
-                raise ValueError(f"{arg} is negative")
-            if arg % 2 != 0:
-                raise ValueError(f"{arg} not even")
-
+            if arg < 0 or arg % 2 != 0:
+                raise ValueError(f"{arg} is not even or negative")

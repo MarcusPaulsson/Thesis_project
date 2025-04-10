@@ -1,17 +1,17 @@
 import itertools
-from math import factorial as math_factorial
+import math
 
 class ArrangementCalculator:
     """
     The ArrangementCalculator class provides permutation calculations and selection operations for a given set of data elements.
     """
 
-    def __init__(self, datas):
+    def __init__(self, data):
         """
-        Initializes the ArrangementCalculator object with a list of data elements.
-        :param datas: List, the data elements to be used for arrangements.
+        Initializes the ArrangementCalculator object with a list of data.
+        :param data: List, the data elements to be used for arrangements.
         """
-        self.datas = datas
+        self.data = data
 
     @staticmethod
     def count(n, m=None):
@@ -23,8 +23,10 @@ class ArrangementCalculator:
         :return: int, the count of arrangements.
         """
         if m is None or n == m:
-            return math_factorial(n)
-        return math_factorial(n) // math_factorial(n - m)
+            return math.factorial(n)
+        if m > n:
+            return 0
+        return math.factorial(n) // math.factorial(n - m)
 
     @staticmethod
     def count_all(n):
@@ -37,20 +39,24 @@ class ArrangementCalculator:
 
     def select(self, m=None):
         """
-        Generates a list of arrangements by selecting m items from the internal datas.
+        Generates a list of arrangements by selecting m items from the internal data.
         If m is not provided, selects all items.
         :param m: int, the number of items to be chosen (default=None).
         :return: List, a list of arrangements.
         """
-        m = m if m is not None else len(self.datas)
-        return [list(p) for p in itertools.permutations(self.datas, m)]
+        if m is None:
+            m = len(self.data)
+        return [list(p) for p in itertools.permutations(self.data, m)]
 
     def select_all(self):
         """
-        Generates a list of all arrangements by selecting at least 1 item and at most the number of internal datas.
+        Generates a list of all arrangements by selecting at least 1 item and at most the number of internal data.
         :return: List, a list of all arrangements.
         """
-        return [arr for m in range(1, len(self.datas) + 1) for arr in self.select(m)]
+        all_arrangements = []
+        for m in range(1, len(self.data) + 1):
+            all_arrangements.extend(self.select(m))
+        return all_arrangements
 
     @staticmethod
     def factorial(n):
@@ -59,4 +65,4 @@ class ArrangementCalculator:
         :param n: int, the number to calculate the factorial.
         :return: int, the factorial of the given number.
         """
-        return math_factorial(n) if n >= 0 else 0
+        return math.factorial(n)

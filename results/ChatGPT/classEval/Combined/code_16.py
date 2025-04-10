@@ -1,7 +1,7 @@
 class Calculator:
     """
-    A simple calculator for performing basic arithmetic operations 
-    using the operators +, -, *, /, and ^ (exponentiation).
+    A simple calculator class to perform basic arithmetic operations 
+    including addition, subtraction, multiplication, division, and exponentiation.
     """
 
     def __init__(self):
@@ -9,34 +9,35 @@ class Calculator:
             '+': lambda x, y: x + y,
             '-': lambda x, y: x - y,
             '*': lambda x, y: x * y,
-            '/': lambda x, y: x / y,
+            '/': lambda x, y: x / y if y != 0 else float('inf'),  # handle division by zero
             '^': lambda x, y: x ** y
         }
 
     def calculate(self, expression):
         """
-        Calculate the value of a given expression.
-        
-        :param expression: str, the expression to evaluate
-        :return: float or None, the result of the evaluation or None for invalid input
+        Evaluates the given arithmetic expression.
+        :param expression: str, a valid arithmetic expression
+        :return: float, the result of the expression; None if invalid or empty.
         """
         if not expression:
             return None
 
         operand_stack = []
         operator_stack = []
-        index = 0
-        length = len(expression)
+        i = 0
 
-        while index < length:
-            char = expression[index]
+        while i < len(expression):
+            char = expression[i]
 
             if char.isdigit():
-                num = self.extract_number(expression, index)
+                num = 0
+                while i < len(expression) and expression[i].isdigit():
+                    num = num * 10 + int(expression[i])
+                    i += 1
                 operand_stack.append(num)
-                index += len(str(num))  # Move index forward to the end of the number
+                continue
 
-            elif char in self.operators:
+            if char in self.operators:
                 while (operator_stack and
                        self.precedence(operator_stack[-1]) >= self.precedence(char)):
                     self.apply_operator(operand_stack, operator_stack)
@@ -48,49 +49,32 @@ class Calculator:
             elif char == ')':
                 while operator_stack and operator_stack[-1] != '(':
                     self.apply_operator(operand_stack, operator_stack)
-                operator_stack.pop()  # Remove '('
+                operator_stack.pop()  # remove '('
 
-            index += 1
+            i += 1
 
         while operator_stack:
             self.apply_operator(operand_stack, operator_stack)
 
         return operand_stack[0] if operand_stack else None
 
-    def extract_number(self, expression, index):
-        """
-        Extracts a full number from the expression starting at the given index.
-        
-        :param expression: str, the expression containing the number
-        :param index: int, the starting index to extract the number
-        :return: int, the extracted number
-        """
-        num = 0
-        while index < len(expression) and expression[index].isdigit():
-            num = num * 10 + int(expression[index])
-            index += 1
-        return num
-
     def precedence(self, operator):
         """
-        Returns the precedence of the specified operator.
-        
-        :param operator: str, the operator to check
-        :return: int, the precedence level of the operator
+        Returns the precedence level of the given operator.
+        :param operator: str, the operator to evaluate
+        :return: int, the precedence level
         """
         precedence_dict = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
         return precedence_dict.get(operator, 0)
 
     def apply_operator(self, operand_stack, operator_stack):
         """
-        Applies the operator at the top of the operator stack 
-        to the two topmost numbers on the operand stack.
-        
-        :param operand_stack: list, the stack of operands
-        :param operator_stack: list, the stack of operators
+        Applies the top operator to the top two operands.
+        :param operand_stack: list, stack of operands
+        :param operator_stack: list, stack of operators
         """
         operator = operator_stack.pop()
-        right_operand = operand_stack.pop()
-        left_operand = operand_stack.pop()
-        result = self.operators[operator](left_operand, right_operand)
+        right = operand_stack.pop()
+        left = operand_stack.pop()
+        result = self.operators[operator](left, right)
         operand_stack.append(result)
