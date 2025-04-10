@@ -81,8 +81,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 20
-    end_index = 30
+    start_index = 0
+    end_index = 100
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
     results = []
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
                 print(f"Task {i} failed during the first iteration.")
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "Gemini_test", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "Gemini_test2", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
 

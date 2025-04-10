@@ -109,7 +109,7 @@ if __name__ == "__main__":
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "ChatGPT_test", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "ChatGPT_test2", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)  # Ensure the directory exists.
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
     save_results_to_json(results, json_file_path)

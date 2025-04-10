@@ -4,6 +4,10 @@ import subprocess
 import sys
 import tempfile
 import shutil
+import signal
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+
 
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(upper_dir)
@@ -37,17 +41,6 @@ gemma_meta_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS
 gemma_naive_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Naive'))
 gemma_iterative_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Iterative'))
 gemma_combined_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Combined'))
-
-# WizardCoder
-#wizardCoder_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'WizardCoder', 'APPS', 'Zero-shot'))
-
-# Qwen
-#qwen_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Qwen', 'APPS', 'Zero-shot'))
-
-
-
-
-
 
 # Define a list of folder paths and their corresponding names
 folder_paths = {
@@ -92,104 +85,147 @@ def load_apps_tests(json_file_path):
         print(f"Error: {e}")
         return None
 
-def run_tests_on_code_snippets(tasks, folder_path, temp_dir):
+def run_single_test(task_data, folder_path, temp_dir, task_index):
+    task = task_data["input_output"]
+    total_tests = 100  # Assuming a fixed total for progress reporting
+
+    # Extract task_id from the filename
+    file_name = f"code_{task_index}.py"
+    try:
+        code_id = int(file_name.split("_")[1].split(".")[0])
+    except (IndexError, ValueError):
+        print(f"Warning: Could not extract task_id from filename '{file_name}'. Skipping test.")
+        return None
+
+    file_path = os.path.join(folder_path, f"code_{task_index}.py")
+    if not os.path.exists(file_path):
+        print(f"Warning: File '{file_path}' not found for test {task_index + 1}.")
+        return None
+
+    process = None
+    output_list = []
+    stderr_output = ""
+    stdout_output = ""
+    passed = False
+    runtime_error = False
+
+    try:
+        with open(file_path, 'r') as f:
+            generated_code = f.read()
+
+        temp_file_path = os.path.join(temp_dir, f"temp_test_{task_index}.py")
+        with open(temp_file_path, 'w') as temp_file:
+            temp_file.write(generated_code)
+
+        print(f"\n--- Running Test {task_index + 1} of {total_tests} ---")
+        json_data = json.loads(task)
+        inputs, outputs = json_data["inputs"], json_data["outputs"]
+        max_numb_test, placeholder = 2, 2
+
+        for i, item in enumerate(inputs):
+            if i >= max_numb_test:
+                break
+            process = subprocess.Popen(["python", temp_file_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            try:
+                stdout, stderr = process.communicate(item, timeout=5)
+                output_list.append(stdout[:-1])
+                stdout_output += stdout
+                stderr_output += stderr
+            except subprocess.TimeoutExpired:
+                print(f"Test {task_index + 1} timed out.")
+                if process and process.poll() is None:
+                    os.kill(process.pid, signal.SIGTERM)
+                    process.wait()
+                return None  # Indicate failure
+
+        if process and process.returncode == 0:
+            expected_lines = outputs[:placeholder]
+            expected_lines = [item.strip() for item in expected_lines]
+
+            if output_list == expected_lines:
+                print(f"Test {task_index + 1} passed")
+                passed = True
+            else:
+                print(f"Test {task_index + 1} failed: Output mismatch")
+                print(f"Expected: {expected_lines}")
+                print(f"Actual: {output_list}")
+                print(f"Stderr: {stderr_output}")
+                print(f"Stdout: {stdout_output}")
+        elif process:
+            print(f"Test {task_index + 1} failed: Runtime error (return code: {process.returncode})")
+            print(f"Stderr: {stderr_output}")
+            print(f"Stdout: {stdout_output}")
+            runtime_error = True
+
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
+        print(f"Error during test {task_index + 1}: {e}")
+    finally:
+        if process and process.poll() is None:
+            process.terminate()
+            process.wait()
+
+    return {"passed": passed, "code_id": code_id, "runtime_error": runtime_error}
+
+def run_tests_on_code_snippets_parallel(tasks, folder_path, temp_dir, max_workers=12):
     if not tasks:
         return {"passed": 0, "total": 0, "passed_ids": []}
 
     passed_tests = 0
-    total_tests = 100
+    total_tests = len(tasks)
     passed_ids = []
-    for i, task_data in enumerate(tasks):
-        task = task_data["input_output"]
+    failed_count = 0
 
-        # Extract task_id from the filename
-        file_name = f"code_{i}.py"
-        try:
-            code_id = int(file_name.split("_")[1].split(".")[0])
-        except (IndexError, ValueError):
-            print(f"Warning: Could not extract task_id from filename '{file_name}'. Skipping test.")
-            continue
-
-        file_path = os.path.join(folder_path, f"code_{i}.py")
-        if not os.path.exists(file_path):
-            print(f"Warning: File '{file_path}' not found for test {i + 1}.")
-            continue
-
-        try:
-            with open(file_path, 'r') as f:
-                generated_code = f.read()
-
-            temp_file_path = os.path.join(temp_dir, f"temp_test_{i}.py")
-            with open(temp_file_path, 'w') as temp_file:
-                temp_file.write(generated_code)
-
-            print(f"\n--- Running Test {i + 1} of {total_tests} ---")
-            json_data = json.loads(task)
-            inputs, outputs = json_data["inputs"], json_data["outputs"]
-            max_numb_test, placeholder = 2, 2
-            output_list = []
-            for test_i, item in enumerate(inputs):
-                if max_numb_test:
-                    max_numb_test -= 1
-                else:
-                    break
-                process = subprocess.Popen(["python", temp_file_path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-                stdout, stderr = process.communicate(item, timeout=5)
-                output_list.append(stdout[:-1])
-                output_list
-            if process.returncode == 0:
-                expected_lines = outputs[:placeholder]
-                expected_lines = [item.strip() for item in expected_lines]
-
-                if output_list == expected_lines:
-                    print(f"Test {i + 1} passed")
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(run_single_test, task, folder_path, temp_dir, i) for i, task in enumerate(tasks)]
+        for future in as_completed(futures):
+            result = future.result()
+            if result is not None:
+                if result["passed"]:
                     passed_tests += 1
-                    passed_ids.append(code_id)
-                else:
-                    print(f"Test {i + 1} failed: Output mismatch")
-                    print(f"Expected: {expected_lines}")
-                    print(f"Actual: {output_list}")
-                    print(f"Stderr: {stderr}")
-                    print(f"Stdout: {stdout}")
-            else:
-                print(f"Test {i + 1} failed: Runtime error")
-                print(f"Stderr: {stderr}")
-                print(f"Stdout: {stdout}")
+                    passed_ids.append(result["code_id"])
+                elif result["runtime_error"]:
+                    failed_count += 1
+                elif result is None:
+                    failed_count += 1 # Timeout or other critical error
 
-        except subprocess.TimeoutExpired:
-            print(f"Test {i + 1} timed out.")
-        except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
-            print(f"Error: {e}")
-
-    print(f"\n--- Test Summary ---")
+    print(f"\n--- Test Summary for {os.path.basename(folder_path)} ---")
     print(f"Total tests: {total_tests}")
     print(f"Passed tests: {passed_tests}")
-    print(f"Failed tests: {total_tests - passed_tests}")
+    print(f"Failed tests: {failed_count}")
     return {"passed": passed_tests, "total": total_tests, "passed_ids": passed_ids}
+
 
 tasks = load_apps_tests(test_data_path)
 
 
 def extract_and_save_passed_code(passed_code_ids):
-    
+    """Extracts and saves passed code snippets to a 'filtered_results' subdirectory."""
     dir = os.path.abspath(os.path.join(upper_dir,'filtered_results')) # Flush previous folder for storing and make a new fresh.
     os.makedirs(dir, exist_ok=True)
 
     for passed_index in passed_code_ids:
         for i in folder_paths:
             parts = folder_paths[i].split(os.sep)  # Split the path into its components
+
             if parts[-4] == 'results':
                 parts[-4] = 'filtered_results'
                 filtered_folder_path = os.path.join(*parts[-4:])
+                
                 filename_to_copy = f"code_{passed_index}.py"
+                
                 source_file_path = os.path.join(folder_paths[i], filename_to_copy)
                 destination_file_path = os.path.join(filtered_folder_path, filename_to_copy)
+                print(destination_file_path)
                 os.makedirs(filtered_folder_path, exist_ok=True)
                 shutil.copy2(source_file_path, destination_file_path) # copy with metadata
+                if os.path.exists(source_file_path):
+                    shutil.copy2(source_file_path, destination_file_path) # copy with metadata
+                else:
+                    print(f"Warning: Source file not found: {source_file_path}")
 
 
-save_passed = False
+save_passed = True
+curr_time = time.time()
 if tasks:
     results = {}
     temp_dir = "tempfolder_apps"
@@ -197,12 +233,13 @@ if tasks:
 
     for folder_name, folder_path in folder_paths.items():
         print(f"\n--- Running {folder_name} Tests ---")
-        results[folder_name] = run_tests_on_code_snippets(tasks, folder_path, temp_dir)
+        results[folder_name] = run_tests_on_code_snippets_parallel(tasks, folder_path, temp_dir, max_workers=12)
 
     print("\n--- Overall Test Summary ---")
     total_passed = 0
     total_all = 0
     model_passed_ids = {}
+    all_passed_ids = {} # Change to dict for id count
     for folder, result in results.items():
         print(f"{folder}: Passed {result['passed']} of {result['total']}")
         total_passed += result['passed']
@@ -211,9 +248,14 @@ if tasks:
         if model_name not in model_passed_ids:
             model_passed_ids[model_name] = {}
         model_passed_ids[model_name][folder] = set(result['passed_ids'])
-
+        for id in result['passed_ids']:
+            if id in all_passed_ids:
+                all_passed_ids[id] += 1
+            else:
+                all_passed_ids[id] = 1
     print(f"\nTotal Passed: {total_passed} of {total_all}")
-
+    time.sleep(5)
+    print(f"\n time {time.time()-curr_time-5}")
     venn_data = {}
     all_task_ids = set(range(len(tasks)))
 
@@ -286,15 +328,13 @@ if tasks:
         print("\n--- Not enough models to generate Venn diagram data ---")
 
     shutil.rmtree(temp_dir)
-    if save_passed:
+    
         # Determine codes passed by all techniques of each model
-        for model in model_names:
-            if model in model_passed_ids:
-                passed_by_all_techniques = set.intersection(*[model_passed_ids[model][f] for f in model_passed_ids[model]])
-                if passed_by_all_techniques:
-                    print(f"\nSaving codes passed by all techniques of {model}: {sorted(list(passed_by_all_techniques))}")
-                    extract_and_save_passed_code(list(passed_by_all_techniques))
-
+    passed_in_all = [id for id, count in all_passed_ids.items() if count == len(folder_paths)]
+    common_passed_code = sorted(passed_in_all)
+    print(f"\nPassed in all folders: {common_passed_code}")
+    if save_passed:
+        extract_and_save_passed_code(common_passed_code)
 
 
         

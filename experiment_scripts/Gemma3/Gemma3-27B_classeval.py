@@ -33,7 +33,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
         ),
     ]
     generate_content_config = types.GenerateContentConfig(
-        temperature=0.7,
+        temperature=0.2,
         top_p=1,
         top_k=40,
         max_output_tokens=2500,
@@ -89,7 +89,7 @@ def process_tasks_parallel(tasks, start_index, end_index, max_workers=5, iterati
             if iterative:
                 future = executor.submit(process_task_with_iterations, task_prompt)
             else:
-                future = executor.submit(run_task_with_gemini_iter, task_prompt, prompt.SYSTEM_PROMPT[0])
+                future = executor.submit(run_task_with_gemini_iter, task_prompt, prompt.SYSTEM_PROMPT)
             futures[future] = i
 
         for future in concurrent.futures.as_completed(futures):
@@ -114,15 +114,15 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 90
-    end_index = 91  # Adjust to the number of tasks you want to run in parallel
+    start_index = 0
+    end_index = 100  # Adjust to the number of tasks you want to run in parallel
     max_workers = 1   # Adjust the number of parallel calls you want to make
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "Gemma3", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "Gemma3_test", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
 

@@ -18,7 +18,7 @@ sys.path.append(upper_dir)
 # EVALUATING ALL RESULTS
 
 result_setting = "filtered_results" # "results"
-result_setting = "results" # "filtered_results"
+#result_setting = "results" # "filtered_results"
 
 # folder_paths_gemini_cli_games = {
 #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
@@ -37,6 +37,7 @@ result_setting = "results" # "filtered_results"
 # ClassEval
 folder_paths_gemini_classEval = {
     "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
+    "Gemini classEval test": os.path.join(upper_dir, result_setting, "Gemini_test", "classEval", "Zero-shot"),
     "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
     "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
     "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
@@ -58,6 +59,7 @@ folder_paths_chatgpt_classEval = {
 }
 folder_paths_gemma_classEval = {
     "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
+    "Gemma3 classEval test": os.path.join(upper_dir, result_setting, "Gemma3_test", "classEval", "Zero-shot"),
     "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
     "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
     "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),
