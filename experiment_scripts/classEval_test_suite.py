@@ -156,6 +156,7 @@ tasks = load_classEval_tests(test_data_path)
 save_passed = False
 
 # Run tests for each folder, using a global temporary directory for temporary scripts
+# Run tests for each folder, using a global temporary directory for temporary scripts
 if tasks:
     results = {}
     with create_and_cleanup_tempdir_global() as global_temp_dir:
@@ -175,62 +176,62 @@ if tasks:
             total_all += result['total']
             individual_results[folder] = {
                 'passed_ids': set(result['passed_ids']),
-                'failed_ids': set(range(1, result['total'] + 1)) - set(result['passed_ids']) # Assuming task IDs are 1 to total
+                'failed_ids': set(range(len(tasks))) - set(result['passed_ids']) # Assuming task IDs are 0-based
             }
 
         print(f"\nTotal Passed: {total_passed} of {total_all}")
 
-        # Find IDs for all Venn diagram subsets
-        folder_names = list(folder_paths.keys())
-        if len(folder_names) == 3:
-            folder1, folder2, folder3 = folder_names[0], folder_names[1], folder_names[2]
+        # Analyze results per model
+        model_names = sorted(list(set(folder.split()[0] for folder in folder_paths)))
 
-            passed_in_all = sorted(list(individual_results[folder1]['passed_ids'] &
-                                       individual_results[folder2]['passed_ids'] &
-                                       individual_results[folder3]['passed_ids']))
+        print("\n--- Model Comparison ---")
+        for model in model_names:
+            model_folders = [f for f in folder_paths if f.startswith(model)]
+            if not model_folders:
+                continue
 
-            passed_1_only = sorted(list(individual_results[folder1]['passed_ids'] -
-                                        individual_results[folder2]['passed_ids'] -
-                                        individual_results[folder3]['passed_ids']))
+            first_folder = model_folders[0]
+            all_passed_in_model = individual_results[first_folder]['passed_ids'].copy()
+            for folder in model_folders[1:]:
+                all_passed_in_model &= individual_results[folder]['passed_ids']
+            print(f"Tasks passed by all prompt techniques of {model}: {sorted(list(all_passed_in_model))}")
 
-            passed_2_only = sorted(list(individual_results[folder2]['passed_ids'] -
-                                        individual_results[folder1]['passed_ids'] -
-                                        individual_results[folder3]['passed_ids']))
+            # Find tasks passed by at least one technique but not all
+            passed_by_some_not_all = set()
+            all_passed_ids_model = set()
+            for folder in model_folders:
+                all_passed_ids_model.update(individual_results[folder]['passed_ids'])
+            passed_by_some_not_all = sorted(list(all_passed_ids_model - all_passed_in_model))
+            if passed_by_some_not_all:
+                print(f"Tasks passed by some but not all techniques of {model}: {passed_by_some_not_all}")
+            else:
+                print(f"No tasks passed by some but not all techniques of {model}.")
 
-            passed_3_only = sorted(list(individual_results[folder3]['passed_ids'] -
-                                        individual_results[folder1]['passed_ids'] -
-                                        individual_results[folder2]['passed_ids']))
+            # Find tasks failed by all techniques
+            first_folder = model_folders[0]
+            all_failed_in_model = individual_results[first_folder]['failed_ids'].copy()
+            for folder in model_folders[1:]:
+                all_failed_in_model &= individual_results[folder]['failed_ids']
+            if all_failed_in_model:
+                print(f"Tasks failed by all prompt techniques of {model}: {sorted(list(all_failed_in_model))}")
+            else:
+                print(f"No tasks failed by all prompt techniques of {model}.")
+            print("-" * 30)
 
-            passed_1_and_2 = sorted(list((individual_results[folder1]['passed_ids'] &
-                                         individual_results[folder2]['passed_ids']) -
-                                        individual_results[folder3]['passed_ids']))
-
-            passed_1_and_3 = sorted(list((individual_results[folder1]['passed_ids'] &
-                                         individual_results[folder3]['passed_ids']) -
-                                        individual_results[folder2]['passed_ids']))
-
-            passed_2_and_3 = sorted(list((individual_results[folder2]['passed_ids'] &
-                                         individual_results[folder3]['passed_ids']) -
-                                        individual_results[folder1]['passed_ids']))
-
-            failed_in_all = sorted(list(individual_results[folder1]['failed_ids'] &
-                                       individual_results[folder2]['failed_ids'] &
-                                       individual_results[folder3]['failed_ids']))
-
-            print("\n--- Venn Diagram Data ---")
-            print(f"Passed in all ({folder1}, {folder2}, {folder3}): {passed_in_all}")
-            print(f"Passed in {folder1} only: {passed_1_only}")
-            print(f"Passed in {folder2} only: {passed_2_only}")
-            print(f"Passed in {folder3} only: {passed_3_only}")
-            print(f"Passed in {folder1} and {folder2} only: {passed_1_and_2}")
-            print(f"Passed in {folder1} and {folder3} only: {passed_1_and_3}")
-            print(f"Passed in {folder2} and {folder3} only: {passed_2_and_3}")
-            print(f"Failed in all ({folder1}, {folder2}, {folder3}): {failed_in_all}")
-        else:
-            print("\nWarning: To generate Venn diagram data, you need exactly three folders defined in 'folder_paths'.")
 
         # The original saving logic for codes passed in all folders remains
         if save_passed:
-            extract_and_save_passed_code(passed_in_all)
+            # Determine which 'all' to consider for saving (e.g., all prompt techniques of each model)
+            for model in model_names:
+                model_folders = [f for f in folder_paths if f.startswith(model)]
+                if not model_folders:
+                    continue
+                first_folder = model_folders[0]
+                all_passed_in_model = individual_results[first_folder]['passed_ids'].copy()
+                for folder in model_folders[1:]:
+                    all_passed_in_model &= individual_results[folder]['passed_ids']
+                if all_passed_in_model:
+                    print(f"\nSaving codes passed by all techniques of {model}: {sorted(list(all_passed_in_model))}")
+                    extract_and_save_passed_code(list(all_passed_in_model)) # Save codes passed by all techniques of each model
 
     # The global temporary directory is cleaned up by the context manager

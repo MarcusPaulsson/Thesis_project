@@ -18,7 +18,7 @@ sys.path.append(upper_dir)
 # EVALUATING ALL RESULTS
 
 result_setting = "filtered_results" # "results"
-#result_setting = "results" # "filtered_results"
+result_setting = "results" # "filtered_results"
 
 # folder_paths_gemini_cli_games = {
 #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
@@ -47,6 +47,7 @@ folder_paths_gemini_classEval = {
 }
 folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Zero-shot": os.path.join(upper_dir,result_setting, "ChatGPT", "classEval", "Zero-shot"),
+    "ChatGPT classEval test": os.path.join(upper_dir,result_setting, "ChatGPT_test", "classEval", "Zero-shot"),
     "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
     "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
     "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),

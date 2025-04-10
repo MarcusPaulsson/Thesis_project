@@ -29,7 +29,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
         ),
     ]
     generate_content_config = types.GenerateContentConfig(
-        temperature=0.7,
+        temperature=0.2,
         top_p=1,
         top_k=40,
         max_output_tokens=2500,
@@ -81,8 +81,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Define the index interval for tasks
-    start_index = 0
-    end_index = 100
+    start_index = 20
+    end_index = 30
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
     results = []
 
@@ -98,14 +98,14 @@ if __name__ == "__main__":
             else:
                 print(f"Task {i} encountered an unexpected issue during iterations.")
         else:
-            assistant_response = run_task_with_gemini_iter(task_prompt, prompt.SYSTEM_PROMPT[0])
+            assistant_response = run_task_with_gemini_iter(task_prompt, prompt.SYSTEM_PROMPT)
             if assistant_response:
                 results.append({"task_index": i, "assistant_response": assistant_response})
             else:
                 print(f"Task {i} failed during the first iteration.")
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "Gemini", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "Gemini_test", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
 
