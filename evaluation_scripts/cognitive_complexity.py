@@ -18,21 +18,8 @@ sys.path.append(upper_dir)
 # EVALUATING ALL RESULTS
 
 result_setting = "filtered_results" # "results"
-#result_setting = "results" # "filtered_results"
+result_setting = "results" # "filtered_results"
 
-# folder_paths_gemini_cli_games = {
-#     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
-#     "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot-CoT"),
-#     "Gemini cli_games Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Expert-role"),
-#     "Gemini cli_games Student-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Student-role"),
-# }
-
-# folder_paths_chatgpt_cli_games = {
-#     "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot"),
-#     "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot-CoT"),
-#     "ChatGPT cli_games Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Expert-role"),
-#     "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
-# }
 
 # ClassEval
 folder_paths_gemini_classEval = {
@@ -48,7 +35,6 @@ folder_paths_gemini_classEval = {
 }
 folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Zero-shot": os.path.join(upper_dir,result_setting, "ChatGPT", "classEval", "Zero-shot"),
-  
     "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
     "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
     "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
@@ -56,6 +42,9 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Naive"),
     "ChatGPT classEval Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Iterative"),
     "ChatGPT classEval Combined": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Combined"),
+
+
+    "ChatGPT classEval YYYYYYYY": os.path.join(upper_dir, result_setting, "ChatGPT", "xlcost", "Zero-shot"),
 }
 folder_paths_gemma_classEval = {
     "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
