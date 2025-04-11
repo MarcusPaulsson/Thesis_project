@@ -1,16 +1,27 @@
-def determine_round_status(n, ratings):
-    for a, b in ratings:
-        if a != b:
-            return "rated"
+def determine_round_rating(n, ratings):
+    rated = False
+    unrated = False
+    
+    for i in range(n):
+        if ratings[i][0] != ratings[i][1]:
+            rated = True
+            break
+    
+    if rated:
+        print("rated")
+        return
     
     for i in range(n - 1):
         if ratings[i][0] < ratings[i + 1][0]:
-            return "unrated"
+            unrated = True
+            break
     
-    return "maybe"
+    if unrated:
+        print("unrated")
+    else:
+        print("maybe")
 
-if __name__ == "__main__":
-    n = int(input().strip())
-    ratings = [tuple(map(int, input().strip().split())) for _ in range(n)]
-    result = determine_round_status(n, ratings)
-    print(result)
+# Input reading
+n = int(input())
+ratings = [tuple(map(int, input().split())) for _ in range(n)]
+determine_round_rating(n, ratings)

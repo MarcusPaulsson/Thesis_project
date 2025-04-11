@@ -4,32 +4,39 @@ c = list(map(int, input().split()))
 # Calculate the total length of platforms
 total_length = sum(c)
 
-# If the maximum jump distance is greater than or equal to the width of the river,
-# we can always reach the other side.
+# If the maximum jump distance is greater than or equal to the width of the river, we can always reach the end
 if d >= n + 1:
     print("YES")
-    print("0 " + "0 " * (n - total_length) + " ".join(str(i + 1) for i in range(m)))
+    print("0 " + "0 " * (n - 1) + "1")
 else:
-    # We need to check if we can place the platforms such that we can jump across
-    # We will try to place the platforms with at least `d` distance between them
-    positions = []
+    # We need to check if we can place the platforms in a way that allows us to jump across
+    # We will try to place the platforms starting from the leftmost position
+    a = [0] * n
     current_position = 0
-
+    
     for i in range(m):
-        positions.append(current_position)
-        current_position += c[i]
-
-        # Ensure there's enough space for the next platform
-        if i < m - 1:
-            current_position += d
-
-    # Check if the last platform can reach the end
-    if positions[-1] + c[-1] + d < n + 1:
-        print("NO")
-    else:
+        # Place the platform at the current position
+        for j in range(c[i]):
+            if current_position < n:
+                a[current_position] = i + 1
+                current_position += 1
+        
+        # Move to the next position after the platform
+        current_position += 1  # Leave at least one cell gap after each platform
+    
+    # Check if we can reach the end
+    reachable = True
+    last_position = -1
+    
+    for i in range(n):
+        if a[i] != 0:
+            last_position = i
+        if last_position != -1 and i - last_position > d:
+            reachable = False
+            break
+    
+    if reachable:
         print("YES")
-        result = [0] * n
-        for i in range(m):
-            for j in range(c[i]):
-                result[positions[i] + j] = i + 1
-        print(" ".join(map(str, result)))
+        print(" ".join(map(str, a)))
+    else:
+        print("NO")

@@ -8,11 +8,11 @@ def solve():
     for d, h in blows:
         max_d = max(max_d, d)
 
-    if max_d >= x:
+    if max_d > x:
         print(1)
         return
 
-    max_diff = -1
+    max_diff = float('-inf')
     for d, h in blows:
         max_diff = max(max_diff, d - h)
 
@@ -22,8 +22,10 @@ def solve():
 
     remaining = x - max_d
     
-    ans = (remaining + max_diff - 1) // max_diff + 1
+    ans = 1
+    ans += (remaining + max_diff - 1) // max_diff
     print(ans)
+
 
 t = int(input())
 for _ in range(t):

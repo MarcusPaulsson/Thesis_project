@@ -10,42 +10,39 @@ def find_courses(n, k, main_courses, dependencies):
         for dep in dependencies[i - 1]:
             graph[dep].append(i)
             in_degree[i] += 1
-
-    # Queue for courses that can be taken (in-degree 0)
+    
+    # Queue for courses that can be taken (in-degree of 0)
     queue = deque()
     for course in range(1, n + 1):
         if in_degree[course] == 0:
             queue.append(course)
-
-    # To track the courses to take
-    order = []
-    taken_courses = set()
-
+    
+    # To track the courses we need to take
+    taken_courses = []
+    main_courses_set = set(main_courses)
+    courses_to_take = set(main_courses)
+    
     # Process the courses
     while queue:
         course = queue.popleft()
-        order.append(course)
-        taken_courses.add(course)
-
-        for next_course in graph[course]:
-            in_degree[next_course] -= 1
-            if in_degree[next_course] == 0:
-                queue.append(next_course)
-
-    # Check if all main courses can be taken
-    for main in main_courses:
-        if main not in taken_courses:
-            return -1
-
-    # Collect all courses that need to be taken
-    result = []
-    for main in main_courses:
-        result.append(main)
-        for course in order:
-            if course not in result and (course not in main_courses or course in taken_courses):
-                result.append(course)
-
-    return len(result), result
+        taken_courses.append(course)
+        
+        # If this course is a main course, remove it from the set of courses to take
+        if course in courses_to_take:
+            courses_to_take.remove(course)
+        
+        # Process the dependent courses
+        for neighbor in graph[course]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    # Check if we have taken all main courses
+    if courses_to_take:
+        return -1
+    
+    # Return the result
+    return len(taken_courses), taken_courses
 
 # Input reading
 n, k = map(int, input().split())
@@ -59,5 +56,6 @@ result = find_courses(n, k, main_courses, dependencies)
 if result == -1:
     print(-1)
 else:
-    print(result[0])
-    print(' '.join(map(str, result[1])))
+    m, courses = result
+    print(m)
+    print(' '.join(map(str, courses)))

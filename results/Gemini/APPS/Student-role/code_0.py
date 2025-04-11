@@ -8,19 +8,33 @@ def solve():
         if s[i] == '[':
             for j in range(i + 1, n):
                 if s[j] == ']':
+                    
+                    first_colon_index = -1
                     for k in range(i + 1, j):
                         if s[k] == ':':
-                            for l in range(k + 1, j):
-                                if s[l] == ':':
-                                    
-                                    count = 0
-                                    for m in range(k + 1, l):
-                                        if s[m] == '|':
-                                            count += 1
-                                    
-                                    curr_len = 2 + 2 + count
-                                    
-                                    max_len = max(max_len, curr_len)
+                            first_colon_index = k
+                            break
+                    
+                    if first_colon_index == -1:
+                        continue
+                    
+                    second_colon_index = -1
+                    for k in range(first_colon_index + 1, j):
+                        if s[k] == ':':
+                            second_colon_index = k
+                            break
+                    
+                    if second_colon_index == -1:
+                        continue
+                    
+                    
+                    vertical_bars_count = 0
+                    for k in range(first_colon_index + 1, second_colon_index):
+                        if s[k] == '|':
+                            vertical_bars_count += 1
+                    
+                    current_len = 4 + vertical_bars_count
+                    max_len = max(max_len, current_len)
     
     print(max_len)
 

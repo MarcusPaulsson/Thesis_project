@@ -15,31 +15,31 @@ def hexagonal_coordinates(n):
     if n == 0:
         return (x, y)
 
-    # Calculate the position in the current layer
+    # Determine the direction and the position in the layer
     direction = n // layer
-    steps = n % layer
+    position = n % layer
 
     if direction == 0:  # Right
-        x += steps
+        x += position
         y += 0
     elif direction == 1:  # Up-right
-        x += steps
-        y += steps
+        x += layer
+        y += position
     elif direction == 2:  # Up-left
-        x -= steps
-        y += steps
+        x += layer - position
+        y += layer
     elif direction == 3:  # Left
-        x -= steps
-        y += 0
+        x -= position
+        y += layer
     elif direction == 4:  # Down-left
-        x -= steps
-        y -= steps
+        x -= layer
+        y -= position
     elif direction == 5:  # Down-right
-        x += steps
-        y -= steps
+        x -= layer - position
+        y -= layer
 
     return (x, y)
 
-n = int(input().strip())
+n = int(input())
 x, y = hexagonal_coordinates(n)
 print(x, y)

@@ -5,25 +5,23 @@ def create_symmetric_matrix(n, k):
     matrix = [[0] * n for _ in range(n)]
     
     for i in range(n):
-        if k > 0:
-            matrix[i][i] = 1
-            k -= 1
-        
-        for j in range(i + 1, n):
-            if k > 1:
-                matrix[i][j] = 1
-                matrix[j][i] = 1
-                k -= 2
-            
+        if k <= 0:
+            break
+        for j in range(i, n):
             if k <= 0:
                 break
-    
-    if k > 0:
-        return -1
+            if i == j:
+                if k >= 1:
+                    matrix[i][j] = 1
+                    k -= 1
+            else:
+                if k >= 2:
+                    matrix[i][j] = 1
+                    matrix[j][i] = 1
+                    k -= 2
     
     return matrix
 
-# Input
 n, k = map(int, input().split())
 result = create_symmetric_matrix(n, k)
 

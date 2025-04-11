@@ -13,19 +13,25 @@ if any(c > k for c in count.values()):
     print("NO")
     exit()
 
-# Prepare to assign colors
-color_assignment = [0] * n
-color_used = defaultdict(int)
+# Prepare to color the elements
+color = [0] * n
+current_color = 1
+used_colors = defaultdict(int)
 
-# Assign colors
 for i in range(n):
     num = a[i]
-    color_used[num] += 1
-    color_assignment[i] = color_used[num] if color_used[num] <= k else 0
+    # Assign a color to the current number
+    if used_colors[num] < k:
+        color[i] = (used_colors[num] + 1)
+        used_colors[num] += 1
+    else:
+        # If we have used all colors for this number, we need to cycle through colors
+        color[i] = (used_colors[num] % k) + 1
+        used_colors[num] += 1
 
-# Check if we have assigned all colors
-if any(c == 0 for c in color_assignment):
+# Check if we have used all colors at least once
+if len(set(color)) < k:
     print("NO")
 else:
     print("YES")
-    print(" ".join(map(str, color_assignment)))
+    print(" ".join(map(str, color)))

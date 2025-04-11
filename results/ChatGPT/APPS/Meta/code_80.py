@@ -1,19 +1,15 @@
 def min_colors_to_sort(n, s):
-    # Step 1: Create a list to store the color assignments
+    # Create a list to store the color for each character
     colors = [0] * n
-    
-    # Step 2: Create a dictionary to track the last seen index of each character
+    # Create a mapping of characters to their last seen index
     last_seen = {}
-    
-    # Step 3: Initialize the color counter
+    # Initialize the color counter
     color_count = 0
     
-    # Step 4: Iterate through the string
     for i in range(n):
         char = s[i]
-        
-        # If the character has been seen before, use the same color
         if char in last_seen:
+            # If the character has been seen before, assign the same color
             colors[i] = colors[last_seen[char]]
         else:
             # If it's a new character, increment the color count and assign a new color
@@ -23,11 +19,15 @@ def min_colors_to_sort(n, s):
         # Update the last seen index for the character
         last_seen[char] = i
     
-    # Step 5: Output the result
-    print(color_count)
-    print(' '.join(map(str, colors)))
+    return color_count, colors
 
-# Example usage
+# Read input
 n = int(input())
 s = input().strip()
-min_colors_to_sort(n, s)
+
+# Get the result
+result_count, result_colors = min_colors_to_sort(n, s)
+
+# Print the output
+print(result_count)
+print(' '.join(map(str, result_colors)))

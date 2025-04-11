@@ -6,7 +6,6 @@ def standing_spectators(n, k, t):
     else:
         return n + k - t
 
-# Read input
-n, k, t = map(int, input().split())
-# Output the result
-print(standing_spectators(n, k, t))
+# Example usage:
+# n, k, t = map(int, input().split())
+# print(standing_spectators(n, k, t))

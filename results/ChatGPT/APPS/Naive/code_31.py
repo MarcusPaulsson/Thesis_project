@@ -5,32 +5,31 @@ def gcd(a, b):
 
 def birthday_paradox(n, k):
     MOD = 1000003
-
-    if k > (1 << n):
+    days = 1 << n  # 2^n days
+    if k > days:
         return 1, 1  # Guaranteed collision
 
     # Calculate the probability of no shared birthdays
     numerator = 1
-    denominator = 1 << n  # 2^n
-
+    denominator = 1
     for i in range(k):
-        numerator *= (denominator - i)
+        numerator *= (days - i)
+        denominator *= days
         numerator %= MOD
-        denominator *= (1 << n)
         denominator %= MOD
 
     # Probability of at least one shared birthday
     A = (denominator - numerator) % MOD
-    B = denominator % MOD
+    B = denominator
 
     # Reduce A/B to irreducible form
-    common_gcd = gcd(A, B)
-    A //= common_gcd
-    B //= common_gcd
+    common_divisor = gcd(A, B)
+    A //= common_divisor
+    B //= common_divisor
 
     return A % MOD, B % MOD
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 result = birthday_paradox(n, k)
 print(result[0], result[1])

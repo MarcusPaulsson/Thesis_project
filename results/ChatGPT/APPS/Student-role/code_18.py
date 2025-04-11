@@ -9,7 +9,5 @@ def minimal_lexicographic_string(s):
     
     return ''.join(u)
 
-# Input
 s = input().strip()
-# Output
 print(minimal_lexicographic_string(s))

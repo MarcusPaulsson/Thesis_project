@@ -11,13 +11,13 @@ def solve():
 
             current_max = 0
             max_so_far = 0
-            for num in temp_a:
-                current_max += num
+            for k in range(n):
+                current_max += temp_a[k]
                 if current_max < 0:
                     current_max = 0
                 max_so_far = max(max_so_far, current_max)
             ans = max(ans, max_so_far)
-            
+
     print(ans)
 
 solve()

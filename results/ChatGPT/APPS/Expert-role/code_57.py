@@ -9,19 +9,19 @@ def fill_gift_values(n, f):
             unassigned.append(i + 1)  # Store 1-based index
 
     # Find the friends who are already assigned gifts
-    assigned = set(f) - {0}
+    assigned = set(fi for fi in f if fi != 0)
 
-    # Find the friends who are not assigned any gift
+    # Find the friends who are not assigned any gifts
     not_assigned = [i for i in range(1, n + 1) if i not in assigned]
 
-    # Assign gifts to the unassigned friends
+    # Fill the unassigned friends with the not assigned friends
     for i in range(len(unassigned)):
-        # Assign the next available friend to give a gift to
+        # Assign the gift to the next available friend
         nf[unassigned[i] - 1] = not_assigned[i]
 
     return nf
 
-# Read input
+# Input reading
 n = int(input())
 f = list(map(int, input().split()))
 

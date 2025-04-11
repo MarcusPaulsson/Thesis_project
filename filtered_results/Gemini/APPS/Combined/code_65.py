@@ -11,19 +11,19 @@ def solve():
 
     diff = m // n
     
-    two_count = 0
-    three_count = 0
+    twos = 0
+    threes = 0
     
     while diff % 2 == 0:
         diff //= 2
-        two_count += 1
+        twos += 1
     while diff % 3 == 0:
         diff //= 3
-        three_count += 1
-        
+        threes += 1
+            
     if diff != 1:
         print(-1)
     else:
-        print(two_count + three_count)
+        print(twos + threes)
 
 solve()

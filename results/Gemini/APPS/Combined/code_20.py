@@ -1,7 +1,7 @@
 def solve():
-    s = input()
-    hh = int(s[:2])
-    mm = int(s[3:])
+    time_str = input()
+    hh = int(time_str[:2])
+    mm = int(time_str[3:])
 
     def is_palindrome(h, m):
         h_str = str(h).zfill(2)

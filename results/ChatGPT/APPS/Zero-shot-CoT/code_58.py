@@ -3,30 +3,26 @@ a = list(map(int, input().split()))
 
 from collections import defaultdict
 
-# Count occurrences of each number
+coloring = [0] * n
 count = defaultdict(int)
-for num in a:
-    count[num] += 1
 
-# If any number occurs more than k times, it's impossible
-if any(c > k for c in count.values()):
-    print("NO")
-    exit()
-
-# Prepare to assign colors
-color_assignment = [0] * n
-color_used = defaultdict(int)
+# Track the used colors for each number
+used_colors = defaultdict(set)
 
 # Assign colors
 for i in range(n):
     num = a[i]
-    # Use the next color for this number
-    color_used[num] += 1
-    color_assignment[i] = color_used[num] if color_used[num] <= k else 0
+    # Find the first available color for this number
+    for color in range(1, k + 1):
+        if color not in used_colors[num]:
+            coloring[i] = color
+            used_colors[num].add(color)
+            count[color] += 1
+            break
 
-# Check if we used all colors
-if len(set(color_assignment)) < k:
+# Check if we have at least one of each color
+if len(count) < k:
     print("NO")
 else:
     print("YES")
-    print(" ".join(map(str, color_assignment)))
+    print(" ".join(map(str, coloring)))

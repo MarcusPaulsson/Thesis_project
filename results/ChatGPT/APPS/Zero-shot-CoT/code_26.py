@@ -19,7 +19,7 @@ expressions = [
     ((z**y)**x, "(z^y)^x"),
 ]
 
-# Find the maximum value and the corresponding index
+# Find the maximum value and its index
 max_value = -math.inf
 max_index = -1
 

@@ -1,6 +1,6 @@
-from itertools import permutations
-
 def max_permutation_not_exceeding(a, b):
+    from itertools import permutations
+    
     a_str = str(a)
     b_str = str(b)
     
@@ -13,7 +13,7 @@ def max_permutation_not_exceeding(a, b):
     # Return the maximum valid number
     return max(valid_numbers)
 
-# Input
+# Input reading
 a = int(input().strip())
 b = int(input().strip())
 

@@ -1,44 +1,48 @@
-from collections import Counter
-
 def solve():
     a = input()
     b = input()
     
     a_digits = sorted(list(a), reverse=True)
-    a_len = len(a)
-    b_len = len(b)
-
-    if a_len > b_len:
+    
+    if len(a) < len(b):
         print("".join(a_digits))
         return
     
-    a_counts = Counter(a)
-    
-    def find_max(index, current_num, remaining_counts, smaller):
-        if index == a_len:
+    def find_max(index, current_num, remaining_digits):
+        if index == len(a):
             return current_num
         
         best_num = ""
         
-        possible_digits = sorted(remaining_counts.keys(), reverse=True)
-        
-        for digit in possible_digits:
-            if smaller or digit <= b[index]:
-                new_remaining_counts = remaining_counts.copy()
-                new_remaining_counts[digit] -= 1
-                if new_remaining_counts[digit] == 0:
-                    del new_remaining_counts[digit]
+        for i in range(len(remaining_digits)):
+            digit = remaining_digits[i]
+            
+            if current_num == "" and digit == '0':
+                continue
+            
+            new_num = current_num + digit
+            
+            if int(new_num) <= int(b[:len(new_num)]):
+                
+                remaining_digits_copy = remaining_digits[:i] + remaining_digits[i+1:]
+                
+                if len(new_num) == len(b):
                     
-                new_smaller = smaller or digit < b[index]
-                
-                temp_num = find_max(index + 1, current_num + digit, new_remaining_counts, new_smaller)
-                
-                if len(temp_num) == a_len and (best_num == "" or temp_num > best_num):
-                    best_num = temp_num
+                    temp_num = new_num + "".join(sorted(remaining_digits_copy, reverse=True))
+                    
+                    if int(temp_num) <= int(b):
+                        if best_num == "" or int(temp_num) > int(best_num):
+                            best_num = temp_num
+                else:
+                    
+                    res = find_max(index + 1, new_num, remaining_digits_copy)
+                    if res != "":
+                        if best_num == "" or int(res) > int(best_num):
+                            best_num = res
         
         return best_num
     
-    result = find_max(0, "", a_counts, False)
+    result = find_max(0, "", a_digits)
     print(result)
 
 solve()

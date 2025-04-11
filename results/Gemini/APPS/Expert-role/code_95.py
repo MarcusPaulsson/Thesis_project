@@ -14,13 +14,13 @@ def solve():
     
     chars = ['a'] * n + ['b'] * n + ['c'] * n
     
-    for p in itertools.permutations(chars):
-        res = "".join(p)
+    for perm in itertools.permutations(chars):
+        res = "".join(perm)
         if check(res, s, t):
             print("YES")
             print(res)
             return
-
+    
     print("NO")
 
 solve()

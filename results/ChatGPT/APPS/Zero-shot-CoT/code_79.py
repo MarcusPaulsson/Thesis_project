@@ -1,48 +1,35 @@
 def min_moves_to_divisible_by_25(n):
     s = str(n)
     length = len(s)
+    target = ['0', '0', '2', '5']
     
-    # Check for possible pairs of digits that can form 25 or 00
-    target_pairs = ['00', '25', '50', '75']
+    # Check for possible pairs of digits that can form 00, 25, 50, or 75
+    pairs = [(0, 0), (2, 5), (5, 0), (7, 5)]
+    
     min_moves = float('inf')
     
-    for target in target_pairs:
-        # Find the last digit of the target
-        last_digit = target[1]
-        first_digit = target[0]
+    for a, b in pairs:
+        pos_a = -1
+        pos_b = -1
         
-        # Find the position of the last digit in the number
-        last_digit_pos = -1
+        # Find the last occurrence of b and then the last occurrence of a before it
         for i in range(length - 1, -1, -1):
-            if s[i] == last_digit:
-                last_digit_pos = i
+            if s[i] == str(b) and pos_b == -1:
+                pos_b = i
+            elif s[i] == str(a) and pos_b != -1:
+                pos_a = i
                 break
         
-        if last_digit_pos == -1:
-            continue
-        
-        # Now find the first digit before the last digit found
-        first_digit_pos = -1
-        for i in range(last_digit_pos - 1, -1, -1):
-            if s[i] == first_digit:
-                first_digit_pos = i
-                break
-        
-        if first_digit_pos == -1:
-            continue
-        
-        # Calculate moves to bring last_digit to the end
-        moves_to_end = length - 1 - last_digit_pos
-        
-        # Calculate moves to bring first_digit to the position before last_digit
-        moves_to_first = last_digit_pos - first_digit_pos
-        
-        total_moves = moves_to_end + moves_to_first
-        
-        min_moves = min(min_moves, total_moves)
+        if pos_a != -1 and pos_b != -1:
+            # Calculate moves to bring b to the end and a before b
+            moves = (length - 1 - pos_b) + (pos_b - pos_a - 1)
+            min_moves = min(min_moves, moves)
     
     return min_moves if min_moves != float('inf') else -1
 
-# Input reading
+# Read input
 n = int(input().strip())
-print(min_moves_to_divisible_by_25(n))
+# Get the result
+result = min_moves_to_divisible_by_25(n)
+# Print the result
+print(result)

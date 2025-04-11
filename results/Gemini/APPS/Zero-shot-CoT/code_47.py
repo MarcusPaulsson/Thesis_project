@@ -1,7 +1,7 @@
 def solve():
     n, x = map(int, input().split())
     a = list(map(int, input().split()))
-    
+
     ans = 0
     for i in range(n + 1):
         for j in range(i, n + 1):
@@ -16,9 +16,7 @@ def solve():
                 if curr_max < 0:
                     curr_max = 0
                 max_so_far = max(max_so_far, curr_max)
-            
             ans = max(ans, max_so_far)
-            
     print(ans)
 
 solve()

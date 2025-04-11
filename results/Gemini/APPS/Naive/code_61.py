@@ -4,7 +4,7 @@ def solve():
     f = list(map(int, input().split()))
 
     a_list = list(map(int, list(a)))
-    
+
     best_a = a
     
     for i in range(n):
@@ -17,7 +17,7 @@ def solve():
             
             if temp_a > best_a:
                 best_a = temp_a
-    
+                
     print(best_a)
 
 solve()

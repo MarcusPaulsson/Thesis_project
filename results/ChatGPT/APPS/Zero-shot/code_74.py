@@ -13,7 +13,7 @@ def min_cost_to_obtain_set(n, k, s):
     if len(unique_subsequences) < k:
         return -1
     
-    # Calculate costs for each unique subsequence
+    # Calculate costs for unique subsequences
     costs = []
     for subseq in unique_subsequences:
         cost = n - len(subseq)

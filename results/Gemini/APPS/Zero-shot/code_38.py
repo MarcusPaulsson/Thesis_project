@@ -3,13 +3,10 @@ def solve():
     kefa = list(map(int, input().split()))
     sasha = list(map(int, input().split()))
 
-    for start in range(L):
-        temp = []
-        for i in range(n):
-            temp.append((sasha[i] + start) % L)
-        temp.sort()
-        
-        if temp == kefa:
+    for shift in range(L):
+        shifted_sasha = [(x + shift) % L for x in sasha]
+        shifted_sasha.sort()
+        if shifted_sasha == kefa:
             print("YES")
             return
     

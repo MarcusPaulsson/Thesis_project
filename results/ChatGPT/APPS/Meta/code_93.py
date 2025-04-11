@@ -1,29 +1,26 @@
 def construct_tree(n, d, k):
-    if d > 2 * (k - 1) + 1 or (d == 1 and n > 1) or (n > k + 1 and d == 1):
+    if d > 2 * (k - 1) + 1 or (d == 1 and n > 2) or (n > k + 1 and d == 1):
         print("NO")
         return
-
+    
     edges = []
     
-    # Create the main path for the diameter
+    # Create the main path of length d
     for i in range(1, d + 1):
         edges.append((i, i + 1))
     
-    # Now we have d edges, and we need to connect the remaining vertices
+    # Now we have d + 1 vertices in the main path
     current_vertex = d + 2
-    for i in range(1, d + 1):
-        if current_vertex > n:
-            break
-        # Connect remaining vertices to the path
-        while len([e for e in edges if e[0] == i or e[1] == i]) < k and current_vertex <= n:
-            edges.append((i, current_vertex))
+    
+    # Attach remaining vertices to the first vertex in the path
+    for i in range(1, n - (d + 1) + 1):
+        if i <= k - 1:
+            edges.append((1, current_vertex))
             current_vertex += 1
-
-    # If we still have vertices left, we can connect them to any of the previous vertices
-    while current_vertex <= n:
-        edges.append((1, current_vertex))
-        current_vertex += 1
-
+        else:
+            edges.append((2, current_vertex))
+            current_vertex += 1
+    
     print("YES")
     for u, v in edges:
         print(u, v)

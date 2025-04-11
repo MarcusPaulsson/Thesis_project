@@ -1,5 +1,5 @@
 def can_color_string(n, s):
-    # Count frequency of each character
+    # Count the frequency of each character
     from collections import Counter
     freq = Counter(s)
     
@@ -11,22 +11,19 @@ def can_color_string(n, s):
     
     # Create a coloring array
     color = ['0'] * n
-    
-    # Assign colors
-    last_color = '0'
+    # Assign colors based on the position of characters
     for i in range(n):
-        if s[i] in freq and freq[s[i]] > 0:
-            if freq[s[i]] == 1:
-                color[i] = last_color
+        if s[i] in freq:
+            if freq[s[i]] > 0:
+                color[i] = '0'
+                freq[s[i]] -= 1
             else:
-                color[i] = '0' if last_color == '1' else '1'
-            freq[s[i]] -= 1
-            last_color = color[i]
+                color[i] = '1'
     
     print("YES")
     print(''.join(color))
 
 # Read input
-n = int(input())
+n = int(input().strip())
 s = input().strip()
 can_color_string(n, s)

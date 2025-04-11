@@ -9,12 +9,10 @@ def kth_largest_in_multiplication_table(n, m, k):
             left = mid + 1
         else:
             right = mid
-    
+            
     return left
 
 # Read input
 n, m, k = map(int, input().split())
-# Get the k-th largest number in the multiplication table
-result = kth_largest_in_multiplication_table(n, m, k)
-# Print the result
-print(result)
+# Output the k-th largest number
+print(kth_largest_in_multiplication_table(n, m, k))

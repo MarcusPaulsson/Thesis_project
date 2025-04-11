@@ -1,9 +1,9 @@
-a, b, c = map(int, input().split())
+def can_break_shield(a, b, c):
+    for i in range(c // a + 1):
+        if (c - i * a) % b == 0:
+            return "Yes"
+    return "No"
 
-# Check all possible combinations of shots from Ebony and Ivory
-for x in range(c // a + 1):
-    if (c - x * a) % b == 0:
-        print("Yes")
-        break
-else:
-    print("No")
+# Input reading
+a, b, c = map(int, input().split())
+print(can_break_shield(a, b, c))

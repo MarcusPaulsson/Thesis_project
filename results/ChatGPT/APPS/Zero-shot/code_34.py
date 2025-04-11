@@ -1,5 +1,5 @@
 def max_min_pieces(n, a, b):
-    left, right = 0, min(a, b) + 1
+    left, right = 0, max(a, b)
     
     while left < right:
         mid = (left + right + 1) // 2
@@ -10,7 +10,5 @@ def max_min_pieces(n, a, b):
             
     return left
 
-# Read input
 n, a, b = map(int, input().split())
-# Calculate and print the result
 print(max_min_pieces(n, a, b))

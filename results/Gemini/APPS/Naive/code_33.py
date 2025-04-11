@@ -1,7 +1,7 @@
 def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
+    if b == 0:
+        return a
+    return gcd(b, a % b)
 
 def extended_gcd(a, b):
     if a == 0:
@@ -21,6 +21,7 @@ def solve():
         return
 
     d, x, y = extended_gcd(a1, a2)
+    
     x *= (b2 - b1) // d
     y *= (b2 - b1) // d
 
@@ -29,15 +30,21 @@ def solve():
     k = (x * a1 + b1)
     
     
-    first = (k % lcm + lcm) % lcm
+    first = k % lcm
+    if first < 0:
+        first += lcm
     
     
-    start = max(L, ( (L - first + lcm - 1) // lcm) * lcm + first)
+    start = first
     
-    if start > R:
-        print(0)
-        return
-    
-    print((R - start) // lcm + 1)
+    while start < L:
+        start += lcm
+        
+    count = 0
+    while start <= R:
+        count += 1
+        start += lcm
+        
+    print(count)
 
 solve()

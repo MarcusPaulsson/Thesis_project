@@ -23,18 +23,18 @@ def solve():
 
     count = 0
     
-    def generate_sequences(current_seq, remaining_length):
-        nonlocal count
-        
-        if remaining_length == 0:
-            if is_regular(current_seq) and count_substring(current_seq, s):
-                count = (count + 1) % mod
-            return
-        
-        generate_sequences(current_seq + '(', remaining_length - 1)
-        generate_sequences(current_seq + ')', remaining_length - 1)
+    def generate_sequences(length):
+        if length == 0:
+            yield ""
+        else:
+            for seq in generate_sequences(length - 1):
+                yield seq + "("
+                yield seq + ")"
     
-    generate_sequences("", 2 * n)
+    for seq in generate_sequences(2 * n):
+        if is_regular(seq) and count_substring(seq, s):
+            count = (count + 1) % mod
+    
     print(count)
 
 solve()

@@ -1,42 +1,37 @@
 def min_cost_to_obtain_set(n, k, s):
-    from collections import defaultdict
+    from collections import Counter
     
     # Count the frequency of each character
-    freq = defaultdict(int)
-    for char in s:
-        freq[char] += 1
+    freq = Counter(s)
     
-    # Calculate the maximum number of unique subsequences we can generate
-    unique_subsequences_count = 0
+    # Calculate the total number of unique subsequences
+    total_unique_subsequences = 0
     total_cost = 0
     
-    # We can generate subsequences of lengths from 0 to n
+    # Generate all possible subsequences and their costs
     for length in range(n + 1):
-        # The number of subsequences of length `length` is C(n, length)
-        # We can use the formula for combinations to calculate this
-        if length == 0:
-            count = 1  # only the empty subsequence
-        else:
-            count = 0
-            for char in freq:
-                count += freq[char] * (1 << (n - freq[char]))  # 2^(n - freq[char])
-        
-        if unique_subsequences_count + count >= k:
-            # We can reach or exceed k with this length
-            total_cost += (n - length) * (k - unique_subsequences_count)
-            return total_cost
-        
-        unique_subsequences_count += count
-        total_cost += (n - length) * count
+        for char, count in freq.items():
+            if count > 0:
+                # Calculate the number of subsequences of this length
+                subsequences_count = (1 << count) - 1  # 2^count - 1 (excluding empty subsequence)
+                total_unique_subsequences += subsequences_count
+                
+                # Calculate the cost for subsequences of this length
+                total_cost += subsequences_count * (n - length)
+                
+                if total_unique_subsequences >= k:
+                    return total_cost
     
-    return -1
+    # If we cannot reach k unique subsequences
+    if total_unique_subsequences < k:
+        return -1
+    
+    return total_cost
 
 # Read input
 n, k = map(int, input().split())
 s = input().strip()
 
-# Get the result
+# Get the result and print it
 result = min_cost_to_obtain_set(n, k, s)
-
-# Print the result
 print(result)

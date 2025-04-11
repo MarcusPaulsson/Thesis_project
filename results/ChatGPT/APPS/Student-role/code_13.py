@@ -1,24 +1,20 @@
 from collections import deque, defaultdict
 
-def main():
-    n, k = map(int, input().split())
-    main_courses = list(map(int, input().split()))
-    
-    dependencies = defaultdict(list)
+def find_course_order(n, k, main_courses, dependencies):
     indegree = [0] * (n + 1)
+    graph = defaultdict(list)
     
+    # Build the graph and indegree array
     for i in range(1, n + 1):
-        line = list(map(int, input().split()))
-        t_i = line[0]
-        for dep in line[1:t_i + 1]:
-            dependencies[dep].append(i)
+        for dep in dependencies[i - 1]:
+            graph[dep].append(i)
             indegree[i] += 1
     
-    # Queue for courses that can be taken (no dependencies)
+    # Queue for courses that can be taken (indegree 0)
     queue = deque()
-    for i in range(1, n + 1):
-        if indegree[i] == 0:
-            queue.append(i)
+    for course in range(1, n + 1):
+        if indegree[course] == 0:
+            queue.append(course)
     
     order = []
     taken_courses = set()
@@ -28,29 +24,35 @@ def main():
         order.append(course)
         taken_courses.add(course)
         
-        for next_course in dependencies[course]:
+        for next_course in graph[course]:
             indegree[next_course] -= 1
             if indegree[next_course] == 0:
                 queue.append(next_course)
     
     # Check if all main courses can be taken
-    if not all(course in taken_courses for course in main_courses):
-        print(-1)
-        return
+    for main_course in main_courses:
+        if main_course not in taken_courses:
+            return -1
     
-    # Collect all courses needed to take
+    # Collect the minimum courses needed to take
     result = []
-    for course in main_courses:
-        result.append(course)
-        for dep in dependencies[course]:
-            if dep not in result:
-                result.append(dep)
+    for course in order:
+        if course in main_courses or any(dep in taken_courses for dep in dependencies[course - 1]):
+            result.append(course)
     
-    # Remove duplicates and sort by order of appearance
-    result = list(dict.fromkeys(result))
-    
-    print(len(result))
-    print(' '.join(map(str, result)))
+    return len(result), result
 
-if __name__ == "__main__":
-    main()
+# Input reading
+n, k = map(int, input().split())
+main_courses = list(map(int, input().split()))
+dependencies = [list(map(int, input().split()[1:])) for _ in range(n)]
+
+# Get the result
+result = find_course_order(n, k, main_courses, dependencies)
+
+# Output the result
+if result == -1:
+    print(-1)
+else:
+    print(result[0])
+    print(' '.join(map(str, result[1])))

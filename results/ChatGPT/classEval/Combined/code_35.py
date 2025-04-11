@@ -1,5 +1,5 @@
 from collections import deque
-import unittest
+
 
 class EightPuzzle:
     """
@@ -91,33 +91,3 @@ class EightPuzzle:
                     open_list.append((new_state, path + [move_direction]))
 
         return []
-
-
-class EightPuzzleTest(unittest.TestCase):
-    def test_find_blank(self):
-        state = [[2, 3, 4], [5, 8, 1], [6, 0, 7]]
-        puzzle = EightPuzzle(state)
-        self.assertEqual(puzzle.find_blank(state), (2, 1))
-
-    def test_move(self):
-        initial_state = [[2, 3, 4], [5, 0, 1], [6, 8, 7]]
-        puzzle = EightPuzzle(initial_state)
-        result = puzzle.move(initial_state, 'up')
-        expected = [[2, 0, 4], [5, 3, 1], [6, 8, 7]]
-        self.assertEqual(result, expected)
-
-    def test_get_possible_moves(self):
-        state = [[2, 3, 4], [5, 0, 1], [6, 8, 7]]
-        puzzle = EightPuzzle(state)
-        result = puzzle.get_possible_moves(state)
-        expected = ['up', 'down', 'left']
-        self.assertTrue(all(direction in expected for direction in result))
-
-    def test_solve(self):
-        puzzle = EightPuzzle([[1, 2, 3], [4, 0, 6], [7, 5, 8]])
-        result = puzzle.solve()
-        expected = ['down', 'right']
-        self.assertEqual(result, expected)
-
-if __name__ == '__main__':
-    unittest.main()

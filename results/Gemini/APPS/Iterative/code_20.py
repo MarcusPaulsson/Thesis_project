@@ -18,7 +18,6 @@ def solve():
             hh += 1
             if hh == 24:
                 hh = 0
-        
         ans += 1
 
 solve()

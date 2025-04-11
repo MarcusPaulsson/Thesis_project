@@ -5,7 +5,6 @@ def solve():
     m = len(t)
     
     ans = 0
-    
     for i in range(n + 1):
         for j in range(i, n + 1):
             temp_s = ""
@@ -16,14 +15,15 @@ def solve():
             
             
             ti = 0
-            si = 0
+            tsi = 0
+            
             possible = True
-            while ti < m and si < len(temp_s):
-                if t[ti] == temp_s[si]:
+            while ti < m and tsi < len(temp_s):
+                if t[ti] == temp_s[tsi]:
                     ti += 1
-                    si += 1
+                    tsi += 1
                 else:
-                    si += 1
+                    tsi += 1
             
             if ti == m:
                 ans = max(ans, j - i)

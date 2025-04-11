@@ -1,22 +1,21 @@
 def find_minimum_D(n, a):
     min_a = min(a)
     max_a = max(a)
-
-    if min_a == max_a:
-        return 0  # All elements are already equal
-
-    # Calculate the difference between the maximum and minimum values
-    diff = max_a - min_a
-
-    # Check if the difference can be evenly divided into three parts
-    if diff % 2 == 0:
-        return diff // 2
-    else:
+    
+    # Check if it's possible to make all elements equal
+    if max_a - min_a > 2 * (max_a - min_a) // 2:
         return -1
+    
+    if max_a == min_a:
+        return 0
+    
+    # Calculate the minimum D
+    D = (max_a - min_a + 1) // 2
+    return D
 
 # Input reading
-n = int(input().strip())
-a = list(map(int, input().strip().split()))
+n = int(input())
+a = list(map(int, input().split()))
 
 # Output the result
 print(find_minimum_D(n, a))

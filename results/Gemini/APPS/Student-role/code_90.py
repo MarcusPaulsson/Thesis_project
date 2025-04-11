@@ -4,40 +4,28 @@ def solve():
 
     total_length = sum(c)
     
-    if d > n + 1:
-        print("YES")
-        result = [0] * n
-        last_index = n - c[0]
-        for i in range(c[0]):
-            result[last_index + i] = 1
-        print(*result)
-        return
-
-    min_empty = (m + 1) * (d - 1)
-    if total_length + min_empty > n:
+    min_empty = m - 1
+    max_empty = n - total_length
+    
+    if d * (m + 1) <= n + 1:
         print("NO")
         return
 
-    print("YES")
-    result = [0] * n
+    arr = [0] * n
     
     current_pos = 0
-    platform_positions = []
     
     for i in range(m):
         
-        needed_space = d - 1 if i == 0 else d - 1
+        needed_space = min(d - 1, n - current_pos - sum(c[i:]))
         
-        while current_pos + c[i] <= n and current_pos < needed_space:
-            current_pos += 1
-        
-        platform_positions.append(current_pos)
+        current_pos += needed_space
         
         for j in range(c[i]):
-            result[current_pos + j] = i + 1
-        
-        current_pos += c[i]
-    
-    print(*result)
+            arr[current_pos] = i + 1
+            current_pos += 1
+            
+    print("YES")
+    print(*arr)
 
 solve()

@@ -1,16 +1,19 @@
 def max_projects(n, r, projects):
-    # Sort projects by their required rating
-    projects.sort(key=lambda x: x[0])
-    
+    projects.sort(key=lambda x: (x[0], -x[1]))  # Sort by required rating, then by rating change
     completed = 0
-    current_rating = r
     
-    for a, b in projects:
-        if current_rating >= a:
-            completed += 1
-            current_rating += b
-            if current_rating < 0:
-                break
+    while True:
+        progress = False
+        for i in range(len(projects)):
+            a_i, b_i = projects[i]
+            if r >= a_i:  # Can complete this project
+                r += b_i  # Update rating
+                completed += 1
+                projects[i] = (float('inf'), 0)  # Mark as completed
+                progress = True
+                break  # Restart the loop to check from the beginning
+        if not progress:
+            break  # No more projects can be completed
     
     return completed
 

@@ -5,42 +5,39 @@ def solve():
     givers = [i + 1 for i in range(n)]
     receivers = [i + 1 for i in range(n)]
 
-    given = set()
-    received = set()
-
+    assigned = [False] * (n + 1)
     for i in range(n):
         if f[i] != 0:
-            given.add(f[i])
+            assigned[f[i]] = True
 
-    missing_givers = []
+    unassigned_givers = []
+    unassigned_receivers = []
+
     for i in range(n):
         if f[i] == 0:
-            missing_givers.append(i)
+            unassigned_givers.append(i)
 
-    missing_receivers = []
     for i in range(1, n + 1):
-        if i not in given:
-            missing_receivers.append(i)
+        if not assigned[i]:
+            unassigned_receivers.append(i)
 
-    for i in range(len(missing_givers)):
-        f[missing_givers[i]] = missing_receivers[i]
+    for i in range(len(unassigned_givers)):
+        giver_index = unassigned_givers[i]
+        receiver = unassigned_receivers[i]
 
-    
-    
-    for i in range(len(missing_givers)):
-        if f[missing_givers[i]] == missing_givers[i] + 1:
-            
-            for j in range(len(missing_givers)):
-                if i != j and f[missing_givers[j]] != missing_givers[j] + 1:
-                    f[missing_givers[i]], f[missing_givers[j]] = f[missing_givers[j]], f[missing_givers[i]]
-                    break
+        if receiver == giver_index + 1:
+            if i + 1 < len(unassigned_givers):
+                unassigned_receivers[i], unassigned_receivers[i+1] = unassigned_receivers[i+1], unassigned_receivers[i]
+                receiver = unassigned_receivers[i]
             else:
                 
-                if len(missing_givers) > 1:
-                  if i == 0:
-                    f[missing_givers[i]], f[missing_givers[i+1]] = f[missing_givers[i+1]], f[missing_givers[i]]
-                  else:
-                    f[missing_givers[i]], f[missing_givers[0]] = f[missing_givers[0]], f[missing_givers[i]]
+                for j in range(len(unassigned_receivers)):
+                    if unassigned_receivers[j] != giver_index + 1 and unassigned_receivers[j] != unassigned_receivers[i]:
+                        unassigned_receivers[i], unassigned_receivers[j] = unassigned_receivers[j], unassigned_receivers[i]
+                        receiver = unassigned_receivers[i]
+                        break
+                
+        f[giver_index] = receiver
 
     print(*f)
 

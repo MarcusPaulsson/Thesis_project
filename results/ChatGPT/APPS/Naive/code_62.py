@@ -1,32 +1,32 @@
-def min_operations_to_divisible_triplet(t, test_cases):
+def min_operations(t, test_cases):
     results = []
     
     for a, b, c in test_cases:
-        min_operations = float('inf')
-        best_triplet = (0, 0, 0)
-        
+        min_moves = float('inf')
+        best_triple = (0, 0, 0)
+
         # Iterate over possible values for A
         for A in range(1, a + 1):
-            # Calculate the nearest B that is divisible by A
+            # Find the closest B that is divisible by A
             if b % A == 0:
                 B = b
             else:
                 B = (b // A + 1) * A
             
-            # Calculate the nearest C that is divisible by B
+            # Find the closest C that is divisible by B
             if C % B == 0:
                 C = c
             else:
                 C = (c // B + 1) * B
             
-            # Calculate operations needed
-            operations = abs(A - a) + abs(B - b) + abs(C - c)
+            # Calculate the number of operations needed
+            moves = abs(A - a) + abs(B - b) + abs(C - c)
             
-            if operations < min_operations:
-                min_operations = operations
-                best_triplet = (A, B, C)
-        
-        results.append((min_operations, best_triplet))
+            if moves < min_moves:
+                min_moves = moves
+                best_triple = (A, B, C)
+
+        results.append((min_moves, best_triple))
     
     return results
 
@@ -35,9 +35,9 @@ t = int(input())
 test_cases = [tuple(map(int, input().split())) for _ in range(t)]
 
 # Get results
-results = min_operations_to_divisible_triplet(t, test_cases)
+results = min_operations(t, test_cases)
 
 # Output results
-for operations, triplet in results:
-    print(operations)
-    print(*triplet)
+for moves, (A, B, C) in results:
+    print(moves)
+    print(A, B, C)

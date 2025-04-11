@@ -1,10 +1,8 @@
-def can_break_shield(a, b, c):
-    for x in range(c // a + 1):
-        if (c - a * x) % b == 0:
+def can_deal_exact_damage(a, b, c):
+    for i in range(c // a + 1):
+        if (c - a * i) % b == 0:
             return "Yes"
     return "No"
 
-# Input
 a, b, c = map(int, input().split())
-# Output
-print(can_break_shield(a, b, c))
+print(can_deal_exact_damage(a, b, c))

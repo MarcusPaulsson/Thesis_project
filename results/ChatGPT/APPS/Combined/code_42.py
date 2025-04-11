@@ -1,27 +1,21 @@
-def count_cyclic_strings(n, s):
+def count_cyclic_binary_strings(n, s):
     from itertools import product
 
-    # Function to check if a string contains s as a substring
-    def contains_substring(t, s):
-        return s in t
+    total_count = 0
+    seen = set()
 
-    # Generate all binary strings of length n
-    all_strings = [''.join(p) for p in product('01', repeat=n)]
-    distinct_cyclic_strings = set()
+    # Generate all possible binary strings of length n
+    for bits in product('01', repeat=n):
+        t = ''.join(bits)
+        # Check if any cyclic shift of t contains s as a substring
+        if any(s in t[i:] + t[:i] for i in range(n)):
+            seen.add(t)
 
-    for t in all_strings:
-        # Check all cyclic shifts of t
-        for i in range(n):
-            cyclic_shift = t[i:] + t[:i]
-            if contains_substring(cyclic_shift, s):
-                distinct_cyclic_strings.add(t)
-                break  # No need to check further shifts for this string
-
-    return len(distinct_cyclic_strings)
+    return len(seen)
 
 # Input reading
 n = int(input().strip())
 s = input().strip()
 
 # Output the result
-print(count_cyclic_strings(n, s))
+print(count_cyclic_binary_strings(n, s))

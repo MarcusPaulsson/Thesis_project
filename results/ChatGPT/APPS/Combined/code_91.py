@@ -1,18 +1,18 @@
 def max_removable_length(s: str, t: str) -> int:
     n, m = len(s), len(t)
 
-    # Create arrays to store the positions of t in s
-    left = [0] * m
-    right = [0] * m
+    # Create arrays to store the first occurrence of t in s from the left and right
+    left = [-1] * m
+    right = [-1] * m
 
-    # Fill left array with positions of t in s from the start
+    # Fill the left array
     j = 0
     for i in range(n):
         if j < m and s[i] == t[j]:
             left[j] = i
             j += 1
 
-    # Fill right array with positions of t in s from the end
+    # Fill the right array
     j = m - 1
     for i in range(n - 1, -1, -1):
         if j >= 0 and s[i] == t[j]:
@@ -24,16 +24,10 @@ def max_removable_length(s: str, t: str) -> int:
     for i in range(m - 1):
         max_length = max(max_length, right[i + 1] - left[i] - 1)
 
-    # Consider removing from the start to the first character of t
-    max_length = max(max_length, right[0])
-    # Consider removing from the last character of t to the end
-    max_length = max(max_length, n - 1 - left[m - 1])
+    # Check the case where we can remove from the start to the end of t
+    max_length = max(max_length, left[m - 1])
+
+    # Check the case where we can remove from the start of t to the end of s
+    max_length = max(max_length, n - right[0] - 1)
 
     return max_length
-
-# Input reading
-s = input().strip()
-t = input().strip()
-
-# Output the result
-print(max_removable_length(s, t))

@@ -17,7 +17,7 @@ def longest_non_palindrome_substring(s):
     
     return 0
 
-# Input
+# Read input
 s = input().strip()
-# Output
+# Output the result
 print(longest_non_palindrome_substring(s))

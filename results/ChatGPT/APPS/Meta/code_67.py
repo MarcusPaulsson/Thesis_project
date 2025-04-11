@@ -3,20 +3,18 @@ def find_nice_indices(n, a):
     nice_indices = []
 
     for i in range(n):
-        remaining_sum = total_sum - a[i]
-        if remaining_sum == a[i] * 2:
-            nice_indices.append(i + 1)  # Store 1-based index
+        if (total_sum - a[i]) % 2 == 0:
+            target = (total_sum - a[i]) // 2
+            if target in a:
+                # Check if the target is not the same as the removed element
+                if target != a[i] or a.count(target) > 1:
+                    nice_indices.append(i + 1)  # Store 1-based index
 
-    return nice_indices
+    print(len(nice_indices))
+    if nice_indices:
+        print(" ".join(map(str, nice_indices)))
 
-# Input reading
-n = int(input())
-a = list(map(int, input().split()))
-
-# Finding nice indices
-nice_indices = find_nice_indices(n, a)
-
-# Output results
-print(len(nice_indices))
-if nice_indices:
-    print(' '.join(map(str, nice_indices)))
+# Example usage:
+# n = int(input())
+# a = list(map(int, input().split()))
+# find_nice_indices(n, a)

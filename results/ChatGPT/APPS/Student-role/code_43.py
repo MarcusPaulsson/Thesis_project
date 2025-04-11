@@ -1,36 +1,37 @@
 import sys
 import math
 
-def angle_between(v1, v2):
-    # Calculate the angle using the cross and dot product
-    cross_product = v1[0] * v2[1] - v1[1] * v2[0]
-    dot_product = v1[0] * v2[0] + v1[1] * v2[1]
-    return math.atan2(abs(cross_product), dot_product)
+def minimal_angle_pair(n, vectors):
+    angles = []
+    
+    for i in range(n):
+        x, y = vectors[i]
+        angle = math.atan2(y, x)
+        angles.append((angle, i + 1))  # Store angle and index (1-based)
 
-def main():
-    n = int(sys.stdin.readline().strip())
-    vectors = []
-    
-    for i in range(n):
-        x, y = map(int, sys.stdin.readline().strip().split())
-        vectors.append((x, y, i + 1))  # Store vector and its index
-    
-    # Sort vectors by angle
-    vectors.sort(key=lambda v: math.atan2(v[1], v[0]))
-    
+    angles.sort()  # Sort by angle
+
     min_angle = float('inf')
-    result = (0, 0)
-    
+    min_pair = (0, 0)
+
     for i in range(n):
-        v1 = vectors[i][:2]
-        v2 = vectors[(i + 1) % n][:2]  # next vector, wrap around
-        angle = angle_between(v1, v2)
+        a1, idx1 = angles[i]
+        a2, idx2 = angles[(i + 1) % n]  # Wrap around to the first element
+        angle_diff = abs(a2 - a1)
+        if angle_diff > math.pi:
+            angle_diff = 2 * math.pi - angle_diff
         
-        if angle < min_angle:
-            min_angle = angle
-            result = (vectors[i][2], vectors[(i + 1) % n][2])
-    
-    print(result[0], result[1])
+        if angle_diff < min_angle:
+            min_angle = angle_diff
+            min_pair = (idx1, idx2)
+
+    return min_pair
 
 if __name__ == "__main__":
-    main()
+    input = sys.stdin.read
+    data = input().splitlines()
+    n = int(data[0])
+    vectors = [tuple(map(int, line.split())) for line in data[1:n + 1]]
+    
+    result = minimal_angle_pair(n, vectors)
+    print(result[0], result[1])

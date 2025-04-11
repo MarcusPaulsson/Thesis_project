@@ -1,4 +1,4 @@
-def min_blows_to_defeat(t, queries):
+def min_blows_to_defeat_zmei(t, queries):
     results = []
     
     for query in queries:
@@ -20,18 +20,14 @@ def min_blows_to_defeat(t, queries):
     
     return results
 
-# Input reading
+# Example usage:
 t = int(input())
 queries = []
-
 for _ in range(t):
     n, x = map(int, input().split())
     blows = [tuple(map(int, input().split())) for _ in range(n)]
     queries.append((n, x, blows))
 
-# Get results
-results = min_blows_to_defeat(t, queries)
-
-# Output results
+results = min_blows_to_defeat_zmei(t, queries)
 for result in results:
     print(result)

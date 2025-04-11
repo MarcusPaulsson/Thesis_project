@@ -1,14 +1,17 @@
+MOD = 10**9 + 7
+
 def count_regular_sequences(n, s):
-    MOD = 10**9 + 7
     m = len(s)
+    
+    # Precompute the number of valid bracket sequences of length 2*k
+    dp = [0] * (n + 1)
+    dp[0] = 1  # Base case: one way to form an empty sequence
 
-    # Precompute Catalan numbers
-    catalan = [0] * (n + 1)
-    catalan[0] = 1
-    for i in range(1, n + 1):
-        catalan[i] = (catalan[i - 1] * (2 * (2 * i - 1)) % MOD * pow(i + 1, MOD - 2, MOD)) % MOD
+    for k in range(1, n + 1):
+        for j in range(k):
+            dp[k] = (dp[k] + dp[j] * dp[k - 1 - j]) % MOD
 
-    # Check if s can be part of a valid sequence
+    # Check the balance of the substring s
     balance = 0
     min_balance = 0
     for char in s:
@@ -18,16 +21,29 @@ def count_regular_sequences(n, s):
             balance -= 1
         min_balance = min(min_balance, balance)
 
-    if balance < 0 or balance > n or min_balance < 0:
+    # If the balance is not valid or if it goes negative
+    if balance < 0 or n < (m + min_balance) // 2:
         return 0
 
-    # Count valid sequences with s as a substring
+    # Calculate the number of valid sequences containing s
     total_count = 0
-    for prefix_length in range(max(0, n - (m - 1) - balance), n - balance + 1):
-        suffix_length = n - prefix_length - (m - 1)
+    for prefix_length in range(n + 1):
+        suffix_length = n - (m - 1) - prefix_length
         if suffix_length < 0:
             continue
-        total_count = (total_count + catalan[prefix_length] * catalan[suffix_length]) % MOD
+        
+        # Calculate the required balance for the prefix
+        prefix_balance = 0
+        for i in range(prefix_length):
+            if i < m:
+                if s[i] == '(':
+                    prefix_balance += 1
+                else:
+                    prefix_balance -= 1
+
+        # Check if we can form a valid sequence
+        if prefix_balance + suffix_length >= 0 and prefix_balance <= n:
+            total_count = (total_count + dp[prefix_length] * dp[suffix_length]) % MOD
 
     return total_count
 

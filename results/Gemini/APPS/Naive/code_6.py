@@ -22,9 +22,9 @@ def solve():
 
     remaining = x - max_damage
     
-    ans = 1
-    ans += (remaining + max_diff - 1) // max_diff
-    print(ans)
+    blows_needed = (remaining + max_diff - 1) // max_diff
+    
+    print(blows_needed + 1)
 
 t = int(input())
 for _ in range(t):

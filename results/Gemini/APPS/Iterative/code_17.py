@@ -6,6 +6,7 @@ def solve():
     elif t <= n:
         print(k)
     else:
-        print(max(0, k - (t - n)))
+        standing = k - (t - n)
+        print(standing)
 
 solve()

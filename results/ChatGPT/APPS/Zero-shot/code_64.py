@@ -1,31 +1,40 @@
+def schedule_exams(n, m, exams):
+    days = [0] * n
+    exam_days = set()
+    
+    for i in range(m):
+        s, d, c = exams[i]
+        exam_days.add(d - 1)  # Store exam days (0-indexed)
+    
+    # Prepare for each exam
+    for i in range(m):
+        s, d, c = exams[i]
+        prep_days = 0
+        
+        for j in range(s - 1, d - 1):  # s-1 to d-2 (0-indexed)
+            if days[j] == 0 and prep_days < c:  # If it's a rest day and we need more prep days
+                days[j] = i + 1  # Mark as preparing for exam i
+                prep_days += 1
+        
+        if prep_days < c:  # If we couldn't prepare enough days
+            return -1
+    
+    # Mark exam days
+    for i in range(m):
+        d = exams[i][1] - 1  # Exam day (0-indexed)
+        days[d] = m + 1  # Mark as exam day
+    
+    return days
+
+# Input reading
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-# Prepare a schedule with all days initialized to 0 (rest)
-schedule = [0] * n
+# Get the schedule
+result = schedule_exams(n, m, exams)
 
-# To keep track of preparation days needed for each exam
-prep_needed = [0] * m
-
-# Fill in the exam days in the schedule
-for i in range(m):
-    s_i, d_i, c_i = exams[i]
-    schedule[d_i - 1] = m + 1  # Mark the exam day (1-indexed to 0-indexed)
-    prep_needed[i] = c_i
-
-# Try to allocate preparation days
-for i in range(m):
-    s_i, d_i, c_i = exams[i]
-    days_allocated = 0
-    
-    for day in range(s_i - 1, d_i - 1):  # s_i to d_i - 1 (0-indexed)
-        if schedule[day] == 0 and days_allocated < c_i:  # If it's a rest day
-            schedule[day] = i + 1  # Mark preparation for exam i (1-indexed)
-            days_allocated += 1
-    
-    if days_allocated < c_i:  # If we couldn't allocate enough preparation days
-        print(-1)
-        exit()
-
-# Print the final schedule
-print(" ".join(map(str, schedule)))
+# Output result
+if result == -1:
+    print(-1)
+else:
+    print(' '.join(map(str, result)))

@@ -4,7 +4,7 @@ a = list(map(int, input().split()))
 min_index = a.index(1)
 max_index = a.index(n)
 
-# Current distance
+# Calculate the current distance
 current_distance = abs(min_index - max_index)
 
 # Calculate the maximum possible distance after one swap

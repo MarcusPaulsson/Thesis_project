@@ -13,7 +13,11 @@ def solve():
 
     if not stack:
         print("YES")
-    else:
+    elif len(stack) == 0:
+        print("YES")
+    elif len(stack) == 1:
+        print("YES")
+    elif len(stack) > 1:
         print("NO")
 
 solve()

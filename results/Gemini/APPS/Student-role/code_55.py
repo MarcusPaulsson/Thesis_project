@@ -5,30 +5,25 @@ def solve():
 
     white_area = (x2 - x1) * (y2 - y1)
 
-    # Intersection of white and black 1
-    x_overlap_1 = max(0, min(x2, x4) - max(x1, x3))
-    y_overlap_1 = max(0, min(y2, y4) - max(y1, y3))
-    intersection_area_1 = x_overlap_1 * y_overlap_1
+    def intersection_area(x1, y1, x2, y2, x3, y3, x4, y4):
+        x_overlap = max(0, min(x2, x4) - max(x1, x3))
+        y_overlap = max(0, min(y2, y4) - max(y1, y3))
+        return x_overlap * y_overlap
 
-    # Intersection of white and black 2
-    x_overlap_2 = max(0, min(x2, x6) - max(x1, x5))
-    y_overlap_2 = max(0, min(y2, y6) - max(y1, y5))
-    intersection_area_2 = x_overlap_2 * y_overlap_2
+    intersection1 = intersection_area(x1, y1, x2, y2, x3, y3, x4, y4)
+    intersection2 = intersection_area(x1, y1, x2, y2, x5, y5, x6, y6)
 
-    # Intersection of white, black 1, and black 2
-    x_overlap_12 = max(0, min(x2, x4, x6) - max(x1, x3, x5))
-    y_overlap_12 = max(0, min(y2, y4, y6) - max(y1, y3, y5))
-    intersection_area_12 = x_overlap_12 * y_overlap_12
+    x7 = max(x3, x5)
+    y7 = max(y3, y5)
+    x8 = min(x4, x6)
+    y8 = min(y4, y6)
 
-    # Intersection of black 1 and black 2
-    x_black_overlap = max(0, min(x4, x6) - max(x3, x5))
-    y_black_overlap = max(0, min(y4, y6) - max(y3, y5))
-    black_overlap_area = x_black_overlap * y_black_overlap
-
-    # Area covered by either black sheet
-    covered_area = intersection_area_1 + intersection_area_2 - intersection_area_12
-
-    if white_area > covered_area:
+    intersection_black = intersection_area(x3, y3, x4, y4, x5, y5, x6, y6)
+    intersection_white_black = intersection_area(x1, y1, x2, y2, x7, y7, x8, y8)
+    
+    total_covered = intersection1 + intersection2 - intersection_white_black
+    
+    if white_area > total_covered:
         print("YES")
     else:
         print("NO")

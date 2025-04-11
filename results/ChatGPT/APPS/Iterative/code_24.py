@@ -8,9 +8,9 @@ def can_win(board):
                 # Temporarily place 'X' in the empty cell
                 board[i][j] = 'X'
                 
-                # Check all directions for a winning line
+                # Check all directions
                 for dx, dy in directions:
-                    count = 1
+                    count = 1  # Count the placed 'X'
                     
                     # Check in the positive direction
                     x, y = i + dx, j + dy
@@ -26,13 +26,14 @@ def can_win(board):
                         x -= dx
                         y -= dy
                     
+                    # If count reaches 5, Alice can win
                     if count >= 5:
-                        return "YES"
+                        return 'YES'
                 
                 # Restore the empty cell
                 board[i][j] = '.'
-    
-    return "NO"
+
+    return 'NO'
 
 # Read input
 board = [input().strip() for _ in range(10)]

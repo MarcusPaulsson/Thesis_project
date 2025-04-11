@@ -1,4 +1,4 @@
-def lexicographically_minimal_string(s):
+def minimal_lexicographic_string(s):
     t = []
     u = []
     
@@ -10,5 +10,4 @@ def lexicographically_minimal_string(s):
     return ''.join(u)
 
 s = input().strip()
-result = lexicographically_minimal_string(s)
-print(result)
+print(minimal_lexicographic_string(s))

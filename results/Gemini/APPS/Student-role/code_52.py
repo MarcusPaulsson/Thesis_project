@@ -16,28 +16,53 @@ def solve():
             else:
                 return float('-inf')
 
-        max_sum = float('-inf')
+        max_elements = m // 2
         
-        # Option 1: Don't pick anything from this row
-        max_sum = max(max_sum, get_dp(row_idx + 1, rem))
-
-        # Option 2: Pick some elements from this row
         row = a[row_idx]
-        max_picks = m // 2
         
-        for i in range(1 << m):
-            picks = []
-            for j in range(m):
-                if (i >> j) & 1:
-                    picks.append(row[j])
+        row_dp = {}
+        
+        def get_row_dp(col_idx, count, row_rem):
+            if (col_idx, count, row_rem) in row_dp:
+                return row_dp[(col_idx, count, row_rem)]
             
-            if len(picks) <= max_picks:
-                current_sum = sum(picks)
-                new_rem = (rem - (current_sum % k)) % k
-                max_sum = max(max_sum, current_sum + get_dp(row_idx + 1, new_rem))
-
-        dp[(row_idx, rem)] = max_sum
-        return max_sum
+            if col_idx == m:
+                return 0
+            
+            res = get_row_dp(col_idx + 1, count, row_rem)
+            
+            if count < max_elements:
+                res = max(res, row[col_idx] + get_row_dp(col_idx + 1, count + 1, (row_rem + row[col_idx]) % k))
+            
+            row_dp[(col_idx, count, row_rem)] = res
+            return res
+        
+        row_max = get_row_dp(0, 0, 0)
+        
+        ans = get_dp(row_idx + 1, rem)
+        
+        for row_rem in range(k):
+            row_dp = {}
+            def get_row_dp2(col_idx, count, row_rem):
+                if (col_idx, count, row_rem) in row_dp:
+                    return row_dp[(col_idx, count, row_rem)]
+                
+                if col_idx == m:
+                    return 0 if row_rem == 0 else float('-inf')
+                
+                res = get_row_dp2(col_idx + 1, count, row_rem)
+                
+                if count < max_elements:
+                    res = max(res, row[col_idx] + get_row_dp2(col_idx + 1, count + 1, (row_rem - row[col_idx]) % k))
+                
+                row_dp[(col_idx, count, row_rem)] = res
+                return res
+            
+            row_max_rem = get_row_dp2(0, 0, row_rem)
+            ans = max(ans, row_max_rem + get_dp(row_idx + 1, (rem - row_rem) % k))
+        
+        dp[(row_idx, rem)] = ans
+        return ans
 
     print(get_dp(0, 0))
 

@@ -28,46 +28,49 @@ def find_max_edges(n, edges):
     # Step 1: Find the farthest node from an arbitrary node (1)
     farthest_from_start, _ = bfs(1, graph)
     
-    # Step 2: Find the farthest node from the farthest node found in step 1
-    farthest_from_a, diameter_length = bfs(farthest_from_start, graph)
+    # Step 2: Find the farthest node from the previously found farthest node
+    farthest_from_a, _ = bfs(farthest_from_start, graph)
     
-    # Step 3: Find the path from farthest_from_start to farthest_from_a
-    path = []
-    parent = {farthest_from_start: None}
-    queue = deque([farthest_from_start])
+    # Step 3: Find the farthest node from the second farthest node
+    farthest_from_b, _ = bfs(farthest_from_a, graph)
     
-    while queue:
-        node = queue.popleft()
-        for neighbor in graph[node]:
-            if neighbor not in parent:
-                parent[neighbor] = node
-                queue.append(neighbor)
+    # The diameter endpoints are farthest_from_start and farthest_from_a
+    # We can take any two nodes from the diameter path and one more node
+    # to maximize the edges covered.
     
-    # Reconstruct the path
-    current = farthest_from_a
-    while current is not None:
-        path.append(current)
-        current = parent[current]
+    # Collect the path from farthest_from_start to farthest_from_a
+    def collect_path(start, end):
+        parent = {start: None}
+        queue = deque([start])
+        while queue:
+            node = queue.popleft()
+            if node == end:
+                break
+            for neighbor in graph[node]:
+                if neighbor not in parent:
+                    parent[neighbor] = node
+                    queue.append(neighbor)
+        
+        path = []
+        while end is not None:
+            path.append(end)
+            end = parent[end]
+        return path[::-1]
     
-    path.reverse()
+    path = collect_path(farthest_from_start, farthest_from_a)
     
-    # Step 4: Choose three vertices from the path
+    # Choose the endpoints of the diameter and one more node
     a = path[0]
-    b = path[len(path) // 2]
-    c = path[-1]
+    b = path[-1]
+    c = path[len(path) // 2]  # Choose a middle node as c
     
-    # The maximum number of edges in the union of paths
-    max_edges = diameter_length + 1
+    # Calculate the number of edges in the union of paths
+    max_edges = len(path) - 1 + (len(graph[a]) - 1) + (len(graph[b]) - 1) - 1
     
     return max_edges, a, b, c
 
-# Input reading
 n = int(input())
 edges = [tuple(map(int, input().split())) for _ in range(n - 1)]
-
-# Find the result
 max_edges, a, b, c = find_max_edges(n, edges)
-
-# Output the result
 print(max_edges)
 print(a, b, c)

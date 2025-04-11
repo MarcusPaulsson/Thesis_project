@@ -2,7 +2,7 @@ def generate_string(n, s, t):
     # Create a list to hold the result
     res = []
     
-    # Count of characters
+    # Count of each character
     count_a = n
     count_b = n
     count_c = n
@@ -11,7 +11,7 @@ def generate_string(n, s, t):
     def is_forbidden():
         if len(res) < 2:
             return False
-        return ''.join(res[-2:]) == s or ''.join(res[-2:]) == t
+        return ''.join(res[-2:]) in (s, t)
     
     # Build the result string
     while count_a > 0 or count_b > 0 or count_c > 0:
@@ -28,27 +28,28 @@ def generate_string(n, s, t):
             
             # Check if the last two characters form a forbidden substring
             if is_forbidden():
-                res.pop()  # Remove the last character
+                # If forbidden, remove the last character and try the next one
+                res.pop()
                 if char == 'a':
                     count_a += 1
                 elif char == 'b':
                     count_b += 1
                 elif char == 'c':
                     count_c += 1
-                break  # Restart the loop to try the next character
+                break
+        else:
+            # If we went through all characters and didn't break, we are done
+            break
     
-    # Join the list into a string
-    result_string = ''.join(res)
-    
-    # Check if we have the right length
-    if len(result_string) == 3 * n:
+    # Check if we have used all characters
+    if count_a == 0 and count_b == 0 and count_c == 0:
         print("YES")
-        print(result_string)
+        print(''.join(res))
     else:
         print("NO")
 
 # Input reading
-n = int(input().strip())
+n = int(input())
 s = input().strip()
 t = input().strip()
 

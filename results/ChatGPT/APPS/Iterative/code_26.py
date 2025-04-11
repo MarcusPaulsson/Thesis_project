@@ -3,7 +3,7 @@ import math
 # Read input
 x, y, z = map(float, input().split())
 
-# Define the expressions and their corresponding values
+# Define the expressions with their corresponding labels
 expressions = [
     (x**(y**z), "x^y^z"),
     (x**(z**y), "x^z^y"),
@@ -19,7 +19,7 @@ expressions = [
     ((z**y)**x, "(z^y)^x"),
 ]
 
-# Find the maximum value and the corresponding expression
+# Find the maximum value and its index
 max_value = -math.inf
 max_index = -1
 

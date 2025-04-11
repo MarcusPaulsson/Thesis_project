@@ -3,22 +3,21 @@ def solve():
     hh, mm = map(int, input().split())
     
     count = 0
+    curr_hh = hh
+    curr_mm = mm
+    
     while True:
-        h_str = str(hh).zfill(2)
-        m_str = str(mm).zfill(2)
-        
-        if '7' in h_str or '7' in m_str:
+        time_str = "{:02d}:{:02d}".format(curr_hh, curr_mm)
+        if '7' in time_str:
             print(count)
             return
         
-        minutes = hh * 60 + mm
-        minutes -= x
-        
-        if minutes < 0:
-            minutes += 24 * 60
-            
-        hh = minutes // 60 % 24
-        mm = minutes % 60
+        curr_mm -= x
+        if curr_mm < 0:
+            curr_hh -= 1
+            curr_mm += 60
+            if curr_hh < 0:
+                curr_hh += 24
         
         count += 1
 

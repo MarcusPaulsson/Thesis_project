@@ -1,41 +1,37 @@
-def can_win(matrix):
+def can_win_in_one_turn(board):
     directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # horizontal, vertical, diagonal /
-    
-    def check_win(x, y):
-        for dx, dy in directions:
-            count = 1
-            
-            # Check in the positive direction
-            nx, ny = x + dx, y + dy
-            while 0 <= nx < 10 and 0 <= ny < 10 and matrix[nx][ny] == 'X':
-                count += 1
-                nx += dx
-                ny += dy
-            
-            # Check in the negative direction
-            nx, ny = x - dx, y - dy
-            while 0 <= nx < 10 and 0 <= ny < 10 and matrix[nx][ny] == 'X':
-                count += 1
-                nx -= dx
-                ny -= dy
-            
-            if count >= 5:
-                return True
-        
-        return False
     
     for i in range(10):
         for j in range(10):
-            if matrix[i][j] == '.':
-                # Temporarily place 'X' to check for a win
-                matrix[i][j] = 'X'
-                if check_win(i, j):
-                    return "YES"
-                # Remove the temporary 'X'
-                matrix[i][j] = '.'
+            if board[i][j] == '.':
+                # Temporarily place 'X' in the empty cell
+                board[i][j] = 'X'
+                
+                for dx, dy in directions:
+                    count = 1
+                    
+                    # Check in the positive direction
+                    x, y = i + dx, j + dy
+                    while 0 <= x < 10 and 0 <= y < 10 and board[x][y] == 'X':
+                        count += 1
+                        x += dx
+                        y += dy
+                    
+                    # Check in the negative direction
+                    x, y = i - dx, j - dy
+                    while 0 <= x < 10 and 0 <= y < 10 and board[x][y] == 'X':
+                        count += 1
+                        x -= dx
+                        y -= dy
+                    
+                    if count >= 5:
+                        return "YES"
+                
+                # Restore the empty cell
+                board[i][j] = '.'
     
     return "NO"
 
-# Read the input
-matrix = [input().strip() for _ in range(10)]
-print(can_win(matrix))
+# Read the board input
+board = [input().strip() for _ in range(10)]
+print(can_win_in_one_turn(board))

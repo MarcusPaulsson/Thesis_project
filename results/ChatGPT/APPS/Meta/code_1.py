@@ -11,7 +11,7 @@ def max_digit_sum(x):
         if str_x[i] == '0':
             continue
         
-        # Create a new number by reducing the current digit by 1 and setting all following digits to 9
+        # Create a new number by reducing the current digit and setting the rest to 9
         new_number = str_x[:i] + str(int(str_x[i]) - 1) + '9' * (n - i - 1)
         new_number = int(new_number)
         
@@ -23,6 +23,5 @@ def max_digit_sum(x):
     
     return max_num
 
-# Input reading
-x = int(input().strip())
+x = int(input())
 print(max_digit_sum(x))

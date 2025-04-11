@@ -18,40 +18,58 @@ def bfs(start, graph):
                     
     return farthest_node, max_distance
 
-def find_max_edges(n, edges):
+def find_max_edges_in_paths(n, edges):
     graph = defaultdict(list)
     
     for a, b in edges:
         graph[a].append(b)
         graph[b].append(a)
     
-    # Step 1: Find the farthest node from an arbitrary node (1)
+    # Step 1: Find the farthest node from an arbitrary node (let's say node 1)
     farthest_from_start, _ = bfs(1, graph)
     
     # Step 2: Find the farthest node from the previously found farthest node
-    farthest_from_a, diameter_length = bfs(farthest_from_start, graph)
+    farthest_from_a, _ = bfs(farthest_from_start, graph)
     
-    # Step 3: Get the path from farthest_from_start to farthest_from_a
-    path = []
-    def get_path(node, parent):
-        path.append(node)
-        if node == farthest_from_a:
-            return True
-        for neighbor in graph[node]:
-            if neighbor != parent and get_path(neighbor, node):
-                return True
-        path.pop()
-        return False
+    # Step 3: Find the farthest node from the second farthest node
+    farthest_from_b, _ = bfs(farthest_from_a, graph)
     
-    get_path(farthest_from_start, -1)
+    # Now we have the two endpoints of the longest path in the tree
+    # We can take any two nodes from the longest path and one more node
+    # that is not on that path to maximize the edges used.
     
-    # Step 4: Choose the three vertices
-    a = path[0]
-    b = path[len(path) // 2]
-    c = path[-1]
+    # To find the path from farthest_from_start to farthest_from_a
+    def find_path(start, end):
+        parent = {start: None}
+        queue = deque([start])
+        
+        while queue:
+            node = queue.popleft()
+            if node == end:
+                break
+            for neighbor in graph[node]:
+                if neighbor not in parent:
+                    parent[neighbor] = node
+                    queue.append(neighbor)
+        
+        path = []
+        while end is not None:
+            path.append(end)
+            end = parent[end]
+        return path[::-1]
     
-    # The maximum number of edges in the union of paths
-    max_edges = diameter_length + 1
+    longest_path = find_path(farthest_from_start, farthest_from_a)
+    
+    # Choose the two endpoints of the longest path
+    a = longest_path[0]
+    b = longest_path[-1]
+    
+    # Choose a third node that is not on the longest path
+    path_set = set(longest_path)
+    c = next(node for node in range(1, n + 1) if node not in path_set)
+    
+    # The maximum number of edges in the union of the paths
+    max_edges = len(longest_path) - 1 + len(graph[a]) + len(graph[b]) + len(graph[c]) - 3
     
     return max_edges, a, b, c
 
@@ -59,9 +77,9 @@ def find_max_edges(n, edges):
 n = int(input())
 edges = [tuple(map(int, input().split())) for _ in range(n - 1)]
 
-# Get the result
-result = find_max_edges(n, edges)
+# Finding the result
+max_edges, a, b, c = find_max_edges_in_paths(n, edges)
 
 # Output the result
-print(result[0])
-print(result[1], result[2], result[3])
+print(max_edges)
+print(a, b, c)

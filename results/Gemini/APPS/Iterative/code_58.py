@@ -11,14 +11,14 @@ def solve():
             print("NO")
             return
 
-    coloring = [0] * n
-    color = 1
-    
+    colors = [0] * n
+    color_idx = 1
+
     for i in range(n):
-        coloring[i] = color
-        color = (color % k) + 1
+        colors[i] = color_idx
+        color_idx = (color_idx % k) + 1
 
     print("YES")
-    print(*coloring)
+    print(*colors)
 
 solve()

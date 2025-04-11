@@ -6,9 +6,9 @@ def solve():
         coloring = ""
         for j in range(n):
             if (i >> j) & 1:
-                coloring += '1'
+                coloring += "1"
             else:
-                coloring += '0'
+                coloring += "0"
 
         s0 = ""
         s1 = ""
@@ -31,19 +31,11 @@ def solve():
             else:
                 merged += s1[idx1]
                 idx1 += 1
-                
-        if "".join(sorted(s)) == "".join(sorted(merged)):
-            
-            sorted_flag = True
-            for k in range(n - 1):
-                if merged[k] > merged[k+1]:
-                    sorted_flag = False
-                    break
-            
-            if sorted_flag:
-                print("YES")
-                print(coloring)
-                return
+
+        if "".join(sorted(s)) == merged:
+            print("YES")
+            print(coloring)
+            return
 
     print("NO")
 

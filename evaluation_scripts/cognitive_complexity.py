@@ -37,7 +37,7 @@ result_setting = "filtered_results" # "results"
 # ClassEval
 folder_paths_gemini_classEval = {
     "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
-    "Gemini classEval test": os.path.join(upper_dir, result_setting, "Gemini_test", "classEval", "Zero-shot"),
+    
     "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
     "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
     "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
@@ -48,7 +48,7 @@ folder_paths_gemini_classEval = {
 }
 folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Zero-shot": os.path.join(upper_dir,result_setting, "ChatGPT", "classEval", "Zero-shot"),
-    "ChatGPT classEval test": os.path.join(upper_dir,result_setting, "ChatGPT_test", "classEval", "Zero-shot"),
+  
     "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
     "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
     "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
@@ -59,7 +59,7 @@ folder_paths_chatgpt_classEval = {
 }
 folder_paths_gemma_classEval = {
     "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
-    "Gemma3 classEval test": os.path.join(upper_dir, result_setting, "Gemma3_test", "classEval", "Zero-shot"),
+  
     "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
     "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
     "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),

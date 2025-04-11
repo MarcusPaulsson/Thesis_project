@@ -1,15 +1,17 @@
 def can_form_regular_bracket_sequence(cnt1, cnt2, cnt3, cnt4):
     # Calculate the total number of opening and closing brackets
-    open_brackets = cnt1 + cnt2
-    close_brackets = cnt2 + cnt3
+    total_open = cnt1 + cnt2
+    total_close = cnt2 + cnt4
     
-    # Check if the number of opening and closing brackets can balance
-    if open_brackets < close_brackets:
+    # Check if the number of opening and closing brackets can balance each other
+    if total_open < total_close:
         return 0
     
-    # Check if the excess closing brackets can be balanced by opening brackets
-    excess_closing = cnt3 - cnt1
-    if excess_closing > 0 and excess_closing > cnt2:
+    # Calculate the excess closing brackets
+    excess_close = cnt3 + cnt4 - cnt1
+    
+    # If there are more excess closing brackets than opening brackets, it's not possible
+    if excess_close > total_open:
         return 0
     
     return 1

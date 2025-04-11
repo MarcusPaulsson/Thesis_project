@@ -12,7 +12,7 @@ def check_records(test_cases):
                 if p_i < p_prev or c_i < c_prev or c_i > p_i:
                     valid = False
                     break
-                if (p_i - p_prev) < (c_i - c_prev):
+                if p_i - p_prev < c_i - c_prev:
                     valid = False
                     break
         
@@ -20,7 +20,7 @@ def check_records(test_cases):
     
     return results
 
-# Input reading
+# Read input
 T = int(input())
 test_cases = []
 for _ in range(T):

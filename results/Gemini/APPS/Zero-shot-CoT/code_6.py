@@ -4,7 +4,7 @@ def solve():
     for _ in range(n):
         blows.append(list(map(int, input().split())))
 
-    max_diff = float('-inf')
+    max_diff = 0
     max_damage = 0
     for d, h in blows:
         max_damage = max(max_damage, d)
@@ -22,6 +22,7 @@ def solve():
     
     ans = 1 + (remaining + max_diff - 1) // max_diff
     print(ans)
+
 
 t = int(input())
 for _ in range(t):

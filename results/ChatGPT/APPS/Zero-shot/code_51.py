@@ -1,25 +1,25 @@
 from collections import Counter
-from math import gcd
+import sys
+import math
 
-n = int(input())
-divisors = list(map(int, input().split()))
+def find_x_y(divisors):
+    count = Counter(divisors)
+    # The largest number in the list must be either x or y
+    max_divisor = max(divisors)
+    
+    # Calculate the product of all unique divisors
+    product = 1
+    for d in count:
+        product *= d ** (count[d] // 2)
+    
+    # The two numbers x and y can be derived from the product and the largest divisor
+    x = product * (max_divisor // math.gcd(product, max_divisor))
+    y = product * (max_divisor // (x // max_divisor))
+    
+    return x, y
 
-# Count the occurrences of each divisor
-count = Counter(divisors)
+n = int(input().strip())
+divisors = list(map(int, input().strip().split()))
 
-# Find the maximum divisor, which should be either x or y
-max_divisor = max(count.keys())
-
-# Initialize x and y
-x = max_divisor
-y = 1
-
-# For each divisor, check if it can be part of y
-for d in count:
-    if d != max_divisor:
-        # If d is a divisor of x, it can also be a divisor of y
-        if count[d] == 2:
-            y *= d
-
-# Output the results
+x, y = find_x_y(divisors)
 print(x, y)

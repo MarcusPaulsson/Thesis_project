@@ -2,9 +2,9 @@ def solve():
     n = int(input())
     a = input()
     f = list(map(int, input().split()))
-    
+
     a_list = list(map(int, list(a)))
-    
+
     best_a = a
     
     for i in range(n):

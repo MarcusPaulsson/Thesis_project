@@ -4,7 +4,6 @@ def construct_string(n, k, t):
     j = 0  # length of previous longest prefix suffix
     i = 1
 
-    # Preprocess the pattern to create the lps array
     while i < n:
         if t[i] == t[j]:
             j += 1
@@ -18,16 +17,19 @@ def construct_string(n, k, t):
                 i += 1
 
     # The length of the longest prefix which is also a suffix
-    overlap_length = lps[-1]
+    longest_prefix_suffix = lps[-1]
 
-    # Construct the result string
-    result = t
+    # The minimum length of the string s
+    min_length = n + (k - 1) * (n - longest_prefix_suffix)
+
+    # Construct the string s
+    s = t
     for _ in range(k - 1):
-        result += t[overlap_length:]  # Append the non-overlapping part
+        s += t[longest_prefix_suffix:]
 
-    return result
+    return s
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 t = input().strip()
 

@@ -19,10 +19,17 @@ def max_beauty_with_multiplier(n, x, a):
     # Calculate the maximum beauty after applying the multiplier
     max_beauty = original_beauty
     for i in range(n):
+        # We will consider subarrays starting from index i
+        current_sum = 0
         for j in range(i, n):
-            # Create a new array with the subarray [i:j] multiplied by x
-            modified_array = a[:i] + [a[k] * x for k in range(i, j + 1)] + a[j + 1:]
-            max_beauty = max(max_beauty, max_subarray_sum(modified_array))
+            current_sum += a[j]
+            # Calculate the beauty if we multiply the subarray a[i:j+1] by x
+            modified_sum = current_sum * x
+            # Calculate the beauty of the remaining parts
+            left_sum = max_subarray_sum(a[:i])
+            right_sum = max_subarray_sum(a[j+1:])
+            total_beauty = left_sum + modified_sum + right_sum
+            max_beauty = max(max_beauty, total_beauty)
     
     return max_beauty
 
@@ -30,6 +37,5 @@ def max_beauty_with_multiplier(n, x, a):
 n, x = map(int, input().split())
 a = list(map(int, input().split()))
 
-# Get the result and print it
-result = max_beauty_with_multiplier(n, x, a)
-print(result)
+# Output the result
+print(max_beauty_with_multiplier(n, x, a))

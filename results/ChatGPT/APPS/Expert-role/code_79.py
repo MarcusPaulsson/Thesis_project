@@ -1,16 +1,14 @@
 def min_moves_to_divisible_by_25(n):
     s = str(n)
     length = len(s)
-    
-    # Check for possible pairs of digits that can form 25 or 00
-    target_pairs = ['00', '25', '50', '75']
     min_moves = float('inf')
-    
-    for pair in target_pairs:
-        last_digit = pair[1]
-        first_digit = pair[0]
+
+    # Check for pairs of digits that can form 25 or 00
+    for target in ['00', '25']:
+        last_digit = target[1]
+        first_digit = target[0]
         
-        # Find the last occurrence of the second digit
+        # Find the last occurrence of the last_digit
         last_index = -1
         for i in range(length - 1, -1, -1):
             if s[i] == last_digit:
@@ -18,9 +16,9 @@ def min_moves_to_divisible_by_25(n):
                 break
         
         if last_index == -1:
-            continue  # If we can't find the last digit, skip this pair
+            continue  # No last_digit found
         
-        # Now find the first occurrence of the first digit before the last_index
+        # Now find the first_digit before the last_digit
         first_index = -1
         for i in range(last_index - 1, -1, -1):
             if s[i] == first_digit:
@@ -28,14 +26,14 @@ def min_moves_to_divisible_by_25(n):
                 break
         
         if first_index == -1:
-            continue  # If we can't find the first digit, skip this pair
+            continue  # No first_digit found
         
-        # Calculate moves needed to bring the first digit to the position before the last digit
-        moves = (last_index - first_index) + (last_index - 1 - first_index)
+        # Calculate moves to bring first_digit to the front of last_digit
+        moves = (last_index - first_index) + (first_index)
         min_moves = min(min_moves, moves)
-    
+
     return min_moves if min_moves != float('inf') else -1
 
-# Input reading
+# Read input
 n = int(input().strip())
 print(min_moves_to_divisible_by_25(n))

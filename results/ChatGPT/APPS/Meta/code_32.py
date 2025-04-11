@@ -1,30 +1,31 @@
 def is_valid_journey(n, journey):
-    current_distance_from_pole = 0  # Distance from the North Pole in kilometers
-
+    position = 0  # Position starts at the North Pole (0 km)
+    
     for t, direction in journey:
-        if current_distance_from_pole == 0 and direction != "South":
+        if position == 0 and direction != "South":
             return "NO"  # At North Pole, can only move South
-        if current_distance_from_pole == 20000 and direction != "North":
+        if position == 20000 and direction != "North":
             return "NO"  # At South Pole, can only move North
         
         if direction == "South":
-            current_distance_from_pole += t
+            position += t
         elif direction == "North":
-            current_distance_from_pole -= t
-        # East and West do not change the distance from the poles, so we ignore them
-
-        # Check if we exceed the limits
-        if current_distance_from_pole < 0 or current_distance_from_pole > 20000:
-            return "NO"
-
-    # Journey must end at the North Pole
-    return "YES" if current_distance_from_pole == 0 else "NO"
-
+            position -= t
+        elif direction == "West" or direction == "East":
+            continue  # No change in position
+        
+        if position < 0 or position > 20000:
+            return "NO"  # Out of bounds
+        
+    if position != 0:
+        return "NO"  # Must end at North Pole
+    
+    return "YES"
 
 # Input reading
 n = int(input())
 journey = [tuple(input().split()) for _ in range(n)]
 journey = [(int(t), dir) for t, dir in journey]
 
-# Output the result
+# Output result
 print(is_valid_journey(n, journey))

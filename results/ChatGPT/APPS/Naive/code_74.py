@@ -13,14 +13,14 @@ def min_cost_to_obtain_set(n, k, s):
     if len(unique_subsequences) < k:
         return -1
     
-    # Calculate costs for each unique subsequence
+    # Calculate the minimum cost
     costs = []
     for subseq in unique_subsequences:
         cost = n - len(subseq)
         costs.append(cost)
     
-    # Sort costs and sum the smallest k costs
     costs.sort()
+    
     return sum(costs[:k])
 
 # Input reading

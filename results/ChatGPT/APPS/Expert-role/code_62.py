@@ -3,29 +3,32 @@ def min_operations(t, test_cases):
     
     for a, b, c in test_cases:
         min_moves = float('inf')
-        best_triple = (a, b, c)
+        best_triplet = (a, b, c)
 
+        # Check for all possible A, B, C combinations
         for A in range(1, a + 1):
             for B in range(A, c + 1):
                 if B % A == 0:
-                    C = (B // A) * A
-                    moves = abs(A - a) + abs(B - b) + abs(C - c)
-                    if moves < min_moves:
-                        min_moves = moves
-                        best_triple = (A, B, C)
-
-        results.append((min_moves, best_triple))
-
+                    C = B
+                    while C <= 10000:
+                        moves = abs(A - a) + abs(B - b) + abs(C - c)
+                        if moves < min_moves:
+                            min_moves = moves
+                            best_triplet = (A, B, C)
+                        C += B
+        
+        results.append((min_moves, best_triplet))
+    
     return results
 
-# Input reading
+# Read input
 t = int(input())
 test_cases = [tuple(map(int, input().split())) for _ in range(t)]
 
 # Get results
 results = min_operations(t, test_cases)
 
-# Output results
-for moves, (A, B, C) in results:
+# Print output
+for moves, triplet in results:
     print(moves)
-    print(A, B, C)
+    print(*triplet)

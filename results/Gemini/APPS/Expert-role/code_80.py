@@ -1,45 +1,41 @@
 def solve():
-  n = int(input())
-  s = input()
-  
-  colors = [0] * n
-  
-  def check(num_colors):
+    n = int(input())
+    s = input()
     
-    def is_sortable(arr, color_assignment):
-      
-      def swap(arr, i, j):
-        arr[i], arr[j] = arr[j], arr[i]
-      
-      arr_copy = list(arr)
-      color_assignment_copy = list(color_assignment)
-      
-      
-      for _ in range(n * (n - 1) // 2):
-        swapped = False
-        for i in range(n - 1):
-          if arr_copy[i] > arr_copy[i+1] and color_assignment_copy[i] != color_assignment_copy[i+1]:
-            swap(arr_copy, i, i+1)
-            swap(color_assignment_copy, i, i+1)
-            swapped = True
-        if not swapped:
-          break
-      
-      return arr_copy == sorted(arr)
+    def check(colors):
+        colored_string = [(s[i], colors[i]) for i in range(n)]
+        
+        def can_sort(arr):
+            arr = arr[:]
+            for _ in range(n):
+                swapped = False
+                for i in range(n - 1):
+                    if arr[i][0] > arr[i+1][0] and arr[i][1] != arr[i+1][1]:
+                        arr[i], arr[i+1] = arr[i+1], arr[i]
+                        swapped = True
+                if not swapped:
+                    break
+            
+            sorted_flag = True
+            for i in range(n - 1):
+                if arr[i][0] > arr[i+1][0]:
+                    sorted_flag = False
+                    break
+            return sorted_flag
+        
+        return can_sort(colored_string)
 
-    
-    import itertools
-    
-    for color_assignment in itertools.product(range(1, num_colors + 1), repeat=n):
-      if is_sortable(list(s), list(color_assignment)):
-          return True, list(color_assignment)
-    return False, None
-  
-  for num_colors in range(1, n + 1):
-    possible, assignment = check(num_colors)
-    if possible:
-      print(num_colors)
-      print(*assignment)
-      return
+    for num_colors in range(1, n + 1):
+        for i in range(num_colors**n):
+            colors = []
+            temp = i
+            for _ in range(n):
+                colors.append(temp % num_colors + 1)
+                temp //= num_colors
+            
+            if check(colors):
+                print(num_colors)
+                print(*colors)
+                return
 
 solve()

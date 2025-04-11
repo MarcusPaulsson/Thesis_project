@@ -1,20 +1,16 @@
-def find_kth_largest(n, m, k):
-    low, high = 1, n * m
-
-    while low < high:
-        mid = (low + high) // 2
+def kth_largest_in_multiplication_table(n, m, k):
+    left, right = 1, n * m
+    
+    while left < right:
+        mid = (left + right) // 2
         count = sum(min(mid // i, m) for i in range(1, n + 1))
-
+        
         if count < k:
-            low = mid + 1
+            left = mid + 1
         else:
-            high = mid
+            right = mid
+            
+    return left
 
-    return low
-
-# Read input
 n, m, k = map(int, input().split())
-# Get the k-th largest number
-result = find_kth_largest(n, m, k)
-# Print the result
-print(result)
+print(kth_largest_in_multiplication_table(n, m, k))

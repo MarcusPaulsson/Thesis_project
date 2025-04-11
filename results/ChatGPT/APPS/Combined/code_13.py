@@ -1,57 +1,54 @@
-from collections import defaultdict, deque
-import sys
+from collections import deque, defaultdict
 
-def main():
-    input = sys.stdin.read
-    data = input().splitlines()
+def find_course_order(n, k, main_courses, dependencies):
+    graph = defaultdict(list)
+    in_degree = [0] * (n + 1)
     
-    n, k = map(int, data[0].split())
-    main_courses = set(map(int, data[1].split()))
+    # Build the graph and in-degree array
+    for course in range(1, n + 1):
+        for dep in dependencies[course - 1]:
+            graph[dep].append(course)
+            in_degree[course] += 1
     
-    dependencies = defaultdict(list)
-    indegree = [0] * (n + 1)
+    queue = deque()
     
-    for i in range(2, n + 2):
-        line = list(map(int, data[i].split()))
-        t_i = line[0]
-        for j in range(1, t_i + 1):
-            dependencies[line[j]].append(i - 1)  # i - 2 + 2 = i
-            indegree[i - 1] += 1
+    # Add all courses that have no dependencies
+    for course in range(1, n + 1):
+        if in_degree[course] == 0:
+            queue.append(course)
     
-    # To track courses that need to be taken
-    courses_to_take = set(main_courses)
-    queue = deque(main_courses)
-    
-    while queue:
-        current = queue.popleft()
-        for prereq in dependencies[current]:
-            indegree[prereq] -= 1
-            if indegree[prereq] == 0:
-                queue.append(prereq)
-                courses_to_take.add(prereq)
-    
-    # Check if we can take all necessary courses
-    if len(courses_to_take) < len(main_courses):
-        print(-1)
-        return
-    
-    # Topological sort to determine the order of courses
     order = []
-    queue = deque(i for i in range(1, n + 1) if indegree[i] == 0 and i in courses_to_take)
+    courses_to_take = set(main_courses)
     
     while queue:
         current = queue.popleft()
         order.append(current)
-        for prereq in dependencies[current]:
-            indegree[prereq] -= 1
-            if indegree[prereq] == 0 and prereq in courses_to_take:
-                queue.append(prereq)
+        
+        if current in courses_to_take:
+            courses_to_take.remove(current)
+        
+        for neighbor in graph[current]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
     
-    if len(order) < len(courses_to_take):
-        print(-1)
-    else:
-        print(len(order))
-        print(' '.join(map(str, order)))
+    if courses_to_take:
+        return -1
+    
+    return len(order), order
 
-if __name__ == "__main__":
-    main()
+# Input reading
+n, k = map(int, input().split())
+main_courses = list(map(int, input().split()))
+dependencies = [list(map(int, input().split()[1:])) for _ in range(n)]
+
+# Find the course order
+result = find_course_order(n, k, main_courses, dependencies)
+
+# Output the result
+if result == -1:
+    print(-1)
+else:
+    m, order = result
+    print(m)
+    print(' '.join(map(str, order)))

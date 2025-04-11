@@ -1,7 +1,6 @@
 n = int(input())
 a = list(map(int, input().split()))
 
-# Initialize the distance array with a large value
 distances = [float('inf')] * n
 
 # First pass: from left to right

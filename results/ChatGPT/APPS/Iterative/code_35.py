@@ -1,28 +1,34 @@
 def is_valid_flag(n, m, field):
-    if n % 3 != 0:
-        return "NO"
-    
-    stripe_height = n // 3
     colors = set()
-    
-    # Check for horizontal stripes
-    for i in range(3):
-        stripe_color = field[i * stripe_height][0]
-        if stripe_color not in 'RGB' or stripe_color in colors:
+    stripe_height = None
+    current_color = None
+    current_height = 0
+
+    for i in range(n):
+        row = field[i]
+        if len(set(row)) != 1 or row[0] not in {'R', 'G', 'B'}:
             return "NO"
-        colors.add(stripe_color)
-        for j in range(stripe_height):
-            if field[i * stripe_height + j] != stripe_color * m:
+        
+        if current_color is None:
+            current_color = row[0]
+            current_height = 1
+        elif row[0] == current_color:
+            current_height += 1
+        else:
+            colors.add(current_color)
+            if stripe_height is None:
+                stripe_height = current_height
+            elif current_height != stripe_height:
                 return "NO"
-    
+            current_color = row[0]
+            current_height = 1
+
+    colors.add(current_color)
+    if current_height != stripe_height:
+        return "NO"
+
     return "YES" if len(colors) == 3 else "NO"
 
-def main():
-    n, m = map(int, input().split())
-    field = [input().strip() for _ in range(n)]
-    
-    result = is_valid_flag(n, m, field)
-    print(result)
-
-if __name__ == "__main__":
-    main()
+n, m = map(int, input().split())
+field = [input().strip() for _ in range(n)]
+print(is_valid_flag(n, m, field))

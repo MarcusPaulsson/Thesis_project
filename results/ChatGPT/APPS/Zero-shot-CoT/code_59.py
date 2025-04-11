@@ -1,18 +1,15 @@
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# We need to ensure that the last x digits of the number have the form:
-# ...000...010...0 (where there are y zeros followed by a 1 and then (x-y-1) zeros)
-# This means we need to check the last x digits of the number.
-
-# The target pattern we want for the last x digits
+# We need to check the last x digits of the number
 target = ['0'] * x
-target[y] = '1'
+target[y] = '1'  # We want the y-th position to be 1
+target = ''.join(target)
+
+# Get the last x digits of the number
+current = number[-x:]
 
 # Count the number of changes needed
-changes = 0
-for i in range(x):
-    if number[n - 1 - i] != target[x - 1 - i]:
-        changes += 1
+operations = sum(1 for i in range(x) if current[i] != target[i])
 
-print(changes)
+print(operations)

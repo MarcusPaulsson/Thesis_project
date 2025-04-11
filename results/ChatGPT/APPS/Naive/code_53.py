@@ -4,9 +4,6 @@ def longest_increasing_sequence(n, a):
     moves = []
     
     while left <= right:
-        if a[left] < last_taken and a[right] < last_taken:
-            break
-        
         if a[left] > last_taken and (a[right] <= last_taken or a[left] < a[right]):
             moves.append('L')
             last_taken = a[left]
@@ -21,7 +18,7 @@ def longest_increasing_sequence(n, a):
     print(len(moves))
     print(''.join(moves))
 
-# Input reading
-n = int(input())
-a = list(map(int, input().split()))
-longest_increasing_sequence(n, a)
+# Example usage:
+# n = int(input())
+# a = list(map(int, input().split()))
+# longest_increasing_sequence(n, a)

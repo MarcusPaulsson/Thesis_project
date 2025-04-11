@@ -6,39 +6,33 @@ def can_construct_square(t, test_cases):
             results.append("NO")
             continue
         
-        can_form_symmetric = False
+        half_m = m // 2
+        can_form = False
+        
         for i in range(n):
-            a, b = tiles[i][0]
-            c, d = tiles[i][1]
             for j in range(n):
-                if i != j:
-                    e, f = tiles[j][0]
-                    g, h = tiles[j][1]
-                    if b == g and c == f:
-                        can_form_symmetric = True
-                        break
-            if can_form_symmetric:
+                if tiles[i][0][1] == tiles[j][1][0]:  # Check if top-right of tile i matches bottom-left of tile j
+                    can_form = True
+                    break
+            if can_form:
                 break
         
-        results.append("YES" if can_form_symmetric else "NO")
+        results.append("YES" if can_form else "NO")
     
     return results
 
-# Read input
+# Example usage:
 t = int(input())
 test_cases = []
 for _ in range(t):
     n, m = map(int, input().split())
     tiles = []
     for _ in range(n):
-        top = tuple(map(int, input().split()))
-        bottom = tuple(map(int, input().split()))
+        top = list(map(int, input().split()))
+        bottom = list(map(int, input().split()))
         tiles.append((top, bottom))
     test_cases.append((n, m, tiles))
 
-# Get results
 results = can_construct_square(t, test_cases)
-
-# Print results
 for result in results:
     print(result)

@@ -2,43 +2,24 @@ def solve():
     n, k = map(int, input().split())
     mod = 10**6 + 3
 
-    if n < 63 and k > (1 << n):
+    if n > 63 and k > 1:
         print(1, 1)
         return
 
-    num = 1
-    den = 1
-    twos_num = 0
-    twos_den = 0
+    if k > (1 << n):
+        print(1, 1)
+        return
 
-    for i in range(int(k)):
-        if i == 0:
-            continue
-        val = (pow(2, n, mod) - i) % mod
-        num = (num * val) % mod
-        
-        temp = i
-        while temp > 0 and temp % 2 == 0:
-            twos_num += 1
-            temp //= 2
+    b = pow(pow(2, n, mod), k, mod)
+    a = 1
+    for i in range(k):
+        a = (a * ((pow(2, n, mod) - i + mod) % mod)) % mod
 
-    den = pow(pow(2, n, mod), int(k - 1), mod)
-    twos_den = (int(k - 1) * int(n))
-    
-    twos_diff = twos_den - twos_num
-    
-    if twos_diff > 0:
-        num = (num * pow(2, min(twos_diff, 60), mod)) % mod
-        den = (den * pow(pow(2, min(twos_diff, 60), mod), mod - 2, mod)) % mod
-    
-    a = (den - num) % mod
-    b = den % mod
-    
     gcd_val = gcd(a, b)
-    
-    a = (a // gcd_val) % mod
-    b = (b // gcd_val) % mod
-    
+    a //= gcd_val
+    b //= gcd_val
+
+    a = (b - a + mod) % mod
     print(a, b)
 
 def gcd(a, b):

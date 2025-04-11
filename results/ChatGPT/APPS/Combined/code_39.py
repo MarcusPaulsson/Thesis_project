@@ -4,7 +4,7 @@ def is_palindrome(s):
 def longest_non_palindrome_substring(s):
     n = len(s)
     
-    # If the entire string is not a palindrome, return its length
+    # Check if the entire string is a palindrome
     if not is_palindrome(s):
         return n
     
@@ -12,12 +12,10 @@ def longest_non_palindrome_substring(s):
     if s.count(s[0]) == n:
         return 0
     
-    # If the string is a palindrome but not all characters are the same,
-    # the longest non-palindrome substring can be obtained by removing
-    # one character from either end.
+    # The longest non-palindrome substring can be obtained by removing one character from either end
     return n - 1
 
-# Input
+# Read input
 s = input().strip()
-# Output
+# Output the result
 print(longest_non_palindrome_substring(s))

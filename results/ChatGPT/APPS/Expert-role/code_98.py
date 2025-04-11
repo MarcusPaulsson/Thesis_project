@@ -1,13 +1,10 @@
 def min_moves_to_n(N):
-    min_moves = float('inf')
-    
+    moves = float('inf')
     for i in range(1, int(N**0.5) + 1):
         if N % i == 0:
             j = N // i
-            moves = (i - 1) + (j - 1)
-            min_moves = min(min_moves, moves)
-    
-    return min_moves
+            moves = min(moves, i + j - 2)
+    return moves
 
-N = int(input().strip())
+N = int(input())
 print(min_moves_to_n(N))

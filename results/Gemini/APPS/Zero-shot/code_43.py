@@ -3,7 +3,7 @@ import math
 def solve():
     n = int(input())
     vectors = []
-    for _ in range(n):
+    for i in range(n):
         x, y = map(int, input().split())
         vectors.append((x, y))
 
@@ -12,23 +12,22 @@ def solve():
 
     angles = []
     for i in range(n):
-        angles.append((angle(vectors[i]), i + 1))
+        angles.append(angle(vectors[i]))
 
-    angles.sort()
-
-    min_diff = float('inf')
+    min_angle_diff = float('inf')
     best_pair = (0, 0)
 
-    for i in range(n - 1):
-        diff = angles[i+1][0] - angles[i][0]
-        if diff < min_diff:
-            min_diff = diff
-            best_pair = (angles[i][1], angles[i+1][1])
+    for i in range(n):
+        for j in range(i + 1, n):
+            angle1 = angles[i]
+            angle2 = angles[j]
+            
+            diff = abs(angle1 - angle2)
+            diff = min(diff, 2 * math.pi - diff)
 
-    diff = angles[0][0] + (2 * math.pi - angles[-1][0])
-    if diff < min_diff:
-        min_diff = diff
-        best_pair = (angles[-1][1], angles[0][1])
+            if diff < min_angle_diff:
+                min_angle_diff = diff
+                best_pair = (i + 1, j + 1)
 
     print(best_pair[0], best_pair[1])
 

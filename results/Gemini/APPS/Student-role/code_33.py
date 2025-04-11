@@ -26,35 +26,24 @@ def solve():
 
     lcm = (a1 * a2) // g
 
-    x0 = (x * a1 + b1)
+    k = (x * a1 + b1)
     
     
-    def find_min_val(a1, b1, a2, b2, L, R):
-        g = gcd(a1, a2)
-        if (b2 - b1) % g != 0:
-            return float('inf')
-
-        d, x, y = extended_gcd(a1, a2)
-        x *= (b2 - b1) // d
-        y *= (b2 - b1) // d
-
-        lcm = (a1 * a2) // g
-        x0 = (x * a1 + b1)
-        
-        k = (L - x0 + lcm - 1) // lcm
-        first = x0 + k * lcm
-        
-        if first > R:
-            return float('inf')
-        return first
+    first = k % lcm
+    if first < 0:
+        first += lcm
     
-    first = find_min_val(a1, b1, a2, b2, L, R)
     
-    if first == float('inf'):
-        print(0)
-        return
+    start = first
     
-    count = (R - first) // lcm + 1
+    while start < L:
+        start += lcm
+    
+    count = 0
+    while start <= R:
+        count += 1
+        start += lcm
+    
     print(count)
 
 solve()

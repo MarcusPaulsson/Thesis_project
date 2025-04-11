@@ -3,40 +3,26 @@ def solve():
     c = list(map(int, input().split()))
 
     total_length = sum(c)
-    min_spaces = m - 1
-    max_spaces = (m + 1) * (d - 1)
+    min_empty = m - 1
+    max_empty = n - total_length
 
-    remaining_space = n - total_length
-    
-    if remaining_space > max_spaces:
+    if d * (m + 1) <= n + 1:
         print("NO")
         return
 
     arr = [0] * n
     
-    curr_pos = 0
-    
+    pos = 0
     for i in range(m):
         
+        needed_space = min(d - 1, n - pos - total_length + sum(c[i:]))
         
-        space_needed = min(remaining_space, d - 1)
+        pos += needed_space
         
-        
-        for j in range(space_needed):
-            arr[curr_pos] = 0
-            curr_pos += 1
-        remaining_space -= space_needed
-
         for j in range(c[i]):
-            arr[curr_pos] = i + 1
-            curr_pos += 1
-
-    
-    for i in range(remaining_space):
-        arr[curr_pos] = 0
-        curr_pos += 1
-
-    
+            arr[pos] = i + 1
+            pos += 1
+            
     print("YES")
     print(*arr)
 

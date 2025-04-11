@@ -1,40 +1,31 @@
-def can_construct_symmetric_square(n, m, tiles):
-    if m % 2 != 0:
-        return "NO"
+def can_construct_symmetric_square(t, test_cases):
+    results = []
+    for case in test_cases:
+        n, m, tiles = case
+        if m % 2 != 0:
+            results.append("NO")
+            continue
+        
+        # Check for pairs of tiles that can form the required symmetry
+        can_form = False
+        tile_map = {}
+        
+        for tile in tiles:
+            top_left, top_right = tile[0]
+            bottom_left, bottom_right = tile[1]
+            # Store tiles in a way to check symmetry easily
+            tile_map[(top_left, top_right)] = (bottom_left, bottom_right)
+        
+        # Check if we can find a matching tile for symmetry
+        for tile in tiles:
+            top_left, top_right = tile[0]
+            bottom_left, bottom_right = tile[1]
+            if (bottom_left, bottom_right) in tile_map:
+                can_form = True
+                break
+        
+        results.append("YES" if can_form else "NO")
     
-    top_left = set()
-    top_right = set()
-    bottom_left = set()
-    bottom_right = set()
-    
-    for tile in tiles:
-        tl, tr = tile[0]
-        bl, br = tile[1]
-        top_left.add(tl)
-        top_right.add(tr)
-        bottom_left.add(bl)
-        bottom_right.add(br)
-    
-    # Check if we can form the symmetric pairs
-    for tl in top_left:
-        if tl in bottom_right:
-            return "YES"
-    for tr in top_right:
-        if tr in bottom_left:
-            return "YES"
-    
-    return "NO"
+    return results
 
-t = int(input())
-results = []
-for _ in range(t):
-    n, m = map(int, input().split())
-    tiles = []
-    for _ in range(n):
-        top = tuple(map(int, input().split()))
-        bottom = tuple(map(int, input().split()))
-        tiles.append((top, bottom))
-    
-    results.append(can_construct_symmetric_square(n, m, tiles))
-
-print("\n".join(results))
+# Input reading and function calling would go here

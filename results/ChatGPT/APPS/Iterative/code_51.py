@@ -3,21 +3,21 @@ import sys
 
 def find_x_y(divisors):
     count = Counter(divisors)
-    # The largest number must be either x or y
-    max_divisor = max(count)
+    unique_divisors = list(count.keys())
     
-    # Remove the largest number from the count
-    count[max_divisor] -= 1
-    if count[max_divisor] == 0:
-        del count[max_divisor]
+    # Initialize x and y
+    x = 1
+    y = 1
     
-    # Now we need to find the other number
-    # The second number must be the product of the remaining divisors
-    product = 1
-    for d, freq in count.items():
-        product *= d ** freq
+    # Calculate x and y based on the counts of divisors
+    for d in unique_divisors:
+        if count[d] == 2:
+            x *= d
+            y *= d
+        elif count[d] == 1:
+            x *= d
     
-    return max_divisor, product
+    return x, y
 
 n = int(input().strip())
 divisors = list(map(int, input().strip().split()))

@@ -26,12 +26,12 @@ def can_win(board):
                         y -= dy
                     
                     if count >= 5:
-                        return "YES"
+                        return 'YES'
                 
-                # Remove the temporary 'X'
+                # Restore the empty cell
                 board[i][j] = '.'
-
-    return "NO"
+    
+    return 'NO'
 
 # Read the input
 board = [input().strip() for _ in range(10)]

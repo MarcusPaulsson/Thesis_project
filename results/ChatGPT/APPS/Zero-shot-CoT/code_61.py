@@ -2,36 +2,23 @@ n = int(input())
 a = input().strip()
 f = list(map(int, input().strip().split()))
 
-# Convert f to a dictionary for easier access
-f_dict = {str(i + 1): str(f[i]) for i in range(9)}
+# Convert f to a list where f[i] corresponds to f(i+1)
+f = [0] + f  # Adding a dummy value at index 0 for convenience
 
-# Initialize the result as the original number
-max_number = a
+max_number = a  # Start with the original number as the maximum
 
-# We will track if we have started replacing
-started_replacing = False
-new_segment = []
-
-for digit in a:
-    if not started_replacing and f_dict[digit] > digit:
-        # Start replacing if we find a digit that can be increased
-        started_replacing = True
-        new_segment.append(f_dict[digit])
-    elif started_replacing:
-        if f_dict[digit] >= digit:
-            # Continue replacing if we can keep the number the same or increase it
-            new_segment.append(f_dict[digit])
-        else:
-            # Stop replacing if we find a digit that cannot be increased
-            break
-    else:
-        # If we haven't started replacing, keep the original digit
-        new_segment.append(digit)
-
-# If we started replacing, we need to construct the new number
-if started_replacing:
-    # Join the new segment and append the rest of the original number
-    new_number = ''.join(new_segment) + a[len(new_segment):]
-    max_number = max(max_number, new_number)
+# We will try to find the best segment to replace
+i = 0
+while i < n:
+    # Start of a potential segment
+    start = i
+    while i < n and f[int(a[i])] >= int(a[i]):
+        i += 1
+    # Now i is at the first position where we can't replace or at the end
+    if start < i:  # We found a segment to replace
+        # Create a new number with this segment replaced
+        new_number = a[:start] + ''.join(str(f[int(a[j])]) for j in range(start, i)) + a[i:]
+        max_number = max(max_number, new_number)
+    i += 1  # Move to the next character
 
 print(max_number)

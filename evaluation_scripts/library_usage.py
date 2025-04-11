@@ -215,7 +215,7 @@ if __name__ == "__main__":
     upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #adjust if running locally.
 
     result_setting = "results" # "results"
-    result_setting = "filtered_results" # "results"
+    #result_setting = "filtered_results" # "results"
 
     # folder_paths_gemini_cli_games = {
     #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),

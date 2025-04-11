@@ -12,82 +12,54 @@ def solve():
         else:
             regular.append((files[i][0], i))
 
-    moves = []
     e = len(examples)
-    r = len(regular)
     
-    temps = []
+    moves = []
     
-    # Move examples to the front
+    # Move examples to 1, 2, ..., e
     for i in range(e):
         if examples[i][0] != str(i + 1):
-            temp_name = generate_temp_name(files)
-            temps.append(temp_name)
-            moves.append(f"move {examples[i][0]} {temp_name}")
-            
-            target_index = -1
-            for j in range(n):
-                if files[j][0] == str(i+1):
-                    target_index = j
-                    break
-                    
-            if target_index != -1:
-                
-                moves.append(f"move {str(i+1)} {str(e+r+len(temps))}")
-                temps.append(str(e+r+len(temps)))
-                moves.append(f"move {temp_name} {str(i+1)}")
-                
-                
-                
-                files[examples[i][1]][0] = str(i+1)
-                files[target_index][0] = str(e+r+len(temps)-1)
-                
-                
-                
-            else:
-                moves.append(f"move {temp_name} {str(i+1)}")
-                files[examples[i][1]][0] = str(i+1)
-                
-    # Move regular tests to the back
-    for i in range(r):
+            moves.append((examples[i][0], str(i + 1)))
+    
+    # Move regular to e+1, e+2, ..., n
+    for i in range(len(regular)):
         if regular[i][0] != str(e + i + 1):
-            
-            temp_name = generate_temp_name(files)
-            temps.append(temp_name)
-            moves.append(f"move {regular[i][0]} {temp_name}")
-            
-            target_index = -1
-            for j in range(n):
-                if files[j][0] == str(e+i+1):
-                    target_index = j
-                    break
-            
-            if target_index != -1:
-                moves.append(f"move {str(e+i+1)} {str(e+r+len(temps))}")
-                temps.append(str(e+r+len(temps)))
-                moves.append(f"move {temp_name} {str(e+i+1)}")
-                
-                files[regular[i][1]][0] = str(e+i+1)
-                files[target_index][0] = str(e+r+len(temps)-1)
-                
-            else:
-                moves.append(f"move {temp_name} {str(e+i+1)}")
-                files[regular[i][1]][0] = str(e+i+1)
+            moves.append((regular[i][0], str(e + i + 1)))
 
-    print(len(moves))
+    
+    conflicts = set()
+    for i in range(1, n + 1):
+        conflicts.add(str(i))
+    
+    temp_moves = []
+    
+    for i in range(len(moves)):
+        if moves[i][1] in conflicts:
+            temp_name = generate_temp_name(files)
+            temp_moves.append((moves[i][0], temp_name))
+            moves[i] = (temp_name, moves[i][1])
+            files.append([temp_name, 'temp'])
+            
+    
+    final_moves = []
+    for move in temp_moves:
+        final_moves.append(move)
     for move in moves:
-        print(move)
+        final_moves.append(move)
+    
+    print(len(final_moves))
+    for move in final_moves:
+        print("move", move[0], move[1])
 
 def generate_temp_name(files):
-    i = 1
+    existing_names = set()
+    for file in files:
+        existing_names.add(file[0])
+    
+    i = 0
     while True:
         temp_name = "temp" + str(i)
-        exists = False
-        for file in files:
-            if file[0] == temp_name:
-                exists = True
-                break
-        if not exists:
+        if temp_name not in existing_names:
             return temp_name
         i += 1
 

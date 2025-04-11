@@ -25,20 +25,21 @@ def solve():
                             return True
         
         return False
-
+    
     if check_mentsu(tiles):
         print(0)
         return
-
+    
     # Try drawing one tile
+    suits = ['m', 'p', 's']
     for i in range(1, 10):
-        for suit in ['m', 'p', 's']:
+        for suit in suits:
             new_tile = str(i) + suit
             new_hand = tiles + [new_tile]
             if check_mentsu(new_hand):
                 print(1)
                 return
-
+    
     # Try drawing two tiles
     print(2)
 

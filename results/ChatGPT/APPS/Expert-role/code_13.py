@@ -1,50 +1,48 @@
 from collections import deque, defaultdict
-import sys
 
-input = sys.stdin.read
-data = input().splitlines()
+def find_course_order(n, k, main_courses, dependencies):
+    indegree = [0] * (n + 1)
+    graph = defaultdict(list)
+    
+    for i in range(1, n + 1):
+        for dep in dependencies[i - 1]:
+            graph[dep].append(i)
+            indegree[i] += 1
+    
+    queue = deque()
+    for course in range(1, n + 1):
+        if indegree[course] == 0:
+            queue.append(course)
+    
+    order = []
+    passed_courses = set()
+    
+    while queue:
+        course = queue.popleft()
+        order.append(course)
+        passed_courses.add(course)
+        
+        for neighbor in graph[course]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    if not all(course in passed_courses for course in main_courses):
+        return -1
+    
+    return len(order), order
 
-n, k = map(int, data[0].split())
-main_courses = list(map(int, data[1].split()))
-dependencies = defaultdict(list)
-in_degree = [0] * (n + 1)
+# Input reading
+n, k = map(int, input().split())
+main_courses = list(map(int, input().split()))
+dependencies = [list(map(int, input().split()[1:])) for _ in range(n)]
 
-# Read dependencies
-for i in range(2, n + 2):
-    line = list(map(int, data[i].split()))
-    t_i = line[0]
-    for dep in line[1:t_i + 1]:
-        dependencies[dep].append(i - 1)  # i - 2 + 1 = i - 1 (0-indexed)
-        in_degree[i - 1] += 1
+# Finding the course order
+result = find_course_order(n, k, main_courses, dependencies)
 
-# Topological sort using Kahn's algorithm
-queue = deque()
-for i in range(1, n + 1):
-    if in_degree[i] == 0:
-        queue.append(i)
-
-order = []
-passed_courses = set()
-
-while queue:
-    course = queue.popleft()
-    order.append(course)
-    passed_courses.add(course)
-    for next_course in dependencies[course]:
-        in_degree[next_course] -= 1
-        if in_degree[next_course] == 0:
-            queue.append(next_course)
-
-# Check if all main courses can be taken
-needed_courses = set(main_courses)
-for course in order:
-    if course in needed_courses:
-        needed_courses.remove(course)
-    if not needed_courses:
-        break
-
-if needed_courses:
+# Output
+if result == -1:
     print(-1)
 else:
-    print(len(order))
-    print(" ".join(map(str, order)))
+    print(result[0])
+    print(' '.join(map(str, result[1])))

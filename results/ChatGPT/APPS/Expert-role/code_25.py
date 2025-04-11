@@ -8,17 +8,14 @@ def create_symmetric_matrix(n, k):
         if k <= 0:
             break
         for j in range(i, n):
-            if k <= 0:
+            if k >= 2 and i != j:
+                matrix[i][j] = 1
+                matrix[j][i] = 1
+                k -= 2
+            elif k == 1 and i == j:
+                matrix[i][j] = 1
+                k -= 1
                 break
-            if i == j:
-                if k >= 1:
-                    matrix[i][j] = 1
-                    k -= 1
-            else:
-                if k >= 2:
-                    matrix[i][j] = 1
-                    matrix[j][i] = 1
-                    k -= 2
 
     if k > 0:
         return -1

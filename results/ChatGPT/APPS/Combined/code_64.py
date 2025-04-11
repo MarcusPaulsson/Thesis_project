@@ -2,25 +2,26 @@ def schedule_exams(n, m, exams):
     # Initialize the schedule with zeros (rest days)
     schedule = [0] * n
     
-    # Try to allocate preparation days
+    # Process each exam
     for i in range(m):
         s_i, d_i, c_i = exams[i]
-        days_allocated = 0
+        # Adjust to 0-based index
+        s_i -= 1
+        d_i -= 1
         
-        # Allocate preparation days between s_i and d_i - 1
-        for day in range(s_i - 1, d_i - 1):
-            if days_allocated < c_i and schedule[day] == 0:
-                schedule[day] = i + 1  # Mark the day for preparation for exam i
-                days_allocated += 1
+        # Find available preparation days
+        available_days = [j for j in range(s_i, d_i) if schedule[j] == 0]
         
-        # If we couldn't allocate enough preparation days, return -1
-        if days_allocated < c_i:
-            return -1
-    
-    # Now allocate the exam days
-    for i in range(m):
-        d_i = exams[i][1]
-        schedule[d_i - 1] = m + 1  # Mark the exam day
+        # Check if we can allocate preparation days
+        if len(available_days) < c_i:
+            return -1  # Not enough days to prepare
+        
+        # Allocate preparation days
+        for j in range(c_i):
+            schedule[available_days[j]] = i + 1  # Mark preparation for exam i+1
+        
+        # Mark the exam day
+        schedule[d_i] = m + 1  # Mark the exam day
     
     return schedule
 

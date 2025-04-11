@@ -17,7 +17,7 @@ def solve():
         if s[i] == ']':
             last_bracket = i
             break
-            
+    
     if last_bracket == -1 or last_bracket <= first_bracket:
         print(-1)
         return
@@ -27,7 +27,7 @@ def solve():
         if s[i] == ':':
             first_colon = i
             break
-            
+    
     if first_colon == -1:
         print(-1)
         return
@@ -37,16 +37,16 @@ def solve():
         if s[i] == ':':
             second_colon = i
             break
-            
+    
     if second_colon == -1 or second_colon <= first_colon:
         print(-1)
         return
     
-    count_pipes = 0
+    count = 0
     for i in range(first_colon + 1, second_colon):
         if s[i] == '|':
-            count_pipes += 1
-            
-    print(4 + count_pipes)
+            count += 1
+    
+    print(4 + count)
 
 solve()

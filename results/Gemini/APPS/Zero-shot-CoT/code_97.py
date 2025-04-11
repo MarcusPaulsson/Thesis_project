@@ -2,14 +2,14 @@ def solve():
     n = int(input())
     x = list(map(int, input().split()))
     
-    odd_count = 0
-    even_count = 0
-    for val in x:
-        if val % 2 == 0:
-            even_count += 1
-        else:
-            odd_count += 1
+    ans = float('inf')
     
-    print(min(odd_count, even_count))
+    for target in range(1, 101):
+        cost = 0
+        for i in range(n):
+            cost += abs(x[i] - target) % 2
+        ans = min(ans, cost)
+        
+    print(ans)
 
 solve()

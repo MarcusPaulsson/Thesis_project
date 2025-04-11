@@ -1,24 +1,42 @@
-a, b, x = map(int, input().split())
+def solve():
+    a, b, x = map(int, input().split())
+    
+    if a > b:
+        start = 0
+        a -= 1
+    else:
+        start = 1
+        b -= 1
+    
+    s = str(start)
+    
+    for i in range(x - 1):
+        if start == 0:
+            if b > 0:
+                s += '1'
+                b -= 1
+                start = 1
+            else:
+                s += '0'
+                a -= 1
+                start = 0
+        else:
+            if a > 0:
+                s += '0'
+                a -= 1
+                start = 0
+            else:
+                s += '1'
+                b -= 1
+                start = 1
+    
+    if start == 0:
+        s += '0' * a
+        s += '1' * b
+    else:
+        s += '1' * b
+        s += '0' * a
+    
+    print(s)
 
-if a > b:
-  start = 0
-else:
-  start = 1
-
-result = ""
-while x > 1:
-  result += str(start)
-  if start == 0:
-    b -= 1
-    start = 1
-  else:
-    a -= 1
-    start = 0
-  x -= 1
-
-if start == 0:
-  result += "0" * a + "1" * b
-else:
-  result += "1" * b + "0" * a
-
-print(result)
+solve()

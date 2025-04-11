@@ -2,10 +2,14 @@ n = int(input())
 a = list(map(int, input().split()))
 
 max_height = max(a)
-total_bricks_needed = sum(max_height - height for height in a)
+total_bricks_needed = 0
+total_bricks_available = 0
 
-# Check if the total number of bricks needed is even
-if total_bricks_needed % 2 == 0:
+for height in a:
+    total_bricks_needed += max_height - height
+    total_bricks_available += height
+
+if total_bricks_needed <= total_bricks_available:
     print("YES")
 else:
     print("NO")

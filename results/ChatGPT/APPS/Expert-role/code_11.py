@@ -4,10 +4,10 @@ def max_chocolates(n, a, b, p, q):
     count_ab = n // (a * b // gcd(a, b))
     
     # Calculate chocolates if we prioritize Red tiles
-    chocolates_red_first = (count_a - count_ab) * p + (count_b - count_ab) * q + count_ab * max(p, q)
+    chocolates_red_first = count_a * p + (count_b - count_ab) * q
     
     # Calculate chocolates if we prioritize Blue tiles
-    chocolates_blue_first = (count_b - count_ab) * q + (count_a - count_ab) * p + count_ab * max(p, q)
+    chocolates_blue_first = count_b * q + (count_a - count_ab) * p
     
     return max(chocolates_red_first, chocolates_blue_first)
 

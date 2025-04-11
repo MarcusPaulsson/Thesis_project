@@ -1,38 +1,32 @@
 def color_array(n, k, a):
     from collections import defaultdict
-    
-    # Step 1: Count occurrences of each number
-    count = defaultdict(int)
-    for num in a:
-        count[num] += 1
-    
-    # Step 2: Check if any number occurs more than k times
-    for num in count:
-        if count[num] > k:
-            print("NO")
-            return
-    
-    # Step 3: Prepare to assign colors
+
     color_assignment = [0] * n
-    color_used = defaultdict(int)  # To track how many times each color is used for each number
-    
-    # Step 4: Assign colors
+    color_count = defaultdict(int)
+    color_used = defaultdict(set)
+
     for i in range(n):
-        num = a[i]
-        # Find the next color to assign to this number
-        next_color = (color_used[num] % k) + 1
-        color_assignment[i] = next_color
-        color_used[num] += 1
-    
-    # Step 5: Check if we have used all colors
-    used_colors = set(color_assignment)
-    if len(used_colors) < k:
+        value = a[i]
+        if color_count[value] < k:
+            color_count[value] += 1
+            color_assignment[i] = color_count[value]
+            color_used[color_count[value]].add(value)
+        else:
+            # Try to assign a color that has not been used for this value
+            for color in range(1, k + 1):
+                if value not in color_used[color]:
+                    color_assignment[i] = color
+                    color_used[color].add(value)
+                    break
+
+    # Check if we have used all colors at least once
+    if len(color_used) < k:
         print("NO")
     else:
         print("YES")
         print(" ".join(map(str, color_assignment)))
 
 # Example usage
-n, k = map(int, input().split())
-a = list(map(int, input().split()))
-color_array(n, k, a)
+# n, k = map(int, input().split())
+# a = list(map(int, input().split()))
+# color_array(n, k, a)

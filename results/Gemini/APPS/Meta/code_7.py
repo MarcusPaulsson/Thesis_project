@@ -1,20 +1,44 @@
 def solve():
     n, m = map(int, input().split())
 
-    l, r = 0, 2 * 10**9
-    ans = r
+    low = 0
+    high = 2 * 10**9  # Increased upper bound for binary search
+    ans = -1
 
-    while l <= r:
-        mid = (l + r) // 2
+    while low <= high:
+        mid = (low + high) // 2
         
-        total_sparrows = mid * (mid + 1) // 2
+        total_sparrows = (mid * (mid + 1)) // 2
         
+        barn_level = n + mid * m
         
-        if n + mid * m >= total_sparrows:
-            ans = mid
-            r = mid - 1
+        if barn_level >= total_sparrows:
+            if (n + (mid * m)) % (10**18 + 7) >= total_sparrows % (10**18 + 7):
+                ans = mid
+                high = mid - 1
+            else:
+                low = mid + 1
         else:
-            l = mid + 1
-    print(ans)
+            low = mid + 1
+            
+    
+    if ans == -1:
+        
+        day = 0
+        grains = n
+        while grains > 0:
+            day += 1
+            grains = min(n, grains + m)
+            grains -= day
+        print(day)
+    else:
+        
+        day = 0
+        grains = n
+        while grains > 0:
+            day += 1
+            grains = min(n, grains + m)
+            grains -= day
+        print(day)
 
 solve()

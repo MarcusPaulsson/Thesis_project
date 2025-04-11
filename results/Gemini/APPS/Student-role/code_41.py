@@ -36,6 +36,5 @@ def nearest_zero(arr):
 if __name__ == "__main__":
   n = int(input())
   arr = list(map(int, input().split()))
-
-  distances = nearest_zero(arr)
-  print(*distances)
+  result = nearest_zero(arr)
+  print(*result)

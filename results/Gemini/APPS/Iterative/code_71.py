@@ -2,6 +2,6 @@ import math
 
 a = int(input())
 if a == 1:
-    print(0)
+  print(1)
 else:
-    print(math.ceil(math.log2(a)))
+  print(int(math.ceil(math.log2(a))))

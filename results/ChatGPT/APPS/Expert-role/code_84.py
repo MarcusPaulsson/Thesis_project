@@ -1,29 +1,36 @@
 def can_color_string(n, s):
-    # Count the occurrences of each character
+    # Count occurrences of each character
     from collections import Counter
     count = Counter(s)
-
+    
     # Check if any character appears more than twice
-    for char, cnt in count.items():
-        if cnt > 2:
-            print("NO")
-            return
-
-    # Create a coloring array
+    if any(c > 2 for c in count.values()):
+        return "NO"
+    
+    # Prepare the coloring
     color = ['0'] * n
-
-    # Assign colors based on the character positions
+    last_color = '0'
+    
+    # Assign colors
     for i in range(n):
-        if s[i] == s[i - 1] if i > 0 else None:
-            color[i] = color[i - 1]
+        if i > 0 and s[i] == s[i - 1]:
+            color[i] = last_color
         else:
-            color[i] = '1' if color[i - 1] == '0' else '0'
-
-    print("YES")
-    print(''.join(color))
+            last_color = '1' if last_color == '0' else '0'
+            color[i] = last_color
+    
+    return "YES", ''.join(color)
 
 # Input reading
-n = int(input().strip())
+n = int(input())
 s = input().strip()
 
-can_color_string(n, s)
+# Get the result
+result = can_color_string(n, s)
+
+# Output the result
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    print(result[1])

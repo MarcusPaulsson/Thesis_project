@@ -4,21 +4,25 @@ def solve():
 
     unique_values = sorted(list(set(a)))
 
+    if n == 1:
+        print(0)
+        return
+
     if len(unique_values) > 3:
         print(-1)
         return
 
-    if len(unique_values) <= 1:
+    if len(unique_values) == 1:
         print(0)
         return
 
     if len(unique_values) == 2:
         val1, val2 = unique_values
-        diff = abs(val1 - val2)
-        if diff % 2 == 0:
-            print(diff // 2)
+        d = abs(val1 - val2)
+        if d % 2 == 0:
+            print(d // 2)
         else:
-            print(diff)
+            print(d)
         return
 
     if len(unique_values) == 3:

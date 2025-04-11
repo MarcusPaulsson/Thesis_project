@@ -3,7 +3,7 @@ import math
 # Read input
 x, y, z = map(float, input().split())
 
-# Define the expressions
+# Define the expressions and their corresponding values
 expressions = [
     (x**(y**z), "x^y^z"),
     (x**(z**y), "x^z^y"),

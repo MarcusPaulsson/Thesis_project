@@ -4,10 +4,14 @@ def solve():
     len_s = len(s)
     
     count = 0
+    distinct_strings = set()
     
     for i in range(2**n):
         binary_string = bin(i)[2:].zfill(n)
         
+        if binary_string in distinct_strings:
+            continue
+            
         is_substring = False
         for j in range(n):
             shifted_string = binary_string[j:] + binary_string[:j]
@@ -17,6 +21,10 @@ def solve():
         
         if is_substring:
             count += 1
+            
+            for j in range(n):
+                shifted_string = binary_string[j:] + binary_string[:j]
+                distinct_strings.add(shifted_string)
                 
     print(count)
 

@@ -1,22 +1,25 @@
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
 
-# Calculate the minimum required space to place the platforms
-min_required_space = sum(c) + (m - 1)
-
-# If the minimum required space is greater than n, it's impossible
-if min_required_space > n:
+# Calculate the minimum required length to place all platforms
+total_length = sum(c)
+if total_length + (m - 1) > n:
     print("NO")
-else:
-    print("YES")
-    a = [0] * n
-    position = 0
+    exit()
 
-    for i in range(m):
-        for j in range(c[i]):
-            a[position] = i + 1
-            position += 1
-        # Move to the next position after the current platform
-        position += 1  # Leave at least one cell gap
+# Create the result array
+result = [0] * n
+current_position = 0
 
-    print(" ".join(map(str, a)))
+# Place the platforms
+for i in range(m):
+    # Place platform i (1-indexed)
+    for j in range(c[i]):
+        result[current_position] = i + 1
+        current_position += 1
+    # Move to the next position after the platform
+    if i < m - 1:
+        current_position += 1  # Leave at least one cell gap
+
+print("YES")
+print(" ".join(map(str, result)))

@@ -1,29 +1,15 @@
 n, pos, l, r = map(int, input().split())
 
-# If no tabs need to be closed
 if l == 1 and r == n:
     print(0)
 else:
-    seconds = 0
-
-    # Close tabs to the left of l
-    if l > 1:
-        if pos > l:
-            seconds += (pos - l) + 1  # Move to l and close
-        else:
-            seconds += (l - pos) + 1  # Move to l and close
+    moves = 0
+    if pos < l:
+        moves += (l - pos) + 1  # Move to l and close left
+    elif pos > r:
+        moves += (pos - r) + 1  # Move to r and close right
     else:
-        if pos > 1:
-            seconds += (pos - 1) + 1  # Move to 1 and close
+        # Move to l and close left, then move to r and close right
+        moves += min(pos - l, r - pos) + (r - l + 1) + 2  # Move to l and r, close both sides
 
-    # Close tabs to the right of r
-    if r < n:
-        if pos < r:
-            seconds += (r - pos) + 1  # Move to r and close
-        else:
-            seconds += (pos - r) + 1  # Move to r and close
-    else:
-        if pos < n:
-            seconds += (n - pos) + 1  # Move to n and close
-
-    print(seconds)
+    print(moves)

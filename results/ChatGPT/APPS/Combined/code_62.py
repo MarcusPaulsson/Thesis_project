@@ -4,26 +4,31 @@ def min_operations_to_divisible_triplet(test_cases):
     for a, b, c in test_cases:
         min_operations = float('inf')
         best_triplet = (a, b, c)
-
-        # Iterate over possible values for A
+        
+        # Iterate through possible values for A
         for A in range(1, a + 1):
-            # Calculate the nearest multiples of A for B and C
-            B = ((b + A - 1) // A) * A  # Next multiple of A >= b
-            if B < b:
-                B = (b // A) * A  # Previous multiple of A <= b
+            # Find the closest B that is divisible by A
+            B = (b // A) * A if b % A == 0 else ((b // A) + 1) * A
             
-            C = ((c + B - 1) // B) * B  # Next multiple of B >= c
-            if C < c:
-                C = (c // B) * B  # Previous multiple of B <= c
+            # Ensure B is at least A
+            if B < A:
+                B = A
             
-            # Calculate operations needed
+            # Find the closest C that is divisible by B
+            C = (c // B) * B if c % B == 0 else ((c // B) + 1) * B
+            
+            # Ensure C is at least B
+            if C < B:
+                C = B
+            
+            # Calculate the number of operations
             operations = abs(A - a) + abs(B - b) + abs(C - c)
             
-            # Update minimum operations and best triplet
+            # Update if we found a better solution
             if operations < min_operations:
                 min_operations = operations
                 best_triplet = (A, B, C)
-
+        
         results.append((min_operations, best_triplet))
     
     return results

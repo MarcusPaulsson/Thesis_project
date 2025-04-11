@@ -1,15 +1,19 @@
-n, m = map(int, input().split())
+def solve():
+    n, m = map(int, input().split())
 
-left = 0
-right = 2 * 10**9
-
-while left <= right:
-    mid = (left + right) // 2
-    total_sparrows = mid * (mid + 1) // 2
+    day = 0
+    grains = n
     
-    if total_sparrows >= n + (n // m) * m:
-        right = mid - 1
-    else:
-        left = mid + 1
+    while True:
+        day += 1
+        grains += m
+        if grains > n:
+            grains = n
+        
+        grains -= day
+        
+        if grains <= 0:
+            print(day)
+            return
 
-print(left)
+solve()

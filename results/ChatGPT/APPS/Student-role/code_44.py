@@ -2,32 +2,19 @@ def minimal_time(d, k, a, b, t):
     # Calculate the time if Vasiliy walks the entire distance
     walk_time = d * b
     
-    # Initialize the minimum time with the walking time
-    min_time = walk_time
-    
-    # Calculate the number of full segments Vasiliy can drive
+    # Calculate the number of full segments the car can drive
     full_segments = d // k
     remaining_distance = d % k
     
-    # Calculate the time for driving full segments and walking the remaining distance
-    drive_time = full_segments * k * a
-    repair_time = full_segments * t
-    total_time = drive_time + repair_time + remaining_distance * b
+    # Calculate the time if Vasiliy drives the car for full segments and walks the remaining distance
+    drive_time = full_segments * (k * a + t) + remaining_distance * a
     
-    # Update the minimum time if this option is better
-    min_time = min(min_time, total_time)
+    # If there are full segments, we need to subtract the last repair time
+    if full_segments > 0:
+        drive_time -= t
     
-    # Check if he can drive less than full segments and walk the rest
-    for i in range(full_segments + 1):
-        drive_time = i * k * a
-        repair_time = i * t
-        remaining_distance = d - i * k
-        
-        if remaining_distance >= 0:
-            total_time = drive_time + repair_time + remaining_distance * b
-            min_time = min(min_time, total_time)
-    
-    return min_time
+    # Compare the two times and return the minimum
+    return min(walk_time, drive_time)
 
 # Input reading
 d, k, a, b, t = map(int, input().split())

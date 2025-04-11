@@ -3,53 +3,48 @@ def solve():
     
     week = [0, 1, 2, 0, 2, 1, 0]
     
-    counts = [week.count(i) for i in range(3)]
+    week_a = week.count(0)
+    week_b = week.count(1)
+    week_c = week.count(2)
     
-    min_rations = min(a // counts[0], b // counts[1], c // counts[2])
+    min_weeks = min(a // week_a, b // week_b, c // week_c)
     
-    a -= min_rations * counts[0]
-    b -= min_rations * counts[1]
-    c -= min_rations * counts[2]
+    a -= min_weeks * week_a
+    b -= min_weeks * week_b
+    c -= min_weeks * week_c
     
-    days = min_rations * 7
+    ans = min_weeks * 7
     
-    best_days = days
+    max_days = 0
     
     for start_day in range(7):
-        
-        temp_days = days
         temp_a, temp_b, temp_c = a, b, c
-        
-        possible = True
+        days = 0
         
         for i in range(7):
-            day_of_week = (start_day + i) % 7
-            food_type = week[day_of_week]
+            current_day = (start_day + i) % 7
             
-            if food_type == 0:
+            if week[current_day] == 0:
                 if temp_a > 0:
                     temp_a -= 1
+                    days += 1
                 else:
-                    possible = False
                     break
-            elif food_type == 1:
+            elif week[current_day] == 1:
                 if temp_b > 0:
                     temp_b -= 1
+                    days += 1
                 else:
-                    possible = False
                     break
             else:
                 if temp_c > 0:
                     temp_c -= 1
+                    days += 1
                 else:
-                    possible = False
                     break
-            
-            if possible:
-                temp_days += 1
         
-        best_days = max(best_days, temp_days)
+        max_days = max(max_days, days)
     
-    print(best_days)
+    print(ans + max_days)
 
 solve()

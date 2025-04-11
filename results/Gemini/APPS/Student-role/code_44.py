@@ -1,23 +1,19 @@
 d, k, a, b, t = map(int, input().split())
 
 if d <= k:
-  print(d * a)
+    print(d * a)
 else:
-  if a * k + t >= b * k:
-    print(k * a + (d - k) * b)
-  else:
-    num_breaks = d // k
-    remaining = d % k
+    cost = k * a
+    remaining_distance = d - k
     
-    time = num_breaks * (k * a + t)
-    
-    if remaining > 0:
-      if remaining * a + t < remaining * b:
-        time += remaining * a
-      else:
-        time -= t
-        time += remaining * b
+    if t + k * a < k * b:
+        num_repairs = remaining_distance // k
+        cost += num_repairs * (t + k * a)
+        remaining_distance %= k
+        
+        if remaining_distance > 0:
+            cost += min(t + remaining_distance * a, remaining_distance * b)
     else:
-      time -= t
-      
-    print(time)
+        cost += remaining_distance * b
+    
+    print(cost)

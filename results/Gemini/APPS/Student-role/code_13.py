@@ -1,4 +1,4 @@
-from collections import defaultdict, deque
+from collections import deque
 
 def solve():
     n, k = map(int, input().split())
@@ -7,11 +7,11 @@ def solve():
     for _ in range(n):
         dependencies.append(list(map(int, input().split()))[1:])
 
-    graph = defaultdict(list)
     in_degree = [0] * (n + 1)
+    adj = [[] for _ in range(n + 1)]
     for i in range(n):
         for dep in dependencies[i]:
-            graph[dep].append(i + 1)
+            adj[dep].append(i + 1)
             in_degree[i + 1] += 1
 
     q = deque()
@@ -19,26 +19,28 @@ def solve():
         if in_degree[i] == 0:
             q.append(i)
 
-    result = []
+    order = []
     count = 0
+    
     while q:
-        node = q.popleft()
-        result.append(node)
+        u = q.popleft()
+        order.append(u)
         count += 1
 
-        for neighbor in graph[node]:
-            in_degree[neighbor] -= 1
-            if in_degree[neighbor] == 0:
-                q.append(neighbor)
+        for v in adj[u]:
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
+                q.append(v)
 
     if count != n:
         print("-1")
         return
 
-    required_courses = set(main_courses)
+    
+    required = set(main_courses)
+    result = []
     visited = [False] * (n + 1)
-    path = []
-
+    
     def dfs(course):
         if visited[course]:
             return
@@ -46,35 +48,18 @@ def solve():
         for dep in dependencies[course-1]:
             if not visited[dep]:
                 dfs(dep)
-                
-        path.append(course)
+        result.append(course)
 
     for course in main_courses:
         if not visited[course]:
             dfs(course)
-
-    path.reverse()
     
-    final_path = []
-    final_set = set()
-    
-    for course in path:
-        if course not in final_set:
-            final_path.append(course)
-            final_set.add(course)
+    result.reverse()
     
     
-    main_courses_present = True
-    for course in main_courses:
-        if course not in final_set:
-            main_courses_present = False
-            break
-            
-    if not main_courses_present:
-        print("-1")
-        return
-
-    print(len(final_path))
-    print(*final_path)
+    
+    
+    print(len(result))
+    print(*result)
 
 solve()

@@ -5,39 +5,30 @@ def solve():
         print("-1")
         return
 
-    best_gcd = 0
-    best_seq = []
+    best_gcd = 1
+    for i in range(1, int(n**0.5) + 1):
+        if n % i == 0:
+            if n // i >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, i)
+            if i >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, n // i)
 
-    for gcd in range(int(n**0.5), 0, -1):
-        if n % gcd == 0:
-            q = n // gcd
-            if q >= k * (k + 1) // 2:
-                
-                seq = [gcd * i for i in range(1, k)]
-                last = n - sum(seq)
-                if last > seq[-1]:
-                   
-                    best_gcd = gcd
-                    best_seq = seq + [last]
-                    break
-            q = gcd
-            gcd = n // gcd
-            if q >= k * (k + 1) // 2:
-                
-                seq = [gcd * i for i in range(1, k)]
-                last = n - sum(seq)
-                if last > seq[-1]:
-                    
-                    best_gcd = gcd
-                    best_seq = seq + [last]
-                    break
+    first = best_gcd
+    remaining_sum = n // best_gcd
+    
+    if k * (k + 1) // 2 > remaining_sum:
+        print("-1")
+        return
 
-    if best_gcd == 0:
-        if n == 1 and k == 1:
-            print(1)
-        else:
-            print("-1")
-    else:
-        print(*best_seq)
+    result = []
+    for i in range(1, k):
+        result.append(first * i)
+        remaining_sum -= i
+
+    result.append(first * remaining_sum)
+
+    for x in result:
+        print(x, end=" ")
+    print()
 
 solve()

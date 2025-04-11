@@ -5,42 +5,25 @@ def solve():
         u, v = map(int, input().split())
         edges.append((u, v))
 
-    def get_path(start, end, graph):
+    def get_path(start, end, adj):
         q = [(start, [start])]
         while q:
             node, path = q.pop(0)
             if node == end:
                 return path
-            for neighbor in graph[node]:
+            for neighbor in adj[node]:
                 if neighbor not in path:
                     q.append((neighbor, path + [neighbor]))
         return None
 
-    def get_edges_from_path(path):
-        edges_in_path = []
+    def edges_in_path(path):
+        edge_set = set()
         for i in range(len(path) - 1):
-            u, v = path[i], path[i+1]
-            edges_in_path.append(tuple(sorted((u, v))))
-        return edges_in_path
+            u, v = sorted((path[i], path[i+1]))
+            edge_set.add((u, v))
+        return edge_set
 
-    def calculate_edges(a, b, c, graph):
-        path_ab = get_path(a, b, graph)
-        path_bc = get_path(b, c, graph)
-        path_ac = get_path(a, c, graph)
-
-        edges_ab = get_edges_from_path(path_ab)
-        edges_bc = get_edges_from_path(path_bc)
-        edges_ac = get_edges_from_path(path_ac)
-
-        all_edges = set(edges_ab + edges_bc + edges_ac)
-        return len(all_edges)
-
-    graph = {i: [] for i in range(1, n + 1)}
-    for u, v in edges:
-        graph[u].append(v)
-        graph[v].append(u)
-
-    best_count = -1
+    max_edges = 0
     best_a, best_b, best_c = -1, -1, -1
 
     for a in range(1, n + 1):
@@ -51,12 +34,27 @@ def solve():
                 if a == c or b == c:
                     continue
 
-                count = calculate_edges(a, b, c, graph)
-                if count > best_count:
-                    best_count = count
+                adj = {i: [] for i in range(1, n + 1)}
+                for u, v in edges:
+                    adj[u].append(v)
+                    adj[v].append(u)
+
+                path_ab = get_path(a, b, adj)
+                path_bc = get_path(b, c, adj)
+                path_ac = get_path(a, c, adj)
+
+                edges_ab = edges_in_path(path_ab)
+                edges_bc = edges_in_path(path_bc)
+                edges_ac = edges_in_path(path_ac)
+
+                union_edges = edges_ab.union(edges_bc).union(edges_ac)
+                num_edges = len(union_edges)
+
+                if num_edges > max_edges:
+                    max_edges = num_edges
                     best_a, best_b, best_c = a, b, c
 
-    print(best_count)
+    print(max_edges)
     print(best_a, best_b, best_c)
 
 solve()

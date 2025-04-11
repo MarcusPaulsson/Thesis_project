@@ -1,9 +1,26 @@
 def solve():
-  n = int(input())
-  s = str(n)
-  l = len(s)
-  first_digit = int(s[0])
-  next_lucky = (first_digit + 1) * (10**(l-1))
-  print(next_lucky - n)
+    n, q = map(int, input().split())
+    painters = []
+    for _ in range(q):
+        l, r = map(int, input().split())
+        painters.append((l, r))
+
+    def calculate_painted_sections(selected_painters):
+        painted = [False] * n
+        for l, r in selected_painters:
+            for i in range(l - 1, r):
+                painted[i] = True
+        return sum(painted)
+
+    max_painted = 0
+    for i in range(q):
+        for j in range(i + 1, q):
+            selected_painters = []
+            for k in range(q):
+                if k != i and k != j:
+                    selected_painters.append(painters[k])
+            max_painted = max(max_painted, calculate_painted_sections(selected_painters))
+
+    print(max_painted)
 
 solve()

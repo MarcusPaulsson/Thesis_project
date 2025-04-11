@@ -1,36 +1,37 @@
 def solve():
-  x1, y1, x2, y2 = map(int, input().split())
-  x3, y3, x4, y4 = map(int, input().split())
-  x5, y5, x6, y6 = map(int, input().split())
+    x1, y1, x2, y2 = map(int, input().split())
+    x3, y3, x4, y4 = map(int, input().split())
+    x5, y5, x6, y6 = map(int, input().split())
 
-  white_area = (x2 - x1) * (y2 - y1)
-  
-  # Calculate overlap between white and black1
-  x_overlap1 = max(0, min(x2, x4) - max(x1, x3))
-  y_overlap1 = max(0, min(y2, y4) - max(y1, y3))
-  overlap_area1 = x_overlap1 * y_overlap1
+    white_area = (x2 - x1) * (y2 - y1)
 
-  # Calculate overlap between white and black2
-  x_overlap2 = max(0, min(x2, x6) - max(x1, x5))
-  y_overlap2 = max(0, min(y2, y6) - max(y1, y5))
-  overlap_area2 = x_overlap2 * y_overlap2
+    def intersection_area(x1, y1, x2, y2, x3, y3, x4, y4):
+        x_overlap_start = max(x1, x3)
+        x_overlap_end = min(x2, x4)
+        y_overlap_start = max(y1, y3)
+        y_overlap_end = min(y2, y4)
 
-  # Calculate overlap between all three rectangles (white, black1, black2)
-  x_overlap_all = max(0, min(x2, x4, x6) - max(x1, x3, x5))
-  y_overlap_all = max(0, min(y2, y4, y6) - max(y1, y3, y5))
-  overlap_area_all = x_overlap_all * y_overlap_all
+        if x_overlap_start < x_overlap_end and y_overlap_start < y_overlap_end:
+            return (x_overlap_end - x_overlap_start) * (y_overlap_end - y_overlap_start)
+        else:
+            return 0
 
-  # Calculate overlap between black1 and black2
-  x_overlap_blacks = max(0, min(x4, x6) - max(x3, x5))
-  y_overlap_blacks = max(0, min(y4, y6) - max(y3, y5))
-  overlap_area_blacks = x_overlap_blacks * y_overlap_blacks
+    intersection1 = intersection_area(x1, y1, x2, y2, x3, y3, x4, y4)
+    intersection2 = intersection_area(x1, y1, x2, y2, x5, y5, x6, y6)
+    intersection12 = intersection_area(x3, y3, x4, y4, x5, y5, x6, y6)
+    intersection_white_12 = intersection_area(x1, y1, x2, y2, max(x3, x5), max(y3, y5), min(x4, x6), min(y4, y6))
 
-  # Calculate area of union of black sheets within the white sheet
-  union_area = overlap_area1 + overlap_area2 - overlap_area_all
-  
-  if white_area > union_area:
-    print("YES")
-  else:
-    print("NO")
+    total_covered_area = intersection1 + intersection2 - intersection_area(x1, y1, x2, y2, x3, y3, x4, y4) - intersection_area(x1, y1, x2, y2, x5, y5, x6, y6) + intersection_area(max(x1, x3, x5), max(y1, y3, y5), min(x2, x4, x6), min(y2, y4, y6), max(x1, x3, x5), max(y1, y3, y5), min(x2, x4, x6), min(y2, y4, y6))
+    
+    intersection_1_2 = intersection_area(x3, y3, x4, y4, x5, y5, x6, y6)
+    intersection_white_1 = intersection_area(x1, y1, x2, y2, x3, y3, x4, y4)
+    intersection_white_2 = intersection_area(x1, y1, x2, y2, x5, y5, x6, y6)
+
+    union_area = intersection_white_1 + intersection_white_2 - intersection_area(max(x1, x3, x5), max(y1, y3, y5), min(x2, x4, x6), min(y2, y4, y6), max(x1, x3, x5), max(y1, y3, y5), min(x2, x4, x6), min(y2, y4, y6))
+
+    if white_area > union_area:
+        print("YES")
+    else:
+        print("NO")
 
 solve()

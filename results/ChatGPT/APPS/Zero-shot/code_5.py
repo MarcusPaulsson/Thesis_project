@@ -3,17 +3,32 @@ n, pos, l, r = map(int, input().split())
 if l == 1 and r == n:
     print(0)
 else:
-    moves = 0
+    seconds = 0
+    
     if pos < l:
-        moves += l - pos  # Move to the leftmost tab to close
-        moves += (r - l + 1)  # Close all tabs to the right
+        seconds += l - pos  # Move to l
+        seconds += 1  # Close left
+        seconds += r - l  # Move to r
+        seconds += 1  # Close right
     elif pos > r:
-        moves += pos - r  # Move to the rightmost tab to close
-        moves += (r - l + 1)  # Close all tabs to the left
+        seconds += pos - r  # Move to r
+        seconds += 1  # Close right
+        seconds += r - l  # Move to l
+        seconds += 1  # Close left
     else:
         # pos is between l and r
-        left_moves = (pos - l) + (r - l + 1)  # Move to l and close left
-        right_moves = (r - pos) + (r - l + 1)  # Move to r and close right
-        moves = min(left_moves, right_moves)
-    
-    print(moves)
+        if pos < l:
+            seconds += l - pos  # Move to l
+            seconds += 1  # Close left
+        elif pos > r:
+            seconds += pos - r  # Move to r
+            seconds += 1  # Close right
+        
+        # Close left if needed
+        if l > 1:
+            seconds += 1  # Close left
+        # Close right if needed
+        if r < n:
+            seconds += 1  # Close right
+
+    print(seconds)

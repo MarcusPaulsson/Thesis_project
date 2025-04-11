@@ -1,26 +1,30 @@
 def max_distance_after_swap(n, a):
-    # Find the positions of the minimum (1) and maximum (n) elements
     min_index = a.index(1)
     max_index = a.index(n)
-    
-    # Calculate the current distance
-    current_distance = abs(min_index - max_index)
-    
-    # Calculate potential new distances by swapping min and max with ends of the array
-    distance_min_to_left = abs(0 - max_index)  # Swap min (1) with the leftmost element
-    distance_min_to_right = abs(n - 1 - max_index)  # Swap min (1) with the rightmost element
-    distance_max_to_left = abs(0 - min_index)  # Swap max (n) with the leftmost element
-    distance_max_to_right = abs(n - 1 - min_index)  # Swap max (n) with the rightmost element
-    
-    # Calculate the maximum possible distance
-    max_distance = max(current_distance, distance_min_to_left, distance_min_to_right,
-                       distance_max_to_left, distance_max_to_right)
-    
+
+    # Calculate initial distance
+    initial_distance = abs(min_index - max_index)
+
+    # Possible new positions after swap
+    new_positions = [
+        (0, max_index),  # Swap 1 with the first element
+        (n - 1, max_index),  # Swap 1 with the last element
+        (min_index, 0),  # Swap n with the first element
+        (min_index, n - 1)  # Swap n with the last element
+    ]
+
+    # Calculate maximum distance after one swap
+    max_distance = initial_distance
+    for new_pos in new_positions:
+        new_distance = abs(new_pos[0] - new_pos[1])
+        max_distance = max(max_distance, new_distance)
+
     return max_distance
 
-# Input handling
+# Read input
 n = int(input())
 a = list(map(int, input().split()))
 
-# Output the result
-print(max_distance_after_swap(n, a))
+# Get the result and print it
+result = max_distance_after_swap(n, a)
+print(result)

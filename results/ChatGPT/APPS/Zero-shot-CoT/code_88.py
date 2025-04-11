@@ -1,50 +1,63 @@
-n = int(input())
-a = list(map(int, input().split()))
-
-from collections import Counter
-
-count = Counter(a)
-
-# Check if we can form a palindromic matrix
-odd_count = 0
-for value in count.values():
-    if value % 2 != 0:
-        odd_count += 1
-
-# For odd n, we can have at most one odd count
-# For even n, we cannot have any odd counts
-if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
-    print("NO")
-else:
-    # Create the matrix
+def can_form_palindromic_matrix(n, numbers):
+    from collections import Counter
+    
+    count = Counter(numbers)
+    
+    # Check for the number of odd occurrences
+    odd_count = sum(1 for v in count.values() if v % 2 != 0)
+    
+    # For an n x n matrix, we can have at most one odd count if n is odd
+    # and no odd counts if n is even
+    if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
+        return "NO"
+    
+    # Prepare the matrix
     matrix = [[0] * n for _ in range(n)]
     
     # Fill the matrix
-    half = []
-    center = None
-    
+    half = n // 2
+    idx = 0
     for value, freq in count.items():
-        if freq % 2 == 1:
-            center = value  # For odd n, we can have a center element
-        half.extend([value] * (freq // 2))
+        while freq > 0:
+            if freq >= 4:
+                # Place in corners
+                matrix[idx][idx] = value
+                matrix[idx][n - 1 - idx] = value
+                matrix[n - 1 - idx][idx] = value
+                matrix[n - 1 - idx][n - 1 - idx] = value
+                freq -= 4
+            elif freq >= 2:
+                # Place in sides
+                if idx < half:
+                    matrix[idx][n - 1 - idx] = value
+                    matrix[n - 1 - idx][idx] = value
+                    freq -= 2
+                else:
+                    # If we reach the middle row/column in odd n
+                    if n % 2 == 1 and idx == half:
+                        matrix[idx][idx] = value
+                        freq -= 1
+            else:
+                break
+            idx = (idx + 1) % half
     
-    half.sort()
-    
-    # Fill the top half of the matrix
-    for i in range(n // 2):
-        for j in range(n // 2):
-            matrix[i][j] = half.pop(0)
-            matrix[i][n - j - 1] = matrix[i][j]
-            matrix[n - i - 1][j] = matrix[i][j]
-            matrix[n - i - 1][n - j - 1] = matrix[i][j]
-    
-    # If n is odd, fill the center row and column
+    # Fill the center for odd n
     if n % 2 == 1:
-        for j in range(n):
-            matrix[n // 2][j] = half.pop(0)
-            matrix[j][n // 2] = half.pop(0)
-        matrix[n // 2][n // 2] = center
+        for value, freq in count.items():
+            if freq % 2 == 1:
+                matrix[half][half] = value
+                break
     
+    return "YES", matrix
+
+n = int(input())
+numbers = list(map(int, input().split()))
+
+result = can_form_palindromic_matrix(n, numbers)
+
+if result == "NO":
+    print("NO")
+else:
     print("YES")
-    for row in matrix:
+    for row in result[1]:
         print(" ".join(map(str, row)))

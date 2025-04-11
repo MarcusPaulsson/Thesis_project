@@ -1,52 +1,52 @@
-def can_form_palindromic_matrix(n, numbers):
+def create_palindromic_matrix(n, numbers):
     from collections import Counter
     
     count = Counter(numbers)
     matrix = [[0] * n for _ in range(n)]
     
-    # Check for the number of odd occurrences
-    odd_count = sum(1 for v in count.values() if v % 2 != 0)
+    # Check if we can form a palindromic matrix
+    odd_count = 0
+    center_value = None
     
-    # For odd n, we can have one center element, for even n, we can't have any
-    if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
-        return "NO"
+    for value, cnt in count.items():
+        if cnt % 2 != 0:
+            odd_count += 1
+            center_value = value
+        if odd_count > 1:
+            return "NO"
     
     # Fill the matrix
-    half_n = (n + 1) // 2
-    idx = 0
-    for value, freq in count.items():
-        while freq > 0:
-            if freq >= 4:
-                # Place in corners
-                matrix[idx][idx] = value
-                matrix[idx][n - 1 - idx] = value
-                matrix[n - 1 - idx][idx] = value
-                matrix[n - 1 - idx][n - 1 - idx] = value
-                freq -= 4
-            elif freq == 2:
-                # Place in the middle of the sides
-                if idx < half_n:
-                    matrix[idx][n - 1 - idx] = value
-                    matrix[n - 1 - idx][idx] = value
-                freq -= 2
-            elif freq == 1:
-                # Place in the center if possible
-                if n % 2 == 1 and idx == half_n - 1:
-                    matrix[half_n - 1][half_n - 1] = value
-                freq -= 1
-            else:
-                break
-            if idx < half_n - 1:
-                idx += 1
-            else:
-                idx = 0
+    half_matrix = []
+    for value, cnt in count.items():
+        half_matrix.extend([value] * (cnt // 2))
+    
+    half_size = len(half_matrix)
+    if n % 2 == 0:
+        # Even size matrix
+        for i in range(n // 2):
+            for j in range(n // 2):
+                matrix[i][j] = half_matrix[i * (n // 2) + j]
+                matrix[i][n - j - 1] = matrix[i][j]
+                matrix[n - i - 1][j] = matrix[i][j]
+                matrix[n - i - 1][n - j - 1] = matrix[i][j]
+    else:
+        # Odd size matrix
+        for i in range(n // 2):
+            for j in range(n // 2):
+                matrix[i][j] = half_matrix[i * (n // 2) + j]
+                matrix[i][n - j - 1] = matrix[i][j]
+                matrix[n - i - 1][j] = matrix[i][j]
+                matrix[n - i - 1][n - j - 1] = matrix[i][j]
+        
+        # Place the center value
+        matrix[n // 2][n // 2] = center_value
     
     return "YES", matrix
 
 n = int(input())
 numbers = list(map(int, input().split()))
 
-result = can_form_palindromic_matrix(n, numbers)
+result = create_palindromic_matrix(n, numbers)
 if result == "NO":
     print(result)
 else:

@@ -1,15 +1,14 @@
-def can_form_palindromic_matrix(n, numbers):
+def create_palindromic_matrix(n, numbers):
     from collections import Counter
     
     count = Counter(numbers)
     
-    # Check for the number of odd counts
+    # Check for the number of odd occurrences
     odd_count = sum(1 for v in count.values() if v % 2 != 0)
     
-    # For an n x n matrix, we can have at most one odd count if n is odd
-    # and no odd counts if n is even
+    # For odd n, we can have at most one odd count, for even n, we cannot have any
     if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
-        return "NO", []
+        return "NO"
     
     # Create the matrix
     matrix = [[0] * n for _ in range(n)]
@@ -22,16 +21,15 @@ def can_form_palindromic_matrix(n, numbers):
             matrix[idx // n][idx % n] = num
             matrix[n - 1 - (idx // n)][n - 1 - (idx % n)] = num
             idx += 1
-    
+            
     # Fill the center for odd n
     if n % 2 == 1:
-        center = n // 2
         for num, freq in count.items():
             if freq % 2 == 1:
-                matrix[center][center] = num
+                matrix[half_n - 1][half_n - 1] = num
                 break
     
-    # Fill remaining cells for even n
+    # Fill the remaining cells for even n
     for i in range(half_n):
         for j in range(half_n):
             if matrix[i][j] == 0:
@@ -49,11 +47,11 @@ def can_form_palindromic_matrix(n, numbers):
 n = int(input())
 numbers = list(map(int, input().split()))
 
-result, matrix = can_form_palindromic_matrix(n, numbers)
+result = create_palindromic_matrix(n, numbers)
 
 if result == "NO":
-    print("NO")
+    print(result)
 else:
-    print("YES")
-    for row in matrix:
+    print(result[0])
+    for row in result[1]:
         print(" ".join(map(str, row)))

@@ -11,10 +11,10 @@ def solve():
     u = ""
     
     for i in range(n):
-        t.append(s[i])
-        while t and t[-1] <= suffix_min[i+1]:
+        while t and t[-1] <= suffix_min[i]:
             u += t.pop()
-            
+        t.append(s[i])
+        
     while t:
         u += t.pop()
         

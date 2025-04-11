@@ -9,20 +9,29 @@ def solve():
     end = -1
     
     for i in range(n):
-        if f[a_list[i] - 1] > a_list[i] and start == -1:
+        if f[a_list[i] - 1] > a_list[i]:
             start = i
-        if start != -1 and f[a_list[i] - 1] >= a_list[i]:
-            end = i
-        elif start != -1:
             break
             
     if start == -1:
         print(a)
+        return
+        
+    for i in range(start, n):
+        if f[a_list[i] - 1] < a_list[i]:
+            end = i - 1
+            break
     else:
-        ans_list = a_list[:]
-        for i in range(start, end + 1):
-            ans_list[i] = f[a_list[i] - 1]
+        end = n - 1
+        
+    
+    result = ""
+    for i in range(n):
+        if start <= i <= end:
+            result += str(f[a_list[i] - 1])
+        else:
+            result += str(a_list[i])
             
-        print("".join(map(str, ans_list)))
+    print(result)
 
 solve()

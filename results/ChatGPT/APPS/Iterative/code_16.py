@@ -7,16 +7,8 @@ cnt_4 = int(input())
 open_brackets = cnt_1 + cnt_2
 close_brackets = cnt_3 + cnt_4
 
-# Check if the number of opening and closing brackets can balance
-if open_brackets < close_brackets:
-    print(0)
+# Check if the number of opening and closing brackets can form a regular sequence
+if open_brackets == close_brackets and cnt_1 <= cnt_2 + cnt_3:
+    print(1)
 else:
-    # Check if we can maintain a non-negative balance while forming the sequence
-    if cnt_3 > open_brackets:
-        print(0)
-    else:
-        # Check if we have enough opening brackets to balance the closing ones
-        if cnt_1 < cnt_4:
-            print(0)
-        else:
-            print(1)
+    print(0)

@@ -1,21 +1,21 @@
 n = int(input())
 a = list(map(int, input().split()))
 
-# Initialize the distance array with a large number
-distances = [float('inf')] * n
+d = [0] * n
+last_zero = -float('inf')
 
-# First pass: from left to right
+# Forward pass to find distances to the nearest zero
 for i in range(n):
     if a[i] == 0:
-        distances[i] = 0
-    elif i > 0:
-        distances[i] = distances[i - 1] + 1
+        last_zero = i
+    d[i] = i - last_zero
 
-# Second pass: from right to left
+last_zero = float('inf')
+
+# Backward pass to find distances to the nearest zero
 for i in range(n - 1, -1, -1):
     if a[i] == 0:
-        distances[i] = 0
-    elif i < n - 1:
-        distances[i] = min(distances[i], distances[i + 1] + 1)
+        last_zero = i
+    d[i] = min(d[i], last_zero - i)
 
-print(' '.join(map(str, distances)))
+print(' '.join(map(str, d)))

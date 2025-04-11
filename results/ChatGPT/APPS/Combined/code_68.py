@@ -1,42 +1,31 @@
-from collections import Counter
-from math import comb
-
 def min_cost_to_obtain_set(n, k, s):
+    from collections import Counter
+
+    # Count the frequency of each character in the string
     freq = Counter(s)
     
-    # Calculate the number of unique subsequences we can generate
-    unique_subsequences = 0
-    costs = []
-    
-    # Generate all possible subsequences and their costs
-    for length in range(1, n + 1):
-        subseq_count = sum(comb(freq[char], length) for char in freq)
-        if subseq_count > 0:
-            unique_subsequences += subseq_count
-            costs.append((length, subseq_count * (n - length)))
-    
-    # If we cannot generate enough unique subsequences
-    if unique_subsequences < k:
-        return -1
-    
-    # Sort costs by length
-    costs.sort()
-    
-    # Calculate the minimum cost to obtain k unique subsequences
     total_cost = 0
-    remaining_k = k
-    
-    for length, cost in costs:
-        if remaining_k <= 0:
-            break
-        # Calculate how many we can take from this length
-        take = min(remaining_k, cost // (n - length))
-        total_cost += take * (n - length)
-        remaining_k -= take
-    
-    return total_cost
+    unique_subsequences = 0
 
-# Read input
+    # Iterate over possible lengths of subsequences
+    for length in range(1, n + 1):
+        current_length_subsequences = sum(1 for count in freq.values() if count >= length)
+
+        if current_length_subsequences == 0:
+            break
+        
+        # Each subsequence of this length has a cost of (n - length)
+        total_cost += current_length_subsequences * (n - length)
+        unique_subsequences += current_length_subsequences
+        
+        # Check if we have reached the required size k
+        if unique_subsequences >= k:
+            return total_cost
+    
+    # If we exit the loop and haven't reached k unique subsequences, it's impossible
+    return -1
+
+# Input reading
 n, k = map(int, input().split())
 s = input().strip()
 

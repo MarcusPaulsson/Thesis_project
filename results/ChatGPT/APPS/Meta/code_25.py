@@ -1,5 +1,5 @@
 def create_symmetric_matrix(n, k):
-    if k > n * n or (n % 2 == 0 and k % 2 != 0):
+    if k > n * (n + 1) // 2:
         return -1
     
     matrix = [[0] * n for _ in range(n)]
@@ -10,25 +10,23 @@ def create_symmetric_matrix(n, k):
         for j in range(i, n):
             if k <= 0:
                 break
-            if i == j:  # Diagonal element
+            if i == j:  # diagonal element
                 if k >= 1:
                     matrix[i][j] = 1
                     k -= 1
-            else:  # Symmetric pair
+            else:  # symmetric pair
                 if k >= 2:
                     matrix[i][j] = 1
                     matrix[j][i] = 1
                     k -= 2
     
-    if k > 0:
-        return -1
-    
-    return matrix
+    return matrix if k == 0 else -1
 
 # Read input
 n, k = map(int, input().split())
 result = create_symmetric_matrix(n, k)
 
+# Output result
 if result == -1:
     print(-1)
 else:

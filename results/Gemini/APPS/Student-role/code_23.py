@@ -10,51 +10,35 @@ def solve():
         print("".join(a_digits))
         return
     
-    if len(a) > len(b):
-        
-        print("".join(a_digits))
-        return
-
+    a_count = Counter(a)
     
-    def find_max_permutation(index, current_num, remaining_digits):
+    def find_max(index, current_num, remaining_count, is_smaller):
         if index == len(a):
             return current_num
         
         best_num = ""
         
-        for digit in sorted(remaining_digits.keys(), reverse=True):
-            if remaining_digits[digit] > 0:
-                
-                temp_remaining_digits = remaining_digits.copy()
-                temp_remaining_digits[digit] -= 1
-                if temp_remaining_digits[digit] == 0:
-                    del temp_remaining_digits[digit]
-                    
-                new_num = current_num + digit
-                
-                if int(new_num) <= int(b[:index+1]):
-                    
-                    if int(new_num) == int(b[:index+1]):
-                        
-                        result = find_max_permutation(index + 1, new_num, temp_remaining_digits)
-                        if result != "" and (best_num == "" or int(result) > int(best_num)):
-                            best_num = result
-                    else:
-                        
-                        remaining_digits_list = []
-                        for d, count in temp_remaining_digits.items():
-                            remaining_digits_list.extend([d] * count)
-                        remaining_digits_list.sort(reverse=True)
-                        
-                        
-                        full_num = new_num + "".join(remaining_digits_list)
-                        if best_num == "" or int(full_num) > int(best_num):
-                            best_num = full_num
+        possible_digits = sorted(remaining_count.keys(), reverse=True)
+        
+        for digit in possible_digits:
+            if not is_smaller and digit > b[index]:
+                continue
+            
+            new_count = remaining_count.copy()
+            new_count[digit] -= 1
+            if new_count[digit] == 0:
+                del new_count[digit]
+            
+            new_is_smaller = is_smaller or digit < b[index]
+            
+            result = find_max(index + 1, current_num + digit, new_count, new_is_smaller)
+            
+            if len(result) == len(a) and (best_num == "" or result > best_num):
+                best_num = result
         
         return best_num
     
-    a_counts = Counter(a)
-    result = find_max_permutation(0, "", a_counts)
+    result = find_max(0, "", a_count, False)
     print(result)
 
 solve()

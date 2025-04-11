@@ -24,7 +24,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
     """
     client = genai.Client(api_key=config.GEMINI_API_KEY)
     model = "gemini-2.0-flash"  # or "gemini-pro", "gemini-2.0-pro"
-    user_prompt = system_prompt + " Use python to code. Give only the code.\n\n" + task_prompt
+    user_prompt = system_prompt + " Use python to code. \n\n" + task_prompt + prompt.TAIL_PROMPT
 
     contents = [
         types.Content(
@@ -144,6 +144,7 @@ if __name__ == "__main__":
     max_workers = 1 # Adjust the number of parallel threads
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
     skip_test = [4, 21, 26, 37, 43, 48, 61, 65, 75, 85, 98]
+    skip_test = []
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 
     # Save results to JSON and extract Python code

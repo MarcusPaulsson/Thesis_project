@@ -1,22 +1,31 @@
 def find_sequence(n, k):
-    # Minimum sum of the first k positive integers
+    # Minimum sum of first k natural numbers
     min_sum = k * (k + 1) // 2
     
     if n < min_sum:
         return -1
     
-    # The maximum GCD we can use
-    g = (n - min_sum) // k + 1
+    # The maximum gcd we can use is n // k
+    max_gcd = n // k
     
-    # Create the sequence
-    sequence = [i + g for i in range(1, k + 1)]
+    # We will try to find the sequence
+    for g in range(max_gcd, 0, -1):
+        # Calculate the sum we need to reach with the sequence
+        target_sum = n // g
+        
+        # Check if we can form the sequence with the current gcd
+        if target_sum >= min_sum:
+            # Create the sequence
+            sequence = [(i + 1) * g for i in range(k)]
+            return sequence
     
-    return sequence
+    return -1
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 result = find_sequence(n, k)
 
+# Print output
 if result == -1:
     print(-1)
 else:

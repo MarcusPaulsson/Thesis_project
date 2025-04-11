@@ -10,41 +10,40 @@ def solve():
         print("".join(a_digits))
         return
     
-    a_counts = Counter(a)
-    
-    def find_max_permutation(index, current_num, remaining_counts):
+    def find_max_permutation(index, current_num, remaining_digits):
         if index == len(a):
             return current_num
         
         best_num = None
         
-        for digit in sorted(remaining_counts.keys(), reverse=True):
-            if remaining_counts[digit] > 0:
-                new_counts = remaining_counts.copy()
-                new_counts[digit] -= 1
-                if new_counts[digit] == 0:
-                    del new_counts[digit]
-                    
+        for digit in sorted(remaining_digits.keys(), reverse=True):
+            if remaining_digits[digit] > 0:
                 new_num = current_num + digit
                 
                 if new_num <= b[:index+1]:
+                    temp_remaining_digits = remaining_digits.copy()
+                    temp_remaining_digits[digit] -= 1
+                    if temp_remaining_digits[digit] == 0:
+                        del temp_remaining_digits[digit]
+                    
                     if new_num == b[:index+1]:
-                        next_best = find_max_permutation(index + 1, new_num, new_counts)
-                        if next_best is not None:
-                            if best_num is None or next_best > best_num:
-                                best_num = next_best
+                        result = find_max_permutation(index + 1, new_num, temp_remaining_digits)
+                        if result is not None:
+                            if best_num is None or result > best_num:
+                                best_num = result
                     else:
-                        remaining_digits = []
-                        for d, count in new_counts.items():
-                            remaining_digits.extend([d] * count)
-                        remaining_digits.sort(reverse=True)
+                        remaining_digits_list = []
+                        for d, count in temp_remaining_digits.items():
+                            remaining_digits_list.extend([d] * count)
+                        remaining_digits_list.sort(reverse=True)
                         
-                        full_num = new_num + "".join(remaining_digits)
+                        full_num = new_num + "".join(remaining_digits_list)
                         if best_num is None or full_num > best_num:
                             best_num = full_num
         
         return best_num
 
+    a_counts = Counter(a)
     result = find_max_permutation(0, "", a_counts)
     print(result)
 

@@ -1,24 +1,19 @@
-def is_valid_flag(n, m, field):
-    # Check for horizontal stripes
+n, m = map(int, input().split())
+flag = [input().strip() for _ in range(n)]
+
+def is_valid_flag(flag, n, m):
+    colors = set()
     stripe_height = n // 3
-    if n % 3 != 0 or stripe_height == 0:
+    
+    if n % 3 != 0:
         return "NO"
     
-    colors = set()
     for i in range(3):
-        stripe_color = field[i * stripe_height][0]
-        if stripe_color not in 'RGB' or stripe_color in colors:
+        stripe = flag[i * stripe_height:(i + 1) * stripe_height]
+        if len(set(stripe)) != 1 or stripe[0][0] not in 'RGB':
             return "NO"
-        colors.add(stripe_color)
-        for j in range(stripe_height):
-            if field[i * stripe_height + j] != stripe_color * m:
-                return "NO"
+        colors.add(stripe[0][0])
     
-    return "YES"
+    return "YES" if len(colors) == 3 else "NO"
 
-# Read input
-n, m = map(int, input().split())
-field = [input().strip() for _ in range(n)]
-
-# Output result
-print(is_valid_flag(n, m, field))
+print(is_valid_flag(flag, n, m))

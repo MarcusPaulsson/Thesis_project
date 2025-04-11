@@ -1,5 +1,5 @@
 def can_win(matrix):
-    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # vertical, horizontal, diagonal right, diagonal left
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # vertical, horizontal, diagonal down-right, diagonal down-left
     n = 10
 
     for i in range(n):
@@ -8,9 +8,8 @@ def can_win(matrix):
                 # Temporarily place 'X' in the empty cell
                 matrix[i][j] = 'X'
                 
-                # Check for a win in all directions
                 for dx, dy in directions:
-                    count = 1  # Count the current placed 'X'
+                    count = 1
                     
                     # Check in the positive direction
                     x, y = i + dx, j + dy
@@ -26,15 +25,14 @@ def can_win(matrix):
                         x -= dx
                         y -= dy
                     
-                    # If we have 5 or more in a row, Alice wins
                     if count >= 5:
-                        return "YES"
+                        return 'YES'
                 
                 # Remove the temporary 'X'
                 matrix[i][j] = '.'
 
-    return "NO"
+    return 'NO'
 
-# Read the input matrix
-matrix = [list(input().strip()) for _ in range(10)]
+# Read input
+matrix = [input().strip() for _ in range(10)]
 print(can_win(matrix))

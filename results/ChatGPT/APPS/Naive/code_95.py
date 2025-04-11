@@ -1,53 +1,51 @@
 def generate_string(n, s, t):
-    # Create a list of characters with n 'a', n 'b', and n 'c'
-    chars = ['a'] * n + ['b'] * n + ['c'] * n
+    # Count of each character
+    count_a = n
+    count_b = n
+    count_c = n
     
-    # Function to check if the last two characters form a forbidden substring
-    def is_forbidden(res):
-        return res[-2:] == s or res[-2:] == t
-    
-    # Resultant string
+    # Create a list to hold the result
     res = []
     
-    # Try to build the result string
-    for char in chars:
-        # If adding the current character would create a forbidden substring
-        while res and is_forbidden(res + [char]):
-            # If we can't add this character, we need to try the next available character
-            if char == 'a':
-                if n > 0:
-                    char = 'b'
-                elif n > 0:
-                    char = 'c'
-                else:
-                    break
-            elif char == 'b':
-                if n > 0:
-                    char = 'a'
-                elif n > 0:
-                    char = 'c'
-                else:
-                    break
-            elif char == 'c':
-                if n > 0:
-                    char = 'a'
-                elif n > 0:
-                    char = 'b'
-                else:
-                    break
-        
-        # If we can add the character, do so
-        if not is_forbidden(res + [char]):
-            res.append(char)
+    # Function to append characters while avoiding substrings
+    def append_char(char):
+        nonlocal count_a, count_b, count_c
+        if char == 'a' and count_a > 0:
+            res.append('a')
+            count_a -= 1
+        elif char == 'b' and count_b > 0:
+            res.append('b')
+            count_b -= 1
+        elif char == 'c' and count_c > 0:
+            res.append('c')
     
-    # Check if we have a valid result
-    if len(res) == 3 * n:
-        return "YES", ''.join(res)
-    else:
-        return "NO", ""
+    # Try to build the result string
+    while count_a > 0 or count_b > 0 or count_c > 0:
+        if len(res) >= 1 and ''.join(res[-1:]) == s[0] and count_a > 0:
+            append_char('c' if 'c' in s else 'b')
+        elif len(res) >= 1 and ''.join(res[-1:]) == s[1] and count_a > 0:
+            append_char('c' if 'c' in t else 'a')
+        elif len(res) >= 2 and ''.join(res[-2:]) == s:
+            append_char('c' if 'c' in s else 'b')
+        elif len(res) >= 2 and ''.join(res[-2:]) == t:
+            append_char('a' if 'a' in t else 'b')
+        else:
+            if count_a > 0:
+                append_char('a')
+            elif count_b > 0:
+                append_char('b')
+            elif count_c > 0:
+                append_char('c')
+    
+    # Check if we have formed a valid string
+    result_str = ''.join(res)
+    if s in result_str or t in result_str:
+        return "NO"
+    
+    return "YES", result_str
 
 # Input reading
-n = int(input().strip())
+n = int(input())
 s = input().strip()
 t = input().strip()
 
@@ -55,6 +53,8 @@ t = input().strip()
 result = generate_string(n, s, t)
 
 # Output the result
-print(result[0])
-if result[0] == "YES":
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
     print(result[1])

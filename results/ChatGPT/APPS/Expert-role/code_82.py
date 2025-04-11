@@ -8,10 +8,10 @@ while count < n and a[count] <= k:
     count += 1
 
 # Solve from the right
-while count < n and a[n - 1 - (count - (n - count))] <= k:
+while count < n and a[n - 1 - (count - (n - len(a)))] <= k:
     count += 1
 
-# Adjust for double counting if both ends are solvable
+# Adjust for double counting
 if count > n:
     count = n
 

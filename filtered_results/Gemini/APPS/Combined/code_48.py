@@ -1,7 +1,7 @@
 def solve():
     n, m, k = map(int, input().split())
 
-    def count_smaller_equal(x):
+    def count_less_equal(x):
         count = 0
         for i in range(1, n + 1):
             count += min(m, x // i)
@@ -13,7 +13,7 @@ def solve():
 
     while low <= high:
         mid = (low + high) // 2
-        if count_smaller_equal(mid) >= k:
+        if count_less_equal(mid) >= k:
             ans = mid
             high = mid - 1
         else:

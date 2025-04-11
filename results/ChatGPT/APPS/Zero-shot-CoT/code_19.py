@@ -10,7 +10,7 @@ def check_records(test_cases):
                 if p_i < p_prev or c_i < c_prev or c_i > p_i:
                     valid = False
                     break
-                if (p_i - p_prev) < (c_i - c_prev):
+                if c_i - c_prev > p_i - p_prev:
                     valid = False
                     break
         results.append("YES" if valid else "NO")
@@ -24,7 +24,7 @@ for _ in range(T):
     stats = [tuple(map(int, input().split())) for _ in range(n)]
     test_cases.append((n, stats))
 
-# Check records and print results
+# Get results and print
 results = check_records(test_cases)
 for result in results:
     print(result)

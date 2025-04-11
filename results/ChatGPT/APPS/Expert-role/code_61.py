@@ -6,15 +6,10 @@ def max_number_after_replacement(n, a, f):
         original_digit = int(a_list[i])
         new_digit = f[original_digit - 1]
         
-        if new_digit > original_digit and not modified:
-            # Start modifying the segment
+        if new_digit > original_digit:
+            a_list[i] = str(new_digit)
             modified = True
-            a_list[i] = str(new_digit)
-        elif new_digit >= original_digit and modified:
-            # Continue modifying the segment
-            a_list[i] = str(new_digit)
-        elif new_digit < original_digit and modified:
-            # Stop modifying the segment
+        elif modified and new_digit < original_digit:
             break
     
     return ''.join(a_list)
@@ -24,6 +19,5 @@ n = int(input())
 a = input().strip()
 f = list(map(int, input().strip().split()))
 
-# Get the result and print
-result = max_number_after_replacement(n, a, f)
-print(result)
+# Output the result
+print(max_number_after_replacement(n, a, f))

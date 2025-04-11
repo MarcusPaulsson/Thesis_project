@@ -3,44 +3,47 @@ def solve():
     
     week = [0, 1, 2, 0, 2, 1, 0]
     
-    best_days = 0
+    min_weeks = min(a // 3, b // 2, c // 2)
+    
+    a -= min_weeks * 3
+    b -= min_weeks * 2
+    c -= min_weeks * 2
+    
+    ans = min_weeks * 7
+    
+    max_days = 0
     
     for start_day in range(7):
-        
+        temp_a, temp_b, temp_c = a, b, c
         days = 0
-        a_temp = a
-        b_temp = b
-        c_temp = c
-        
-        current_day = start_day
+        curr_day = start_day
         
         while True:
+            food = week[curr_day % 7]
             
-            food_type = week[current_day % 7]
-            
-            if food_type == 0:
-                if a_temp > 0:
-                    a_temp -= 1
+            if food == 0:
+                if temp_a > 0:
+                    temp_a -= 1
                     days += 1
                 else:
                     break
-            elif food_type == 1:
-                if b_temp > 0:
-                    b_temp -= 1
+            elif food == 1:
+                if temp_b > 0:
+                    temp_b -= 1
                     days += 1
                 else:
                     break
             else:
-                if c_temp > 0:
-                    c_temp -= 1
+                if temp_c > 0:
+                    temp_c -= 1
                     days += 1
                 else:
                     break
             
-            current_day += 1
+            curr_day += 1
         
-        best_days = max(best_days, days)
-        
-    print(best_days)
+        max_days = max(max_days, days)
+    
+    print(ans + max_days)
 
 solve()

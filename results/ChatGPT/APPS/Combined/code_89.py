@@ -1,12 +1,12 @@
 def can_complete_projects(n, r, projects):
-    # Sort projects based on the required rating (a_i)
+    # Sort projects by their required rating (a_i)
     projects.sort(key=lambda x: x[0])
     
     for a, b in projects:
-        if r < a:
+        if r < a:  # Check if current rating is less than required
             return "NO"
-        r += b
-        if r < 0:
+        r += b  # Update rating after completing the project
+        if r < 0:  # Check if rating falls below zero
             return "NO"
     
     return "YES"

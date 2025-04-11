@@ -1,40 +1,40 @@
 def max_days(a, b, c):
-    # Calculate the maximum full weeks the cat can be fed
+    # Calculate full weeks
     full_weeks = min(a // 3, b // 2, c // 2)
     a -= full_weeks * 3
     b -= full_weeks * 2
     c -= full_weeks * 2
-    
-    # Calculate the remaining days the cat can be fed starting from each day of the week
-    max_days = 0
+    days = full_weeks * 7
+
+    # Try starting from each day of the week
     for start_day in range(7):
-        days = 0
-        remaining_a, remaining_b, remaining_c = a, b, c
+        current_a, current_b, current_c = a, b, c
+        current_days = 0
         
         for day in range(7):
-            current_day = (start_day + day) % 7
-            if current_day in [0, 3, 6]:  # Fish food days
-                if remaining_a > 0:
-                    remaining_a -= 1
-                    days += 1
+            food_type = (start_day + day) % 7
+            if food_type in [0, 3, 6]:  # Fish food days
+                if current_a > 0:
+                    current_a -= 1
+                    current_days += 1
                 else:
                     break
-            elif current_day in [1, 5]:  # Rabbit stew days
-                if remaining_b > 0:
-                    remaining_b -= 1
-                    days += 1
+            elif food_type in [1, 5]:  # Rabbit stew days
+                if current_b > 0:
+                    current_b -= 1
+                    current_days += 1
                 else:
                     break
             else:  # Chicken stake days
-                if remaining_c > 0:
-                    remaining_c -= 1
-                    days += 1
+                if current_c > 0:
+                    current_c -= 1
+                    current_days += 1
                 else:
                     break
-        
-        max_days = max(max_days, days)
-    
-    return full_weeks * 7 + max_days
+
+        days = max(days, current_days + full_weeks * 7)
+
+    return days
 
 # Input reading
 a, b, c = map(int, input().split())

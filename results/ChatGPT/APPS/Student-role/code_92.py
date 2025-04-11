@@ -1,11 +1,9 @@
 x = float(input().strip())
 
-# We need to find two integers a and b such that 1 <= a, b <= 10
-# and a * b is approximately equal to x
-
-# Since x is between 0 and 5, we can iterate over possible values of a and b
+# Calculate integers a and b such that 1 <= a, b <= 10
+# We can use a simple approach to find a and b
 for a in range(1, 11):
     for b in range(1, 11):
-        if abs(a * b - x) < 1e-6:  # Check if the product is close to x
+        if abs(a * b - x) < 1e-6:
             print(a, b)
             break

@@ -8,30 +8,36 @@ def solve_problems(n, k):
     # Maximum sum of problems that can be solved in k days
     max_sum = 0
     a = []
-    current = 1
+    for i in range(1, k + 1):
+        a.append(i)
+        max_sum += i
     
-    for i in range(k):
-        a.append(current)
-        max_sum += current
-        current = min(2 * current, current + 1 + (k - i - 1))
-    
-    if n > max_sum:
+    if n > max_sum * 2:
         print("NO")
         return
     
-    # Now we need to adjust the array to sum to n
-    for i in range(k - 1, -1, -1):
-        while sum(a) < n and a[i] < (2 * a[i]):
-            a[i] += 1
-            if sum(a) == n:
-                break
+    # Start with the minimum valid sequence
+    a = list(range(1, k + 1))
+    current_sum = sum(a)
     
-    if sum(a) == n:
+    # Distribute the remaining problems
+    remaining = n - current_sum
+    
+    for i in range(k - 1, -1, -1):
+        # Maximum we can add to a[i]
+        max_add = min(remaining, a[i] * 2 - a[i])
+        remaining -= max_add
+        a[i] += max_add
+        
+        if remaining <= 0:
+            break
+    
+    if remaining > 0:
+        print("NO")
+    else:
         print("YES")
         print(" ".join(map(str, a)))
-    else:
-        print("NO")
 
-# Read input
+# Example usage:
 n, k = map(int, input().split())
 solve_problems(n, k)

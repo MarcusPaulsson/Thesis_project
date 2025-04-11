@@ -3,15 +3,13 @@ MOD = 10**9 + 7
 def count_regular_sequences(n, s):
     m = len(s)
     
-    # Precompute the number of valid sequences of length 2k
-    dp = [0] * (n + 1)
-    dp[0] = 1  # Base case: one valid sequence of length 0
+    # Precompute Catalan numbers
+    catalan = [0] * (n + 1)
+    catalan[0] = 1
+    for i in range(1, n + 1):
+        catalan[i] = (catalan[i - 1] * (2 * (2 * i - 1)) % MOD * pow(i + 1, MOD - 2, MOD)) % MOD
     
-    for k in range(1, n + 1):
-        for j in range(k):
-            dp[k] = (dp[k] + dp[j] * dp[k - 1 - j]) % MOD
-    
-    # Check if s can be a valid substring
+    # Check the balance of the substring s
     balance = 0
     min_balance = 0
     for char in s:
@@ -21,21 +19,18 @@ def count_regular_sequences(n, s):
             balance -= 1
         min_balance = min(min_balance, balance)
     
-    if balance < 0 or balance > n or min_balance < 0:
+    if balance < 0 or balance > 2 * n - m:
         return 0
     
-    # Calculate the number of valid sequences containing s
+    # Calculate the number of valid sequences
     total_count = 0
-    
-    # Try to place s at every possible position
-    for i in range(n - (m // 2) + 1):
-        left_needed = (m // 2) + i
-        right_needed = n - left_needed
-        
-        if left_needed < 0 or right_needed < 0:
+    for prefix in range(n + 1):
+        if prefix + balance < 0 or prefix + balance > n:
             continue
-        
-        total_count = (total_count + dp[left_needed] * dp[right_needed]) % MOD
+        suffix = n - prefix - (balance + (n - m) // 2)
+        if suffix < 0 or suffix > n:
+            continue
+        total_count = (total_count + catalan[prefix] * catalan[suffix]) % MOD
     
     return total_count
 

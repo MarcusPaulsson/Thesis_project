@@ -2,19 +2,18 @@ def has_palindrome_subsequence(t, test_cases):
     results = []
     for n, a in test_cases:
         found = False
-        # Use a dictionary to track the last seen index of each number
-        last_seen = {}
+        last_occurrence = {}
         for i in range(n):
-            if a[i] in last_seen:
-                # If we have seen this number before, check the distance
-                if i - last_seen[a[i]] >= 2:
+            if a[i] in last_occurrence:
+                # Check if the distance between the same elements is at least 2
+                if i - last_occurrence[a[i]] >= 2:
                     found = True
                     break
-            last_seen[a[i]] = i
+            last_occurrence[a[i]] = i
         results.append("YES" if found else "NO")
     return results
 
-# Read input
+# Input reading
 t = int(input())
 test_cases = []
 for _ in range(t):
@@ -25,6 +24,6 @@ for _ in range(t):
 # Get results
 results = has_palindrome_subsequence(t, test_cases)
 
-# Print results
+# Output results
 for result in results:
     print(result)

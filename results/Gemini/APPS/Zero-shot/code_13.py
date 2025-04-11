@@ -5,64 +5,84 @@ def solve():
     main_courses = list(map(int, input().split()))
     dependencies = []
     for _ in range(n):
-        dependencies.append(list(map(int, input().split()))[1:])
+        line = list(map(int, input().split()))
+        dependencies.append(line[1:])
 
-    indegree = [0] * (n + 1)
-    graph = [[] for _ in range(n + 1)]
-    
-    for i in range(1, n + 1):
-        for dep in dependencies[i-1]:
-            graph[dep].append(i)
-            indegree[i] += 1
+    in_degree = [0] * (n + 1)
+    adj = [[] for _ in range(n + 1)]
+    for i in range(n):
+        for dep in dependencies[i]:
+            adj[dep].append(i + 1)
+            in_degree[i + 1] += 1
 
     q = deque()
     for i in range(1, n + 1):
-        if indegree[i] == 0 :
+        if in_degree[i] == 0:
             q.append(i)
-            
-    result = []
+
+    order = []
     count = 0
-    
     while q:
         u = q.popleft()
-        result.append(u)
-        count+=1
-
-        for v in graph[u]:
-            indegree[v] -= 1
-            if indegree[v] == 0:
+        order.append(u)
+        count += 1
+        for v in adj[u]:
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
                 q.append(v)
 
     if count != n:
         print("-1")
         return
-    
-    necessary = set(main_courses)
-    
-    
-    
-    
-    visited = [False] * (n+1)
-    ans=[]
-    
-    def dfs(node):
-        if visited[node]:
+
+    required = set(main_courses)
+    result = []
+    visited = [False] * (n + 1)
+
+    def dfs(course):
+        if visited[course]:
             return
-        visited[node] = True
+        visited[course] = True
+        for dep in dependencies[course - 1]:
+            dfs(dep)
         
-        for neighbor in dependencies[node-1]:
-            dfs(neighbor)
-            
-        ans.append(node)
-    
     for course in main_courses:
         dfs(course)
         
-    ans = ans[::-1]
+    q = deque()
+    in_degree = [0] * (n + 1)
+    adj = [[] for _ in range(n + 1)]
+    for i in range(n):
+        if visited[i+1]:
+            for dep in dependencies[i]:
+                if visited[dep]:
+                    adj[dep].append(i + 1)
+                    in_degree[i + 1] += 1
+
+    for i in range(1, n + 1):
+        if visited[i] and in_degree[i] == 0:
+            q.append(i)
+            
+    result = []
+    while q:
+        u = q.popleft()
+        result.append(u)
+        for v in adj[u]:
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
+                q.append(v)
+                
     
+    main_courses_passed = 0
+    for course in main_courses:
+        if course in result:
+            main_courses_passed += 1
+            
+    if main_courses_passed != len(main_courses):
+        print("-1")
+        return
     
-    
-    print(len(ans))
-    print(*ans)
+    print(len(result))
+    print(*result)
 
 solve()

@@ -16,9 +16,8 @@ def mod_inverse(a, m):
     return x1
 
 def birthday_paradox(n, k):
-    MOD = 10**6 + 3
-    days = 1 << n  # 2^n days
-
+    MOD = 1000003
+    days = 1 << n  # 2^n
     if k > days:
         return 1, 1  # Guaranteed collision
 
@@ -26,12 +25,14 @@ def birthday_paradox(n, k):
     numerator = 1
     denominator = 1
     for i in range(k):
-        numerator = (numerator * (days - i)) % MOD
-        denominator = (denominator * days) % MOD
+        numerator *= (days - i)
+        denominator *= days
+        numerator %= MOD
+        denominator %= MOD
 
     # Probability of at least one shared birthday
     A = (denominator - numerator) % MOD
-    B = denominator
+    B = denominator % MOD
 
     # Reduce A/B to irreducible form
     common_gcd = gcd(A, B)

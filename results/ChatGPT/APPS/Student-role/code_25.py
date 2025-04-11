@@ -1,17 +1,18 @@
 def create_symmetric_matrix(n, k):
     if k > n * (n + 1) // 2:
         return -1
-    
+
     matrix = [[0] * n for _ in range(n)]
     
     for i in range(n):
         if k <= 0:
             break
-        # Place 1 on the diagonal
+        # Fill the diagonal first
         if k > 0:
             matrix[i][i] = 1
             k -= 1
         
+        # Fill the symmetric pairs (i, j) and (j, i)
         for j in range(i + 1, n):
             if k >= 2:
                 matrix[i][j] = 1
@@ -19,11 +20,8 @@ def create_symmetric_matrix(n, k):
                 k -= 2
             if k <= 0:
                 break
-    
-    if k > 0:
-        return -1
-    
-    return matrix
+
+    return matrix if k == 0 else -1
 
 n, k = map(int, input().split())
 result = create_symmetric_matrix(n, k)

@@ -1,28 +1,26 @@
 def color_array(n, k, a):
     from collections import defaultdict
-
-    color_assignment = [0] * n
-    color_used = defaultdict(set)
     
+    # Dictionary to keep track of the colors assigned to each number
+    color_map = defaultdict(list)
+    result = [0] * n
+    
+    # Assign colors to each element in the array
     for i in range(n):
         num = a[i]
-        for color in range(1, k + 1):
-            if num not in color_used[color]:
-                color_assignment[i] = color
-                color_used[color].add(num)
-                break
-        else:
-            print("NO")
-            return
-
-    if len(color_used) < k:
+        # Get the current color to assign
+        current_color = len(color_map[num]) % k + 1
+        color_map[num].append(current_color)
+        result[i] = current_color
+    
+    # Check if we have at least one of each color
+    if len(set(result)) < k:
         print("NO")
     else:
         print("YES")
-        print(" ".join(map(str, color_assignment)))
+        print(" ".join(map(str, result)))
 
-# Input reading
-n, k = map(int, input().split())
-a = list(map(int, input().split()))
-
-color_array(n, k, a)
+# Example usage:
+# n, k = map(int, input().split())
+# a = list(map(int, input().split()))
+# color_array(n, k, a)

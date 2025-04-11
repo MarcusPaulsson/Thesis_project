@@ -15,7 +15,7 @@ def next_palindrome_time(hh, mm):
         if is_palindrome(time_str):
             return minutes_passed
 
-current_time = input().strip()
-hh, mm = map(int, current_time.split(':'))
+time_input = input().strip()
+hh, mm = map(int, time_input.split(':'))
 result = next_palindrome_time(hh, mm)
 print(result)

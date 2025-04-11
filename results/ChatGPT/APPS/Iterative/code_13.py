@@ -1,63 +1,54 @@
 from collections import deque, defaultdict
+import sys
 
-def main():
-    n, k = map(int, input().split())
-    main_courses = set(map(int, input().split()))
-    
-    # Build the graph and indegree count
-    graph = defaultdict(list)
-    indegree = [0] * (n + 1)
-    
-    for i in range(1, n + 1):
-        data = list(map(int, input().split()))
-        t_i = data[0]
-        dependencies = data[1:t_i + 1]
-        for dep in dependencies:
-            graph[dep].append(i)
-            indegree[i] += 1
-    
-    # Topological sort using Kahn's algorithm
-    queue = deque()
-    for course in range(1, n + 1):
-        if indegree[course] == 0:
-            queue.append(course)
-    
-    order = []
-    while queue:
-        current = queue.popleft()
-        order.append(current)
-        for neighbor in graph[current]:
-            indegree[neighbor] -= 1
-            if indegree[neighbor] == 0:
-                queue.append(neighbor)
-    
-    # Check if we can complete all main courses
-    completed_courses = set()
-    for course in order:
-        if course in main_courses:
-            completed_courses.add(course)
-        if len(completed_courses) == len(main_courses):
-            break
-    
-    if len(completed_courses) < len(main_courses):
-        print(-1)
-        return
-    
-    # Collect all courses needed to complete the main courses
-    needed_courses = set()
+input = sys.stdin.read
+data = input().splitlines()
+
+n, k = map(int, data[0].split())
+main_courses = list(map(int, data[1].split()))
+dependencies = defaultdict(list)
+in_degree = [0] * (n + 1)
+
+# Read dependencies
+for i in range(1, n + 1):
+    line = list(map(int, data[i + 1].split()))
+    t_i = line[0]
+    for dep in line[1:t_i + 1]:
+        dependencies[dep].append(i)
+        in_degree[i] += 1
+
+# Topological sorting using Kahn's algorithm
+queue = deque()
+for i in range(1, n + 1):
+    if in_degree[i] == 0:
+        queue.append(i)
+
+order = []
+passed_courses = set()
+
+while queue:
+    course = queue.popleft()
+    order.append(course)
+    passed_courses.add(course)
+    for next_course in dependencies[course]:
+        in_degree[next_course] -= 1
+        if in_degree[next_course] == 0:
+            queue.append(next_course)
+
+# Check if all main courses can be passed
+if not all(course in passed_courses for course in main_courses):
+    print(-1)
+else:
+    # Collect all courses that need to be passed
+    result_courses = set()
     for course in main_courses:
-        stack = [course]
-        while stack:
-            current = stack.pop()
-            if current not in needed_courses:
-                needed_courses.add(current)
-                stack.extend(graph[current])
-    
-    # Filter the order to only include needed courses
-    result = [course for course in order if course in needed_courses]
-    
-    print(len(result))
-    print(" ".join(map(str, result)))
+        result_courses.add(course)
+        for dep in dependencies[course]:
+            result_courses.add(dep)
 
-if __name__ == "__main__":
-    main()
+    # Ensure we have a valid order
+    result_courses = list(dict.fromkeys(order))  # Remove duplicates while preserving order
+    result_courses = [course for course in result_courses if course in passed_courses]
+
+    print(len(result_courses))
+    print(' '.join(map(str, result_courses)))

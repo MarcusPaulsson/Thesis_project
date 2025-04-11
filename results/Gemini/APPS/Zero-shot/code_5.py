@@ -12,8 +12,7 @@ def solve():
     if r == n:
         print(abs(pos - l) + 1)
         return
-    
-    ans = min(abs(pos - l) + abs(r - l) + 2, abs(pos - r) + abs(r - l) + 2)
-    print(ans)
+
+    print(min(abs(pos - l) + abs(r - l) + 2, abs(pos - r) + abs(r - l) + 2))
 
 solve()

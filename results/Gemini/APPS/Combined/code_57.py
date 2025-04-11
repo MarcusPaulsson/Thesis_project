@@ -2,36 +2,32 @@ def solve():
     n = int(input())
     f = list(map(int, input().split()))
 
-    givers = [i + 1 for i in range(n)]
-    receivers = [i + 1 for i in range(n)]
+    givers = []
+    receivers = []
 
-    given = set()
+    assigned = [False] * (n + 1)
     for i in range(n):
         if f[i] != 0:
-            given.add(f[i])
+            assigned[f[i]] = True
 
-    not_given = []
-    for i in range(1, n + 1):
-        if i not in given:
-            not_given.append(i)
-
-    zeros_indices = []
     for i in range(n):
         if f[i] == 0:
-            zeros_indices.append(i)
+            givers.append(i)
 
-    for i in range(len(zeros_indices)):
-        f[zeros_indices[i]] = not_given[i]
+    for i in range(1, n + 1):
+        if not assigned[i]:
+            receivers.append(i)
 
-    for i in range(len(zeros_indices)):
-        if f[zeros_indices[i]] == zeros_indices[i] + 1:
-            if i + 1 < len(zeros_indices):
-                f[zeros_indices[i]], f[zeros_indices[i+1]] = f[zeros_indices[i+1]], f[zeros_indices[i]]
+    for i in range(len(givers)):
+        if givers[i] == receivers[i] - 1:
+            if i + 1 < len(givers):
+                receivers[i], receivers[i+1] = receivers[i+1], receivers[i]
             else:
-                
-                for j in range(len(zeros_indices)):
-                    if zeros_indices[j] + 1 != f[zeros_indices[i]]:
-                        f[zeros_indices[i]], f[zeros_indices[j]] = f[zeros_indices[j]], f[zeros_indices[i]]
-                        break
+                receivers[i], receivers[i-1] = receivers[i-1], receivers[i]
+
+    for i in range(len(givers)):
+        f[givers[i]] = receivers[i]
+
     print(*f)
+
 solve()

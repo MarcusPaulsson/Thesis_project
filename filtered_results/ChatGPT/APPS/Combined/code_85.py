@@ -1,16 +1,14 @@
-def find_price(A, B):
-    # Loop through potential prices starting from 1
-    for price in range(1, 10000):
-        tax_8 = int(price * 0.08)  # Calculate and floor the tax for 8%
-        tax_10 = int(price * 0.10)  # Calculate and floor the tax for 10%
+def find_price_before_tax(A, B):
+    for price in range(1, 10000):  # Arbitrarily chosen upper limit for price
+        tax_8 = price * 0.08
+        tax_10 = price * 0.10
         
-        # Check if the calculated taxes match A and B
-        if tax_8 == A and tax_10 == B:
-            return price  # Return the first valid price found
-    
-    return -1  # Return -1 if no valid price is found
+        if int(tax_8) == A and int(tax_10) == B:
+            return price
+            
+    return -1
 
 # Read input
 A, B = map(int, input().split())
-# Get the result and print it
-print(find_price(A, B))
+# Output the result
+print(find_price_before_tax(A, B))

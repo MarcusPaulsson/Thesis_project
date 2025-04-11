@@ -1,27 +1,35 @@
 def max_beauty_with_multiplier(n, x, a):
-    # Function to calculate maximum subarray sum using Kadane's algorithm
+    # Function to calculate the maximum subarray sum using Kadane's algorithm
     def kadane(arr):
-        max_ending_here = max_so_far = 0
+        max_sum = 0
+        current_sum = 0
         for value in arr:
-            max_ending_here = max(0, max_ending_here + value)
-            max_so_far = max(max_so_far, max_ending_here)
-        return max_so_far
+            current_sum += value
+            max_sum = max(max_sum, current_sum)
+            current_sum = max(current_sum, 0)
+        return max_sum
 
-    # Calculate the original beauty of the array
+    # Calculate the original beauty (max subarray sum)
     original_beauty = kadane(a)
 
+    # If x is 0, the best we can do is the original beauty
+    if x == 0:
+        return original_beauty
+
     # Calculate the maximum beauty after multiplying a subarray by x
-    max_gain = 0
-    current_gain = 0
-
+    max_increase = 0
+    current_sum = 0
     for i in range(n):
-        current_gain += a[i] * (x - 1)
-        if current_gain < 0:
-            current_gain = 0
-        max_gain = max(max_gain, current_gain)
+        current_sum += a[i]
+        # Calculate the potential increase if we multiply the current subarray by x
+        potential_increase = current_sum * (x - 1)
+        max_increase = max(max_increase, potential_increase)
+        # Reset current_sum if it drops below 0
+        if current_sum < 0:
+            current_sum = 0
 
-    # The maximum beauty is either the original beauty or the beauty after applying the multiplier
-    return max(original_beauty, original_beauty + max_gain)
+    # The maximum beauty is the original beauty plus the best increase we can get
+    return original_beauty + max_increase
 
 # Read input
 n, x = map(int, input().split())

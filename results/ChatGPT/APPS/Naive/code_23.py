@@ -1,20 +1,20 @@
 def max_permutation_not_exceeding(a, b):
     from itertools import permutations
 
-    # Convert a to string and get its digits
-    a_str = str(a)
-    b_str = str(b)
+    # Convert a to a string to work with its digits
+    str_a = str(a)
+    str_b = str(b)
 
     # Generate all unique permutations of the digits of a
-    permuted_numbers = set(int(''.join(p)) for p in permutations(a_str))
+    permuted_numbers = set(int(''.join(p)) for p in permutations(str_a))
 
-    # Filter permutations to find the maximum that does not exceed b
-    valid_numbers = [num for num in permuted_numbers if num <= b and len(str(num)) == len(a_str)]
+    # Filter out numbers that exceed b and have the same length as a
+    valid_numbers = [num for num in permuted_numbers if num <= b and len(str(num)) == len(str_a)]
 
     # Return the maximum valid number
     return max(valid_numbers)
 
-# Input reading
+# Read input
 a = int(input().strip())
 b = int(input().strip())
 

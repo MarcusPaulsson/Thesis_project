@@ -1,55 +1,58 @@
 def solve():
     n = input()
     s = list(n)
-    l = len(s)
-    ans = float('inf')
+    n = len(s)
 
-    for suffix in ['00', '25', '50', '75']:
-        temp_s = s[:]
+    def calculate_moves(arr, target):
         moves = 0
-
-        # Find the last digit of the suffix
-        last_digit_index = -1
-        for i in range(l - 1, -1, -1):
-            if temp_s[i] == suffix[1]:
-                last_digit_index = i
+        temp_arr = arr[:]
+        
+        # Move the last two digits to the end
+        first_target_index = -1
+        for i in range(len(temp_arr) - 1, -1, -1):
+            if temp_arr[i] == target[1]:
+                first_target_index = i
                 break
-
-        if last_digit_index == -1:
-            continue
-
-        moves += l - 1 - last_digit_index
-        temp_s.pop(last_digit_index)
-
-        # Find the first digit of the suffix
+        
+        if first_target_index == -1:
+            return float('inf')
+        
+        moves += len(temp_arr) - 1 - first_target_index
+        temp_arr.pop(first_target_index)
+        
+        second_target_index = -1
+        for i in range(len(temp_arr) - 1, -1, -1):
+            if temp_arr[i] == target[0]:
+                second_target_index = i
+                break
+        
+        if second_target_index == -1:
+            return float('inf')
+        
+        moves += len(temp_arr) - 1 - second_target_index
+        temp_arr.pop(second_target_index)
+        
+        # Remove leading zeros
         first_digit_index = -1
-        for i in range(len(temp_s) - 1, -1, -1):
-            if temp_s[i] == suffix[0]:
+        for i in range(len(temp_arr)):
+            if temp_arr[i] != '0':
                 first_digit_index = i
                 break
-
+        
         if first_digit_index == -1:
-            continue
+            return moves
+        
+        moves += first_digit_index
+        
+        return moves
 
-        moves += len(temp_s) - 1 - first_digit_index
-        temp_s.pop(first_digit_index)
-
-        # Remove leading zeros
-        leading_zeros = 0
-        for i in range(len(temp_s)):
-            if temp_s[i] == '0':
-                leading_zeros += 1
-            else:
-                break
-
-        # If all digits are zero after removing suffix, it's invalid
-        if leading_zeros == len(temp_s):
-            continue
-
-        moves += leading_zeros
-
-        ans = min(ans, moves)
-
+    ans = float('inf')
+    
+    ans = min(ans, calculate_moves(s, "00"))
+    ans = min(ans, calculate_moves(s, "25"))
+    ans = min(ans, calculate_moves(s, "50"))
+    ans = min(ans, calculate_moves(s, "75"))
+                
     if ans == float('inf'):
         print(-1)
     else:

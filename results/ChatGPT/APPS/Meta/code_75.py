@@ -1,49 +1,45 @@
 def max_days(a, b, c):
-    # Define the food consumption pattern for each day of the week
-    week_pattern = [0, 0, 1, 0, 0, 1, 0]  # 0: fish, 1: rabbit, 2: chicken
-    food_needed = [0, 0, 0]  # fish, rabbit, chicken
+    # Food consumption pattern based on the day of the week
+    food_pattern = [0, 1, 2, 0, 1, 2, 0]  # 0: fish, 1: rabbit, 2: chicken
+    max_days = 0
     
-    # Calculate the total number of complete weeks we can sustain
-    complete_weeks = min(a // 3, b // 2, c // 2)
-    
-    # Update the food supplies after consuming complete weeks
-    a -= complete_weeks * 3
-    b -= complete_weeks * 2
-    c -= complete_weeks * 2
-    
-    # Total days from complete weeks
-    total_days = complete_weeks * 7
-    
-    # Check for each starting day of the week
+    # Try starting from each day of the week
     for start_day in range(7):
+        fish = a
+        rabbit = b
+        chicken = c
         days = 0
-        current_a, current_b, current_c = a, b, c
         
-        # Simulate the days of the week starting from start_day
+        # Simulate the days of the week
         for i in range(7):
-            day = (start_day + i) % 7
-            if day in [0, 3, 6]:  # Fish food days
-                if current_a > 0:
-                    current_a -= 1
+            current_day = (start_day + i) % 7
+            if food_pattern[current_day] == 0:  # Fish food
+                if fish > 0:
+                    fish -= 1
                     days += 1
                 else:
                     break
-            elif day in [1, 5]:  # Rabbit stew days
-                if current_b > 0:
-                    current_b -= 1
+            elif food_pattern[current_day] == 1:  # Rabbit stew
+                if rabbit > 0:
+                    rabbit -= 1
                     days += 1
                 else:
                     break
-            else:  # Chicken stake days
-                if current_c > 0:
-                    current_c -= 1
+            else:  # Chicken stake
+                if chicken > 0:
+                    chicken -= 1
                     days += 1
                 else:
                     break
         
-        total_days = max(total_days, complete_weeks * 7 + days)
+        # Add full weeks
+        full_weeks = min(fish // 3, rabbit // 2, chicken // 2)
+        days += full_weeks * 7
+        
+        # Update maximum days
+        max_days = max(max_days, days)
     
-    return total_days
+    return max_days
 
 # Input reading
 a, b, c = map(int, input().split())

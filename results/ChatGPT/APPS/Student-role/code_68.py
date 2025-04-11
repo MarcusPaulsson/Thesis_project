@@ -6,33 +6,29 @@ def min_cost_to_obtain_set(n, k, s):
     for char in s:
         freq[char] += 1
     
-    # Calculate the maximum number of unique subsequences we can generate
+    # Calculate the number of unique subsequences
     unique_subsequences = 0
     total_cost = 0
-    cost_per_length = [0] * (n + 1)
     
-    # Calculate the cost for each possible length of subsequence
+    # Generate all possible subsequences
     for length in range(n + 1):
-        cost_per_length[length] = n - length
+        for char in freq:
+            if freq[char] >= length:
+                unique_subsequences += 1
+                total_cost += (n - length)
+                if unique_subsequences >= k:
+                    return total_cost
     
-    # Generate subsequences and calculate their costs
-    for char, count in freq.items():
-        # For each character, we can generate subsequences of lengths 1 to count
-        for length in range(1, count + 1):
-            unique_subsequences += 1
-            total_cost += cost_per_length[length]
-            if unique_subsequences >= k:
-                return total_cost
-    
-    # If we reach here, we couldn't generate enough unique subsequences
+    # If we can't reach k unique subsequences
     if unique_subsequences < k:
         return -1
     
     return total_cost
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 s = input().strip()
 
-# Output the result
-print(min_cost_to_obtain_set(n, k, s))
+# Get the result and print it
+result = min_cost_to_obtain_set(n, k, s)
+print(result)

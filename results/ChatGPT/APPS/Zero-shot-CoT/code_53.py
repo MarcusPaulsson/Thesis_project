@@ -31,6 +31,6 @@ def longest_increasing_sequence(n, a):
     print(''.join(moves))
 
 # Example usage:
-n = int(input())
-a = list(map(int, input().split()))
-longest_increasing_sequence(n, a)
+# n = int(input())
+# a = list(map(int, input().split()))
+# longest_increasing_sequence(n, a)

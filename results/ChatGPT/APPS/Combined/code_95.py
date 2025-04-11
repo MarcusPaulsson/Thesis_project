@@ -1,41 +1,42 @@
 def generate_string(n, s, t):
-    # Initialize counts for 'a', 'b', and 'c'
+    # Count of each character
     counts = {'a': n, 'b': n, 'c': n}
     
-    # Create a list to build the result string
+    # Create a list to hold the result
     res = []
     
-    # Function to check if the last two characters form a forbidden substring
-    def is_forbidden():
-        return ''.join(res[-2:]) in (s, t) if len(res) >= 2 else False
+    # Function to check if adding a character would create a forbidden substring
+    def can_add_char(c):
+        if len(res) >= 1 and res[-1] == c:
+            return False
+        if len(res) >= 1 and res[-1] + c in (s, t):
+            return False
+        return True
     
-    # Build the result string while avoiding forbidden substrings
+    # Try to build the result string
     while sum(counts.values()) > 0:
         for char in 'abc':
-            if counts[char] > 0:
+            if counts[char] > 0 and can_add_char(char):
                 res.append(char)
                 counts[char] -= 1
-                if is_forbidden():
-                    res.pop()
-                    counts[char] += 1
-                else:
-                    break
+                break
         else:
-            # If we couldn't add any character, it means we are stuck
-            return "NO", ""
+            # If we went through all characters and couldn't add any, we are stuck
+            return "NO"
     
-    # Check if the result is valid
-    return "YES", ''.join(res)
+    # Join the result list into a string
+    result_string = ''.join(res)
+    
+    # Check if the result contains forbidden substrings
+    if s in result_string or t in result_string:
+        return "NO"
+    
+    return "YES\n" + result_string
 
 # Input reading
 n = int(input())
 s = input().strip()
 t = input().strip()
 
-# Generate the result
-result = generate_string(n, s, t)
-
-# Output the result
-print(result[0])
-if result[0] == "YES":
-    print(result[1])
+# Generate and print the result
+print(generate_string(n, s, t))

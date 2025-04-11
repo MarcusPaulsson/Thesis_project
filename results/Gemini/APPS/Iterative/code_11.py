@@ -12,9 +12,11 @@ red_count = n // a
 blue_count = n // b
 both_count = n // lcm(a, b)
 
+total_chocolates = 0
+
 if p > q:
-    total_chocolates = red_count * p + (blue_count - both_count) * q
+    total_chocolates += red_count * p + (blue_count - both_count) * q
 else:
-    total_chocolates = blue_count * q + (red_count - both_count) * p
+    total_chocolates += blue_count * q + (red_count - both_count) * p
 
 print(total_chocolates)

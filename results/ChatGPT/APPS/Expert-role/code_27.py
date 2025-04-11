@@ -1,16 +1,20 @@
+def min_operations(n, s):
+    min_ops = n  # Start with the maximum operations (typing each character)
+    
+    # Check for every possible prefix length
+    for i in range(1, n + 1):
+        prefix = s[:i]
+        # Check if the string can be formed by prefix + copy + remaining characters
+        if s.startswith(prefix):
+            # Calculate operations: type prefix + copy + remaining characters
+            operations = i + 1 + (n - 2 * i) if n >= 2 * i else i
+            min_ops = min(min_ops, operations)
+    
+    return min_ops
+
+# Input reading
 n = int(input())
-s = input()
+s = input().strip()
 
-# Initialize the minimum operations to the length of the string
-min_operations = n
-
-# Check for all possible prefixes
-for i in range(1, n):
-    # If the prefix can be doubled and still fit in the string
-    if s[:i] == s[i:i+i]:
-        # Calculate operations: type prefix + copy + remaining characters
-        operations = i + 1 + (n - 2 * i)
-        min_operations = min(min_operations, operations)
-
-# Print the minimum operations found
-print(min_operations)
+# Output the result
+print(min_operations(n, s))

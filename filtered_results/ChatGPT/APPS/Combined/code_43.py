@@ -1,37 +1,43 @@
 import sys
 import math
 
-def main():
-    input_data = sys.stdin.read().strip().splitlines()
-    n = int(input_data[0])
-    vectors = []
+def find_min_angle_pair(n, vectors):
+    angles = []
 
-    for i in range(1, n + 1):
-        x, y = map(int, input_data[i].split())
-        angle = math.atan2(y, x)
-        vectors.append((angle, i))
-
-    # Sort vectors by angle
-    vectors.sort()
-
-    min_angle = float('inf')
-    answer = (0, 0)
-
-    # Check the minimal angle between consecutive vectors
+    # Calculate angles and store with their original indices
     for i in range(n):
-        current_angle = vectors[i][0]
-        next_angle = vectors[(i + 1) % n][0]
-        
-        # Calculate the angle difference
-        angle_diff = (next_angle - current_angle) % (2 * math.pi)
-        if angle_diff > math.pi:
-            angle_diff = 2 * math.pi - angle_diff
+        x, y = vectors[i]
+        angle = math.atan2(y, x)  # Angle in radians
+        angles.append((angle, i + 1))  # Store angle and 1-based index
 
+    # Sort angles
+    angles.sort()
+
+    # Initialize minimum angle and pair of indices
+    min_angle = float('inf')
+    min_pair = (0, 0)
+
+    # Check adjacent angles in the sorted list
+    for i in range(n):
+        angle1, index1 = angles[i]
+        angle2, index2 = angles[(i + 1) % n]  # Wrap around to first element
+        
+        # Calculate the non-oriented angle
+        angle_diff = angle2 - angle1
+        if angle_diff < 0:
+            angle_diff += 2 * math.pi
+        
+        # Update minimum angle and pair if found a smaller angle
         if angle_diff < min_angle:
             min_angle = angle_diff
-            answer = (vectors[i][1], vectors[(i + 1) % n][1])
+            min_pair = (index1, index2)
 
-    print(answer[0], answer[1])
+    return min_pair
 
-if __name__ == "__main__":
-    main()
+# Read input
+n = int(sys.stdin.readline().strip())
+vectors = [tuple(map(int, sys.stdin.readline().strip().split())) for _ in range(n)]
+
+# Find and print the result
+result = find_min_angle_pair(n, vectors)
+print(result[0], result[1])

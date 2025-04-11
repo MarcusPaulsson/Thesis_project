@@ -1,15 +1,14 @@
 def solve():
     a, b = map(int, input().split())
     
-    ans = -1
     for price in range(1, 2001):
-        tax8 = int(price * 0.08)
-        tax10 = int(price * 0.10)
+        tax_8 = int(price * 0.08)
+        tax_10 = int(price * 0.10)
         
-        if tax8 == a and tax10 == b:
-            ans = price
-            break
-            
-    print(ans)
+        if tax_8 == a and tax_10 == b:
+            print(price)
+            return
+    
+    print("-1")
 
 solve()

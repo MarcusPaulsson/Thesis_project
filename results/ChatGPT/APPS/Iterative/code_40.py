@@ -6,8 +6,7 @@ if any(a != b for a, b in ratings):
     print("rated")
 else:
     # Check if the ratings are in non-increasing order
-    unrated = any(ratings[i][0] < ratings[i + 1][0] for i in range(n - 1))
-    if unrated:
+    if any(ratings[i][0] < ratings[i + 1][0] for i in range(n - 1)):
         print("unrated")
     else:
         print("maybe")

@@ -8,10 +8,10 @@ def solve():
         prefix = s[:i]
         if s.startswith(prefix * 2):
             ans = min(ans, i + 1 + (n - 2 * i))
-        elif s[:i] == s[i:2*i] and 2*i <= n:
-            ans = min(ans, i + 1 + (n - 2*i))
-        
-        
+        elif s.startswith(prefix) and s[i:].startswith(prefix) and len(prefix) <= len(s[i:]):
+            if s[:i] == s[i:2*i] and 2*i <= n:
+                ans = min(ans, i + 1 + (n - 2*i))
+    
     print(ans)
 
 solve()

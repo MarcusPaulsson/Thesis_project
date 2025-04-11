@@ -1,16 +1,15 @@
 def solve():
     n, a, b = map(int, input().split())
     
-    ans = 0
+    max_x = 0
     for i in range(1, n):
-        if i > a or n - i > b:
-            continue
-        
-        x = a // i
-        y = b // (n - i)
-        
-        ans = max(ans, min(x, y))
+        if i >= 1 and i < n:
+            x1 = a // i
+            x2 = b // (n - i)
+            
+            if x1 > 0 and x2 > 0:
+                max_x = max(max_x, min(x1, x2))
     
-    print(ans)
+    print(max_x)
 
 solve()

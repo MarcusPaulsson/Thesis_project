@@ -7,17 +7,15 @@ changed = False
 
 for i in range(n):
     original_digit = int(a[i])
-    mapped_digit = f[original_digit - 1]
+    new_digit = f[original_digit - 1]
     
-    if mapped_digit > original_digit:
+    if new_digit > original_digit:
         if not changed:
             changed = True
-            max_number[i] = str(mapped_digit)
+            max_number[i] = str(new_digit)
         else:
-            max_number[i] = str(mapped_digit)
-    elif mapped_digit < original_digit and changed:
+            max_number[i] = str(new_digit)
+    elif new_digit < original_digit and changed:
         break
-    else:
-        max_number[i] = str(original_digit)
 
 print(''.join(max_number))

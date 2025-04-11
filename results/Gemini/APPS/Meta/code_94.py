@@ -3,51 +3,40 @@ def solve():
     
     if a > b:
         start = 0
-        a, b = b, a
+        a_char = '0'
+        b_char = '1'
     else:
         start = 1
+        a_char = '1'
+        b_char = '0'
     
-    s = ""
+    result = ""
     
-    if x % 2 == 0:
-        for i in range(x // 2):
-            s += str(start)
-            s += str(1 - start)
-        
-        if start == 0:
-            s = "1" + s
-            b -= 1
-            s += "0" * a
-            s += "1" * b
-        else:
-            s = "0" + s
-            a -= 1
-            s += "1" * b
-            s += "0" * a
-        
+    if start == 0:
+        result += a_char
+        a -= 1
     else:
-        for i in range(x // 2):
-            s += str(start)
-            s += str(1 - start)
-        
-        s += str(start)
-        
-        if start == 0:
-            a -= 1
-            s += "0" * a
-            s += "1" * b
-        else:
+        result += b_char
+        b -= 1
+    
+    x -= 1
+    
+    while x > 0:
+        if result[-1] == a_char:
+            result += b_char
             b -= 1
-            s += "1" * b
-            s += "0" * a
+        else:
+            result += a_char
+            a -= 1
+        x -= 1
     
-    if a > b:
-        start = 0
-        a, b = b, a
-        s = "".join(["1" if c == "0" else "0" for c in s])
+    if result[-1] == a_char:
+        result += b_char * b
+        result += a_char * a
     else:
-        start = 1
+        result += a_char * a
+        result += b_char * b
     
-    print(s)
+    print(result)
 
 solve()

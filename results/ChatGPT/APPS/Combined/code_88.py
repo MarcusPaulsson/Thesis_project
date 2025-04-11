@@ -1,53 +1,50 @@
-def create_palindromic_matrix(n, numbers):
-    from collections import Counter
-    
-    # Count the frequency of each number
+from collections import Counter
+
+def is_palindromic_matrix_possible(n, numbers):
     count = Counter(numbers)
-    
-    # Check for the possibility of forming a palindromic matrix
     odd_count = sum(1 for freq in count.values() if freq % 2 != 0)
-    if odd_count > 1:
-        return "NO"
     
-    # Prepare the matrix
+    if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
+        return False
+    
+    return True
+
+def construct_palindromic_matrix(n, numbers):
+    count = Counter(numbers)
     matrix = [[0] * n for _ in range(n)]
     
-    # Fill the half list with half of the frequencies
-    half = []
-    center_value = None
-    for value, freq in count.items():
-        half.extend([value] * (freq // 2))
-        if freq % 2 != 0:
-            center_value = value
+    half_n = (n + 1) // 2
+    idx = 0
     
-    # Fill the matrix symmetrically
-    index = 0
-    for i in range(n):
-        for j in range(n):
-            if i < (n + 1) // 2:  # Fill only the top half and the center row if n is odd
-                if j < (n + 1) // 2:  # Fill only the left half and the center column if n is odd
-                    matrix[i][j] = half[index]
-                    matrix[i][n - j - 1] = half[index]
-                    matrix[n - i - 1][j] = half[index]
-                    matrix[n - i - 1][n - j - 1] = half[index]
-                    index += 1
-                elif n % 2 == 1 and j == n // 2:  # Fill the center cell if n is odd
-                    matrix[i][j] = center_value
-                    matrix[n - i - 1][j] = center_value
+    for num, freq in count.items():
+        for _ in range(freq // 2):
+            row, col = divmod(idx, n)
+            matrix[row][col] = num
+            matrix[n - 1 - row][n - 1 - col] = num
+            idx += 1
+            
+    if n % 2 == 1:
+        center = n // 2
+        for num, freq in count.items():
+            if freq % 2 == 1:
+                matrix[center][center] = num
+                break
     
-    return "YES", matrix
+    return matrix
 
-# Input reading
-n = int(input().strip())
-numbers = list(map(int, input().strip().split()))
-
-# Generate the result
-result = create_palindromic_matrix(n, numbers)
-
-# Output the result
-if result == "NO":
-    print(result)
-else:
-    print(result[0])
-    for row in result[1]:
+def main():
+    n = int(input().strip())
+    numbers = list(map(int, input().strip().split()))
+    
+    if not is_palindromic_matrix_possible(n, numbers):
+        print("NO")
+        return
+    
+    matrix = construct_palindromic_matrix(n, numbers)
+    
+    print("YES")
+    for row in matrix:
         print(" ".join(map(str, row)))
+
+if __name__ == "__main__":
+    main()

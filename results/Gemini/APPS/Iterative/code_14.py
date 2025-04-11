@@ -2,32 +2,62 @@ def solve():
     n, k = map(int, input().split())
     p = list(map(int, input().split()))
 
-    used = [False] * (n + 1)
-    for x in p:
-        used[x] = True
-
+    used = set(p)
     remaining = []
     for i in range(n, 0, -1):
-        if not used[i]:
+        if i not in used:
             remaining.append(i)
 
-    p_full = p[:]
-    p_full.extend(remaining)
-
+    p = p + remaining
+    
     def is_stack_sortable(arr):
-        stack = []
-        output = []
+        a = arr[:]
+        s = []
+        b = []
         
-        for num in arr:
-            stack.append(num)
-            while stack and stack[-1] == len(output) + 1:
-                output.append(stack.pop())
+        i = 0
+        j = 0
         
-        return len(output) == len(arr)
+        while i < len(arr) or len(s) > 0:
+            
+            if len(s) > 0 and (i == len(arr) or s[-1] < (arr[i] if i < len(arr) else float('inf'))):
+                b.append(s.pop())
+            elif i < len(arr):
+                s.append(arr[i])
+                i += 1
+            else:
+                return False
+                
+        for i in range(len(b) - 1):
+            if b[i] > b[i+1]:
+                return False
+        return True
 
-    if is_stack_sortable(p_full):
-        print(*p_full)
-    else:
+    
+    used = set(p[:k])
+    remaining = []
+    for i in range(n, 0, -1):
+        if i not in used:
+            remaining.append(i)
+    
+    
+    best_p = None
+    
+    import itertools
+    
+    for perm in itertools.permutations(remaining):
+        temp_p = p[:k] + list(perm)
+        
+        if is_stack_sortable(temp_p):
+            if best_p is None:
+                best_p = temp_p
+            else:
+                if temp_p > best_p:
+                    best_p = temp_p
+    
+    if best_p is None:
         print("-1")
+    else:
+        print(*best_p)
 
 solve()

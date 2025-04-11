@@ -2,18 +2,19 @@ from collections import deque
 
 def solve():
     n, k = map(int, input().split())
-    main_courses = list(map(int, input().split()))
+    main_courses = set(map(int, input().split()))
     dependencies = []
-    for _ in range(n):
-        line = list(map(int, input().split()))
-        dependencies.append(line[1:])
-
     in_degree = [0] * (n + 1)
     adj = [[] for _ in range(n + 1)]
-    for i in range(n):
-        for dependency in dependencies[i]:
-            adj[dependency].append(i + 1)
-            in_degree[i + 1] += 1
+
+    for i in range(1, n + 1):
+        line = list(map(int, input().split()))
+        t = line[0]
+        deps = line[1:]
+        dependencies.append(deps)
+        for dep in deps:
+            adj[dep].append(i)
+            in_degree[i] += 1
 
     q = deque()
     for i in range(1, n + 1):
@@ -39,49 +40,42 @@ def solve():
 
     
     required_courses = set(main_courses)
-    
-    reachable = [False] * (n + 1)
-    q = deque(main_courses)
-    for course in main_courses:
-        reachable[course] = True
-    
-    while q:
-        u = q.popleft()
-        for i in range(1, n + 1):
-            if u in adj[i]:
-                if not reachable[i]:
-                    reachable[i] = True
-                    q.append(i)
-                    required_courses.add(i)
-    
-    
     result = []
     visited = [False] * (n + 1)
-    
+
     def dfs(course):
         if visited[course]:
-            return True
-        
+            return
         visited[course] = True
-        
-        for dependency in dependencies[course-1]:
-            if not dfs(dependency):
-                return False
-        
+        for dep in dependencies[course - 1]:
+            if not visited[dep]:
+                dfs(dep)
         result.append(course)
-        return True
-    
     
     for course in main_courses:
-        if not dfs(course):
-            print("-1")
-            return
-            
+        if not visited[course]:
+            dfs(course)
+    
+    result.reverse()
+    
     final_result = []
-    for course in reversed(result):
-        if course not in final_result:
-            final_result.append(course)
+    final_visited = [False] * (n + 1)
+    
+    def dfs2(course):
+        if final_visited[course]:
+            return
+        final_visited[course] = True
+        for dep in dependencies[course - 1]:
+            if not final_visited[dep]:
+                dfs2(dep)
+        final_result.append(course)
+    
+    for course in main_courses:
+        if not final_visited[course]:
+            dfs2(course)
             
+    final_result.reverse()
+    
     print(len(final_result))
     print(*final_result)
 

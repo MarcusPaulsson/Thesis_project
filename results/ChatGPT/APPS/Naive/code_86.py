@@ -1,30 +1,32 @@
 def solve_problems(n, k):
-    # Minimum sum of problems needed to satisfy the conditions
+    # Minimum sum required to satisfy the conditions
     min_sum = k * (k + 1) // 2
     if n < min_sum:
-        return "NO"
-
-    # Start with the minimum valid sequence
+        print("NO")
+        return
+    
+    # Start with the minimum valid array
     a = list(range(1, k + 1))
     current_sum = sum(a)
-
+    
     # Distribute the remaining problems
     remaining = n - current_sum
+    
     for i in range(k - 1, -1, -1):
-        # Maximum we can add to a[i] while satisfying the conditions
+        # Maximum we can add to a[i] while respecting the constraints
         max_add = min(remaining, (2 * a[i]) - a[i])
         a[i] += max_add
         remaining -= max_add
+        
         if remaining <= 0:
             break
-
-    # Check if we have distributed all problems
-    if sum(a) == n:
-        return "YES\n" + " ".join(map(str, a))
+    
+    if remaining > 0:
+        print("NO")
     else:
-        return "NO"
+        print("YES")
+        print(" ".join(map(str, a)))
 
-# Read input
+# Example usage
 n, k = map(int, input().split())
-result = solve_problems(n, k)
-print(result)
+solve_problems(n, k)

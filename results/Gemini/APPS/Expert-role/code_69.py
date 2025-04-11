@@ -2,7 +2,7 @@ def solve():
     n, m, d = map(int, input().split())
     edges = []
     for _ in range(m):
-        edges.append(list(map(int, input().split())))
+        edges.append(tuple(map(int, input().split())))
 
     def find_spanning_tree(graph_edges, num_nodes, required_degree):
         adj = [[] for _ in range(num_nodes + 1)]
@@ -10,48 +10,54 @@ def solve():
             adj[u].append(v)
             adj[v].append(u)
 
-        def bfs(start_node, all_edges):
-            visited = [False] * (num_nodes + 1)
-            q = [start_node]
-            visited[start_node] = True
+        def bfs(start_node, available_edges):
+            visited = {start_node}
+            queue = [start_node]
             spanning_tree_edges = []
+
+            while queue:
+                u = queue.pop(0)
+                neighbors = []
+                for v1, v2 in available_edges:
+                    if v1 == u:
+                        neighbors.append(v2)
+                    elif v2 == u:
+                        neighbors.append(v1)
+                
+                for v in neighbors:
+                    if v not in visited:
+                        visited.add(v)
+                        queue.append(v)
+                        spanning_tree_edges.append((u, v))
             
-            while q:
-                u = q.pop(0)
-                for v in adj[u]:
-                    if not visited[v]:
-                        edge = (min(u, v), max(u, v))
-                        if edge in [tuple(sorted(e)) for e in graph_edges]:
-                                spanning_tree_edges.append((u, v))
-                                visited[v] = True
-                                q.append(v)
-            
-            for i in range(1, num_nodes + 1):
-                if not visited[i]:
-                    return None
-            return spanning_tree_edges
+            if len(visited) == num_nodes:
+                return spanning_tree_edges
+            else:
+                return None
 
-        spanning_tree = bfs(1, edges)
-
-        if spanning_tree is None:
-            return None
-
-        degree_of_one = 0
-        for u, v in spanning_tree:
-            if u == 1 or v == 1:
-                degree_of_one += 1
-
-        if degree_of_one == required_degree:
-            return spanning_tree
-        else:
-            return None
         
+        import itertools
+        
+        for comb in itertools.combinations(edges, n - 1):
+            
+            spanning_tree_edges = bfs(1, list(comb))
+            
+            if spanning_tree_edges is not None:
+                degree_of_one = 0
+                for u, v in spanning_tree_edges:
+                    if u == 1 or v == 1:
+                        degree_of_one += 1
+                
+                if degree_of_one == required_degree:
+                    return spanning_tree_edges
+        
+        return None
 
-    result = find_spanning_tree(edges, n, d)
+    spanning_tree = find_spanning_tree(edges, n, d)
 
-    if result:
+    if spanning_tree:
         print("YES")
-        for u, v in result:
+        for u, v in spanning_tree:
             print(u, v)
     else:
         print("NO")

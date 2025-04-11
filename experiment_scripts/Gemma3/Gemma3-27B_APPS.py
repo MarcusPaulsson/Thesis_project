@@ -23,7 +23,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
     """
     client = genai.Client(api_key=config.GEMINI_API_KEY)
     model = "gemma-3-27b-it"
-    user_prompt = system_prompt + " Use python to code. Give only the code.\n" + task_prompt
+    user_prompt = system_prompt + " Use python to code.\n" + task_prompt + prompt.TAIL_PROMPT
     time.sleep(4)
     contents = [
         types.Content(

@@ -6,31 +6,42 @@ def solve():
         print(0)
         return
 
-    distinct_values = sorted(list(set(a)))
-
-    if len(distinct_values) > 3:
-        print(-1)
-        return
-
-    if len(distinct_values) == 1:
-        print(0)
-        return
-
-    if len(distinct_values) == 2:
-        diff = abs(distinct_values[0] - distinct_values[1])
-        if diff % 2 == 0:
-            print(diff // 2)
-        else:
-            print(diff)
-        return
-
-    if len(distinct_values) == 3:
-        v1, v2, v3 = distinct_values
-        if v2 - v1 == v3 - v2:
-            print(v2 - v1)
-        else:
-            print(-1)
-        return
-
+    for d in range(101):
+        possible = True
+        
+        
+        first_val = None
+        
+        
+        for target in range(1, 101):
+            
+            valid_d = True
+            
+            
+            first_val_found = False
+            
+            for i in range(n):
+                
+                if a[i] == target:
+                    if not first_val_found:
+                        first_val_found = True
+                    continue
+                elif a[i] + d == target:
+                    if not first_val_found:
+                        first_val_found = True
+                    continue
+                elif a[i] - d == target:
+                    if not first_val_found:
+                        first_val_found = True
+                    continue
+                else:
+                    valid_d = False
+                    break
+            
+            if valid_d and first_val_found:
+                print(d)
+                return
+    
+    print(-1)
 
 solve()

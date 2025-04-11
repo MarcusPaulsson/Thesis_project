@@ -1,31 +1,40 @@
+def schedule_exams(n, m, exams):
+    days = [0] * n
+    exam_days = set()
+    preparation_needed = [0] * m
+    
+    for i in range(m):
+        s, d, c = exams[i]
+        preparation_needed[i] = c
+        exam_days.add(d - 1)  # Store exam days (0-indexed)
+    
+    for i in range(m):
+        s, d, c = exams[i]
+        prep_days = 0
+        
+        for j in range(s - 1, d - 1):  # s-1 to d-2 (0-indexed)
+            if prep_days < c and days[j] == 0:
+                days[j] = i + 1  # Mark preparation for exam i
+                prep_days += 1
+        
+        if prep_days < c:
+            return -1  # Not enough preparation days
+    
+    for i in range(n):
+        if days[i] == 0 and i in exam_days:
+            days[i] = m + 1  # Mark exam day
+        elif days[i] == 0:
+            days[i] = 0  # Rest day
+    
+    return days
+
+# Input reading
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-# Schedule initialization
-schedule = [0] * n  # 0 means rest day
-exam_days = set()
+result = schedule_exams(n, m, exams)
 
-# Mark exam days
-for i in range(m):
-    s, d, c = exams[i]
-    exam_days.add(d - 1)  # d is 1-based, convert to 0-based
-    schedule[d - 1] = m + 1  # m + 1 means an exam day
-
-# Prepare days tracking
-prepare_count = [0] * m
-
-# Try to allocate preparation days
-for day in range(n):
-    if day in exam_days:
-        continue  # Can't prepare on exam days
-    for i in range(m):
-        if prepare_count[i] < exams[i][2] and exams[i][0] - 1 <= day < exams[i][1] - 1:
-            schedule[day] = i + 1  # Mark preparation for exam i
-            prepare_count[i] += 1
-            break
-
-# Check if all preparations are satisfied
-if all(prepare_count[i] == exams[i][2] for i in range(m)):
-    print(' '.join(map(str, schedule)))
-else:
+if result == -1:
     print(-1)
+else:
+    print(' '.join(map(str, result)))

@@ -17,7 +17,7 @@ def min_replacements_to_lucky(ticket):
         # We need to decrease the first half or increase the second half
         changes = [9 - digit for digit in first_half] + [digit for digit in second_half]
     else:
-        # We need to decrease the second half or increase the first half
+        # We need to increase the first half or decrease the second half
         changes = [digit for digit in first_half] + [9 - digit for digit in second_half]
     
     # Sort changes in descending order
@@ -33,7 +33,7 @@ def min_replacements_to_lucky(ticket):
     
     return replacements
 
-# Input
+# Read input
 ticket = input().strip()
-# Output
+# Print the result
 print(min_replacements_to_lucky(ticket))

@@ -1,7 +1,7 @@
 def min_cost_to_obtain_set(n, k, s):
     unique_subsequences = set()
     
-    # Generate all subsequences
+    # Generate all possible subsequences
     for i in range(1 << n):
         subsequence = []
         for j in range(n):
@@ -9,17 +9,17 @@ def min_cost_to_obtain_set(n, k, s):
                 subsequence.append(s[j])
         unique_subsequences.add(''.join(subsequence))
     
-    # Calculate the cost for each unique subsequence
+    # If we can't obtain k unique subsequences
+    if len(unique_subsequences) < k:
+        return -1
+    
+    # Calculate the minimum cost
     costs = []
     for subseq in unique_subsequences:
         cost = n - len(subseq)
         costs.append(cost)
     
-    # Sort costs to minimize total cost
     costs.sort()
-    
-    if len(costs) < k:
-        return -1
     
     return sum(costs[:k])
 

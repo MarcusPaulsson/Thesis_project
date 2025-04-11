@@ -1,36 +1,35 @@
 def min_cost_to_obtain_set(n, k, s):
-    from collections import Counter
-    from math import comb
+    from collections import defaultdict
 
     # Count the frequency of each character
-    freq = Counter(s)
-    
-    # Calculate the number of unique subsequences we can generate
-    unique_subsequences_count = 0
-    subsequence_costs = []
+    freq = defaultdict(int)
+    for char in s:
+        freq[char] += 1
 
-    # Generate subsequences and their costs
-    for length in range(1, n + 1):
-        for char in freq:
-            if freq[char] >= length:
-                # The number of ways to choose 'length' characters from 'freq[char]'
-                count = comb(freq[char], length)
-                unique_subsequences_count += count
-                subsequence_costs.extend([n - length] * count)
-    
-    # If we cannot generate enough unique subsequences
-    if unique_subsequences_count < k:
+    # Calculate the number of unique subsequences and their costs
+    unique_subsequences = 0
+    costs = []
+
+    # Generate all possible subsequences and their costs
+    for length in range(n + 1):
+        for char, count in freq.items():
+            if count > 0:
+                # The cost to create a subsequence of this length
+                cost = n - length
+                # Count how many unique subsequences of this length can be formed
+                count_of_subsequences = min(count, 2 ** length - 1)
+                unique_subsequences += count_of_subsequences
+                costs.extend([cost] * count_of_subsequences)
+
+    # If we cannot form at least k unique subsequences
+    if unique_subsequences < k:
         return -1
-    
-    # Sort costs to minimize the total cost
-    subsequence_costs.sort()
-    
-    # Calculate the minimum cost to obtain k unique subsequences
-    total_cost = sum(subsequence_costs[:k])
-    
-    return total_cost
 
-# Input reading
+    # Sort costs and sum the minimum k costs
+    costs.sort()
+    return sum(costs[:k])
+
+# Read input
 n, k = map(int, input().split())
 s = input().strip()
 

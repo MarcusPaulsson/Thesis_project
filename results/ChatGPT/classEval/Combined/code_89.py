@@ -1,7 +1,7 @@
 import random
 import ast
 import operator
-import unittest
+
 
 class TwentyFourPointGame:
     """
@@ -56,35 +56,3 @@ class TwentyFourPointGame:
         allowed_chars = set("0123456789+-*/() ")
         return all(char in allowed_chars for char in expression)
 
-
-# Unit tests
-class TwentyFourPointGameTest(unittest.TestCase):
-    
-    def test_get_my_cards(self):
-        game = TwentyFourPointGame()
-        cards = game.get_my_cards()
-        self.assertEqual(len(cards), 4)
-        for card in cards:
-            self.assertIn(card, range(1, 10))
-
-    def test_answer_valid_expression(self):
-        game = TwentyFourPointGame()
-        game.nums = [4, 3, 6, 6]
-        self.assertTrue(game.answer('4*3+6+6'))
-
-    def test_answer_invalid_expression(self):
-        game = TwentyFourPointGame()
-        self.assertFalse(game.answer('1+1+1+1'))
-        self.assertFalse(game.answer('1+'))
-        self.assertFalse(game.answer('abc'))
-
-    def test_evaluate_expression(self):
-        game = TwentyFourPointGame()
-        self.assertTrue(game.evaluate_expression('4*3+6+6'))
-        self.assertFalse(game.evaluate_expression('4+3+6+6'))
-        self.assertFalse(game.evaluate_expression('1+1+1+1'))
-        self.assertFalse(game.evaluate_expression('1+'))
-        self.assertFalse(game.evaluate_expression('abc'))
-
-if __name__ == '__main__':
-    unittest.main()

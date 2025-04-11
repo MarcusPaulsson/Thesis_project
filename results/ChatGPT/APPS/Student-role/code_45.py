@@ -9,17 +9,17 @@ def find_sequence(n, k):
     max_gcd = (n - min_sum) // k + 1
     
     # Create the sequence
-    sequence = [(i + max_gcd) for i in range(1, k + 1)]
+    sequence = [i + max_gcd for i in range(1, k + 1)]
+    
+    # Adjust the last element to ensure the sum is exactly n
+    sequence[-1] += (n - sum(sequence))
     
     return sequence
 
-# Read input
+# Input reading
 n, k = map(int, input().split())
-
-# Get the result
 result = find_sequence(n, k)
 
-# Print the result
 if result == -1:
     print(-1)
 else:

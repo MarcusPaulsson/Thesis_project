@@ -19,21 +19,8 @@ def solve():
                 break
         
         if possible:
-            
-            kefa_shifted = []
-            for i in range(n):
-                kefa_shifted.append(kefa[i])
-            
-            sasha_shifted = []
-            for i in range(n):
-                sasha_shifted.append((sasha[i] + start_diff) % l)
-            
-            sasha_shifted.sort()
-            kefa_shifted.sort()
-            
-            if sasha_shifted == kefa_shifted:
-                print("YES")
-                return
+            print("YES")
+            return
     
     print("NO")
 

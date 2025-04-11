@@ -13,6 +13,11 @@ def solve():
         print(abs(pos - l) + 1)
         return
 
-    print(min(abs(pos - l) + abs(r - l) + 2, abs(pos - r) + abs(r - l) + 2))
+    if pos < l:
+        print(abs(pos - l) + 1 + abs(r - l) + 1)
+    elif pos > r:
+        print(abs(pos - r) + 1 + abs(r - l) + 1)
+    else:
+        print(min(abs(pos - l) + 1 + abs(r - l) + 1, abs(pos - r) + 1 + abs(r - l) + 1))
 
 solve()

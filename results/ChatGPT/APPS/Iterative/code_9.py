@@ -1,10 +1,10 @@
 d = int(input())
 n, m = map(int, input().split())
-sofas = []
 
+sofas = []
 for _ in range(d):
     x1, y1, x2, y2 = map(int, input().split())
-    sofas.append((x1, y1, x2, y2))
+    sofas.append((min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)))
 
 cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
 

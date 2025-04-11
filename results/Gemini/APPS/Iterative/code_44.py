@@ -1,19 +1,22 @@
 d, k, a, b, t = map(int, input().split())
 
 if d <= k:
-  print(d * a)
+    print(d * a)
 else:
-  cost = k * a
-  remaining_distance = d - k
-  
-  if t + k * a < k * b:
-    num_breaks = remaining_distance // k
-    cost += num_breaks * (t + k * a)
-    remaining_distance %= k
+    cost = k * a
+    d -= k
     
-    if remaining_distance > 0:
-      cost += min(t + remaining_distance * a, remaining_distance * b)
-  else:
-    cost += remaining_distance * b
-    
-  print(cost)
+    if a * k + t < b * k:
+        num_breaks = d // k
+        
+        if num_breaks > 0:
+            cost += num_breaks * min(a * k + t, b * k)
+        
+        d %= k
+        
+        if d > 0:
+            cost += min(a * d + t, b * d)
+    else:
+        cost += b * d
+        
+    print(cost)

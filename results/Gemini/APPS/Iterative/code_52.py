@@ -6,30 +6,33 @@ def solve():
 
     dp = {}
 
-    def get_dp(row_idx, total_sum_mod_k):
+    def get_dp(row_idx, current_sum):
+        if (row_idx, current_sum) in dp:
+            return dp[(row_idx, current_sum)]
+
         if row_idx == n:
-            return 0 if total_sum_mod_k == 0 else float('-inf')
+            if current_sum % k == 0:
+                return 0
+            else:
+                return float('-inf')
+
+        max_sum_for_row = float('-inf')
         
-        if (row_idx, total_sum_mod_k) in dp:
-            return dp[(row_idx, total_sum_mod_k)]
-
-        max_sum = float('-inf')
-
+        # Iterate through all possible combinations of elements in the current row
         for count in range(min(m // 2 + 1, m + 1)):
             for mask in range(1 << m):
-                selected_count = 0
-                current_sum = 0
-                for j in range(m):
-                    if (mask >> j) & 1:
-                        selected_count += 1
-                        current_sum += a[row_idx][j]
-                
-                if selected_count == count:
-                    max_sum = max(max_sum, current_sum + get_dp(row_idx + 1, (total_sum_mod_k + current_sum) % k))
-        
-        dp[(row_idx, total_sum_mod_k)] = max_sum
-        return max_sum
+                if bin(mask).count('1') == count:
+                    row_sum = 0
+                    for j in range(m):
+                        if (mask >> j) & 1:
+                            row_sum += a[row_idx][j]
 
-    print(get_dp(0, 0))
+                    max_sum_for_row = max(max_sum_for_row, row_sum + get_dp(row_idx + 1, (current_sum + row_sum) % k))
+
+        dp[(row_idx, current_sum)] = max_sum_for_row
+        return max_sum_for_row
+
+    result = get_dp(0, 0)
+    print(result)
 
 solve()

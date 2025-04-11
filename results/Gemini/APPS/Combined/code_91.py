@@ -4,7 +4,7 @@ def solve():
     n = len(s)
     m = len(t)
     
-    max_len = 0
+    ans = 0
     
     for i in range(n + 1):
         for j in range(i, n + 1):
@@ -15,18 +15,20 @@ def solve():
                 temp_s += s[j:]
             
             
-            t_idx = 0
-            temp_s_idx = 0
+            ti = 0
+            tsi = 0
             
             possible = True
-            while t_idx < m and temp_s_idx < len(temp_s):
-                if t[t_idx] == temp_s[temp_s_idx]:
-                    t_idx += 1
-                temp_s_idx += 1
+            while ti < m and tsi < len(temp_s):
+                if t[ti] == temp_s[tsi]:
+                    ti += 1
+                    tsi += 1
+                else:
+                    tsi += 1
             
-            if t_idx == m:
-                max_len = max(max_len, j - i)
-                
-    print(max_len)
+            if ti == m:
+                ans = max(ans, j - i)
+    
+    print(ans)
 
 solve()

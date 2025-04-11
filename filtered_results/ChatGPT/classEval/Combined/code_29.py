@@ -38,35 +38,3 @@ class DataStatistics:
         count = Counter(data)
         max_freq = max(count.values())
         return sorted(num for num, freq in count.items() if freq == max_freq)
-
-# Unit tests for DataStatistics class
-import unittest
-
-class TestDataStatistics(unittest.TestCase):
-
-    def setUp(self):
-        self.ds = DataStatistics()
-
-    def test_mean(self):
-        self.assertEqual(self.ds.mean([1, 2, 3, 4, 5]), 3.00)
-        self.assertEqual(self.ds.mean([1, 2, 3, 4, 5, 6]), 3.50)
-        self.assertEqual(self.ds.mean([1, 2, 4, 5, 6, 7]), 4.17)
-        self.assertEqual(self.ds.mean([1, 2, 4, 5, 6, 7, 8]), 4.71)
-        self.assertEqual(self.ds.mean([1, 2, 4, 5, 6, 7, 8, 9]), 5.25)
-
-    def test_median(self):
-        self.assertEqual(self.ds.median([2, 5, 1, 3, 4]), 3.00)
-        self.assertEqual(self.ds.median([2, 5, 1, 3, 4, 6]), 3.50)
-        self.assertEqual(self.ds.median([2, 5, 1, 4, 6, 7]), 4.50)
-        self.assertEqual(self.ds.median([2, 5, 1, 4, 6, 7, 8]), 5.00)
-        self.assertEqual(self.ds.median([2, 5, 1, 4, 6, 7, 8, 9]), 5.50)
-
-    def test_mode(self):
-        self.assertEqual(self.ds.mode([2, 2, 3, 3, 4]), [2, 3])
-        self.assertEqual(self.ds.mode([2, 2, 2, 3, 3, 4]), [2])
-        self.assertEqual(self.ds.mode([2, 2, 3, 3, 4, 4]), [2, 3, 4])
-        self.assertEqual(self.ds.mode([2, 2, 3, 3, 4, 4, 4]), [4])
-        self.assertEqual(self.ds.mode([2, 2, 3, 3, 4, 4, 4, 5]), [4])
-
-if __name__ == "__main__":
-    unittest.main()

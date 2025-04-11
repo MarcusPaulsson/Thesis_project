@@ -50,32 +50,3 @@ class AreaCalculator:
         :return: area of annulus, float
         """
         return math.pi * (outer_radius ** 2 - inner_radius ** 2)
-
-# Unit tests
-import unittest
-
-class AreaCalculatorTest(unittest.TestCase):
-
-    def setUp(self):
-        self.circle_calculator = AreaCalculator(2)
-        self.sphere_calculator = AreaCalculator(2)
-        self.cylinder_calculator = AreaCalculator(2)
-        self.annulus_calculator = AreaCalculator(2.5)
-
-    def test_calculate_circle_area(self):
-        self.assertAlmostEqual(12.57, self.circle_calculator.calculate_circle_area(), delta=0.01)
-
-    def test_calculate_sphere_area(self):
-        self.assertAlmostEqual(50.27, self.sphere_calculator.calculate_sphere_area(), delta=0.01)
-
-    def test_calculate_cylinder_area(self):
-        self.assertAlmostEqual(50.27, self.cylinder_calculator.calculate_cylinder_area(2), delta=0.01)
-
-    def test_calculate_sector_area(self):
-        self.assertAlmostEqual(6.28, self.circle_calculator.calculate_sector_area(math.pi), delta=0.01)
-
-    def test_calculate_annulus_area(self):
-        self.assertAlmostEqual(25.13, self.annulus_calculator.calculate_annulus_area(1, 3), delta=0.01)
-
-if __name__ == "__main__":
-    unittest.main()

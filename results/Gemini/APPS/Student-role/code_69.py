@@ -38,7 +38,6 @@ def solve():
                     return True
                 return False
 
-            is_spanning = True
             num_edges_added = 0
             for u, v in tree_edges:
                 if union(u, v):
@@ -47,9 +46,9 @@ def solve():
             if num_edges_added != n - 1:
                 continue
 
-            degree = check_degree(tree_edges)
-            if degree == d:
+            if check_degree(tree_edges) == d:
                 return tree_edges
+
         return None
 
     spanning_tree = find_spanning_tree(edges, n, d)

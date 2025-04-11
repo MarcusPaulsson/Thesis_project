@@ -1,35 +1,22 @@
 def minimal_time_to_post_office(d, k, a, b, t):
-    # Calculate the time if Vasiliy walks the entire distance
-    walk_time = d * b
+    # If the car can drive the entire distance without breaking
+    if d <= k:
+        return d * a
     
-    # Initialize the minimum time with the walking time
-    min_time = walk_time
-    
-    # Calculate the number of full segments Vasiliy can drive
+    # Calculate the number of full segments the car can drive
     full_segments = d // k
     remaining_distance = d % k
     
-    # Calculate the time for driving full segments and walking the remaining distance
-    drive_time = full_segments * k * a
-    repair_time = full_segments * t
-    total_time = drive_time + repair_time + remaining_distance * b
+    # Time taken if using the car for full segments and walking the remaining distance
+    time_using_car = (full_segments * (k * a + t)) + (remaining_distance * a) - t
     
-    # Update minimum time if this option is better
-    min_time = min(min_time, total_time)
+    # Time taken if walking the entire distance
+    time_walking = d * b
     
-    # Check if he can drive less than full segments and walk the rest
-    for i in range(full_segments + 1):
-        drive_distance = i * k
-        drive_time = drive_distance * a
-        repair_time = i * t
-        remaining_distance = d - drive_distance
-        
-        total_time = drive_time + repair_time + remaining_distance * b
-        min_time = min(min_time, total_time)
-    
-    return min_time
+    # Return the minimum time
+    return min(time_using_car, time_walking)
 
-# Input reading
+# Read input
 d, k, a, b, t = map(int, input().split())
-# Output the result
+# Calculate and print the result
 print(minimal_time_to_post_office(d, k, a, b, t))

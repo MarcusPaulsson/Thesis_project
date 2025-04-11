@@ -16,16 +16,15 @@ def solve():
         else:
             break
             
-        if l > r:
+        if l > r and a[l-1] <= k and a[r+1] <= k and l-1 == r+1:
             break
-        
-        can_solve_left = a[l] <= k if l <= r else False
-        can_solve_right = a[r] <=k if l <= r else False
-        
-        if not can_solve_left and not can_solve_right:
+        elif l > r and a[l-1] <=k and l-1 == r:
             break
-        
-
+        elif l > r and a[r+1] <=k and l == r+1:
+            break
+        elif l == r and a[l] <= k:
+            break
+            
     print(count)
 
 solve()

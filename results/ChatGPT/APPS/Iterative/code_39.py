@@ -7,9 +7,7 @@ if not is_palindrome(s):
     print(len(s))
 else:
     # Check for the longest non-palindrome substring
-    n = len(s)
-    # If all characters are the same, return 0
-    if s.count(s[0]) == n:
+    if len(set(s)) == 1:  # All characters are the same
         print(0)
     else:
-        print(n - 1)  # The longest non-palindrome substring can be of length n-1
+        print(len(s) - 1)  # The longest non-palindrome substring will be of length len(s) - 1

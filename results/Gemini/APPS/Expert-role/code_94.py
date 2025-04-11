@@ -15,21 +15,36 @@ def solve():
         s += "1"
         b -= 1
     
-    for i in range(x):
-        if s[-1] == '0':
-            s += "1"
-            b -= 1
+    x -= 1
+    
+    curr = 1 - start
+    
+    while x > 0:
+        if curr == 0:
+            if a > 0:
+                s += "0"
+                a -= 1
+            else:
+                s += "1"
+                b -= 1
         else:
-            s += "0"
-            a -= 1
-            
-    if s[-1] == '0':
+            if b > 0:
+                s += "1"
+                b -= 1
+            else:
+                s += "0"
+                a -= 1
+        
+        curr = 1 - curr
+        x -= 1
+        
+    if curr == 0:
         s += "0" * a
         s += "1" * b
     else:
         s += "1" * b
         s += "0" * a
-        
+    
     print(s)
 
 solve()

@@ -16,11 +16,9 @@ def solve():
             return
         
         if direction == "North":
-            current_pos -= t
-            current_pos = max(0, current_pos)
+            current_pos = max(0, current_pos - t)
         elif direction == "South":
-            current_pos += t
-            current_pos = min(20000, current_pos)
+            current_pos = min(20000, current_pos + t)
         
     if current_pos == 0:
         print("YES")

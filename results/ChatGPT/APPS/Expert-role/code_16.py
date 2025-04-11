@@ -3,12 +3,16 @@ cnt2 = int(input())
 cnt3 = int(input())
 cnt4 = int(input())
 
-# Check if it is possible to form a regular bracket sequence
-if cnt1 + cnt2 < cnt3 + cnt4:
-    print(0)
+# A regular bracket sequence can be formed if:
+# 1. The total number of opening brackets must be equal to the total number of closing brackets.
+# 2. At any point in the sequence, the number of closing brackets must not exceed the number of opening brackets.
+
+# Calculate the total number of opening and closing brackets
+open_brackets = cnt1 + cnt2
+close_brackets = cnt2 + cnt3
+
+# Check the conditions for a regular bracket sequence
+if open_brackets >= close_brackets and (cnt1 - cnt3) >= 0:
+    print(1)
 else:
-    # Check if the excess closing brackets can be balanced
-    if cnt3 > cnt1 + cnt2:
-        print(0)
-    else:
-        print(1)
+    print(0)

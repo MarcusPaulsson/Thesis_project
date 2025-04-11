@@ -20,14 +20,11 @@ def solve():
         for i in range(n - 1):
             next_element = p[-1] + q[i]
             p.append(next_element)
-            if not (1 <= next_element <= n):
-                valid = False
-                break
-        
-        if valid and check_permutation(p):
+            
+        if check_permutation(p):
             print(*p)
             return
-    
-    print(-1)
+
+    print("-1")
 
 solve()

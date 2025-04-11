@@ -1,35 +1,42 @@
 def max_beauty(n, x, a):
     # Function to calculate the maximum subarray sum using Kadane's algorithm
     def kadane(arr):
-        max_sum = 0
-        current_sum = 0
+        max_ending_here = max_so_far = 0
         for value in arr:
-            current_sum += value
-            max_sum = max(max_sum, current_sum)
-            current_sum = max(current_sum, 0)
-        return max_sum
+            max_ending_here = max(0, max_ending_here + value)
+            max_so_far = max(max_so_far, max_ending_here)
+        return max_so_far
 
-    # Calculate the original beauty of the array
+    # Calculate the beauty of the original array
     original_beauty = kadane(a)
 
-    # If x is 0, we can only take the original beauty
-    if x == 0:
+    # If x is 1, multiplying by x doesn't change the array
+    if x == 1:
         return original_beauty
 
     # Calculate the maximum beauty after multiplying a subarray by x
-    max_increase = 0
+    max_with_x = 0
     current_sum = 0
+
     for i in range(n):
         current_sum += a[i]
-        # Calculate the potential increase if we multiply the subarray ending at i
-        potential_increase = current_sum * (x - 1)
-        max_increase = max(max_increase, potential_increase)
-        # Reset current_sum if it drops below 0
-        if current_sum < 0:
-            current_sum = 0
+        max_with_x = max(max_with_x, current_sum * x)
+        current_sum = max(current_sum, 0)
 
-    # The maximum beauty after the operation
-    return max(original_beauty, original_beauty + max_increase)
+    # Now we need to consider the case where we multiply a subarray by x
+    # We will calculate the maximum sum of the array after applying the multiplication
+    max_sum_with_x = 0
+    current_sum = 0
+
+    for i in range(n):
+        current_sum += a[i]
+        max_sum_with_x = max(max_sum_with_x, current_sum)
+        current_sum = max(current_sum, 0)
+
+    # Now we need to consider the case where we multiply a subarray by x
+    max_sum_with_x = max(max_sum_with_x, original_beauty + max_with_x)
+
+    return max(original_beauty, max_sum_with_x)
 
 # Input reading
 n, x = map(int, input().split())

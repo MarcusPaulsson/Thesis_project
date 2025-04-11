@@ -1,29 +1,35 @@
 def max_painted_sections(n, q, painters):
-    # Create a list to store the painted sections count
-    painted_count = [0] * (n + 1)
+    # Create an array to count the coverage of each section
+    coverage = [0] * (n + 1)
 
-    # Function to calculate the number of painted sections with a specific set of painters
-    def count_painted(painter_indices):
-        painted = [0] * (n + 1)
-        for index in painter_indices:
-            l, r = painters[index]
-            for j in range(l, r + 1):
-                painted[j] = 1
-        return sum(painted)
+    # Count the coverage of each section by all painters
+    for l, r in painters:
+        for i in range(l, r + 1):
+            coverage[i] += 1
 
-    max_sections = 0
+    # Calculate the total painted sections with all painters
+    total_painted = sum(1 for i in range(1, n + 1) if coverage[i] > 0)
 
-    # Try every combination of q - 2 painters
-    from itertools import combinations
-    for indices in combinations(range(q), q - 2):
-        max_sections = max(max_sections, count_painted(indices))
+    # If we hire q - 2 painters, we need to find the two painters that cover the least sections
+    contributions = []
+    for l, r in painters:
+        contribution = sum(1 for i in range(l, r + 1) if coverage[i] == 1)
+        contributions.append(contribution)
 
-    return max_sections
+    # Sort contributions in ascending order
+    contributions.sort()
 
-# Read input
+    # The maximum painted sections we can achieve is total painted minus the contributions of the two least contributing painters
+    if len(contributions) >= 2:
+        max_painted = total_painted - (contributions[0] + contributions[1])
+    else:
+        max_painted = total_painted
+
+    return max(max_painted, 0)  # Ensure we don't return negative painted sections
+
+# Input reading
 n, q = map(int, input().split())
 painters = [tuple(map(int, input().split())) for _ in range(q)]
 
-# Get the result and print it
-result = max_painted_sections(n, q, painters)
-print(result)
+# Output the result
+print(max_painted_sections(n, q, painters))

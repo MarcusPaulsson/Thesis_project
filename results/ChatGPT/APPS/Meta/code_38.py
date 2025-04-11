@@ -1,15 +1,12 @@
 def can_tracks_coincide(n, L, kefa_distances, sasha_distances):
-    # Calculate the distances between consecutive barriers for Kefa
+    # Calculate the distances between barriers for Kefa
     kefa_diffs = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
-    # Calculate the distances between consecutive barriers for Sasha
+    # Calculate the distances between barriers for Sasha
     sasha_diffs = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
     
-    # Check if kefa_diffs can be rotated to match sasha_diffs
-    double_kefa_diffs = kefa_diffs * 2  # Create a doubled list for rotation checking
-    
-    # Check if sasha_diffs is a subarray of double_kefa_diffs
+    # Check if the two lists of differences are the same, considering circular shifts
     for i in range(n):
-        if double_kefa_diffs[i:i+n] == sasha_diffs:
+        if kefa_diffs == sasha_diffs[i:] + sasha_diffs[:i]:
             return "YES"
     
     return "NO"

@@ -1,14 +1,13 @@
 def construct_string(n, k, t):
     # Find the longest suffix of t that is also a prefix
+    longest_overlap = 0
     for i in range(1, n):
-        if t[i:] == t[:n - i]:
-            overlap_length = n - i
+        if t[:n - i] == t[i:]:
+            longest_overlap = n - i
             break
-    else:
-        overlap_length = 0
-
+            
     # Construct the result string
-    result = t + (t[overlap_length:] * (k - 1))
+    result = t + (t[longest_overlap:] * (k - 1))
     return result
 
 # Read input

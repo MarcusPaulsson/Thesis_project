@@ -1,9 +1,9 @@
-import math
+import sys
 
 # Read input
-x, y, z = map(float, input().split())
+x, y, z = map(float, sys.stdin.readline().strip().split())
 
-# Define the expressions
+# Define the expressions and their corresponding values
 expressions = [
     (x**(y**z), "x^y^z"),
     (x**(z**y), "x^z^y"),
@@ -19,8 +19,8 @@ expressions = [
     ((z**y)**x, "(z^y)^x")
 ]
 
-# Find the maximum value and the corresponding expression
-max_value = -math.inf
+# Find the maximum value and its corresponding expression
+max_value = -1
 max_index = -1
 
 for i, (value, expr) in enumerate(expressions):

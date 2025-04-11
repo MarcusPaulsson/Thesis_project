@@ -2,156 +2,120 @@ def solve():
     n = int(input())
     a = list(map(int, input().split()))
 
-    def find_longest_increasing_subsequence(arr):
-        best_len = 0
-        best_seq = ""
+    def find_longest_increasing_sequence(arr):
+        max_len = 0
+        best_moves = ""
 
-        def backtrack(current_seq, current_arr, last_val, moves):
-            nonlocal best_len, best_seq
+        def backtrack(current_sequence, remaining_arr, moves):
+            nonlocal max_len, best_moves
 
-            if not current_arr:
-                if len(current_seq) > best_len:
-                    best_len = len(current_seq)
-                    best_seq = moves
+            if not remaining_arr:
+                if len(current_sequence) > max_len:
+                    max_len = len(current_sequence)
+                    best_moves = moves
                 return
 
-            if current_arr[0] > last_val and current_arr[-1] > last_val:
-                if current_arr[0] < current_arr[-1]:
-                    backtrack(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                    backtrack(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                elif current_arr[0] > current_arr[-1]:
-                    backtrack(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                    backtrack(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                else:
-                    
-                    temp_arr = current_arr[:]
-                    temp_seq = current_seq[:]
-                    temp_moves = moves[:]
-                    
-                    len_l = 0
-                    i = 0
-                    while i < len(temp_arr) and temp_arr[i] > last_val and temp_arr[i] == temp_arr[0]:
-                        len_l += 1
-                        i += 1
-                    
-                    len_r = 0
-                    j = len(temp_arr) - 1
-                    while j >= 0 and temp_arr[j] > last_val and temp_arr[j] == temp_arr[-1]:
-                        len_r += 1
-                        j -= 1
-                    
-                    if len_l > len_r:
-                        backtrack(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                    elif len_r > len_l:
-                        backtrack(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                    else:
-                        
-                        
-                        temp_arr_l = current_arr[1:]
-                        temp_seq_l = current_seq + [current_arr[0]]
-                        temp_moves_l = moves + "L"
-                        
-                        best_len_l = 0
-                        best_seq_l = ""
-                        
-                        def backtrack_l(current_seq, current_arr, last_val, moves):
-                            nonlocal best_len_l, best_seq_l
-                            
-                            if not current_arr:
-                                if len(current_seq) > best_len_l:
-                                    best_len_l = len(current_seq)
-                                    best_seq_l = moves
-                                return
-                            
-                            if current_arr[0] > last_val and current_arr[-1] > last_val:
-                                if current_arr[0] < current_arr[-1]:
-                                    backtrack_l(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                                    backtrack_l(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                                elif current_arr[0] > current_arr[-1]:
-                                    backtrack_l(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                                    backtrack_l(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                                else:
-                                    return
-                            elif current_arr[0] > last_val:
-                                backtrack_l(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                            elif current_arr[-1] > last_val:
-                                backtrack_l(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                            else:
-                                if len(current_seq) > best_len_l:
-                                    best_len_l = len(current_seq)
-                                    best_seq_l = moves
-                                return
-                        
-                        backtrack_l(temp_seq_l, temp_arr_l, temp_seq_l[-1], temp_moves_l)
-                        
-                        
-                        temp_arr_r = current_arr[:-1]
-                        temp_seq_r = current_seq + [current_arr[-1]]
-                        temp_moves_r = moves + "R"
-                        
-                        best_len_r = 0
-                        best_seq_r = ""
-                        
-                        def backtrack_r(current_seq, current_arr, last_val, moves):
-                            nonlocal best_len_r, best_seq_r
-                            
-                            if not current_arr:
-                                if len(current_seq) > best_len_r:
-                                    best_len_r = len(current_seq)
-                                    best_seq_r = moves
-                                return
-                            
-                            if current_arr[0] > last_val and current_arr[-1] > last_val:
-                                if current_arr[0] < current_arr[-1]:
-                                    backtrack_r(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                                    backtrack_r(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                                elif current_arr[0] > current_arr[-1]:
-                                    backtrack_r(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                                    backtrack_r(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                                else:
-                                    return
-                            elif current_arr[0] > last_val:
-                                backtrack_r(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-                            elif current_arr[-1] > last_val:
-                                backtrack_r(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
-                            else:
-                                if len(current_seq) > best_len_r:
-                                    best_len_r = len(current_seq)
-                                    best_seq_r = moves
-                                return
-                        
-                        backtrack_r(temp_seq_r, temp_arr_r, temp_seq_r[-1], temp_moves_r)
-                        
-                        if best_len_l > best_len_r:
-                            if len(temp_seq_l) + best_len_l - len(temp_seq_l) > best_len:
-                                best_len = len(temp_seq_l) + best_len_l - len(temp_seq_l)
-                                best_seq = temp_moves_l + best_seq_l
-                        elif best_len_r > best_len_l:
-                            if len(temp_seq_r) + best_len_r - len(temp_seq_r) > best_len:
-                                best_len = len(temp_seq_r) + best_len_r - len(temp_seq_r)
-                                best_seq = temp_moves_r + best_seq_r
-                        else:
-                            if len(temp_seq_l) + best_len_l - len(temp_seq_l) > best_len:
-                                best_len = len(temp_seq_l) + best_len_l - len(temp_seq_l)
-                                best_seq = temp_moves_l + best_seq_l
-                            
-                        return
-                            
-            elif current_arr[0] > last_val:
-                backtrack(current_seq + [current_arr[0]], current_arr[1:], current_arr[0], moves + "L")
-            elif current_arr[-1] > last_val:
-                backtrack(current_seq + [current_arr[-1]], current_arr[:-1], current_arr[-1], moves + "R")
+            if not current_sequence:
+                # Take left
+                backtrack(current_sequence + [remaining_arr[0]], remaining_arr[1:], moves + "L")
+                # Take right
+                backtrack(current_sequence + [remaining_arr[-1]], remaining_arr[:-1], moves + "R")
             else:
-                if len(current_seq) > best_len:
-                    best_len = len(current_seq)
-                    best_seq = moves
+                last_val = current_sequence[-1]
+                
+                # Take left
+                if remaining_arr[0] > last_val:
+                    backtrack(current_sequence + [remaining_arr[0]], remaining_arr[1:], moves + "L")
+                
+                # Take right
+                if remaining_arr[-1] > last_val:
+                    backtrack(current_sequence + [remaining_arr[-1]], remaining_arr[:-1], moves + "R")
+
+        backtrack([], a, "")
+        return max_len, best_moves
+
+    def find_longest_increasing_sequence_optimized(arr):
+        n = len(arr)
+        max_len = 0
+        best_moves = ""
+
+        def solve_recursive(left, right, last_val, moves):
+            nonlocal max_len, best_moves
+
+            if left > right:
+                if len(moves) > max_len:
+                    max_len = len(moves)
+                    best_moves = moves
                 return
 
-        backtrack([], arr, 0, "")
-        return best_len, best_seq
+            if arr[left] > last_val and arr[right] > last_val:
+                if arr[left] < arr[right]:
+                    solve_recursive(left + 1, right, arr[left], moves + "L")
+                elif arr[right] < arr[left]:
+                    solve_recursive(left, right - 1, arr[right], moves + "R")
+                else:
+                    len_left, moves_left = solve_helper(left + 1, right, arr[left], "L")
+                    len_right, moves_right = solve_helper(left, right - 1, arr[right], "R")
 
-    length, sequence = find_longest_increasing_subsequence(a)
+                    if len_left > len_right:
+                        solve_recursive(left + 1, right, arr[left], moves + "L")
+                    elif len_right > len_left:
+                        solve_recursive(left, right - 1, arr[right], moves + "R")
+                    else:
+                        solve_recursive(left + 1, right, arr[left], moves + "L")
+            elif arr[left] > last_val:
+                solve_recursive(left + 1, right, arr[left], moves + "L")
+            elif arr[right] > last_val:
+                solve_recursive(left, right - 1, arr[right], moves + "R")
+            else:
+                if len(moves) > max_len:
+                    max_len = len(moves)
+                    best_moves = moves
+                return
+
+        def solve_helper(left, right, last_val, moves):
+            curr_len = 0
+            curr_moves = ""
+            while left <= right:
+                if arr[left] > last_val and arr[right] > last_val:
+                    if arr[left] < arr[right]:
+                        last_val = arr[left]
+                        curr_moves += "L"
+                        left += 1
+                    elif arr[right] < arr[left]:
+                        last_val = arr[right]
+                        curr_moves += "R"
+                        right -= 1
+                    else:
+                        len_left, moves_left = solve_helper(left + 1, right, arr[left], "L")
+                        len_right, moves_right = solve_helper(left, right - 1, arr[right], "R")
+                        
+                        if len_left > len_right:
+                            last_val = arr[left]
+                            curr_moves += "L"
+                            left += 1
+                        else:
+                            last_val = arr[right]
+                            curr_moves += "R"
+                            right -= 1
+                        break
+                elif arr[left] > last_val:
+                    last_val = arr[left]
+                    curr_moves += "L"
+                    left += 1
+                elif arr[right] > last_val:
+                    last_val = arr[right]
+                    curr_moves += "R"
+                    right -= 1
+                else:
+                    break
+            return len(curr_moves), moves + curr_moves
+
+        solve_recursive(0, n - 1, 0, "")
+        return max_len, best_moves
+
+    length, moves = find_longest_increasing_sequence_optimized(a)
     print(length)
-    print(sequence)
+    print(moves)
 
 solve()

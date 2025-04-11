@@ -1,7 +1,8 @@
-def minimum_traps(m, x):
-    # Since GCD(x, m) = 1, the x-mouse will visit all rooms in a cycle of length m
-    # The number of traps needed is equal to m - 1 (all rooms except room 0)
+def min_traps(m, x):
+    # Since GCD(x, m) = 1, the x-mouse will visit all rooms
+    # The number of unique rooms visited is equal to m
+    # The minimum number of traps needed is m - 1 (trapping all rooms except room 0)
     return m
 
 m, x = map(int, input().split())
-print(minimum_traps(m, x))
+print(min_traps(m, x))

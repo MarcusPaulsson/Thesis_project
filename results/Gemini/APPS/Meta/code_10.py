@@ -1,10 +1,14 @@
 def solve():
     n = int(input())
     
-    min_days_off = (n // 7) * 2
-    max_days_off = (n // 7) * 2
+    min_days_off = 0
+    max_days_off = 0
     
+    weeks = n // 7
     remaining_days = n % 7
+    
+    min_days_off = weeks * 2
+    max_days_off = weeks * 2
     
     if remaining_days == 1:
         min_days_off += 0

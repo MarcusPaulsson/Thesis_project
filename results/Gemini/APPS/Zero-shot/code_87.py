@@ -1,37 +1,52 @@
 def solve():
-    n, k = map(int, input().split())
+    n, r = map(int, input().split())
+    projects = []
+    for _ in range(n):
+        projects.append(list(map(int, input().split())))
 
-    if k * (k + 1) // 2 > n:
-        print("NO")
-        return
+    def check(subset):
+        
+        pos_projects = []
+        neg_projects = []
+        for i in subset:
+            if projects[i][1] >= 0:
+                pos_projects.append(i)
+            else:
+                neg_projects.append(i)
 
-    a = [i + 1 for i in range(k)]
-    remaining = n - sum(a)
-    
-    if remaining == 0:
-        print("YES")
-        print(*a)
-        return
+        
+        pos_projects.sort(key=lambda x: projects[x][0])
+        neg_projects.sort(key=lambda x: projects[x][0] + projects[x][1], reverse=True)
 
-    increment = remaining // k
-    a = [x + increment for x in a]
-    remaining -= increment * k
+        
+        current_rating = r
+        
+        for i in pos_projects:
+            if current_rating >= projects[i][0]:
+                current_rating += projects[i][1]
+            else:
+                return False
 
-    for i in range(k - 1, -1, -1):
-        add = min(remaining, 2 * a[i] - a[i] - 1)
-        a[i] += add
-        remaining -= add
+        for i in neg_projects:
+            if current_rating >= projects[i][0]:
+                current_rating += projects[i][1]
+                if current_rating < 0:
+                    return False
+            else:
+                return False
+        
+        return True
 
-    if remaining > 0:
-        print("NO")
-        return
+    max_size = 0
+    for i in range(1 << n):
+        subset = []
+        for j in range(n):
+            if (i >> j) & 1:
+                subset.append(j)
+        
+        if check(subset):
+            max_size = max(max_size, len(subset))
 
-    for i in range(k - 1):
-        if not (a[i] < a[i+1] <= 2 * a[i]):
-            print("NO")
-            return
-
-    print("YES")
-    print(*a)
+    print(max_size)
 
 solve()

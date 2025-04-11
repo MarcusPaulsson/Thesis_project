@@ -4,24 +4,26 @@ def solve():
     
     best_perimeter = float('inf')
     
-    for h in range(1, int(total**0.5) + 2):
-        if total % h == 0:
-            w = total // h
+    for height in range(1, int(total**0.5) + 2):
+        if total % height == 0:
+            width = total // height
             
-            # Case 1: a forms a rectangle
-            for h_a in range(1, int(a**0.5) + 2):
-                if a % h_a == 0:
-                    w_a = a // h_a
-                    if h_a <= h and w_a <= w:
-                        best_perimeter = min(best_perimeter, 2 * (h + w))
+            # Case 1: Red forms a rectangle
+            for red_height in range(1, int(a**0.5) + 2):
+                if a % red_height == 0:
+                    red_width = a // red_height
+                    
+                    if red_height <= height and red_width <= width:
+                        best_perimeter = min(best_perimeter, 2 * (height + width))
             
-            # Case 2: b forms a rectangle
-            for h_b in range(1, int(b**0.5) + 2):
-                if b % h_b == 0:
-                    w_b = b // h_b
-                    if h_b <= h and w_b <= w:
-                        best_perimeter = min(best_perimeter, 2 * (h + w))
-    
+            # Case 2: Blue forms a rectangle
+            for blue_height in range(1, int(b**0.5) + 2):
+                if b % blue_height == 0:
+                    blue_width = b // blue_height
+                    
+                    if blue_height <= height and blue_width <= width:
+                        best_perimeter = min(best_perimeter, 2 * (height + width))
+                        
     print(best_perimeter)
 
 solve()

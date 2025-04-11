@@ -1,23 +1,16 @@
 def solve():
     n, m = map(int, input().split())
     
-    low = 0
-    high = 2 * 10**9 
+    day = 0
+    grains = n
     
-    ans = high
-    
-    while low <= high:
-        mid = (low + high) // 2
+    while True:
+        day += 1
+        grains = min(n, grains + m)
+        grains -= day
         
-        total_sparrows = mid * (mid + 1) // 2
-        
-        
-        if n + mid * m >= total_sparrows:
-            ans = mid
-            high = mid - 1
-        else:
-            low = mid + 1
-            
-    print(ans)
+        if grains <= 0:
+            print(day)
+            return
 
 solve()

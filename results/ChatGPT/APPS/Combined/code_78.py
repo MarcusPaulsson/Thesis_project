@@ -1,42 +1,41 @@
-MOD = 10**9 + 7
-
 def count_regular_sequences(n, s):
+    MOD = 10**9 + 7
     m = len(s)
-    
-    # Precompute the number of valid sequences of length 2k
-    dp = [[0] * (n + 1) for _ in range(2 * n + 1)]
-    dp[0][0] = 1
-    
-    for i in range(1, 2 * n + 1):
-        for j in range(n + 1):
-            if j > 0:
-                dp[i][j] = (dp[i][j] + dp[i - 1][j - 1]) % MOD
-            if j < n:
-                dp[i][j] = (dp[i][j] + dp[i - 1][j + 1]) % MOD
 
-    # Calculate the balance of the string s
+    # Precompute factorials and inverse factorials
+    fact = [1] * (2 * n + 1)
+    for i in range(2, 2 * n + 1):
+        fact[i] = fact[i - 1] * i % MOD
+
+    def mod_inv(x):
+        return pow(x, MOD - 2, MOD)
+
+    inv_fact = [1] * (2 * n + 1)
+    for i in range(2, 2 * n + 1):
+        inv_fact[i] = mod_inv(fact[i])
+
+    # Check if s can be part of a valid sequence
     balance = 0
     min_balance = 0
     for char in s:
-        if char == '(':
-            balance += 1
-        else:
-            balance -= 1
+        balance += 1 if char == '(' else -1
         min_balance = min(min_balance, balance)
 
-    # Check if the balance is valid
-    if balance < 0 or balance > n or (n - balance) < -min_balance:
+    if balance < 0 or balance > 2 * n or min_balance < 0:
         return 0
 
-    # Count valid sequences with s as a substring
-    total_count = 0
-    for i in range(n - (balance - min_balance) + 1):
-        total_count = (total_count + dp[2 * (n - i)][(n - i) + min_balance]) % MOD
+    # Count valid sequences
+    total_sequences = 0
+    for prefix_length in range(n + 1):
+        suffix_length = n - prefix_length
+        if prefix_length + m + suffix_length == n:
+            total_sequences += (fact[prefix_length + suffix_length] * inv_fact[prefix_length] % MOD * inv_fact[suffix_length] % MOD)
+            total_sequences %= MOD
 
-    return total_count
+    return total_sequences
 
-# Input reading
-n = int(input().strip())
+# Read input
+n = int(input())
 s = input().strip()
 
 # Output the result

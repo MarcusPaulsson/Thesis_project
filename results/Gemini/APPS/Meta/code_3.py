@@ -5,21 +5,21 @@ def solve():
         l, r = map(int, input().split())
         painters.append((l, r))
 
+    def calculate_painted_sections(selected_painters):
+        painted = [0] * n
+        for l, r in selected_painters:
+            for i in range(l - 1, r):
+                painted[i] = 1
+        return sum(painted)
+
     max_painted = 0
     for i in range(q):
         for j in range(i + 1, q):
-            
-            chosen_painters = []
+            selected_painters = []
             for k in range(q):
                 if k != i and k != j:
-                    chosen_painters.append(painters[k])
-
-            painted_sections = [0] * (n + 1)
-            for l, r in chosen_painters:
-                for section in range(l, r + 1):
-                    painted_sections[section] = 1
-
-            max_painted = max(max_painted, sum(painted_sections))
+                    selected_painters.append(painters[k])
+            max_painted = max(max_painted, calculate_painted_sections(selected_painters))
 
     print(max_painted)
 

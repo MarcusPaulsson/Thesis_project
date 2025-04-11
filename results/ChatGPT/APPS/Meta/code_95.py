@@ -1,41 +1,49 @@
 def generate_string(n, s, t):
-    # Create a list of characters to use in the result
-    chars = ['a'] * n + ['b'] * n + ['c'] * n
+    # Count of each character
+    count_a = count_b = count_c = n
     
-    # Function to check if the last two characters of the result form a forbidden substring
-    def is_forbidden(res):
-        return res[-2:] == s or res[-2:] == t
-    
-    # Initialize the result string
+    # Create a list to hold the result
     res = []
     
-    # Try to build the result string
-    for char in chars:
-        res.append(char)
-        # If the last two characters form a forbidden substring, we need to adjust
-        while len(res) >= 2 and is_forbidden(res):
-            # Remove the last character and try to replace it with a different character
-            last_char = res.pop()
-            # Find a different character to replace it
-            for replacement in ['a', 'b', 'c']:
-                if replacement != last_char and (len(res) < 1 or res[-1] != replacement):
-                    res.append(replacement)
-                    break
-            else:
-                # If we can't find a valid replacement, return "NO"
-                return "NO", ""
+    # Function to check if the last two characters form a forbidden substring
+    def is_forbidden():
+        return len(res) >= 2 and (res[-1] + res[-2] == s or res[-1] + res[-2] == t)
     
-    return "YES", ''.join(res)
+    # Build the result string
+    for _ in range(3 * n):
+        for char in 'abc':
+            if char == 'a' and count_a > 0:
+                res.append(char)
+                count_a -= 1
+                if not is_forbidden():
+                    break
+                res.pop()  # Backtrack
+                count_a += 1
+            elif char == 'b' and count_b > 0:
+                res.append(char)
+                count_b -= 1
+                if not is_forbidden():
+                    break
+                res.pop()  # Backtrack
+                count_b += 1
+            elif char == 'c' and count_c > 0:
+                res.append(char)
+                count_c -= 1
+                if not is_forbidden():
+                    break
+                res.pop()  # Backtrack
+                count_c += 1
+        else:
+            # If we couldn't add any character, it's impossible
+            return "NO"
+    
+    return "YES\n" + ''.join(res)
 
 # Read input
 n = int(input())
 s = input().strip()
 t = input().strip()
 
-# Generate the string
+# Generate the result
 result = generate_string(n, s, t)
-
-# Print the result
-print(result[0])
-if result[0] == "YES":
-    print(result[1])
+print(result)

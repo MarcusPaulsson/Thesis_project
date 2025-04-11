@@ -1,30 +1,27 @@
 def solve():
     s = input()
     n = len(s)
-    t = ""
+    t = []
     u = ""
     
-    min_suffix = [""] * (n + 1)
-    min_suffix[n] = ""
+    suffix_min = [""] * (n + 1)
+    suffix_min[n] = chr(ord('z') + 1) 
     for i in range(n - 1, -1, -1):
-        if min_suffix[i+1] == "":
-            min_suffix[i] = s[i]
-        else:
-            if s[i] <= min_suffix[i+1][0]:
-                min_suffix[i] = s[i] + min_suffix[i+1]
-            else:
-                min_suffix[i] = min_suffix[i+1]
-    
-    for i in range(n):
-        t += s[0]
-        s = s[1:]
+        suffix_min[i] = min(s[i], suffix_min[i+1])
         
-        while len(t) > 0 and t[-1] <= min_suffix[i+1][0] if i+1 < n else len(t) > 0:
+    i = 0
+    while i < n or len(t) > 0:
+        if len(t) > 0 and t[-1] <= suffix_min[i]:
             u += t[-1]
-            t = t[:-1]
+            t.pop()
+        else:
+            if i < n:
+                t.append(s[i])
+                i += 1
+            else:
+                u += t[-1]
+                t.pop()
     
-    u += t[::-1]
     print(u)
-    
 
 solve()

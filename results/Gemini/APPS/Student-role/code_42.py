@@ -8,6 +8,9 @@ def solve():
     for i in range(2**n):
         binary_string = bin(i)[2:].zfill(n)
         
+        if binary_string in distinct_strings:
+            continue
+        
         is_substring = False
         for j in range(n):
             shifted_string = binary_string[j:] + binary_string[:j]
@@ -16,9 +19,11 @@ def solve():
                 break
         
         if is_substring:
-            if binary_string not in distinct_strings:
-                count += 1
-                distinct_strings.add(binary_string)
+            count += 1
+            
+            for j in range(n):
+                shifted_string = binary_string[j:] + binary_string[:j]
+                distinct_strings.add(shifted_string)
                 
     print(count)
 

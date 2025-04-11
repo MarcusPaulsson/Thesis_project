@@ -1,34 +1,36 @@
 def is_records_correct(test_cases):
     results = []
     
-    for n, stats in test_cases:
+    for n, records in test_cases:
         valid = True
+        previous_p, previous_c = 0, 0
         
-        for i in range(1, n):
-            p_prev, c_prev = stats[i - 1]
-            p_i, c_i = stats[i]
-            
-            if p_i < p_prev or c_i < c_prev or c_i > p_i:
+        for p, c in records:
+            if p < previous_p or c < previous_c or c > p:
+                valid = False
+                break
+            if (p - previous_p) < (c - previous_c):
                 valid = False
                 break
             
-            if (p_i - p_prev) < (c_i - c_prev):
-                valid = False
-                break
+            previous_p, previous_c = p, c
         
         results.append("YES" if valid else "NO")
     
     return results
 
-# Input reading
+# Read input
 T = int(input())
 test_cases = []
 
 for _ in range(T):
     n = int(input())
-    stats = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, stats))
+    records = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, records))
 
-# Get results and print
+# Get results
 results = is_records_correct(test_cases)
-print("\n".join(results))
+
+# Print results
+for result in results:
+    print(result)

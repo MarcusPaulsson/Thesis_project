@@ -1,46 +1,52 @@
 def solve():
-  n, k = map(int, input().split())
+    n, k = map(int, input().split())
 
-  if k * (k + 1) // 2 > n:
+    if k == 1:
+        print("YES")
+        print(n)
+        return
+
+    
+    def check(first):
+        arr = [first]
+        total = first
+        for _ in range(k - 1):
+            next_val = arr[-1] + 1
+            if next_val > 2 * arr[-1]:
+                return False, []
+            arr.append(next_val)
+            total += next_val
+        
+        if total > n:
+            return False, []
+        
+        diff = n - total
+        
+        for i in range(k - 1, -1, -1):
+            add = min(diff, 2 * arr[i] - arr[i] - (arr[i] - (arr[i-1] if i > 0 else 0) if i > 0 else 0))
+            arr[i] += add
+            diff -= add
+            
+            if diff == 0:
+                break
+        
+        if diff > 0:
+            return False, []
+        
+        
+        for i in range(k - 1):
+            if not (arr[i] < arr[i+1] <= 2 * arr[i]):
+                return False, []
+        
+        return True, arr
+
+    for first in range(1, n + 1):
+        possible, arr = check(first)
+        if possible:
+            print("YES")
+            print(*arr)
+            return
+
     print("NO")
-    return
-
-  a = [i + 1 for i in range(k)]
-  remaining = n - k * (k + 1) // 2
-
-  for i in range(k):
-    a[i] += remaining // k
-
-  remaining %= k
-
-  for i in range(k - 1, k - 1 - remaining, -1):
-    a[i] += 1
-
-  for i in range(k - 1):
-    if a[i + 1] > 2 * a[i]:
-      diff = a[i + 1] - 2 * a[i]
-      a[i + 1] -= diff
-      a[k - 1] += diff
-      if a[i+1] <= a[i]:
-          print("NO")
-          return
-
-  for i in range(k-1):
-    if not (a[i] < a[i+1] and a[i+1] <= 2*a[i]):
-        
-        
-        if a[i] >= a[i+1]:
-          print("NO")
-          return
-        if a[i+1] > 2*a[i]:
-          print("NO")
-          return
-
-  if min(a) <= 0:
-      print("NO")
-      return
-  
-  print("YES")
-  print(*a)
 
 solve()

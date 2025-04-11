@@ -1,33 +1,26 @@
 def max_sum_divisible_by_k(n, m, k, matrix):
     max_choose = m // 2
-    dp = [[-1] * k for _ in range(n + 1)]
+    dp = [[-1] * k for _ in range(max_choose + 1)]
     dp[0][0] = 0
 
-    for i in range(1, n + 1):
-        row = matrix[i - 1]
+    for row in matrix:
         row.sort(reverse=True)
-        current_dp = dp[i - 1][:]  # Copy previous row
+        current_dp = [dp[i][:] for i in range(max_choose + 1)]
+        
+        for i in range(1, max_choose + 1):
+            for j in range(min(i, len(row))):
+                if current_dp[i - 1][(j + 1) % k] != -1:
+                    new_sum = current_dp[i - 1][(j + 1) % k] + row[j]
+                    new_mod = new_sum % k
+                    current_dp[i][new_mod] = max(current_dp[i][new_mod], new_sum)
 
-        for j in range(1, max_choose + 1):
-            if j > len(row):
-                break
-            sum_selected = sum(row[:j])
-            for r in range(k):
-                if current_dp[r] != -1:
-                    new_sum = current_dp[r] + sum_selected
-                    new_remainder = new_sum % k
-                    if new_sum > dp[i][new_remainder]:
-                        dp[i][new_remainder] = new_sum
+        dp = current_dp
 
-        for r in range(k):
-            dp[i][r] = max(dp[i][r], current_dp[r])
-
-    return max(dp[n])
+    return max(dp[i][0] for i in range(max_choose + 1))
 
 # Input reading
 n, m, k = map(int, input().split())
 matrix = [list(map(int, input().split())) for _ in range(n)]
 
-# Calculate and print the result
-result = max_sum_divisible_by_k(n, m, k, matrix)
-print(result)
+# Output the result
+print(max_sum_divisible_by_k(n, m, k, matrix))

@@ -1,10 +1,10 @@
-cnt_1 = int(input())
-cnt_2 = int(input())
-cnt_3 = int(input())
-cnt_4 = int(input())
+cnt1 = int(input())
+cnt2 = int(input())
+cnt3 = int(input())
+cnt4 = int(input())
 
 # Check the conditions for forming a regular bracket sequence
-if cnt_1 + cnt_2 >= cnt_3 + cnt_4 and cnt_3 <= cnt_1 + cnt_2:
+if cnt1 + cnt2 >= cnt3 + cnt4 and cnt1 <= cnt3 + 1:
     print(1)
 else:
     print(0)

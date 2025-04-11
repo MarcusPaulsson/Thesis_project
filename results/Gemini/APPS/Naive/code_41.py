@@ -12,7 +12,7 @@ def nearest_zero(arr):
   n = len(arr)
   distances = [float('inf')] * n
 
-  # Forward pass: find the distance to the nearest zero from the left
+  # Forward pass: Find distances to the nearest zero from the left
   last_zero = float('-inf')
   for i in range(n):
     if arr[i] == 0:
@@ -21,7 +21,7 @@ def nearest_zero(arr):
     elif last_zero != float('-inf'):
       distances[i] = min(distances[i], i - last_zero)
 
-  # Backward pass: find the distance to the nearest zero from the right
+  # Backward pass: Find distances to the nearest zero from the right
   last_zero = float('inf')
   for i in range(n - 1, -1, -1):
     if arr[i] == 0:

@@ -2,7 +2,7 @@ def solve():
     n = int(input())
     s = input()
     
-    gold_count = s.count('G')
+    golds = s.count('G')
     
     max_len = 0
     for i in range(n):
@@ -21,8 +21,11 @@ def solve():
                     current_len = 0
             max_current_len = max(max_current_len, current_len)
             
-            max_len = max(max_len, min(max_current_len, gold_count))
-    
-    print(max_len)
+            max_len = max(max_len, max_current_len)
+            
+    if golds == 0:
+        print(0)
+    else:
+        print(min(max_len, golds))
 
 solve()

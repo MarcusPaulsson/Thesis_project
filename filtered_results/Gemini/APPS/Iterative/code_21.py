@@ -1,12 +1,19 @@
 def solve():
     n = int(input())
     a = list(map(int, input().split()))
+
+    pos_min = a.index(1)
+    pos_max = a.index(n)
+
+    ans = max(abs(pos_min - pos_max), abs(pos_max - pos_min))
     
-    pos_1 = a.index(1)
-    pos_n = a.index(n)
+    ans = max(ans, abs(0 - pos_min))
+    ans = max(ans, abs(n - 1 - pos_min))
+    ans = max(ans, abs(0 - pos_max))
+    ans = max(ans, abs(n - 1 - pos_max))
     
-    ans = max(pos_1, pos_n, n - 1 - pos_1, n - 1 - pos_n)
-    
+    ans = max(abs(0 - pos_min), abs(n - 1 - pos_min), abs(0 - pos_max), abs(n - 1 - pos_max))
+
     print(ans)
 
 solve()

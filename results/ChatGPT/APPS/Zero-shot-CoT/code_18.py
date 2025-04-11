@@ -9,7 +9,5 @@ def lexicographically_minimal_string(s):
     
     return ''.join(u)
 
-# Input
 s = input().strip()
-# Output
 print(lexicographically_minimal_string(s))

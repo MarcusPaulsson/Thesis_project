@@ -6,24 +6,17 @@ def max_permutation_not_exceeding(a, b):
     str_b = str(b)
     
     # Generate all unique permutations of the digits of a
-    perms = set(permutations(str_a))
+    permuted_numbers = set(int(''.join(p)) for p in permutations(str_a))
     
-    # Filter out permutations that are valid (not starting with '0' and not exceeding b)
-    valid_perms = []
-    for perm in perms:
-        num = int(''.join(perm))
-        if num <= b and str(num) == str_a:  # Check if it has the same length as a
-            valid_perms.append(num)
+    # Filter out numbers that are greater than b and have the same length as a
+    valid_numbers = [num for num in permuted_numbers if num <= b and len(str(num)) == len(str_a)]
     
-    # Return the maximum valid permutation
-    return max(valid_perms)
+    # Return the maximum of the valid numbers
+    return max(valid_numbers)
 
 # Input reading
 a = int(input().strip())
 b = int(input().strip())
 
-# Get the result
-result = max_permutation_not_exceeding(a, b)
-
-# Print the result
-print(result)
+# Output the result
+print(max_permutation_not_exceeding(a, b))

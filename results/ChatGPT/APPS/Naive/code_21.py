@@ -5,21 +5,19 @@ def max_distance_after_swap(n, a):
     # Calculate current distance
     current_distance = abs(min_index - max_index)
 
-    # Possible new positions for min (1) and max (n) after swap
+    # Possible new positions after swap
     new_positions = [
-        (0, max_index),        # Swap with first element
-        (n - 1, max_index),    # Swap with last element
-        (min_index, 0),        # Swap with first element
-        (min_index, n - 1)     # Swap with last element
+        (0, max_index),  # Swap min with first element
+        (n - 1, max_index),  # Swap min with last element
+        (min_index, 0),  # Swap max with first element
+        (min_index, n - 1)  # Swap max with last element
     ]
 
     max_distance = current_distance
 
     for new_pos in new_positions:
         new_min_index, new_max_index = new_pos
-        if a[new_min_index] == 1 or a[new_max_index] == n:
-            distance = abs(new_min_index - new_max_index)
-            max_distance = max(max_distance, distance)
+        max_distance = max(max_distance, abs(new_min_index - new_max_index))
 
     return max_distance
 

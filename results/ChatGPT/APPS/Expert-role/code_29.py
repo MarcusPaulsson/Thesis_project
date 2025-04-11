@@ -13,27 +13,28 @@ def min_replacements_to_lucky(ticket):
     
     # Create a list of possible changes
     changes = []
-    
     if sum_first > sum_second:
         # We need to decrease the first half or increase the second half
-        changes = [9 - digit for digit in first_half] + [digit for digit in second_half]
+        changes += [9 - digit for digit in first_half]  # Maximize decrease from first half
+        changes += [digit for digit in second_half]     # Maximize increase from second half
     else:
-        # We need to increase the first half or decrease the second half
-        changes = [digit for digit in first_half] + [9 - digit for digit in second_half]
+        # We need to decrease the second half or increase the first half
+        changes += [9 - digit for digit in second_half]  # Maximize decrease from second half
+        changes += [digit for digit in first_half]       # Maximize increase from first half
     
     # Sort changes in descending order
     changes.sort(reverse=True)
     
+    # Calculate the minimum number of changes needed
     count = 0
     for change in changes:
         diff -= change
         count += 1
         if diff <= 0:
             break
-            
+    
     return count
 
-# Read input
+# Example usage
 ticket = input().strip()
-# Print output
 print(min_replacements_to_lucky(ticket))

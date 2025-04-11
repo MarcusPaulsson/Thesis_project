@@ -12,32 +12,23 @@ def solve():
 
     num = 1
     den = 1
-    twos_num = 0
-    twos_den = 0
+    
+    for i in range(int(k)):
+        num = (num * (pow(2, n, mod) - i)) % mod
+        den = (den * pow(2, n, mod)) % mod
 
-    for i in range(k):
-        val = (pow(2, n, mod) - i) % mod
-        num = (num * val) % mod
-        twos_num += count_twos(pow(2, n, 2**60) - i)
+    gcd_val = gcd(num, den)
+    num //= gcd_val
+    den //= gcd_val
 
-    den = pow(pow(2, n, mod), k, mod)
-    twos_den = n * k
-
-    twos_diff = min(twos_num, twos_den)
-
-    num = (num * pow(2, mod - 1 - twos_diff % (mod - 1), mod)) % mod
-    den = (den * pow(2, mod - 1 - twos_diff % (mod - 1), mod)) % mod
-
-    a = (den - num + mod) % mod
+    a = (den - num) % mod
     b = den % mod
 
     print(a, b)
 
-def count_twos(n):
-    count = 0
-    while n > 0 and n % 2 == 0:
-        count += 1
-        n //= 2
-    return count
+def gcd(a, b):
+    if b == 0:
+        return a
+    return gcd(b, a % b)
 
 solve()

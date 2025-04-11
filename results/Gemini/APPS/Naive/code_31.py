@@ -6,8 +6,9 @@ def solve():
         print(1, 1)
         return
 
-    if k > mod:
-        print(1, 1)
+    if k == 2:
+        pow_2_n_mod = pow(2, n, mod)
+        print(1, pow_2_n_mod)
         return
 
     num = 1
@@ -20,23 +21,13 @@ def solve():
         den = (den * pow(2, n, mod)) % mod
 
     
+    
     inv_den = pow(den, mod - 2, mod)
     prob_diff = (num * inv_den) % mod
     
     a = (1 - prob_diff + mod) % mod
     b = 1
     
-    
-    g = gcd(a, pow(2, int(n * (k-1)), mod))
-    
-    a = a // g
-    b = pow(2, int(n * (k-1)), mod) // g
-    
-    print(a % mod, b % mod)
-
-def gcd(a, b):
-    if b == 0:
-        return a
-    return gcd(b, a % b)
+    print(a, 1)
 
 solve()

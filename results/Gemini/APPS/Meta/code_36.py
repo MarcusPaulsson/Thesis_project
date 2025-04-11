@@ -23,31 +23,24 @@ def solve():
         x -= 2 * n
     elif n <= 2 * k:
         x -= 2 * k
-        n -= k
-        x -= (n)
-        y += 2 * n
+        x += 2 * (n - k)
+        y += 2 * (n - k)
     elif n <= 3 * k:
         x -= 2 * k
-        y += 2 * k
-        n -= 2 * k
-        x += (-n)
-        y += n
-    elif n <= 4 * k:
-        y += 2 * k
-        n -= 3 * k
-        x += 2 * n
-    elif n <= 5 * k:
         x += 2 * k
         y += 2 * k
-        n -= 4 * k
-        x += n
-        y -= 2 * n
+        x += 2 * (3 * k - n)
+    elif n <= 4 * k:
+        x += 2 * (4 * k - n)
+        y += 2 * k
+    elif n <= 5 * k:
+        x += 2 * (5 * k - n)
+        y -= 2 * (n - 4 * k)
     else:
         x += 2 * k
-        n -= 5 * k
-        x -= n
-        y -= n
-    
+        y -= 2 * k
+        x -= 2 * (n - 5 * k)
+        
     print(x, y)
 
 solve()

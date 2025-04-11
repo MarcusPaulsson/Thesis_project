@@ -1,41 +1,36 @@
-def count_common_terms(a1, b1, a2, b2, L, R):
-    # Normalize b1 and b2 to be in the range of L to R
-    def normalize(b, a, L, R):
-        if a == 0:
-            return b if L <= b <= R else None
-        # Find the smallest k such that a * k + b >= L
-        k_start = (L - b + a - 1) // a if a > 0 else (L - b) // a
-        # Find the largest k such that a * k + b <= R
-        k_end = (R - b) // a if a > 0 else (R - b + a - 1) // a
-        return (k_start, k_end)
+def count_common_ap(a1, b1, a2, b2, L, R):
+    # Calculate the first possible value of x in the range [L, R]
+    def first_value(a, b, start):
+        if (start - b) % a == 0:
+            return start
+        return start + (a - (start - b) % a) % a
 
-    # Get the ranges for k' for both progressions
-    k1_range = normalize(b1, a1, L, R)
-    k2_range = normalize(b2, a2, L, R)
+    # Calculate the last possible value of x in the range [L, R]
+    def last_value(a, b, end):
+        if (end - b) % a == 0:
+            return end
+        return end - (end - b) % a
 
-    if k1_range is None or k2_range is None:
+    # Find the first and last values for both progressions
+    first_x1 = first_value(a1, b1, L)
+    last_x1 = last_value(a1, b1, R)
+    
+    first_x2 = first_value(a2, b2, L)
+    last_x2 = last_value(a2, b2, R)
+
+    # If the first value of one progression is greater than the last of the other, return 0
+    if first_x1 > last_x2 or first_x2 > last_x1:
         return 0
 
-    k1_start, k1_end = k1_range
-    k2_start, k2_end = k2_range
-
-    # Find the common terms
-    common_terms = set()
-    
-    # Generate terms for the first progression
-    for k in range(k1_start, k1_end + 1):
-        common_terms.add(a1 * k + b1)
-
-    # Count how many of these terms are also in the second progression
+    # Calculate the number of common values in the range
     count = 0
-    for l in range(k2_start, k2_end + 1):
-        term = a2 * l + b2
-        if term in common_terms and L <= term <= R:
+    for x in range(max(first_x1, first_x2), min(last_x1, last_x2) + 1):
+        if (x - b1) % a1 == 0 and (x - b2) % a2 == 0:
             count += 1
 
     return count
 
-# Input reading
+# Read input
 a1, b1, a2, b2, L, R = map(int, input().split())
-# Output the result
-print(count_common_terms(a1, b1, a2, b2, L, R))
+# Print the result
+print(count_common_ap(a1, b1, a2, b2, L, R))

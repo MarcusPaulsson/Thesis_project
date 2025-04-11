@@ -1,59 +1,71 @@
-import sys
 from collections import defaultdict, deque
 
 def bfs(start, graph):
-    visited = [-1] * (n + 1)
+    visited = {start: 0}
     queue = deque([start])
-    visited[start] = 0
     farthest_node = start
+    max_distance = 0
     
     while queue:
         node = queue.popleft()
         for neighbor in graph[node]:
-            if visited[neighbor] == -1:
+            if neighbor not in visited:
                 visited[neighbor] = visited[node] + 1
                 queue.append(neighbor)
-                if visited[neighbor] > visited[farthest_node]:
+                if visited[neighbor] > max_distance:
+                    max_distance = visited[neighbor]
                     farthest_node = neighbor
                     
-    return farthest_node, visited
+    return farthest_node, max_distance
 
 def find_max_edges(n, edges):
     graph = defaultdict(list)
     
-    for a, b in edges:
-        graph[a].append(b)
-        graph[b].append(a)
-
-    # Step 1: Find the farthest node from an arbitrary node (1)
-    farthest_node_from_start, _ = bfs(1, graph)
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
     
-    # Step 2: Find the farthest node from the farthest node found in step 1
-    farthest_node, distances = bfs(farthest_node_from_start, graph)
+    # Step 1: Find the farthest node from an arbitrary node (node 1)
+    farthest_from_start, _ = bfs(1, graph)
     
-    # Step 3: Find the farthest node from the second farthest node
-    other_end_node, distances_from_other_end = bfs(farthest_node, graph)
-
-    # Step 4: Find the maximum distance and the nodes at that distance
-    max_distance = max(distances)
-    max_distance_nodes = [i for i in range(1, n + 1) if distances[i] == max_distance]
-
-    # Step 5: Choose three distinct nodes
-    a = farthest_node_from_start
-    b = max_distance_nodes[0]
-    c = max_distance_nodes[1] if len(max_distance_nodes) > 1 else (b % n + 1)
-
-    # The number of edges in the union of paths is the number of edges in the tree
-    # minus the edges in the path between a and b
-    return len(edges), a, b, c
-
-if __name__ == "__main__":
-    input = sys.stdin.read
-    data = input().splitlines()
+    # Step 2: Find the farthest node from the previously found farthest node
+    farthest_from_a, diameter_length = bfs(farthest_from_start, graph)
     
-    n = int(data[0])
-    edges = [tuple(map(int, line.split())) for line in data[1:n]]
+    # Step 3: Find the path from farthest_from_start to farthest_from_a
+    path = []
+    parent = {farthest_from_start: None}
+    queue = deque([farthest_from_start])
     
-    result = find_max_edges(n, edges)
-    print(result[0])
-    print(result[1], result[2], result[3])
+    while queue:
+        node = queue.popleft()
+        for neighbor in graph[node]:
+            if neighbor not in parent:
+                parent[neighbor] = node
+                queue.append(neighbor)
+    
+    # Reconstruct the path
+    current = farthest_from_a
+    while current is not None:
+        path.append(current)
+        current = parent[current]
+    
+    path_length = len(path)
+    
+    # Step 4: Choose three distinct vertices
+    if path_length >= 3:
+        a, b, c = path[0], path[path_length // 2], path[-1]
+    else:
+        a, b, c = path[0], path[1], path[2]
+    
+    return diameter_length + 1, a, b, c
+
+# Input reading
+n = int(input())
+edges = [tuple(map(int, input().split())) for _ in range(n - 1)]
+
+# Get the result
+result = find_max_edges(n, edges)
+
+# Output the result
+print(result[0])
+print(result[1], result[2], result[3])

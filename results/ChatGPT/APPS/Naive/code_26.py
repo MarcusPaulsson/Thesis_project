@@ -13,18 +13,18 @@ def calculate_expressions(x, y, z):
         ((z ** x) ** y, "(z^x)^y"),
         ((z ** y) ** x, "(z^y)^x"),
     ]
-    return expressions
-
-def find_max_expression(x, y, z):
-    expressions = calculate_expressions(x, y, z)
-    max_value = max(value for value, _ in expressions)
-    for value, expr in expressions:
-        if value == max_value:
-            return expr
+    
+    max_value = float('-inf')
+    max_index = -1
+    
+    for index, (value, expr) in enumerate(expressions):
+        if value > max_value:
+            max_value = value
+            max_index = index
+            
+    return expressions[max_index][1]
 
 # Read input
 x, y, z = map(float, input().split())
-
-# Find and print the maximum expression
-result = find_max_expression(x, y, z)
+result = calculate_expressions(x, y, z)
 print(result)

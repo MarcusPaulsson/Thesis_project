@@ -8,14 +8,12 @@ while count < n and a[count] <= k:
     count += 1
 
 # Solve from the right
-right_count = 0
-while right_count < n and a[n - 1 - right_count] <= k:
-    right_count += 1
+while count < n and a[n - 1 - (count - count)] <= k:
+    count += 1
 
-# Adjust count to avoid double counting if both ends are solved
-if count + right_count > n:
+# Adjust count if both ends are solved
+if count > n:
     count = n
-else:
-    count += right_count
 
+# The total problems solved is the count of problems solved from both ends
 print(count)

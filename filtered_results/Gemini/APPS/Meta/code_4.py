@@ -4,22 +4,19 @@ def solve():
 
     def is_lucky(h, m):
         return '7' in str(h) or '7' in str(m)
-    
+
     count = 0
-    h = hh
-    m = mm
-    
     while True:
-        if is_lucky(h, m):
+        if is_lucky(hh, mm):
             print(count)
             return
-        
-        m -= x
-        if m < 0:
-            m += 60
-            h -= 1
-            if h < 0:
-                h += 24
+
+        mm -= x
+        if mm < 0:
+            mm += 60
+            hh -= 1
+            if hh < 0:
+                hh += 24
         
         count += 1
 

@@ -11,15 +11,11 @@ def restore_permutation(n, q):
     offset = 1 - min_value
     
     # Step 4: Adjust the permutation values
-    p = [x + offset for x in p]
+    for i in range(n):
+        p[i] += offset
     
-    # Step 5: Check if the adjusted permutation is valid
+    # Step 5: Check if the permutation is valid
     if len(set(p)) == n and all(1 <= x <= n for x in p):
-        print(" ".join(map(str, p)))
+        print(' '.join(map(str, p)))
     else:
         print(-1)
-
-# Example usage:
-n = int(input())
-q = list(map(int, input().split()))
-restore_permutation(n, q)

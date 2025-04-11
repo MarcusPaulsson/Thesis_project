@@ -1,29 +1,32 @@
 def color_array(n, k, a):
     from collections import defaultdict
 
-    color_assignment = [0] * n  # To store the color of each element
-    color_count = defaultdict(int)  # To count occurrences of each color
-    element_to_colors = defaultdict(set)  # To store which colors are assigned to each element
+    # Step 1: Initialize variables
+    color_assignment = [0] * n
+    frequency = defaultdict(list)
 
-    # Step 2: Assign colors
-    for i in range(n):
-        element = a[i]
-        # Try to assign a color to this element
-        for color in range(1, k + 1):
-            if color_count[color] < 1 and color not in element_to_colors[element]:
-                color_assignment[i] = color
-                color_count[color] += 1
-                element_to_colors[element].add(color)
-                break
+    # Step 2: Organize indices of each unique number
+    for index, value in enumerate(a):
+        frequency[value].append(index)
 
-    # Step 3: Check if we have assigned all colors
-    if len(color_count) < k:
-        print("NO")
-    else:
-        print("YES")
-        print(" ".join(map(str, color_assignment)))
+    # Step 3: Check if coloring is possible
+    if len(frequency) > k:
+        return "NO"
 
-# Example usage
-n, k = map(int, input().split())
-a = list(map(int, input().split()))
-color_array(n, k, a)
+    # Step 4: Assign colors
+    current_color = 1
+    for indices in frequency.values():
+        for i, index in enumerate(indices):
+            color_assignment[index] = (i % k) + 1
+
+    return "YES", color_assignment
+
+# Example usage:
+# n, k = map(int, input().split())
+# a = list(map(int, input().split()))
+# result = color_array(n, k, a)
+# if result == "NO":
+#     print(result)
+# else:
+#     print(result[0])
+#     print(" ".join(map(str, result[1])))

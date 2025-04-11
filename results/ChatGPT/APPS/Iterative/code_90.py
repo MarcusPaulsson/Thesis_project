@@ -4,45 +4,43 @@ c = list(map(int, input().split()))
 # Calculate the total length of platforms
 total_length = sum(c)
 
-# If the maximum jump distance is greater than or equal to n, we can always reach the end
-if d >= n:
+# If the maximum jump distance is greater than or equal to the width of the river, it's always possible
+if d >= n + 1:
     print("YES")
-    print("0 " * n + str(m))
+    print("0 " + "0 " * (n - 1) + str(m))
     exit()
 
-# We need to check if we can place the platforms such that we can jump from 0 to n + 1
-# The maximum distance we can jump is d, so we need to ensure that the gaps between platforms
-# do not exceed d.
+# Check if we can place the platforms such that we can reach the end
+# We need to ensure that the gaps between platforms do not exceed d
+positions = []
+current_position = 1
 
-# Start placing platforms
-a = [0] * n
+for length in c:
+    positions.append(current_position)
+    current_position += length
+
+# Check if the gaps between the platforms can be filled with jumps
+for i in range(1, len(positions)):
+    gap = positions[i] - (positions[i - 1] + c[i - 1])
+    if gap > d:
+        print("NO")
+        exit()
+
+# Check the gap before the first platform and after the last platform
+if positions[0] - 1 > d or (n + 1) - (positions[-1] + c[-1]) > d:
+    print("NO")
+    exit()
+
+# If we can place the platforms, let's construct the output
+result = [0] * n
 current_position = 0
 
-# Place platforms in the array
 for i in range(m):
     for j in range(c[i]):
-        a[current_position + j] = i + 1
-    current_position += c[i]
+        result[current_position] = i + 1
+        current_position += 1
+    if i < m - 1:
+        current_position += d - c[i]  # Leave a gap of at most d
 
-# Check if we can jump from the end of the last platform to n + 1
-if current_position + d >= n + 1:
-    print("YES")
-    print(" ".join(map(str, a)))
-else:
-    # Check for gaps between platforms
-    gap = d
-    last_position = 0
-    
-    for i in range(m):
-        # Check if we can jump from the last position to the start of the current platform
-        if last_position + gap < current_position:
-            print("NO")
-            exit()
-        last_position += c[i]
-
-    # Final check from the last platform to n + 1
-    if last_position + d >= n + 1:
-        print("YES")
-        print(" ".join(map(str, a)))
-    else:
-        print("NO")
+print("YES")
+print(" ".join(map(str, result)))

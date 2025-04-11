@@ -1,8 +1,8 @@
 def construct_binary_string(a, b, x):
-    # Start with an empty string
+    # Initialize the binary string
     s = []
     
-    # Determine the starting character based on the larger count
+    # Determine the starting character based on the counts of a and b
     if a > b:
         s.append('0')
         a -= 1
@@ -11,16 +11,19 @@ def construct_binary_string(a, b, x):
         b -= 1
     
     # We need to create x transitions
-    for i in range(x):
+    transitions = x
+    
+    # Create the alternating pattern
+    while transitions > 0:
         if s[-1] == '0':
             s.append('1')
             b -= 1
         else:
             s.append('0')
             a -= 1
+        transitions -= 1
     
-    # Now we have used x transitions, we need to fill the rest
-    # Fill with the remaining characters
+    # Fill the remaining characters
     while a > 0:
         s.append('0')
         a -= 1
@@ -28,9 +31,10 @@ def construct_binary_string(a, b, x):
         s.append('1')
         b -= 1
     
+    # Join the list into a string and return
     return ''.join(s)
 
 # Read input
 a, b, x = map(int, input().split())
-# Generate and print the binary string
+# Print the result
 print(construct_binary_string(a, b, x))

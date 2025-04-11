@@ -1,5 +1,5 @@
 def can_complete_projects(n, r, projects):
-    # Sort projects by their required rating
+    # Sort projects based on the required rating
     projects.sort(key=lambda x: x[0])
     
     for a, b in projects:

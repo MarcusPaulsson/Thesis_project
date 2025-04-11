@@ -24,4 +24,5 @@ def solve():
         print(-1)
     else:
         print(count)
+
 solve()

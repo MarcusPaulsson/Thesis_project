@@ -15,7 +15,6 @@ def solve():
         print("YES")
     elif len(stack) == 1:
         print("YES")
-
     else:
         print("NO")
 

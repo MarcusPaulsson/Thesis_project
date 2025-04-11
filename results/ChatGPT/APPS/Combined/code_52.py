@@ -7,25 +7,19 @@ def max_sum_divisible_by_k(n, m, k, matrix):
         row = sorted(matrix[i - 1], reverse=True)[:max_elements]
         current_sums = {0}  # Start with the sum of choosing no elements
 
-        for num in row:
-            new_sums = {s + num for s in current_sums}  # Use set comprehension for new sums
-            current_sums.update(new_sums)  # Merge new sums into current sums
-
-        for s in current_sums:
-            mod = s % k
-            if dp[i - 1][mod] != -1:
-                dp[i][mod] = max(dp[i][mod], dp[i - 1][mod] + s)
+        for value in row:
+            current_sums.update({s + value for s in current_sums})
 
         for mod in range(k):
             if dp[i - 1][mod] != -1:
-                dp[i][mod] = max(dp[i][mod], dp[i - 1][mod])
+                for s in current_sums:
+                    new_sum = dp[i - 1][mod] + s
+                    new_mod = new_sum % k
+                    dp[i][new_mod] = max(dp[i][new_mod], new_sum)
 
     return max(dp[n])
 
-# Read input
-n, m, k = map(int, input().split())
-matrix = [list(map(int, input().split())) for _ in range(n)]
-
-# Get the result and print it
-result = max_sum_divisible_by_k(n, m, k, matrix)
-print(result)
+# Example usage:
+# n, m, k = map(int, input().split())
+# matrix = [list(map(int, input().split())) for _ in range(n)]
+# print(max_sum_divisible_by_k(n, m, k, matrix))

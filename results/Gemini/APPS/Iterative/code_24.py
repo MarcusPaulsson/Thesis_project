@@ -3,22 +3,26 @@ def solve():
     for _ in range(10):
         board.append(list(input()))
 
-    def check_win(b):
+    def check_win(board):
         for i in range(10):
             for j in range(10):
-                if b[i][j] == 'X':
+                if board[i][j] == 'X':
                     # Check horizontal
-                    if j <= 5 and all(b[i][j+k] == 'X' for k in range(5)):
-                        return True
+                    if j + 4 < 10:
+                        if all(board[i][j+k] == 'X' for k in range(5)):
+                            return True
                     # Check vertical
-                    if i <= 5 and all(b[i+k][j] == 'X' for k in range(5)):
-                        return True
+                    if i + 4 < 10:
+                        if all(board[i+k][j] == 'X' for k in range(5)):
+                            return True
                     # Check diagonal (top-left to bottom-right)
-                    if i <= 5 and j <= 5 and all(b[i+k][j+k] == 'X' for k in range(5)):
-                        return True
+                    if i + 4 < 10 and j + 4 < 10:
+                        if all(board[i+k][j+k] == 'X' for k in range(5)):
+                            return True
                     # Check diagonal (top-right to bottom-left)
-                    if i <= 5 and j >= 4 and all(b[i+k][j-k] == 'X' for k in range(5)):
-                        return True
+                    if i + 4 < 10 and j - 4 >= 0:
+                        if all(board[i+k][j-k] == 'X' for k in range(5)):
+                            return True
         return False
 
     for i in range(10):

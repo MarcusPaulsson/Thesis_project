@@ -1,17 +1,17 @@
 def min_operations_to_remainder(n, x, y, number):
-    # Construct the target pattern for the last x digits
-    target_remainder = '0' * (x - y - 1) + '1' + '0' * y
-    current_remainder = number[-x:]  # Get the last x digits of the number
+    # Create the target pattern based on y
+    target = ['0'] * x
+    target[y] = '1'
     
-    # Count the number of changes needed
-    operations_needed = sum(1 for i in range(x) if current_remainder[i] != target_remainder[i])
+    # Count the number of operations needed
+    operations = sum(1 for i in range(x) if number[n - 1 - i] != target[x - 1 - i])
     
-    return operations_needed
+    return operations
 
-# Input reading
+# Read input
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# Calculate and print the result
+# Get the result and print it
 result = min_operations_to_remainder(n, x, y, number)
 print(result)

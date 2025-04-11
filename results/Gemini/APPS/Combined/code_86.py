@@ -5,31 +5,29 @@ def solve():
         print("NO")
         return
 
-    a = [0] * k
-    for i in range(k):
-        a[i] = i + 1
-
+    a = [i + 1 for i in range(k)]
     remaining = n - k * (k + 1) // 2
 
     for i in range(k):
         a[i] += remaining // k
-
+    
     remaining %= k
-
+    
     for i in range(k - 1, k - 1 - remaining, -1):
         a[i] += 1
 
     for i in range(k - 1):
-        if a[i + 1] > 2 * a[i]:
-            diff = a[i + 1] - 2 * a[i]
-            a[i + 1] -= diff
-            a[k - 1] += diff
-            if a[i + 1] > 2 * a[i]:
+        if a[i+1] > 2 * a[i]:
+            diff = a[i+1] - 2 * a[i]
+            a[i+1] -= diff
+            a[k-1] += diff
+            
+            if a[k-1] > 2 * a[k-2]:
                 print("NO")
                 return
-            
+
     for i in range(k - 1):
-        if a[i + 1] <= a[i]:
+        if not (a[i] < a[i+1] <= 2 * a[i]):
             print("NO")
             return
 

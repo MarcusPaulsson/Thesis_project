@@ -10,37 +10,32 @@ def solve():
         print("".join(a_digits))
         return
     
-    def find_max_permutation(index, current_num, remaining_digits):
+    if len(a) > len(b):
+        print("".join(a_digits))
+        return
+
+    a_count = Counter(a)
+    
+    def find_max_permutation(index, current_num, remaining_count):
         if index == len(a):
             return current_num
         
-        best_num = ""
+        for digit in sorted(remaining_count.keys(), reverse=True):
+            new_count = remaining_count.copy()
+            new_count[digit] -= 1
+            if new_count[digit] == 0:
+                del new_count[digit]
+            
+            new_num = current_num + digit
+            
+            if new_num <= b:
+                result = find_max_permutation(index + 1, new_num, new_count)
+                if result is not None:
+                    return result
         
-        for digit in sorted(remaining_digits.keys(), reverse=True):
-            if remaining_digits[digit] > 0:
-                temp_remaining_digits = remaining_digits.copy()
-                temp_remaining_digits[digit] -= 1
-                if temp_remaining_digits[digit] == 0:
-                    del temp_remaining_digits[digit]
-                
-                new_num = current_num + digit
-                
-                if int(new_num) <= int(b[:len(new_num)]):
-                    if len(new_num) == len(b[:len(new_num)]):
-                         if int(new_num) <= int(b[:len(new_num)]):
-                            possible_num = find_max_permutation(index + 1, new_num, temp_remaining_digits)
-                            if possible_num != "" and (best_num == "" or int(possible_num) > int(best_num)):
-                                best_num = possible_num
-                    else:
-                        possible_num = find_max_permutation(index + 1, new_num, temp_remaining_digits)
-                        if possible_num != "" and (best_num == "" or int(possible_num) > int(best_num)):
-                            best_num = possible_num
-                    
-        return best_num
+        return None
 
-    
-    a_counts = Counter(list(a))
-    result = find_max_permutation(0, "", a_counts)
+    result = find_max_permutation(0, "", a_count)
     print(result)
-    
+
 solve()

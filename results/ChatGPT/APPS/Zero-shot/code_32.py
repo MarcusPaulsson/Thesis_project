@@ -1,30 +1,31 @@
 n = int(input())
-current_position = 0  # Position in kilometers from the North Pole (0 to 20000)
-
+position = 0  # Position on the meridian, starting at the North Pole (0 km)
 valid = True
 
 for _ in range(n):
     t, direction = input().split()
     t = int(t)
 
-    if direction == "South":
-        if current_position == 20000:  # At South Pole
-            valid = False
-        current_position += t
-    elif direction == "North":
-        if current_position == 0:  # At North Pole
-            valid = False
-        current_position -= t
-    elif direction in ["West", "East"]:
-        # Moving West or East does not change the position in terms of North/South
-        pass
-
-    # Check if current position is out of bounds
-    if current_position < 0 or current_position > 20000:
+    if position == 0 and direction != "South":
         valid = False
+        break
+    elif position == 20000 and direction != "North":
+        valid = False
+        break
 
-# Final position must be at the North Pole
-if current_position != 0:
-    valid = False
+    if direction == "South":
+        position += t
+    elif direction == "North":
+        position -= t
+    elif direction == "West" or direction == "East":
+        # Moving West or East does not change the position on the meridian
+        continue
 
-print("YES" if valid else "NO")
+    if position < 0 or position > 20000:
+        valid = False
+        break
+
+if valid and position == 0:
+    print("YES")
+else:
+    print("NO")

@@ -1,13 +1,11 @@
 n = int(input())
 s = input()
 
-min_operations = n  # Start with the assumption that we type all characters one by one
+min_operations = n  # Start with the maximum operations (typing all characters)
 
-# Check for all possible prefixes to copy
 for i in range(1, n):
-    prefix = s[:i]
-    if s.startswith(prefix, i):  # Check if the string can be formed by prefix + remaining
-        # Operations: type prefix (i) + copy (1) + type remaining (n - 2*i)
+    if s[:i] == s[i:i+i]:  # Check if the prefix can be copied
+        # Calculate operations: type i characters, copy, and type the rest
         operations = i + 1 + (n - 2 * i)
         min_operations = min(min_operations, operations)
 

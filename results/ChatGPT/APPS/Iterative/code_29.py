@@ -8,19 +8,15 @@ def min_replacements_to_lucky(ticket):
     if sum_first == sum_second:
         return 0
     
-    # Calculate the difference
     diff = abs(sum_first - sum_second)
     
-    # Create a list of possible changes
+    # Calculate the maximum possible changes
     changes = []
     if sum_first > sum_second:
-        # We need to decrease sum_first or increase sum_second
-        changes = [9 - d for d in first_half] + [d for d in second_half]
+        changes = [9 - digit for digit in second_half]
     else:
-        # We need to decrease sum_second or increase sum_first
-        changes = [9 - d for d in second_half] + [d for d in first_half]
+        changes = [9 - digit for digit in first_half]
     
-    # Sort changes in descending order
     changes.sort(reverse=True)
     
     count = 0
@@ -29,10 +25,8 @@ def min_replacements_to_lucky(ticket):
         count += 1
         if diff <= 0:
             break
-    
+            
     return count
 
-# Input
 ticket = input().strip()
-# Output
 print(min_replacements_to_lucky(ticket))

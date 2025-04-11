@@ -6,49 +6,56 @@ def find_spanning_tree(n, m, D, edges):
         return
 
     graph = defaultdict(list)
-    for v, u in edges:
-        graph[v].append(u)
+    for u, v in edges:
         graph[u].append(v)
+        graph[v].append(u)
 
     degree = {i: 0 for i in range(1, n + 1)}
     spanning_tree_edges = []
     visited = set()
     
-    # Start BFS/DFS from vertex 1
-    queue = deque([1])
-    visited.add(1)
-
-    while queue:
-        node = queue.popleft()
-        if degree[node] < D and node == 1:
-            # Try to connect to more nodes if we are at node 1
+    # BFS to create a spanning tree
+    def bfs(start):
+        queue = deque([start])
+        visited.add(start)
+        while queue:
+            node = queue.popleft()
             for neighbor in graph[node]:
                 if neighbor not in visited and degree[node] < D:
+                    visited.add(neighbor)
                     spanning_tree_edges.append((node, neighbor))
                     degree[node] += 1
                     degree[neighbor] += 1
-                    visited.add(neighbor)
                     queue.append(neighbor)
-        else:
-            # Connect to unvisited neighbors
-            for neighbor in graph[node]:
-                if neighbor not in visited:
-                    spanning_tree_edges.append((node, neighbor))
-                    degree[node] += 1
-                    degree[neighbor] += 1
-                    visited.add(neighbor)
-                    queue.append(neighbor)
+                if degree[node] == D:
+                    break
 
-    # Check if we have a valid spanning tree
-    if degree[1] != D or len(spanning_tree_edges) != n - 1:
+    bfs(1)
+
+    if degree[1] != D:
         print("NO")
-    else:
+        return
+
+    # Add remaining edges to complete the spanning tree
+    for u in range(1, n + 1):
+        for v in graph[u]:
+            if degree[u] < 1 and degree[v] < 1 and (u, v) not in spanning_tree_edges and (v, u) not in spanning_tree_edges:
+                spanning_tree_edges.append((u, v))
+                degree[u] += 1
+                degree[v] += 1
+                if len(spanning_tree_edges) == n - 1:
+                    break
+        if len(spanning_tree_edges) == n - 1:
+            break
+
+    if len(spanning_tree_edges) == n - 1:
         print("YES")
-        for v, u in spanning_tree_edges:
-            print(v, u)
+        for u, v in spanning_tree_edges:
+            print(u, v)
+    else:
+        print("NO")
 
-# Read input
-n, m, D = map(int, input().split())
-edges = [tuple(map(int, input().split())) for _ in range(m)]
-
-find_spanning_tree(n, m, D, edges)
+# Example usage
+# n, m, D = map(int, input().split())
+# edges = [tuple(map(int, input().split())) for _ in range(m)]
+# find_spanning_tree(n, m, D, edges)

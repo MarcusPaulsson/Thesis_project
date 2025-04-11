@@ -6,34 +6,75 @@ def solve():
 
     dp = {}
 
-    def get_dp(row_idx, total_sum_mod_k):
-        if (row_idx, total_sum_mod_k) in dp:
-            return dp[(row_idx, total_sum_mod_k)]
-
-        if row_idx == n:
-            if total_sum_mod_k == 0:
+    def calculate_max_sum(row_index, current_sum_mod):
+        if row_index == n:
+            if current_sum_mod == 0:
                 return 0
             else:
-                return float('-inf')
+                return -float('inf')
 
-        max_sum = float('-inf')
-        
-        # Option 1: Don't pick any elements from the current row
-        max_sum = max(max_sum, get_dp(row_idx + 1, total_sum_mod_k))
+        if (row_index, current_sum_mod) in dp:
+            return dp[(row_index, current_sum_mod)]
 
-        # Option 2: Pick some elements from the current row
-        row = a[row_idx]
         max_elements = m // 2
+        row = a[row_index]
+
+        row_dp = {}
+
+        def calculate_row_max_sum(col_index, elements_chosen, current_row_sum_mod):
+            if col_index == m:
+                if elements_chosen <= max_elements:
+                    return 0 if current_row_sum_mod == 0 else -float('inf')
+                else:
+                    return -float('inf')
+
+            if (col_index, elements_chosen, current_row_sum_mod) in row_dp:
+                return row_dp[(col_index, elements_chosen, current_row_sum_mod)]
+
+            choose = -float('inf')
+            if elements_chosen < max_elements:
+                new_row_sum_mod = (current_row_sum_mod + row[col_index]) % k
+                choose = row[col_index] + calculate_row_max_sum(col_index + 1, elements_chosen + 1, new_row_sum_mod)
+
+            skip = calculate_row_max_sum(col_index + 1, elements_chosen, current_row_sum_mod)
+
+            row_dp[(col_index, elements_chosen, current_row_sum_mod)] = max(choose, skip)
+            return row_dp[(col_index, elements_chosen, current_row_sum_mod)]
+
+        max_row_sum = calculate_row_max_sum(0, 0, 0)
         
-        for num_elements in range(1, max_elements + 1):
-            for combination in combinations(row, num_elements):
-                current_sum = sum(combination)
-                max_sum = max(max_sum, current_sum + get_dp(row_idx + 1, (total_sum_mod_k + current_sum) % k))
+        max_val = -float('inf')
+        for row_sum_mod in range(k):
+            row_dp_mod = {}
 
-        dp[(row_idx, total_sum_mod_k)] = max_sum
-        return max_sum
+            def calculate_row_max_sum_with_sum(col_index, elements_chosen, current_row_sum, current_row_sum_mod):
+                if col_index == m:
+                    if elements_chosen <= max_elements:
+                        return current_row_sum if current_row_sum_mod == 0 else -float('inf')
+                    else:
+                        return -float('inf')
 
-    from itertools import combinations
-    print(get_dp(0, 0))
+                if (col_index, elements_chosen, current_row_sum_mod) in row_dp_mod:
+                    return row_dp_mod[(col_index, elements_chosen, current_row_sum_mod)]
+
+                choose = -float('inf')
+                if elements_chosen < max_elements:
+                    new_row_sum_mod = (current_row_sum_mod + row[col_index]) % k
+                    choose = calculate_row_max_sum_with_sum(col_index + 1, elements_chosen + 1, current_row_sum + row[col_index], new_row_sum_mod)
+
+                skip = calculate_row_max_sum_with_sum(col_index + 1, elements_chosen, current_row_sum, current_row_sum_mod)
+
+                row_dp_mod[(col_index, elements_chosen, current_row_sum_mod)] = max(choose, skip)
+                return row_dp_mod[(col_index, elements_chosen, current_row_sum_mod)]
+
+            row_max_sum_val = calculate_row_max_sum_with_sum(0, 0, 0, row_sum_mod)
+            
+            max_val = max(max_val, row_max_sum_val + calculate_max_sum(row_index + 1, (current_sum_mod + row_sum_mod) % k))
+
+        dp[(row_index, current_sum_mod)] = max_val
+        return max_val
+
+    result = calculate_max_sum(0, 0)
+    print(result)
 
 solve()

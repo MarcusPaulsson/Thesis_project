@@ -1,9 +1,9 @@
-def gcd(x, y):
-    while y:
-        x, y = y, x % y
-    return x
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
 
-def mod_inv(a, m):
+def mod_inverse(a, m):
     m0, x0, x1 = m, 0, 1
     if m == 1:
         return 0
@@ -19,29 +19,28 @@ def birthday_paradox(n, k):
     MOD = 1000003
     days = 1 << n  # 2^n
     if k > days:
-        return 1, 1  # Guaranteed collision
-
-    # Calculate the probability of no collision
-    prob_no_collision_numer = 1
-    prob_no_collision_denom = 1
+        return 1, 1
+    
+    # Calculate the probability of no shared birthdays
+    numerator = 1
+    denominator = 1
     for i in range(k):
-        prob_no_collision_numer *= (days - i)
-        prob_no_collision_denom *= days
-        prob_no_collision_numer %= MOD
-        prob_no_collision_denom %= MOD
-
-    # Probability of at least one collision
-    A = (prob_no_collision_denom - prob_no_collision_numer) % MOD
-    B = prob_no_collision_denom
-
+        numerator *= (days - i)
+        denominator *= days
+        numerator %= MOD
+        denominator %= MOD
+    
+    # Probability of at least two people sharing a birthday
+    A = (denominator - numerator) % MOD
+    B = denominator % MOD
+    
     # Reduce A/B to irreducible form
-    common_divisor = gcd(A, B)
-    A //= common_divisor
-    B //= common_divisor
-
+    common_gcd = gcd(A, B)
+    A //= common_gcd
+    B //= common_gcd
+    
     return A % MOD, B % MOD
 
-# Input reading
 n, k = map(int, input().split())
-result = birthday_paradox(n, k)
-print(result[0], result[1])
+A, B = birthday_paradox(n, k)
+print(A, B)

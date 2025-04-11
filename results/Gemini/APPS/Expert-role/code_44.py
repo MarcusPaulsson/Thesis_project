@@ -4,18 +4,72 @@ def solve():
     if d <= k:
         print(d * a)
     else:
-        ans = k * a
-        d -= k
+        cost1 = k * a + t + (d - k) * b
         
-        if t + k * a < k * b:
-            num_breaks = d // k
-            ans += num_breaks * (t + k * a)
-            d -= num_breaks * k
+        num_breaks = (d // k) - 1
+        remaining_dist = d % k
+        
+        if remaining_dist == 0:
+            num_breaks += 1
+            remaining_dist = k
+        
+        cost2 = k * a
+        
+        if num_breaks > 0:
+            cost2 += num_breaks * (k * a + t)
+        
+        cost2 += remaining_dist * min(a, b)
+        
+        if remaining_dist == k and a > b:
+            cost2 -= remaining_dist * (a - b)
             
-            if d > 0:
-                ans += min(t + d * a, d * b)
+        
+        cost3 = 0
+        num_full_breaks = d // k
+        rem_dist = d % k
+        
+        if rem_dist == 0 and d > 0:
+            num_full_breaks -= 1
+            rem_dist = k
+            
+        if num_full_breaks > 0:
+            cost3 += num_full_breaks * (k * a + t)
+        
+        cost3 += rem_dist * b if rem_dist > 0 else 0
+        cost3 += k * a if d > 0 else 0
+        
+        
+        cost4 = 0
+        num_full_breaks = d // k
+        rem_dist = d % k
+        
+        if rem_dist == 0 and d > 0:
+            num_full_breaks -= 1
+            rem_dist = k
+            
+        if num_full_breaks > 0:
+            cost4 += num_full_breaks * (k * a + t)
+        
+        cost4 += rem_dist * b if rem_dist > 0 else 0
+        cost4 += k * a if d > 0 else 0
+        
+        if k * a + t > k * b:
+            num_breaks = (d // k)
+            rem_dist = d % k
+            
+            if rem_dist == 0 and d > 0:
+                num_breaks -= 1
+                rem_dist = k
+            
+            cost5 = num_breaks * (k * a + t) + rem_dist * b
+            
+            if d <= k:
+                cost5 = d * a
+            else:
+                cost5 = k * a + (d - k) * b
+            
+            print(min(cost5, d * a + max(0, (d // k) - 1) * t))
         else:
-            ans += d * b
-        print(ans)
+            print(min(d * a + max(0, (d // k) - 1) * t, d * a + (d // k - 1) * t + (d % k) * b))
 
 solve()

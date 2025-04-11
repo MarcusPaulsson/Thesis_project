@@ -1,35 +1,50 @@
 def min_cost_to_obtain_set(n, k, s):
     from collections import defaultdict
     
-    # Count the frequency of each character in the string
+    # Count the frequency of each character
     freq = defaultdict(int)
     for char in s:
         freq[char] += 1
     
-    # Calculate the number of unique subsequences we can generate
+    # Calculate the number of unique subsequences we can form
     unique_subsequences = 0
-    total_cost = 0
     costs = []
     
-    # Generate subsequences and their costs
-    for length in range(1, n + 1):
-        # For each unique character, we can create subsequences of this length
-        for char, count in freq.items():
-            if count >= length:
-                # The number of ways to choose 'length' characters from 'count' is C(count, length)
-                # This is equivalent to the number of unique subsequences of this length
-                unique_subsequences += 1
-                costs.append(n - length)  # Cost of adding this subsequence
+    # For each unique character, calculate the number of subsequences
+    for count in freq.values():
+        # The number of subsequences formed by this character is 2^count - 1 (excluding the empty subsequence)
+        unique_subsequences += (1 << count) - 1
+        costs.append(count)  # The cost of using this character is its count
     
-    # If we can't generate enough unique subsequences
+    # If we cannot form at least k unique subsequences
     if unique_subsequences < k:
         return -1
     
-    # Sort costs to minimize total cost
-    costs.sort()
+    # Sort costs in descending order
+    costs.sort(reverse=True)
     
-    # Calculate the minimum total cost to obtain k unique subsequences
-    return sum(costs[:k])
+    total_cost = 0
+    remaining_k = k
+    
+    # We will try to take the largest costs first to minimize the total cost
+    for cost in costs:
+        if remaining_k <= 0:
+            break
+        # The maximum number of subsequences we can take from this character
+        max_subsequences = (1 << cost) - 1
+        
+        if remaining_k > max_subsequences:
+            total_cost += cost * max_subsequences
+            remaining_k -= max_subsequences
+        else:
+            total_cost += cost * remaining_k
+            remaining_k = 0
+    
+    # If we still have remaining k, we need to add more subsequences
+    if remaining_k > 0:
+        total_cost += remaining_k  # Each additional subsequence will cost at least 1
+    
+    return total_cost
 
 # Read input
 n, k = map(int, input().split())

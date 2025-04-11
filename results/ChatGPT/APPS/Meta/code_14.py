@@ -1,52 +1,54 @@
-def is_stack_sortable(n, k, p):
-    # Create a set of used elements from the first k elements
+def restore_stack_sortable_permutation(n, k, p):
+    # Create a set of used numbers from the first k elements
     used = set(p)
-    # The remaining elements that need to be added to the permutation
+    
+    # Create the remaining numbers that need to be filled in the permutation
     remaining = [i for i in range(1, n + 1) if i not in used]
     
     # Initialize the result with the first k elements
     result = p[:]
     
-    # Initialize a stack
+    # Initialize a stack to simulate the stack operations
     stack = []
     
-    # The next number we expect to append to the result
-    next_expected = 1
+    # The next number we need to push from remaining
+    next_remaining_index = 0
     
-    # Iterate through the first k elements
+    # Iterate over the first k elements to check stack-sortability
     for i in range(k):
-        while stack and stack[-1] == next_expected:
-            result.append(stack.pop())
-            next_expected += 1
+        # While we can push from remaining and the top of the stack is less than the next needed
+        while (next_remaining_index < len(remaining) and 
+               (not stack or stack[-1] > p[i])):
+            stack.append(remaining[next_remaining_index])
+            next_remaining_index += 1
         
-        # If the current element is not the expected one
-        if p[i] != next_expected:
-            # Push the current element onto the stack
-            stack.append(p[i])
+        # If the top of the stack is the current element, pop it
+        if stack and stack[-1] == p[i]:
+            stack.pop()
         else:
-            # If it is the expected one, append it to the result
-            result.append(p[i])
-            next_expected += 1
+            # If we can't match the current element, it's not stack-sortable
+            return -1
     
-    # Now we need to process the remaining elements
-    for num in sorted(remaining, reverse=True):
-        while stack and stack[-1] == next_expected:
-            result.append(stack.pop())
-            next_expected += 1
-        stack.append(num)
+    # Now we need to fill the rest of the result with remaining elements
+    while next_remaining_index < len(remaining):
+        stack.append(remaining[next_remaining_index])
+        next_remaining_index += 1
     
-    # Finally, empty the stack if possible
-    while stack and stack[-1] == next_expected:
+    # Pop all remaining elements from the stack to the result
+    while stack:
         result.append(stack.pop())
-        next_expected += 1
     
-    # Check if we have added all numbers from 1 to n
-    if next_expected - 1 == n:
-        print(" ".join(map(str, result)))
-    else:
-        print(-1)
+    return result
 
-# Example usage
+# Read input
 n, k = map(int, input().split())
 p = list(map(int, input().split()))
-is_stack_sortable(n, k, p)
+
+# Get the result
+result = restore_stack_sortable_permutation(n, k, p)
+
+# Print the result
+if result == -1:
+    print(-1)
+else:
+    print(" ".join(map(str, result)))

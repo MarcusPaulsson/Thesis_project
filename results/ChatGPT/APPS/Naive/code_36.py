@@ -1,42 +1,36 @@
-def hexagon_coordinates(n):
+def get_coordinates(n):
     if n == 0:
         return (0, 0)
 
     layer = 0
     moves_in_layer = 1
 
-    # Determine the layer in which the move n is located
     while n >= moves_in_layer:
         n -= moves_in_layer
         layer += 1
         moves_in_layer = 6 * layer
 
-    # Calculate the coordinates based on the layer and remaining moves
     x, y = layer, 0
-    if n > 0:
-        # Move in the hexagonal pattern
-        direction = n // layer
-        steps = n % layer
 
-        if direction == 0:  # Right
-            x += steps
-        elif direction == 1:  # Top-right
-            x += steps
-            y += steps
-        elif direction == 2:  # Top-left
-            x -= steps
-            y += steps
-        elif direction == 3:  # Left
-            x -= steps
-        elif direction == 4:  # Bottom-left
-            x -= steps
-            y -= steps
-        elif direction == 5:  # Bottom-right
-            x += steps
-            y -= steps
+    if n == 0:
+        return (x, y)
+
+    directions = [
+        (1, 0),  # right
+        (0, 1),  # top-right
+        (-1, 1), # top-left
+        (-1, 0), # left
+        (0, -1), # bottom-left
+        (1, -1)  # bottom-right
+    ]
+
+    for i in range(n):
+        direction = i % 6
+        x += directions[direction][0]
+        y += directions[direction][1]
 
     return (x, y)
 
 n = int(input().strip())
-x, y = hexagon_coordinates(n)
+x, y = get_coordinates(n)
 print(x, y)

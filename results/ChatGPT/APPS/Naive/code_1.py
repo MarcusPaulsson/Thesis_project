@@ -1,12 +1,12 @@
-def max_digit_sum_number(x):
+def max_digit_sum(x):
     str_x = str(x)
     n = len(str_x)
     
-    # Start with the original number
+    # Start with the maximum possible number which is x itself
     max_number = x
-    max_digit_sum = sum(int(d) for d in str_x)
+    max_sum = sum(int(d) for d in str_x)
     
-    # Check numbers by reducing digits
+    # Iterate through each digit to find the best candidate
     for i in range(n):
         if str_x[i] == '0':
             continue
@@ -16,14 +16,12 @@ def max_digit_sum_number(x):
         new_number = int(new_number)
         
         if new_number > 0:
-            new_digit_sum = sum(int(d) for d in str(new_number))
-            if new_digit_sum > max_digit_sum or (new_digit_sum == max_digit_sum and new_number > max_number):
+            current_sum = sum(int(d) for d in str(new_number))
+            if current_sum > max_sum or (current_sum == max_sum and new_number > max_number):
                 max_number = new_number
-                max_digit_sum = new_digit_sum
-    
+                max_sum = current_sum
+
     return max_number
 
-# Input
-x = int(input().strip())
-# Output
-print(max_digit_sum_number(x))
+x = int(input())
+print(max_digit_sum(x))

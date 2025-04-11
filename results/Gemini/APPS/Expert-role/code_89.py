@@ -20,6 +20,7 @@ def solve():
         if check(order):
             print("YES")
             return
+    
     print("NO")
 
 solve()

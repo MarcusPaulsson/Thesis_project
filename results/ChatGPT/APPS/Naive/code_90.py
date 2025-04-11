@@ -1,46 +1,33 @@
-def can_cross_river(n, m, d, c):
-    # Calculate the total length of platforms
-    total_length = sum(c)
-    
-    # If the maximum jump distance is greater than or equal to the river width
-    if d >= n + 1:
-        print("YES")
-        print("0 " + "0 " * (n - 1) + str(m))
-        return
-    
-    # Initialize the river representation
-    river = [0] * n
+def can_cross_river(n, m, d, platforms):
+    total_length = sum(platforms)
+    if total_length + (m - 1) > n:
+        return "NO"
+
+    result = [0] * n
     current_position = 0
-    
-    # Place platforms in the river
+
     for i in range(m):
-        # Check if we can place the platform
-        if current_position + c[i] > n:
-            print("NO")
-            return
+        platform_length = platforms[i]
+        # Place the platform at the furthest position we can
+        start_position = current_position + 1
+        end_position = start_position + platform_length - 1
         
-        # Place the platform
-        for j in range(c[i]):
-            river[current_position + j] = i + 1
+        # Check if we can place the platform without exceeding the river width
+        if end_position > n:
+            return "NO"
         
-        # Move the current position to the end of the current platform
-        current_position += c[i]
+        # Fill the result array with the platform index
+        for j in range(platform_length):
+            result[start_position + j - 1] = i + 1
         
-        # Ensure there is enough space for the next jump
-        if i < m - 1:
-            current_position += 1  # Leave at least one cell gap between platforms
-    
-    # Check if we can reach the end
-    last_platform_end = current_position - 1
-    if last_platform_end + d >= n:
-        print("YES")
-        print(" ".join(map(str, river)))
-    else:
-        print("NO")
+        # Update the current position to the end of the current platform
+        current_position = end_position
 
-# Read input
+    return "YES\n" + " ".join(map(str, result))
+
+# Input reading
 n, m, d = map(int, input().split())
-c = list(map(int, input().split()))
+platforms = list(map(int, input().split()))
 
-# Call the function
-can_cross_river(n, m, d, c)
+# Output the result
+print(can_cross_river(n, m, d, platforms))

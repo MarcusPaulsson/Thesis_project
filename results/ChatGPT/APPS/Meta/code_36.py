@@ -1,44 +1,42 @@
-def hexagonal_coordinates(n):
+def find_coordinates(n):
     if n == 0:
         return (0, 0)
-
+    
     layer = 0
-    moves_in_layer = 0
-
-    # Find the layer where the nth move is located
-    while moves_in_layer <= n:
-        moves_in_layer += 6 * layer
+    moves_in_layer = 6 * layer
+    
+    while n > moves_in_layer:
+        n -= moves_in_layer
         layer += 1
-
-    layer -= 1
-    moves_in_layer -= 6 * layer
-
-    # Calculate the position in the layer
-    position_in_layer = n - moves_in_layer
-
-    # Calculate the coordinates based on the layer and position
+        moves_in_layer = 6 * layer
+    
     x, y = layer, 0
-
-    if position_in_layer < layer:
-        x -= position_in_layer
-    elif position_in_layer < 2 * layer:
-        x -= layer
-        y += position_in_layer - layer
-    elif position_in_layer < 3 * layer:
-        x += position_in_layer - 2 * layer
-        y += layer
-    elif position_in_layer < 4 * layer:
-        x += layer
-        y -= position_in_layer - 3 * layer
-    elif position_in_layer < 5 * layer:
-        x += 5 * layer - position_in_layer
-        y -= layer
-    else:
-        x -= layer
-        y -= position_in_layer - 5 * layer
-
+    
+    if n == 0:
+        return (x, y)
+    
+    # Calculate the position in the current layer
+    direction = n // layer
+    steps = n % layer
+    
+    if direction == 0:  # Right
+        x += steps
+    elif direction == 1:  # Top-right
+        x += steps
+        y += steps
+    elif direction == 2:  # Top-left
+        y += steps
+    elif direction == 3:  # Left
+        x -= steps
+        y += steps
+    elif direction == 4:  # Bottom-left
+        x -= steps
+    elif direction == 5:  # Bottom-right
+        x += steps
+        y -= steps
+    
     return (x, y)
 
 n = int(input())
-x, y = hexagonal_coordinates(n)
+x, y = find_coordinates(n)
 print(x, y)

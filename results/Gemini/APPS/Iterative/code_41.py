@@ -4,7 +4,7 @@ def solve():
 
     distances = [float('inf')] * n
 
-    # Forward pass
+    # Forward pass: find distances to the nearest zero to the left
     last_zero = float('-inf')
     for i in range(n):
         if a[i] == 0:
@@ -12,7 +12,7 @@ def solve():
         if last_zero != float('-inf'):
             distances[i] = min(distances[i], i - last_zero)
 
-    # Backward pass
+    # Backward pass: find distances to the nearest zero to the right
     last_zero = float('inf')
     for i in range(n - 1, -1, -1):
         if a[i] == 0:

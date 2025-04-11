@@ -17,6 +17,7 @@ def mod_inverse(a, m):
 
 def birthday_paradox(n, k):
     MOD = 1000003
+    
     days = 1 << n  # 2^n
     if k > days:
         return 1, 1  # Guaranteed collision
@@ -32,14 +33,14 @@ def birthday_paradox(n, k):
 
     # Probability of at least one collision
     A = (denominator - numerator) % MOD
-    B = denominator
+    B = denominator % MOD
 
     # Reduce A/B to irreducible form
-    common_gcd = gcd(A, B)
-    A //= common_gcd
-    B //= common_gcd
+    g = gcd(A, B)
+    A //= g
+    B //= g
 
-    return A % MOD, B % MOD
+    return A, B
 
 # Input reading
 n, k = map(int, input().split())

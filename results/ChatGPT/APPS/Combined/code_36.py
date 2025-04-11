@@ -1,40 +1,43 @@
-def get_coordinates(n):
+def find_coordinates(n):
     if n == 0:
         return (0, 0)
 
-    # Determine the layer of the spiral
     layer = 0
-    while n > 6 * layer:
-        n -= 6 * layer
+    moves_in_layer = 0
+
+    # Determine the layer in which the move n is located
+    while n > moves_in_layer:
         layer += 1
+        moves_in_layer = 6 * layer
 
-    # Initialize coordinates based on the layer
+    # Calculate the coordinates based on the layer and remaining moves
     x, y = layer, 0
+    remaining_moves = n - (moves_in_layer - 6 * layer)
 
-    # Calculate the coordinates based on the position in the layer
-    if n > 0:
-        if n <= layer:
-            x -= n
-        elif n <= 2 * layer:
-            x = -layer
-            y += (n - layer)
-        elif n <= 3 * layer:
-            x += (n - 2 * layer)
-            y = layer
-        elif n <= 4 * layer:
-            x += layer
-            y -= (n - 3 * layer)
-        elif n <= 5 * layer:
-            x = (n - 4 * layer) - layer
-            y -= layer
-        else:  # n <= 6 * layer
-            x -= (layer - (n - 5 * layer))
-            y = -layer
+    if remaining_moves > 0:
+        # Each segment of the layer corresponds to a direction
+        direction = remaining_moves // layer
+        steps = remaining_moves % layer
+
+        if direction == 0:  # right
+            x += steps
+        elif direction == 1:  # top-right
+            x += steps
+            y += steps
+        elif direction == 2:  # top-left
+            x -= steps
+            y += steps
+        elif direction == 3:  # left
+            x -= steps
+        elif direction == 4:  # bottom-left
+            x -= steps
+            y -= steps
+        elif direction == 5:  # bottom-right
+            x += steps
+            y -= steps
 
     return (x, y)
 
-# Read input
-n = int(input().strip())
-# Get coordinates and print
-coordinates = get_coordinates(n)
-print(coordinates[0], coordinates[1])
+n = int(input())
+x, y = find_coordinates(n)
+print(x, y)

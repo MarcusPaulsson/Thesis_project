@@ -6,36 +6,105 @@ def solve():
         sofas.append(list(map(int, input().split())))
     cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
 
-    def count_sofas(sofa_index):
-        l, r, t, b = 0, 0, 0, 0
+    def count_left(sofa_index):
+        count = 0
         x1, y1, x2, y2 = sofas[sofa_index]
-        
         for i in range(d):
             if i == sofa_index:
                 continue
-            
             ox1, oy1, ox2, oy2 = sofas[i]
             
-            # Check left
-            if min(x1, x2) > max(ox1, ox2):
-                l += 1
-            # Check right
-            elif max(x1, x2) < min(ox1, ox2):
-                r += 1
-            # Check top
-            if min(y1, y2) > max(oy1, oy2):
-                t += 1
-            # Check bottom
-            elif max(y1, y2) < min(oy1, oy2):
-                b += 1
-        return l, r, t, b
+            min_y = min(y1, y2)
+            max_y = max(y1, y2)
+            omin_y = min(oy1, oy2)
+            omax_y = max(oy1, oy2)
+            
+            min_x = min(x1, x2)
+            max_x = max(x1, x2)
+            omin_x = min(ox1, ox2)
+            omax_x = max(ox1, ox2)
+            
+            
+            if min_x > omax_x:
+                count += 1
+        return count
 
+    def count_right(sofa_index):
+        count = 0
+        x1, y1, x2, y2 = sofas[sofa_index]
+        for i in range(d):
+            if i == sofa_index:
+                continue
+            ox1, oy1, ox2, oy2 = sofas[i]
+            
+            min_y = min(y1, y2)
+            max_y = max(y1, y2)
+            omin_y = min(oy1, oy2)
+            omax_y = max(oy1, oy2)
+            
+            min_x = min(x1, x2)
+            max_x = max(x1, x2)
+            omin_x = min(ox1, ox2)
+            omax_x = max(ox1, ox2)
+            
+            if omax_x > max_x:
+                count += 1
+        return count
+
+    def count_top(sofa_index):
+        count = 0
+        x1, y1, x2, y2 = sofas[sofa_index]
+        for i in range(d):
+            if i == sofa_index:
+                continue
+            ox1, oy1, ox2, oy2 = sofas[i]
+            
+            min_y = min(y1, y2)
+            max_y = max(y1, y2)
+            omin_y = min(oy1, oy2)
+            omax_y = max(oy1, oy2)
+            
+            min_x = min(x1, x2)
+            max_x = max(x1, x2)
+            omin_x = min(ox1, ox2)
+            omax_x = max(ox1, ox2)
+            
+            if min_y > omax_y:
+                count += 1
+        return count
+
+    def count_bottom(sofa_index):
+        count = 0
+        x1, y1, x2, y2 = sofas[sofa_index]
+        for i in range(d):
+            if i == sofa_index:
+                continue
+            ox1, oy1, ox2, oy2 = sofas[i]
+            
+            min_y = min(y1, y2)
+            max_y = max(y1, y2)
+            omin_y = min(oy1, oy2)
+            omax_y = max(oy1, oy2)
+            
+            min_x = min(x1, x2)
+            max_x = max(x1, x2)
+            omin_x = min(ox1, ox2)
+            omax_x = max(ox1, ox2)
+            
+            if omax_y > max_y:
+                count += 1
+        return count
+
+    result = -1
     for i in range(d):
-        l, r, t, b = count_sofas(i)
+        l = count_left(i)
+        r = count_right(i)
+        t = count_top(i)
+        b = count_bottom(i)
         if l == cnt_l and r == cnt_r and t == cnt_t and b == cnt_b:
-            print(i + 1)
-            return
+            result = i + 1
+            break
 
-    print(-1)
+    print(result)
 
 solve()

@@ -1,44 +1,42 @@
 def is_stack_sortable(n, k, p):
-    # Create a set of used elements from the first k elements
-    used = set(p)
+    # Create a set for the elements already in p
+    present = set(p)
     # Initialize the result array with the first k elements
     result = p[:]
     
-    # The next available number to use in the permutation
-    next_available = n
+    # Initialize the next number to be placed in the permutation
+    next_num = n
     
-    # A stack to simulate the stack operations
+    # Initialize a stack to simulate the stack operations
     stack = []
     
     # Iterate through the first k elements
     for i in range(k):
-        # Push elements onto the stack until we can pop
-        while next_available > 0 and (len(stack) == 0 or stack[-1] < p[i]):
-            if next_available not in used:
-                stack.append(next_available)
-            next_available -= 1
+        # While the stack is not empty and the top of the stack is less than the next number
+        while stack and stack[-1] < next_num:
+            result.append(stack.pop())
         
-        # If the stack's top is not equal to the current element, it's not sortable
-        if len(stack) > 0 and stack[-1] == p[i]:
-            stack.pop()
-        elif len(stack) > 0 and stack[-1] > p[i]:
+        # If the current element is not the next number, we need to fill the stack
+        if p[i] < next_num:
+            # Push numbers onto the stack until we reach the current element
+            while next_num > p[i]:
+                if next_num not in present:
+                    stack.append(next_num)
+                next_num -= 1
+        
+        # If the current element is not the next number, it's impossible to sort
+        if p[i] != next_num:
             return -1
+        
+        # Move to the next number
+        next_num -= 1
     
-    # Fill the remaining elements in the result
-    while next_available > 0:
-        if next_available not in used:
-            result.append(next_available)
-        next_available -= 1
+    # After processing the first k elements, we need to empty the stack
+    while stack:
+        result.append(stack.pop())
     
-    # Now we need to ensure the result is stack-sortable
-    stack = []
-    for num in result:
-        while stack and stack[-1] < num:
-            stack.pop()
-        stack.append(num)
-    
-    # If the stack is not empty, we can check if we can pop all elements
-    if len(stack) != len(result):
+    # Check if the result is a valid permutation
+    if len(result) != n or len(set(result)) != n:
         return -1
     
     return result

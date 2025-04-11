@@ -4,11 +4,11 @@ def min_moves_to_divisible_by_25(n):
     moves = float('inf')
 
     # Check for pairs of digits that can form 25 or 00
-    for target in ['00', '25']:
+    for target in ['25', '50', '75']:
         last_digit = target[1]
         second_last_digit = target[0]
         
-        # Find the last occurrence of the last_digit
+        # Find the last occurrence of last_digit
         last_index = -1
         for i in range(length - 1, -1, -1):
             if s[i] == last_digit:
@@ -18,7 +18,7 @@ def min_moves_to_divisible_by_25(n):
         if last_index == -1:
             continue
         
-        # Now find the second_last_digit before the last_index
+        # Find the second last occurrence of second_last_digit before last_index
         second_last_index = -1
         for i in range(last_index - 1, -1, -1):
             if s[i] == second_last_digit:

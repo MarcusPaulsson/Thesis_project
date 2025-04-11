@@ -1,5 +1,5 @@
-import math
+def count_set_bits(n):
+    return bin(n).count('1')
 
 a = int(input())
-output = math.ceil(math.log2(a))
-print(output)
+print(count_set_bits(a))

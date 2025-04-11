@@ -2,51 +2,32 @@ def solve():
     n = int(input())
     s = input()
     
-    colors = [0] * n
-    
-    def check(num_colors):
-        coloring = [0] * n
+    def check(colors):
+        colored_string = [(s[i], colors[i]) for i in range(n)]
         
-        def is_sortable(coloring):
-            arr = list(s)
+        def can_sort(arr):
+            arr = arr[:]
+            for i in range(n):
+                for j in range(n - i - 1):
+                    if arr[j][0] > arr[j+1][0] and arr[j][1] != arr[j+1][1]:
+                        arr[j], arr[j+1] = arr[j+1], arr[j]
             
-            swapped = True
-            while swapped:
-                swapped = False
-                for i in range(n - 1):
-                    if arr[i] > arr[i+1] and coloring[i] != coloring[i+1]:
-                        arr[i], arr[i+1] = arr[i+1], arr[i]
-                        swapped = True
-            
-            return "".join(arr) == "".join(sorted(s))
+            sorted_chars = [arr[i][0] for i in range(n)]
+            return sorted_chars == sorted(s)
         
-        
-        def find_coloring(index):
-            if index == n:
-                if is_sortable(coloring):
-                    return True
-                else:
-                    return False
-            
-            for color in range(1, num_colors + 1):
-                coloring[index] = color
-                if find_coloring(index + 1):
-                    return True
-                coloring[index] = 0
-            
-            return False
-
-        if find_coloring(0):
-            return True, coloring
-        else:
-            return False, None
-
+        return can_sort(colored_string)
     
     for num_colors in range(1, n + 1):
-        possible, coloring = check(num_colors)
-        if possible:
-            print(num_colors)
-            print(*coloring)
-            return
+        for i in range(num_colors**n):
+            colors = []
+            temp = i
+            for _ in range(n):
+                colors.append(temp % num_colors + 1)
+                temp //= num_colors
+            
+            if check(colors):
+                print(num_colors)
+                print(*colors)
+                return
 
 solve()

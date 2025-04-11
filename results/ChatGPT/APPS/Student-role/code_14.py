@@ -1,48 +1,26 @@
-def is_stack_sortable(n, k, p):
-    # Create a set of used elements
+def restore_stack_sortable_permutation(n, k, p):
     used = set(p)
-    # Create a list for the remaining elements
     remaining = [i for i in range(1, n + 1) if i not in used]
-    
-    # Initialize the result with the first k elements
+    s = []
     result = p[:]
     
-    # Initialize a stack
-    stack = []
-    
-    # Iterate through the first k elements
     for i in range(k):
-        # While the stack is not empty and the top of the stack is greater than the next element in remaining
-        while stack and (not remaining or stack[-1] > remaining[-1]):
-            result.append(stack.pop())
-        # Push the current element onto the stack
-        stack.append(p[i])
+        while s and (not remaining or s[-1] < remaining[-1]):
+            result.append(s.pop())
+        s.append(p[i])
     
-    # Now we need to add the remaining elements in a way that keeps the stack sortable
-    for num in sorted(remaining, reverse=True):
-        while stack and stack[-1] < num:
-            result.append(stack.pop())
-        stack.append(num)
+    while s:
+        result.append(s.pop())
     
-    # Add any remaining elements in the stack to the result
-    while stack:
-        result.append(stack.pop())
+    while remaining:
+        if s and s[-1] < remaining[-1]:
+            print(-1)
+            return
+        result.append(remaining.pop())
     
-    # Check if the result is a valid permutation
-    if len(result) != n or sorted(result) != list(range(1, n + 1)):
-        return -1
-    
-    return result
+    print(" ".join(map(str, result)))
 
-# Read input
-n, k = map(int, input().split())
-p = list(map(int, input().split()))
-
-# Get the result
-result = is_stack_sortable(n, k, p)
-
-# Print the result
-if result == -1:
-    print(-1)
-else:
-    print(' '.join(map(str, result)))
+# Example usage:
+# n, k = map(int, input().split())
+# p = list(map(int, input().split()))
+# restore_stack_sortable_permutation(n, k, p)

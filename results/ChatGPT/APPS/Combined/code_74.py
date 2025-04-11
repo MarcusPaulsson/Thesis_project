@@ -1,28 +1,38 @@
+from collections import Counter
+from math import comb
+
 def min_cost_to_obtain_set(n, k, s):
-    # Step 1: Create a set to store unique subsequences
-    unique_subsequences = set()
+    freq = Counter(s)
+    unique_chars = len(freq)
     
-    # Step 2: Generate all possible subsequences
-    for i in range(1 << n):  # There are 2^n possible subsequences
-        subsequence = ''.join(s[j] for j in range(n) if i & (1 << j))
-        unique_subsequences.add(subsequence)
-    
-    # Step 3: Calculate the cost for each unique subsequence
-    costs = [n - len(subseq) for subseq in unique_subsequences]
-    
-    # Step 4: Sort costs to find the minimum total cost for k unique subsequences
-    costs.sort()
-    
-    # Step 5: Check if we can obtain k unique subsequences
-    if len(costs) < k:
+    if unique_chars < k:
         return -1
     
-    # Step 6: Calculate the total minimum cost for the first k costs
-    return sum(costs[:k])
-
-# Input reading
-n, k = map(int, input().split())
-s = input().strip()
-
-# Output the result
-print(min_cost_to_obtain_set(n, k, s))
+    total_subsequences = 0
+    costs = []
+    
+    for length in range(1, n + 1):
+        subseq_count = sum(comb(freq[char], length) for char in freq if freq[char] >= length)
+        total_subsequences += subseq_count
+        costs.append((n - length) * subseq_count)
+        
+        if total_subsequences >= k:
+            break
+    
+    if total_subsequences < k:
+        return -1
+    
+    min_cost = 0
+    remaining = k
+    
+    for length, cost in enumerate(costs):
+        if remaining <= 0:
+            break
+        if total_subsequences >= remaining:
+            min_cost += cost * remaining
+            break
+        else:
+            min_cost += cost * total_subsequences
+            remaining -= total_subsequences
+    
+    return min_cost

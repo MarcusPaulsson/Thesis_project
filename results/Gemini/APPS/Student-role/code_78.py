@@ -1,9 +1,8 @@
 def solve():
     n = int(input())
     s = input()
-    len_s = len(s)
     mod = 10**9 + 7
-
+    
     def is_regular(seq):
         balance = 0
         for char in seq:
@@ -14,22 +13,26 @@ def solve():
             if balance < 0:
                 return False
         return balance == 0
-
+    
     def count_regular_sequences(n, s):
         count = 0
-        for i in range(2**(2*n)):
-            seq = ""
-            binary = bin(i)[2:].zfill(2*n)
-            for bit in binary:
-                if bit == '0':
-                    seq += '('
-                else:
-                    seq += ')'
+        
+        def generate_sequences(current_seq, open_count, close_count):
+            nonlocal count
             
-            if is_regular(seq) and s in seq:
-                count = (count + 1) % mod
+            if len(current_seq) == 2 * n:
+                if is_regular(current_seq) and s in current_seq:
+                    count = (count + 1) % mod
+                return
+            
+            if open_count < n:
+                generate_sequences(current_seq + '(', open_count + 1, close_count)
+            if close_count < open_count:
+                generate_sequences(current_seq + ')', open_count, close_count + 1)
+        
+        generate_sequences("", 0, 0)
         return count
-
+    
     print(count_regular_sequences(n, s))
 
 solve()

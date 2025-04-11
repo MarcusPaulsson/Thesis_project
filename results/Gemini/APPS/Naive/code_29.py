@@ -7,11 +7,9 @@ def solve():
             s2 = str(j).zfill(3)
             if sum(int(d) for d in s1) == sum(int(d) for d in s2):
                 cnt = 0
-                for k in range(3):
-                    if s[k] != s1[k]:
-                        cnt += 1
-                for k in range(3):
-                    if s[k+3] != s2[k]:
+                temp = s1 + s2
+                for k in range(6):
+                    if s[k] != temp[k]:
                         cnt += 1
                 ans = min(ans, cnt)
     print(ans)

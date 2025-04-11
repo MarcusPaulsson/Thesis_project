@@ -8,16 +8,16 @@ def solve():
             for j in range(10):
                 if board[i][j] == 'X':
                     # Check horizontal
-                    if j <= 5 and all(board[i][j + k] == 'X' for k in range(5)):
+                    if j <= 5 and all(board[i][j+k] == 'X' for k in range(5)):
                         return True
                     # Check vertical
-                    if i <= 5 and all(board[i + k][j] == 'X' for k in range(5)):
+                    if i <= 5 and all(board[i+k][j] == 'X' for k in range(5)):
                         return True
                     # Check diagonal (top-left to bottom-right)
-                    if i <= 5 and j <= 5 and all(board[i + k][j + k] == 'X' for k in range(5)):
+                    if i <= 5 and j <= 5 and all(board[i+k][j+k] == 'X' for k in range(5)):
                         return True
                     # Check diagonal (top-right to bottom-left)
-                    if i <= 5 and j >= 4 and all(board[i + k][j - k] == 'X' for k in range(5)):
+                    if i <= 5 and j >= 4 and all(board[i+k][j-k] == 'X' for k in range(5)):
                         return True
         return False
 

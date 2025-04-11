@@ -9,30 +9,30 @@ def solve():
         moves = 0
         
         # Find the last digit of the suffix
-        last_digit_idx = -1
+        last_digit_index = -1
         for i in range(n_len - 1, -1, -1):
             if temp_n[i] == suffix[1]:
-                last_digit_idx = i
+                last_digit_index = i
                 break
         
-        if last_digit_idx == -1:
+        if last_digit_index == -1:
             continue
         
-        moves += (n_len - 1 - last_digit_idx)
-        temp_n.pop(last_digit_idx)
+        moves += (n_len - 1 - last_digit_index)
+        temp_n.pop(last_digit_index)
         
         # Find the first digit of the suffix
-        first_digit_idx = -1
-        for i in range(n_len - 2, -1, -1):
+        first_digit_index = -1
+        for i in range(len(temp_n) - 1, -1, -1):
             if temp_n[i] == suffix[0]:
-                first_digit_idx = i
+                first_digit_index = i
                 break
         
-        if first_digit_idx == -1:
+        if first_digit_index == -1:
             continue
         
-        moves += (n_len - 2 - first_digit_idx)
-        temp_n.pop(first_digit_idx)
+        moves += (len(temp_n) - 1 - first_digit_index)
+        temp_n.pop(first_digit_index)
         
         # Remove leading zeros
         leading_zeros = 0
@@ -44,11 +44,14 @@ def solve():
         
         moves += leading_zeros
         
+        if len(temp_n) == 0 and suffix != "00":
+            continue
+            
         ans = min(ans, moves)
-        
+    
     if ans == float('inf'):
         print("-1")
     else:
         print(ans)
-        
+
 solve()

@@ -4,7 +4,5 @@ def can_deal_exact_damage(a, b, c):
             return "Yes"
     return "No"
 
-# Input
 a, b, c = map(int, input().split())
-# Output
 print(can_deal_exact_damage(a, b, c))

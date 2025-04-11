@@ -1,6 +1,5 @@
 from collections import Counter
 import sys
-import math
 
 def find_x_y(divisors):
     count = Counter(divisors)
@@ -11,11 +10,11 @@ def find_x_y(divisors):
             x *= d
             y *= d
         elif count[d] == 1:
-            if x == 1:
+            if x < y:
                 x *= d
             else:
                 y *= d
-
+                
     return x, y
 
 n = int(input().strip())

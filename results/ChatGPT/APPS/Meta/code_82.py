@@ -3,15 +3,15 @@ a = list(map(int, input().split()))
 
 count = 0
 
-# Check from the left
+# Solve from the left
 while count < n and a[count] <= k:
     count += 1
 
-# Check from the right
+# Solve from the right
 while count < n and a[n - 1 - (count - 1)] <= k:
     count += 1
 
-# If we counted the same problem from both ends, subtract 1
+# Adjust for double counting the middle element if both ends are solvable
 if count > n:
     count = n
 

@@ -1,11 +1,10 @@
 x = float(input().strip())
 
-# Calculate the integers a and b based on the input x
-a = int(x) + 1
-b = int((x - int(x)) * 10) + 1
+# Scale x to a range suitable for generating integers between 1 and 10
+scaled_x = x * 10
 
-# Ensure a and b are within the range of 1 to 10
-a = min(max(a, 1), 10)
-b = min(max(b, 1), 10)
+# Generate two integers based on the scaled value
+a = int(scaled_x) % 10 + 1
+b = (int(scaled_x * 2) % 10) + 1
 
 print(a, b)

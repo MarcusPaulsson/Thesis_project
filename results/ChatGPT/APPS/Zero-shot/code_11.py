@@ -1,19 +1,21 @@
 def max_chocolates(n, a, b, p, q):
-    count_red = n // a
-    count_blue = n // b
-    count_both = n // (a * b // gcd(a, b))
-    
+    count_a = n // a
+    count_b = n // b
+    count_ab = n // (a * b)
+
     # Calculate chocolates
-    chocolates = (count_red - count_both) * p + (count_blue - count_both) * q + count_both * max(p, q)
-    
+    chocolates_a = count_a * p
+    chocolates_b = count_b * q
+
+    # If p > q, prioritize painting Red
+    if p > q:
+        chocolates = chocolates_a + (count_b - count_ab) * q
+    else:
+        chocolates = (count_a - count_ab) * p + chocolates_b
+
     return chocolates
 
-def gcd(x, y):
-    while y:
-        x, y = y, x % y
-    return x
-
-# Input
+# Read input
 n, a, b, p, q = map(int, input().split())
-# Output
+# Print the result
 print(max_chocolates(n, a, b, p, q))

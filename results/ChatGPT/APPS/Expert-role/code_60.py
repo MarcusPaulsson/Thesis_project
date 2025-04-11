@@ -2,17 +2,20 @@ def has_palindrome_subsequence(t, test_cases):
     results = []
     for n, a in test_cases:
         found = False
-        index_map = {}
+        # Use a dictionary to track the first occurrence of each number
+        first_occurrence = {}
         for i in range(n):
-            if a[i] in index_map:
-                if i - index_map[a[i]] >= 2:
+            if a[i] in first_occurrence:
+                # If we find the same number again, we can form a palindrome
+                if i - first_occurrence[a[i]] >= 2:
                     found = True
                     break
-            index_map[a[i]] = i
+            else:
+                first_occurrence[a[i]] = i
         results.append("YES" if found else "NO")
     return results
 
-# Read input
+# Example usage:
 t = int(input())
 test_cases = []
 for _ in range(t):
@@ -20,9 +23,6 @@ for _ in range(t):
     a = list(map(int, input().split()))
     test_cases.append((n, a))
 
-# Get results
 results = has_palindrome_subsequence(t, test_cases)
-
-# Print results
 for result in results:
     print(result)

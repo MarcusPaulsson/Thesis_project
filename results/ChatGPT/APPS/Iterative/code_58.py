@@ -3,31 +3,29 @@ a = list(map(int, input().split()))
 
 from collections import defaultdict
 
-# Dictionary to hold the indices of each number
-indices = defaultdict(list)
+coloring = [0] * n
+color_used = defaultdict(list)
 
-for index, value in enumerate(a):
-    indices[value].append(index)
+for i in range(n):
+    color_used[a[i]].append(i)
 
-# Check if we can color the array
-if len(indices) > k:
+if len(color_used) < k:
     print("NO")
 else:
-    print("YES")
-    color = [0] * n
-    current_color = 1
-    
-    # Assign colors while ensuring distinct colors for each number
-    for value, index_list in indices.items():
-        for index in index_list:
-            color[index] = current_color
-        current_color += 1
-        if current_color > k:
-            current_color = 1
+    color = 1
+    for indices in color_used.values():
+        if len(indices) < k:
+            # If there are not enough distinct colors available for this group
+            for index in indices:
+                coloring[index] = color
+                color = (color % k) + 1
+        else:
+            # Assign colors from 1 to k for the first k distinct elements
+            for j in range(k):
+                coloring[indices[j]] = j + 1
+            # Continue coloring the rest with the available colors
+            for index in indices[k:]:
+                coloring[index] = (j + 1) % k + 1
 
-    # Ensure all colors from 1 to k are used at least once
-    used_colors = set(color)
-    if len(used_colors) < k:
-        print("NO")
-    else:
-        print(" ".join(map(str, color)))
+    print("YES")
+    print(" ".join(map(str, coloring)))

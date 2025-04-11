@@ -3,15 +3,19 @@ MOD = 10**9 + 7
 def count_regular_sequences(n, s):
     m = len(s)
     
-    # Precompute the number of valid sequences of length 2k
-    dp = [0] * (n + 1)
-    dp[0] = 1  # Base case: one way to form an empty sequence
-    
-    for k in range(1, n + 1):
-        for j in range(k):
-            dp[k] = (dp[k] + dp[j] * dp[k - 1 - j]) % MOD
-            
-    # Check if s can be a valid substring
+    # Precompute factorials and inverse factorials
+    fact = [1] * (2 * n + 1)
+    for i in range(2, 2 * n + 1):
+        fact[i] = fact[i - 1] * i % MOD
+
+    def mod_inv(x):
+        return pow(x, MOD - 2, MOD)
+
+    inv_fact = [1] * (2 * n + 1)
+    for i in range(2, 2 * n + 1):
+        inv_fact[i] = mod_inv(fact[i])
+
+    # Check the balance of the substring s
     balance = 0
     min_balance = 0
     for char in s:
@@ -20,33 +24,23 @@ def count_regular_sequences(n, s):
         else:
             balance -= 1
         min_balance = min(min_balance, balance)
-    
-    if balance < 0 or balance > n or min_balance < 0:
+
+    if balance < 0 or balance + 2 * n < 0:
         return 0
-    
-    # Count valid sequences containing s
+
+    # Count valid placements of s in a valid sequence
     total_count = 0
-    
     for prefix_length in range(n + 1):
-        suffix_length = n - (m - 1) - prefix_length
-        if suffix_length < 0:
+        suffix_length = n - prefix_length
+        if min_balance + prefix_length < 0:
             continue
         
-        # Count valid prefix sequences of length prefix_length
-        prefix_count = dp[prefix_length]
-        
-        # Count valid suffix sequences of length suffix_length
-        suffix_count = dp[suffix_length]
-        
-        # Valid positions for s in the sequence
-        if prefix_length + min_balance >= 0 and prefix_length + balance <= n:
-            total_count = (total_count + prefix_count * suffix_count) % MOD
-            
+        # Calculate the number of valid sequences
+        total_count += (fact[prefix_length + suffix_length] * inv_fact[prefix_length] % MOD * inv_fact[suffix_length] % MOD) % MOD
+        total_count %= MOD
+
     return total_count
 
-# Input reading
-n = int(input().strip())
+n = int(input())
 s = input().strip()
-
-# Output the result
 print(count_regular_sequences(n, s))

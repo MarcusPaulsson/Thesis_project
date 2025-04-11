@@ -11,7 +11,7 @@ def count_pairs(n, m):
         count_y[j % 5] += 1
         
     result = 0
-    # Calculate pairs where (x + y) % 5 == 0
+    # Calculate the number of valid pairs
     for i in range(5):
         result += count_x[i] * count_y[(5 - i) % 5]
         

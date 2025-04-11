@@ -6,29 +6,29 @@ def solve():
         print(0)
         return
 
-    unique_vals = sorted(list(set(a)))
-
-    if len(unique_vals) > 3:
-        print(-1)
-        return
-
-    if len(unique_vals) == 1:
-        print(0)
-        return
-
-    if len(unique_vals) == 2:
-        d = unique_vals[1] - unique_vals[0]
-        if d % 2 == 0:
-            print(d // 2)
-        else:
-            print(d)
-        return
-
-    if len(unique_vals) == 3:
-        if unique_vals[1] - unique_vals[0] == unique_vals[2] - unique_vals[1]:
-            print(unique_vals[1] - unique_vals[0])
-        else:
-            print(-1)
-        return
+    for d in range(101):
+        possible = True
+        
+        for target in set(a):
+            
+            valid = True
+            for i in range(len(a)):
+                found = False
+                if a[i] == target:
+                    found = True
+                elif a[i] + d == target:
+                    found = True
+                elif a[i] - d == target:
+                    found = True
+                
+                if not found:
+                    valid = False
+                    break
+            
+            if valid:
+                print(d)
+                return
+        
+    print(-1)
 
 solve()

@@ -6,28 +6,30 @@ def minimal_time_to_post_office(d, k, a, b, t):
     full_segments = d // k
     remaining_distance = d % k
     
-    # Calculate time if using the car for full segments and walking the rest
-    time_using_car = full_segments * (k * a + t) + remaining_distance * a - t  # subtract t for the last segment
-    min_time = min(min_time, time_using_car)
+    # Time if Vasiliy drives all full segments and walks the remaining distance
+    time_if_driving_all = full_segments * (k * a + t) + remaining_distance * a - t
+    min_time = min(min_time, time_if_driving_all)
     
-    # Calculate time if walking the entire distance
-    time_walking = d * b
-    min_time = min(min_time, time_walking)
-    
-    # Check combinations of driving and walking
-    for i in range(full_segments + 1):
-        distance_driven = i * k
-        time_spent = i * (k * a + t)  # time for driving and repairing
+    # Check if it's better to walk some distance instead of driving
+    for segments in range(full_segments + 1):
+        distance_driven = segments * k
+        time_spent = segments * (k * a + t)
         
-        if distance_driven < d:
-            remaining_distance = d - distance_driven
-            time_spent += remaining_distance * b  # time for walking the remaining distance
+        # Remaining distance to walk
+        remaining_distance = d - distance_driven
         
-        min_time = min(min_time, time_spent)
+        # If remaining distance is negative, break
+        if remaining_distance < 0:
+            break
+        
+        # Calculate total time
+        total_time = time_spent + remaining_distance * b
+        
+        # Update minimum time
+        min_time = min(min_time, total_time)
     
     return min_time
 
-# Read input
-d, k, a, b, t = map(int, input().split())
-# Calculate and print the result
-print(minimal_time_to_post_office(d, k, a, b, t))
+# Example usage:
+# d, k, a, b, t = map(int, input().split())
+# print(minimal_time_to_post_office(d, k, a, b, t))

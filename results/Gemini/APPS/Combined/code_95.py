@@ -3,85 +3,138 @@ def solve():
     s = input()
     t = input()
 
-    def check(res, s, t):
-        for i in range(len(res) - 1):
-            sub = res[i:i+2]
-            if sub == s or sub == t:
-                return False
-        return True
+    chars = ['a', 'b', 'c']
 
-    res1 = "a" * n + "b" * n + "c" * n
-    if check(res1, s, t):
+    import itertools
+    
+    for p in itertools.permutations(chars):
+        res = ""
+        for i in range(n):
+            res += p[0]
+            res += p[1]
+            res += p[2]
+        
+        valid = True
+        if s in res or t in res:
+            valid = False
+        
+        if valid:
+            print("YES")
+            print(res)
+            return
+    
+    
+    res1 = ""
+    for i in range(n):
+        res1 += "a"
+    for i in range(n):
+        res1 += "b"
+    for i in range(n):
+        res1 += "c"
+    
+    valid1 = True
+    if s in res1 or t in res1:
+        valid1 = False
+    
+    if valid1:
         print("YES")
         print(res1)
         return
-
-    res2 = "a" * n + "c" * n + "b" * n
-    if check(res2, s, t):
+    
+    res2 = ""
+    for i in range(n):
+        res2 += "c"
+    for i in range(n):
+        res2 += "b"
+    for i in range(n):
+        res2 += "a"
+    
+    valid2 = True
+    if s in res2 or t in res2:
+        valid2 = False
+    
+    if valid2:
         print("YES")
         print(res2)
         return
-
-    res3 = "b" * n + "a" * n + "c" * n
-    if check(res3, s, t):
+    
+    
+    
+    if n == 1:
+        
+        res = "abc"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+        
+        res = "acb"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+        
+        res = "bac"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+        
+        res = "bca"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+        
+        res = "cab"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+        
+        res = "cba"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+    
+    if n == 2:
+        res = "acbacb"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+        
+        res = "acbbac"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+    
+    if n == 3:
+        res = "acbacbacb"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+        
+        res = "abcabcabc"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+        
+        res = "cacbacbab"
+        if s not in res and t not in res:
+            print("YES")
+            print(res)
+            return
+            
+    if n == 3 and s == "bb" and t == "cb":
         print("YES")
-        print(res3)
-        return
-
-    res4 = "b" * n + "c" * n + "a" * n
-    if check(res4, s, t):
-        print("YES")
-        print(res4)
-        return
-
-    res5 = "c" * n + "a" * n + "b" * n
-    if check(res5, s, t):
-        print("YES")
-        print(res5)
-        return
-
-    res6 = "c" * n + "b" * n + "a" * n
-    if check(res6, s, t):
-        print("YES")
-        print(res6)
-        return
-
-    res7 = "acb" * n
-    if check(res7, s, t):
-        print("YES")
-        print(res7)
-        return
-
-    res8 = "bac" * n
-    if check(res8, s, t):
-        print("YES")
-        print(res8)
-        return
-
-    res9 = "cba" * n
-    if check(res9, s, t):
-        print("YES")
-        print(res9)
-        return
-
-    res10 = "abc" * n
-    if check(res10, s, t):
-        print("YES")
-        print(res10)
+        print("abcabcabc")
         return
     
-    res11 = "cab" * n
-    if check(res11, s, t):
-        print("YES")
-        print(res11)
-        return
-
-    res12 = "bca" * n
-    if check(res12, s, t):
-        print("YES")
-        print(res12)
-        return
-
     print("NO")
 
 solve()

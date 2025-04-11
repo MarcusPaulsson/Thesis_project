@@ -14,30 +14,30 @@ def solve():
                 best_gcd = max(best_gcd, n // i)
 
     if best_gcd == 1 and k * (k + 1) // 2 > n:
-      print(-1)
-      return
+        print(-1)
+        return
     
-    
-    
-    if best_gcd == 1 and n < k*(k+1)//2:
+    if best_gcd == 1 and n == 1 and k == 1:
+        print(1)
+        return
+
+    if best_gcd == 1 and n == 1 and k > 1:
         print(-1)
         return
 
     
+    first_k_sum = k * (k + 1) // 2
+    remaining = n // best_gcd - first_k_sum
     
-    sequence = []
-    sum_so_far = 0
+    if remaining < 0:
+        print(-1)
+        return
+
+    result = []
     for i in range(1, k):
-        sequence.append(best_gcd * i)
-        sum_so_far += best_gcd * i
+        result.append(i * best_gcd)
+    result.append((k + remaining) * best_gcd)
 
-    sequence.append(n - sum_so_far)
-
-    if sequence[-1] <= sequence[-2]:
-        print(-1)
-        return
-        
-
-    print(*sequence)
+    print(*result)
 
 solve()

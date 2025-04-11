@@ -8,30 +8,38 @@ def solve():
     for i in range(1, int(x**0.5) + 1):
         if x % i == 0:
             divisors_x.append(i)
-            if i * i != x:
+            if i != x // i:
                 divisors_x.append(x // i)
     divisors_x.sort()
     
-    counts = {}
-    for val in d:
-        counts[val] = counts.get(val, 0) + 1
-    
+    temp_d = d[:]
     for val in divisors_x:
-        counts[val] = counts.get(val, 0) - 1
-    
-    remaining_divisors = []
-    for val in counts:
-        for _ in range(counts[val]):
-            remaining_divisors.append(val)
+        if val in temp_d:
+            temp_d.remove(val)
+        else:
+            pass
             
-    remaining_divisors.sort()
+    y = 1
+    if len(temp_d) > 0:
+        y = temp_d[-1]
+    else:
+        y = 1
+        
+    divisors_y = []
+    for i in range(1, int(y**0.5) + 1):
+        if y % i == 0:
+            divisors_y.append(i)
+            if i != y // i:
+                divisors_y.append(y // i)
+    divisors_y.sort()
     
-    if not remaining_divisors:
-        print(x, x)
-        return
-
-    y = remaining_divisors[-1]
+    all_divisors = divisors_x + divisors_y
+    all_divisors.sort()
+    d.sort()
     
-    print(x, y)
+    if all_divisors == d:
+        print(x, y)
+    else:
+        print(x, y)
 
 solve()

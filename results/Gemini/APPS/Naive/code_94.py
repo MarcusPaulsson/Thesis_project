@@ -10,19 +10,14 @@ def solve():
     
     for i in range(x):
         s += str(start)
-        if start == 0:
-            start = 1
-            b -= 1
-        else:
-            start = 0
-            a -= 1
+        start = 1 - start
     
     if start == 0:
-        s += "0" * a
-        s += "1" * b
+        s += "0" * (a - (x + 1) // 2)
+        s += "1" * (b - x // 2)
     else:
-        s += "1" * b
-        s += "0" * a
+        s += "1" * (b - (x + 1) // 2)
+        s += "0" * (a - x // 2)
     
     print(s)
 

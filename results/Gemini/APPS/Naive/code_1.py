@@ -2,7 +2,7 @@ def solve():
     x = int(input())
     
     best_num = x
-    max_sum = sum_digits(x)
+    max_digit_sum = sum_digits(x)
     
     s = str(x)
     n = len(s)
@@ -15,20 +15,21 @@ def solve():
         num = int(num_str)
         
         if num > 0:
-            current_sum = sum_digits(num)
-            if current_sum > max_sum:
-                max_sum = current_sum
+            digit_sum = sum_digits(num)
+            
+            if digit_sum > max_digit_sum:
+                max_digit_sum = digit_sum
                 best_num = num
-            elif current_sum == max_sum and num > best_num:
+            elif digit_sum == max_digit_sum and num > best_num:
                 best_num = num
                 
     print(best_num)
 
 def sum_digits(n):
     s = str(n)
-    sum_val = 0
+    digit_sum = 0
     for digit in s:
-        sum_val += int(digit)
-    return sum_val
+        digit_sum += int(digit)
+    return digit_sum
 
 solve()

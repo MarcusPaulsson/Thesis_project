@@ -18,10 +18,7 @@ def solve():
 
     for i in range(n):
         for j in range(i + 1, n):
-            angle1 = angles[i]
-            angle2 = angles[j]
-            
-            angle_diff = abs(angle1 - angle2)
+            angle_diff = abs(angles[i] - angles[j])
             angle_diff = min(angle_diff, 2 * math.pi - angle_diff)
 
             if angle_diff < min_angle_diff:

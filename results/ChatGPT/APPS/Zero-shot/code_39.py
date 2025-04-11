@@ -6,9 +6,9 @@ s = input().strip()
 if not is_palindrome(s):
     print(len(s))
 else:
-    # Check for the longest non-palindrome substring
-    n = len(s)
-    if len(set(s)) == 1:  # All characters are the same
-        print(0)
-    else:
-        print(n - 1)  # The longest non-palindrome substring can be obtained by removing one character
+    for length in range(len(s) - 1, 0, -1):
+        for start in range(len(s) - length + 1):
+            if not is_palindrome(s[start:start + length]):
+                print(length)
+                exit()
+    print(0)

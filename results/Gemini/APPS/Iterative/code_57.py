@@ -2,37 +2,49 @@ def solve():
     n = int(input())
     f = list(map(int, input().split()))
 
-    givers = [i + 1 for i in range(n)]
-    receivers = [i + 1 for i in range(n)]
+    assigned = [False] * (n + 1)
+    for i in range(n):
+        if f[i] != 0:
+            assigned[f[i]] = True
 
-    given = set()
-    for val in f:
-        if val != 0:
-            given.add(val)
-
-    need_to_give = []
+    unassigned_givers = []
     for i in range(n):
         if f[i] == 0:
-            need_to_give.append(i)
+            unassigned_givers.append(i)
 
-    available_receivers = []
+    unassigned_receivers = []
     for i in range(1, n + 1):
-        if i not in given:
-            available_receivers.append(i)
+        if not assigned[i]:
+            unassigned_receivers.append(i)
 
-    for i in range(len(need_to_give)):
-        giver_index = need_to_give[i]
-        receiver = available_receivers[i]
-
-        if receiver == giver_index + 1:
-            for j in range(len(available_receivers)):
-                if available_receivers[j] != giver_index + 1:
-                    available_receivers[i], available_receivers[j] = available_receivers[j], available_receivers[i]
-                    receiver = available_receivers[i]
-                    break
+    for i in range(len(unassigned_givers)):
+        giver_index = unassigned_givers[i]
+        receiver = unassigned_receivers[i]
 
         f[giver_index] = receiver
 
+    # Check for self-gifting and swap if necessary
+    for i in range(n):
+        if f[i] == i + 1:
+            # Find another index to swap with
+            for j in range(n):
+                if i != j and f[j] != j + 1 and f[j] != 0 and f[j] != i + 1:
+                    f[i], f[j] = f[j], f[i]
+                    break
+            else:
+                # If no suitable j is found, swap with the next unassigned giver
+                for j in range(len(unassigned_givers)):
+                    giver_index = unassigned_givers[j]
+                    if giver_index != i:
+                        f[i], f[giver_index] = f[giver_index], f[i]
+                        break
+                else:
+                    # If still no suitable swap, find any other index
+                    for j in range(n):
+                        if i != j:
+                            f[i], f[j] = f[j], f[i]
+                            break
+    
     print(*f)
 
 solve()

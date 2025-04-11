@@ -4,43 +4,39 @@ import math
 def minimal_angle_pair(n, vectors):
     angles = []
     
-    # Calculate angles and sort them
     for i in range(n):
         x, y = vectors[i]
-        angle = math.atan2(y, x) # angle in radians
-        angles.append((angle, i + 1)) # store angle and index (1-based)
+        angle = math.atan2(y, x)
+        angles.append((angle, i + 1))  # Store angle and index (1-based)
 
-    # Sort by angle
-    angles.sort()
+    angles.sort()  # Sort by angle
 
     min_angle = float('inf')
     best_pair = (0, 0)
 
-    # Check adjacent angles in the sorted list and also wrap around
     for i in range(n):
-        angle1, idx1 = angles[i]
-        angle2, idx2 = angles[(i + 1) % n]
+        angle1, index1 = angles[i]
+        angle2, index2 = angles[(i + 1) % n]  # Wrap around to the first element
+        angle_diff = angle2 - angle1
         
-        # Calculate the angle difference
-        diff = angle2 - angle1
-        if diff < 0:
-            diff += 2 * math.pi
+        if angle_diff < 0:
+            angle_diff += 2 * math.pi
         
-        # Non-oriented angle
-        non_oriented_angle = min(diff, 2 * math.pi - diff)
-
-        if non_oriented_angle < min_angle:
-            min_angle = non_oriented_angle
-            best_pair = (idx1, idx2)
+        if angle_diff > math.pi:
+            angle_diff = 2 * math.pi - angle_diff
+        
+        if angle_diff < min_angle:
+            min_angle = angle_diff
+            best_pair = (index1, index2)
 
     return best_pair
 
-# Input reading
-n = int(sys.stdin.readline().strip())
-vectors = [tuple(map(int, sys.stdin.readline().strip().split())) for _ in range(n)]
-
-# Get the result
-result = minimal_angle_pair(n, vectors)
-
-# Output the result
-print(result[0], result[1])
+if __name__ == "__main__":
+    input = sys.stdin.read
+    data = input().splitlines()
+    
+    n = int(data[0])
+    vectors = [tuple(map(int, line.split())) for line in data[1:n + 1]]
+    
+    result = minimal_angle_pair(n, vectors)
+    print(result[0], result[1])

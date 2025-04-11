@@ -24,6 +24,6 @@ def nearest_zero_distance(n, arr):
 n = int(input().strip())
 arr = list(map(int, input().strip().split()))
 
-# Get distances and print them
+# Get the result and print it
 result = nearest_zero_distance(n, arr)
 print(' '.join(map(str, result)))

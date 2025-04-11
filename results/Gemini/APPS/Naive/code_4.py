@@ -17,6 +17,7 @@ def solve():
             hh -= 1
             if hh < 0:
                 hh += 24
+        
         count += 1
 
 solve()

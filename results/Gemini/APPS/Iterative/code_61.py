@@ -3,30 +3,30 @@ def solve():
     a = input()
     f = list(map(int, input().split()))
 
-    best_a = list(a)
+    a_list = list(map(int, list(a)))
     
     start = -1
     end = -1
     
     for i in range(n):
-        digit = int(a[i])
-        if f[digit - 1] > digit:
+        if f[a_list[i] - 1] > a_list[i]:
             start = i
             break
+            
+    if start == -1:
+        print(a)
+        return
     
-    if start != -1:
-        end = start
-        for i in range(start, n):
-            digit = int(a[i])
-            if f[digit - 1] >= digit:
-                end = i
-            else:
-                break
+    for i in range(start, n):
+        if f[a_list[i] - 1] >= a_list[i]:
+            end = i
+        else:
+            break
+            
+    
+    for i in range(start, end + 1):
+        a_list[i] = f[a_list[i] - 1]
         
-        for i in range(start, end + 1):
-            digit = int(a[i])
-            best_a[i] = str(f[digit - 1])
-    
-    print("".join(best_a))
+    print("".join(map(str, a_list)))
 
 solve()

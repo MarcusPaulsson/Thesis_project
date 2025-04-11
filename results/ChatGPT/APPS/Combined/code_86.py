@@ -1,33 +1,33 @@
 def solve_polycarp(n, k):
-    # Calculate the minimum and maximum sums of problems that can be solved in k days
+    # Calculate the minimum sum required to satisfy the conditions
     min_sum = k * (k + 1) // 2
-    max_sum = k * (2 * k + 1) // 2
-
-    # Check if n is within the possible range
-    if n < min_sum or n > max_sum:
+    if n < min_sum:
         print("NO")
         return
-
-    # Initialize the array with the minimum required problems for each day
+    
+    # Initialize the array with the minimum required problems
     a = list(range(1, k + 1))
-    current_sum = sum(a)
-
+    current_sum = min_sum
+    
     # Calculate the remaining problems to distribute
     remaining = n - current_sum
-
-    # Distribute the remaining problems while respecting the constraints
+    
+    # Distribute the remaining problems from the last day to the first
     for i in range(k - 1, -1, -1):
-        # Calculate the maximum increase possible for a[i]
-        max_increase = min(remaining, a[i] - 1 + a[i] // 2)
-        a[i] += max_increase
-        remaining -= max_increase
-
+        # Calculate the maximum we can add to a[i] while respecting the conditions
+        max_add = min(remaining, (2 * a[i]) - a[i] - 1)  # Ensure a[i] < a[i+1]
+        a[i] += max_add
+        remaining -= max_add
+        
         if remaining <= 0:
             break
+    
+    if remaining > 0:
+        print("NO")
+    else:
+        print("YES")
+        print(" ".join(map(str, a)))
 
-    print("YES")
-    print(" ".join(map(str, a)))
-
-# Read input
-n, k = map(int, input().split())
-solve_polycarp(n, k)
+# Example usage:
+# n, k = map(int, input().split())
+# solve_polycarp(n, k)

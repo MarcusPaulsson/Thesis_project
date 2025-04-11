@@ -24,7 +24,7 @@ def solve():
     elif remaining_days == 6:
         min_days_off += 1
         max_days_off += 2
-        
+    
     print(min_days_off, max_days_off)
 
 solve()

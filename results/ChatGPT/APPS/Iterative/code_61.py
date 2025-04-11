@@ -2,21 +2,22 @@ n = int(input())
 a = input().strip()
 f = list(map(int, input().strip().split()))
 
-max_number = a  # Start with the original number as the maximum
+max_number = a
+changed = False
+start = 0
 
-# We will check for the best segment to replace
-i = 0
-while i < n:
-    # If the current digit can be improved
-    if f[int(a[i]) - 1] > int(a[i]):
-        # Start a segment to replace
+for i in range(n):
+    current_digit = int(a[i])
+    mapped_digit = f[current_digit - 1]
+    
+    if not changed and mapped_digit > current_digit:
+        changed = True
         start = i
-        while i < n and f[int(a[i]) - 1] >= int(a[i]):
-            i += 1
-        # Create the new number with the segment replaced
-        new_number = a[:start] + ''.join(str(f[int(a[j]) - 1]) for j in range(start, i)) + a[i:]
-        max_number = max(max_number, new_number)
-    else:
-        i += 1
+    elif changed and mapped_digit < current_digit:
+        break
 
-print(max_number)
+if changed:
+    result = a[:start] + ''.join(str(f[int(d) - 1]) for d in a[start:i]) + a[i:]
+    max_number = max(max_number, result)
+
+print(max(max_number, a))

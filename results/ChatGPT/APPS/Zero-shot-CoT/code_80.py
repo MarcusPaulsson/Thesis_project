@@ -1,30 +1,35 @@
 def min_colors_to_sort(n, s):
     from collections import defaultdict
-    
-    # Step 1: Create a mapping of character positions
+
+    # Create a mapping of character positions
     char_positions = defaultdict(list)
     for index, char in enumerate(s):
         char_positions[char].append(index)
-    
-    # Step 2: Create a list of colors
+
+    # Create a list to store the color for each character
     colors = [0] * n
     color_count = 0
-    
-    # Step 3: Iterate through the characters in sorted order
+
+    # Create a list of the characters sorted
     sorted_chars = sorted(char_positions.keys())
+
+    # Assign colors based on the sorted order
     for char in sorted_chars:
         positions = char_positions[char]
-        # Assign a new color for each group of positions
-        for i in range(len(positions)):
-            if i == 0:
-                color_count += 1
-            colors[positions[i]] = color_count
-    
-    # Step 4: Output the result
-    print(color_count)
-    print(' '.join(map(str, colors)))
+        # Assign a new color for this character
+        color_count += 1
+        for pos in positions:
+            colors[pos] = color_count
 
-# Input reading
-n = int(input().strip())
+    return color_count, colors
+
+# Read input
+n = int(input())
 s = input().strip()
-min_colors_to_sort(n, s)
+
+# Get the result
+res, coloring = min_colors_to_sort(n, s)
+
+# Print the output
+print(res)
+print(' '.join(map(str, coloring)))

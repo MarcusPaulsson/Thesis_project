@@ -21,7 +21,7 @@ def solve():
                 k -= 2
             else:
                 break
-
+        
     if k != 0:
         print("-1")
         return

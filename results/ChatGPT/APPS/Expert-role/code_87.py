@@ -1,15 +1,13 @@
 def max_projects(n, r, projects):
-    # Sort projects by their required rating
-    projects.sort(key=lambda x: x[0])
-    
+    projects.sort(key=lambda x: (x[0], -x[1]))  # Sort by required rating, then by rating change
     count = 0
     current_rating = r
     
     for a, b in projects:
-        if current_rating >= a:
+        if current_rating >= a:  # Can start the project
             count += 1
-            current_rating += b
-            if current_rating < 0:
+            current_rating += b  # Update rating after completing the project
+            if current_rating < 0:  # Ensure rating doesn't fall below zero
                 break
     
     return count

@@ -1,7 +1,7 @@
 def min_coins_to_move_chips(n, positions):
-    even_count = sum(1 for x in positions if x % 2 == 0)
-    odd_count = n - even_count
-    return min(even_count, odd_count)
+    odd_count = sum(1 for x in positions if x % 2 != 0)
+    even_count = n - odd_count
+    return min(odd_count, even_count)
 
 # Input reading
 n = int(input())

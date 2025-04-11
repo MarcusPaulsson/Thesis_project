@@ -1,32 +1,29 @@
 def schedule_exams(n, m, exams):
     days = [0] * n  # Initialize days with 0 (rest days)
-    exam_days = set()  # To keep track of exam days
-    prepare_needed = [0] * m  # To track preparation days needed for each exam
+    exam_days = [False] * (n + 1)  # Track exam days
+    preparation_needed = [0] * (m + 1)  # Track preparation days needed for each exam
 
     # Fill exam days and preparation needs
     for i in range(m):
         s, d, c = exams[i]
-        exam_days.add(d - 1)  # Store exam day (0-indexed)
-        prepare_needed[i] = c
+        exam_days[d] = True
+        preparation_needed[i + 1] = c
 
     # Prepare for exams
     for i in range(m):
         s, d, c = exams[i]
-        s -= 1  # Convert to 0-indexed
-        for j in range(s, d - 1):
-            if prepare_needed[i] > 0 and days[j] == 0:
-                days[j] = i + 1  # Mark preparation for exam i
-                prepare_needed[i] -= 1
+        count = 0
+        for j in range(s, d):
+            if count < c and days[j - 1] == 0:  # If we can prepare on this day
+                days[j - 1] = i + 1  # Mark preparation for exam i+1
+                count += 1
+        if count < c:  # If we couldn't prepare enough days
+            return -1
 
-    # Check if all preparations are done
+    # Assign exam days
     for i in range(m):
-        if prepare_needed[i] > 0:
-            return -1  # Not enough days to prepare for exam i
-
-    # Fill in exam days
-    for i in range(m):
-        d = exams[i][1] - 1  # Convert to 0-indexed
-        days[d] = m + 1  # Mark exam day
+        d = exams[i][1]
+        days[d - 1] = m + 1  # Mark exam day
 
     return days
 

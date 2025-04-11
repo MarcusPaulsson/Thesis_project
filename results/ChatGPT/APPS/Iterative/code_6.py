@@ -1,31 +1,27 @@
 def min_blows_to_defeat_zmei(t, queries):
     results = []
+    
     for query in queries:
         n, x, blows = query
-        min_blows = float('inf')
-        possible = False
+        min_blow_count = float('inf')
         
         for d, h in blows:
             if d >= x:
-                min_blows = min(min_blows, 1)
-                possible = True
+                min_blow_count = min(min_blow_count, 1)
+            elif h >= d:
+                continue  # This blow is not effective as it grows more heads than it cuts
             else:
-                # Calculate the effective damage per blow
-                effective_damage = d - h
-                if effective_damage > 0:
-                    # Calculate how many blows are needed to reduce heads to zero
-                    blows_needed = (x - d + effective_damage - 1) // effective_damage + 1
-                    min_blows = min(min_blows, blows_needed)
-                    possible = True
+                # Calculate the effective reduction per blow
+                effective_reduction = d - h
+                # Calculate the number of blows needed
+                blows_needed = (x - d + effective_reduction - 1) // effective_reduction + 1
+                min_blow_count = min(min_blow_count, blows_needed)
         
-        if possible:
-            results.append(min_blows)
-        else:
-            results.append(-1)
+        results.append(min_blow_count if min_blow_count != float('inf') else -1)
     
     return results
 
-# Input reading
+# Example usage:
 t = int(input())
 queries = []
 for _ in range(t):
@@ -33,9 +29,6 @@ for _ in range(t):
     blows = [tuple(map(int, input().split())) for _ in range(n)]
     queries.append((n, x, blows))
 
-# Get results
 results = min_blows_to_defeat_zmei(t, queries)
-
-# Output results
 for result in results:
     print(result)

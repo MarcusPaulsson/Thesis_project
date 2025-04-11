@@ -1,33 +1,48 @@
 def min_colors_to_sort(n, s):
-    # Create a list to store the color assignments
+    from collections import defaultdict
+
+    # Create a list to store the color for each character
     colors = [0] * n
-    # Create a dictionary to track the last seen index of each character
-    last_seen = {}
+    # Dictionary to track the last position of each character
+    last_position = defaultdict(list)
+
+    # Fill the last_position with indices of each character
+    for i, char in enumerate(s):
+        last_position[char].append(i)
+
     # Initialize the color counter
     color_count = 0
+    # A set to track the used colors
+    used_colors = set()
 
+    # Iterate through the string to assign colors
     for i in range(n):
         char = s[i]
-        if char in last_seen:
-            # If the character has been seen before, assign the same color
-            colors[i] = colors[last_seen[char]]
-        else:
-            # If it's a new character, increment the color count and assign a new color
-            color_count += 1
-            colors[i] = color_count
+        # If the character is already colored, continue
+        if colors[i] != 0:
+            continue
         
-        # Update the last seen index for the character
-        last_seen[char] = i
+        # Assign a new color
+        color_count += 1
+        current_color = color_count
+        colors[i] = current_color
+        used_colors.add(current_color)
 
-    return color_count, colors
+        # Check the last positions of the current character
+        for pos in last_position[char]:
+            if colors[pos] == 0:
+                colors[pos] = current_color
 
-# Read input
+        # Now we need to ensure that we can swap with different colors
+        for j in range(i + 1, n):
+            if s[j] < s[i] and colors[j] == 0:
+                colors[j] = current_color
+
+    # Output the results
+    print(color_count)
+    print(" ".join(map(str, colors)))
+
+# Example usage:
 n = int(input())
 s = input().strip()
-
-# Get the result
-res, coloring = min_colors_to_sort(n, s)
-
-# Print the result
-print(res)
-print(' '.join(map(str, coloring)))
+min_colors_to_sort(n, s)

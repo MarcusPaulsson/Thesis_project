@@ -5,12 +5,10 @@ def solve():
         print(1)
         return
 
-    count = 0
-    i = 2
-    while i <= a:
-        i *= 2
-        count += 1
+    n = 0
+    while (1 << n) <= a:
+        n += 1
     
-    print(count)
+    print(n - 1)
 
 solve()

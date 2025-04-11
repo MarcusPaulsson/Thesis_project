@@ -12,12 +12,13 @@ for name, type_ in files:
 
 moves = []
 e = len(examples)
+n = len(files)
 
-# Rename example files
+# Rename examples to 1, 2, ..., e
 for i in range(e):
     moves.append(f"move {examples[i]} {i + 1}")
 
-# Rename regular files
+# Rename regular tests to e + 1, e + 2, ..., n
 for i in range(len(regulars)):
     moves.append(f"move {regulars[i]} {e + i + 1}")
 

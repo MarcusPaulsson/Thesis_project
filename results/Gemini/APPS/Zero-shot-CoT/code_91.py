@@ -4,8 +4,7 @@ def solve():
     n = len(s)
     m = len(t)
     
-    max_len = 0
-    
+    ans = 0
     for i in range(n + 1):
         for j in range(i, n + 1):
             temp_s = ""
@@ -13,7 +12,6 @@ def solve():
                 temp_s += s[:i]
             if j < n:
                 temp_s += s[j:]
-            
             
             k = 0
             l = 0
@@ -24,8 +22,8 @@ def solve():
                 k += 1
             
             if l == m:
-                max_len = max(max_len, j - i)
-                
-    print(max_len)
+                ans = max(ans, j - i)
+    
+    print(ans)
 
 solve()

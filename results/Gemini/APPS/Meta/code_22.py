@@ -25,9 +25,6 @@ def solve():
         'm':'m',
         't':'t',
         'u':'u',
-        'i':'i',
-        'a':'a',
-        'h':'h',
         'y':'y'
     }
     
@@ -38,12 +35,8 @@ def solve():
     
     if n % 2 == 1:
         if s[n // 2] not in mirror or mirror[s[n // 2]] != s[n // 2]:
-            if s[n // 2] not in mirror:
-                print("NIE")
-                return
-            if mirror[s[n // 2]] != s[n // 2]:
-                print("NIE")
-                return
+            print("NIE")
+            return
     
     print("TAK")
 

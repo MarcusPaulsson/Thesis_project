@@ -1,20 +1,18 @@
 def min_operations(n, s):
-    # Initialize the minimum operations to the length of the string
+    # Start with the assumption that we will type all characters one by one
     min_ops = n
     
-    # Check for all possible prefixes
-    for i in range(1, n + 1):
-        prefix = s[:i]
-        # Check if the prefix can be repeated to form the beginning of the string
-        if s.startswith(prefix * (n // i)) and n % i == 0:
-            # Calculate operations: typing the prefix + 1 copy + remaining characters
-            operations = i + 1 + (n - len(prefix * (n // i)))
-            min_ops = min(min_ops, operations)
+    # Check for possible copy operations
+    for i in range(1, n):
+        # If the prefix of length i is equal to the suffix of length i
+        if s[:i] == s[i:2*i]:
+            # Calculate operations: type i characters, copy, and type the rest
+            min_ops = min(min_ops, i + 1 + (n - 2 * i))
     
     return min_ops
 
 # Input reading
-n = int(input())
+n = int(input().strip())
 s = input().strip()
 
 # Output the result

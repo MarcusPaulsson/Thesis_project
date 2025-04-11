@@ -10,6 +10,7 @@ def solve():
     low = 1
     high = n * m
     ans = 0
+
     while low <= high:
         mid = (low + high) // 2
         if count_less_equal(mid) >= k:
@@ -17,6 +18,7 @@ def solve():
             high = mid - 1
         else:
             low = mid + 1
+
     print(ans)
 
 solve()

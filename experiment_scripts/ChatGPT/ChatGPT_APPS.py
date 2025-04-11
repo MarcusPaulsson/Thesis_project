@@ -40,7 +40,7 @@ def extract_apps_tasks(json_file_path):
                         test_string += "  Outputs:\n"
                         for i in range(len(list_of_input)):
                             test_string += list_of_outputs[i]
-                        tasks.append(current_task + test_string)
+                        tasks.append(current_task + test_string + prompt.TAIL_PROMPT)
                   
                     elif "question" in data:
                         tasks.append(data["question"])

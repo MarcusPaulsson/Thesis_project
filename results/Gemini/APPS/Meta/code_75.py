@@ -10,26 +10,57 @@ def solve():
     days[5] = 1  # Saturday
     days[6] = 0  # Sunday
     
-    food = [a, b, c]
+    week_a = 0
+    week_b = 0
+    week_c = 0
     
-    def calculate_days(start_day):
-        food_copy = food[:]
-        count = 0
-        day = start_day
-        while True:
-            food_type = days[day % 7]
-            if food_copy[food_type] > 0:
-                food_copy[food_type] -= 1
-                count += 1
-                day += 1
-            else:
-                break
-        return count
-
-    max_days = 0
+    for day in days:
+        if day == 0:
+            week_a += 1
+        elif day == 1:
+            week_b += 1
+        else:
+            week_c += 1
+            
+    ans = 0
+    
     for start_day in range(7):
-        max_days = max(max_days, calculate_days(start_day))
-    
-    print(max_days)
+        cur_a = a
+        cur_b = b
+        cur_c = c
+        
+        cur_days = 0
+        
+        weeks = min(cur_a // week_a, cur_b // week_b, cur_c // week_c)
+        cur_days += weeks * 7
+        cur_a -= weeks * week_a
+        cur_b -= weeks * week_b
+        cur_c -= weeks * week_c
+        
+        temp_days = days[start_day:] + days[:start_day]
+        
+        for day in temp_days:
+            if day == 0:
+                if cur_a > 0:
+                    cur_a -= 1
+                    cur_days += 1
+                else:
+                    break
+            elif day == 1:
+                if cur_b > 0:
+                    cur_b -= 1
+                    cur_days += 1
+                else:
+                    break
+            else:
+                if cur_c > 0:
+                    cur_c -= 1
+                    cur_days += 1
+                else:
+                    break
+        
+        ans = max(ans, cur_days)
+        
+    print(ans)
 
 solve()

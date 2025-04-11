@@ -4,14 +4,16 @@ def can_be_same_track(n, L, kefa_distances, sasha_distances):
     # Calculate the distances between consecutive barriers for Sasha
     sasha_diffs = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
     
-    # Check if Kefa's differences can be rotated to match Sasha's differences
+    # Check if the kefa_diffs can be rotated to match sasha_diffs
+    double_kefa_diffs = kefa_diffs * 2  # Create a doubled list for rotation checking
+    
     for i in range(n):
-        if kefa_diffs[i:] + kefa_diffs[:i] == sasha_diffs:
+        if double_kefa_diffs[i:i + n] == sasha_diffs:
             return "YES"
     
     return "NO"
 
-# Input reading
+# Read input
 n, L = map(int, input().split())
 kefa_distances = list(map(int, input().split()))
 sasha_distances = list(map(int, input().split()))

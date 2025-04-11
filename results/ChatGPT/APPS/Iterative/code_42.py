@@ -6,12 +6,13 @@ def count_cyclic_strings(n, s):
     seen = set()
 
     # Generate all binary strings of length n
-    for bits in product('01', repeat=n):
-        t = ''.join(bits)
-        # Check if s is a substring in any cyclic shift of t
+    for t in product('01', repeat=n):
+        t = ''.join(t)
+        # Check if s is a substring of any cyclic shift of t
         if any(s in t[i:] + t[:i] for i in range(n)):
-            # Add the cyclic string to the set to ensure uniqueness
-            seen.add(t)
+            # Store the canonical form of the cyclic string to avoid duplicates
+            min_rotation = min(t[i:] + t[:i] for i in range(n))
+            seen.add(min_rotation)
 
     return len(seen)
 

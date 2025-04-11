@@ -1,26 +1,16 @@
-def minimum_D(n, a):
+def min_D_to_equalize(n, a):
     min_a = min(a)
     max_a = max(a)
 
-    if min_a == max_a:
-        return 0  # All elements are already equal
+    if max_a == min_a:
+        return 0
 
-    # The potential target value to make all elements equal
-    target1 = min_a + (max_a - min_a) // 2
-    target2 = max_a - (max_a - min_a) // 2
+    # Calculate the possible D values
+    possible_D = (max_a - min_a) // 2
 
-    # Calculate the required D for both targets
-    D1 = max(0, target1 - min_a, max_a - target1)
-    D2 = max(0, target2 - min_a, max_a - target2)
-
-    # Check if we can achieve target1 or target2
-    def can_achieve(target):
-        return all(abs(x - target) <= D1 for x in a)
-
-    if can_achieve(target1):
-        return D1
-    elif can_achieve(target2):
-        return D2
+    # Check if we can achieve equality with this D
+    if (max_a - min_a) % 2 == 0:
+        return possible_D
     else:
         return -1
 
@@ -29,4 +19,4 @@ n = int(input())
 a = list(map(int, input().split()))
 
 # Output the result
-print(minimum_D(n, a))
+print(min_D_to_equalize(n, a))

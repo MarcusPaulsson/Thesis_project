@@ -5,26 +5,30 @@ def solve():
     vectors = []
     for i in range(n):
         x, y = map(int, input().split())
-        vectors.append((x, y, i + 1))
+        vectors.append((x, y))
 
-    angles = []
-    for x, y, index in vectors:
-        angle = math.atan2(y, x)
-        angles.append((angle, index))
+    def angle(v):
+        return math.atan2(v[1], v[0])
 
-    angles.sort()
-
-    min_angle_diff = float('inf')
-    best_pair = (0, 0)
-
+    angles_with_indices = []
     for i in range(n):
-        j = (i + 1) % n
-        angle_diff = abs(angles[i][0] - angles[j][0])
-        angle_diff = min(angle_diff, 2 * math.pi - angle_diff)
+        angles_with_indices.append((angle(vectors[i]), i + 1))
 
-        if angle_diff < min_angle_diff:
-            min_angle_diff = angle_diff
-            best_pair = (angles[i][1], angles[j][1])
+    angles_with_indices.sort()
+
+    min_diff = float('inf')
+    best_pair = None
+
+    for i in range(n - 1):
+        diff = angles_with_indices[i+1][0] - angles_with_indices[i][0]
+        if diff < min_diff:
+            min_diff = diff
+            best_pair = (angles_with_indices[i][1], angles_with_indices[i+1][1])
+
+    circular_diff = angles_with_indices[0][0] + (2 * math.pi - angles_with_indices[-1][0])
+    if circular_diff < min_diff:
+        min_diff = circular_diff
+        best_pair = (angles_with_indices[0][1], angles_with_indices[-1][1])
 
     print(best_pair[0], best_pair[1])
 

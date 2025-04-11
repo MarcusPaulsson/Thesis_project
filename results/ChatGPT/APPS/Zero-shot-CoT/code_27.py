@@ -1,16 +1,13 @@
 n = int(input())
 s = input()
 
-# Initialize the minimum operations to the length of the string (typing all characters one by one)
-min_operations = n
+min_operations = n  # Start with the maximum operations needed (typing all characters)
 
-# Check for all possible prefixes
+# Check for possible copy operations
 for i in range(1, n):
-    # Check if the prefix can be doubled and still fit in the string
-    if s[:i] == s[i:i+i] and i + i <= n:
-        # Calculate operations: type prefix + copy + remaining characters
-        operations = i + 1 + (n - (i + i))
+    if s[:i] == s[i:i+i]:  # Check if the prefix can be copied
+        # Calculate operations: type prefix + 1 copy + remaining characters
+        operations = i + 1 + (n - 2 * i)
         min_operations = min(min_operations, operations)
 
-# Print the minimum operations found
 print(min_operations)

@@ -1,42 +1,55 @@
+def generate_string(n, s, t):
+    # Count of each character
+    a_count = b_count = c_count = n
+    
+    # Create a list to hold the result
+    res = []
+    
+    # Function to check if the last two characters form a forbidden substring
+    def is_forbidden():
+        return ''.join(res[-2:]) == s or ''.join(res[-2:]) == t
+    
+    # Build the result string
+    while a_count > 0 or b_count > 0 or c_count > 0:
+        for char in 'abc':
+            if char == 'a' and a_count > 0:
+                res.append(char)
+                a_count -= 1
+            elif char == 'b' and b_count > 0:
+                res.append(char)
+                b_count -= 1
+            elif char == 'c' and c_count > 0:
+                res.append(char)
+                c_count -= 1
+            
+            # Check if the last two characters form a forbidden substring
+            if is_forbidden():
+                res.pop()  # Remove the last character added
+                if char == 'a':
+                    a_count += 1
+                elif char == 'b':
+                    b_count += 1
+                elif char == 'c':
+                    c_count += 1
+                break  # Restart the loop to try adding a different character
+        else:
+            # If we went through all characters and couldn't add any, we are stuck
+            print("NO")
+            return
+
+    # Join the result list into a string
+    result_string = ''.join(res)
+    
+    # Check if we have a valid result
+    if s in result_string or t in result_string:
+        print("NO")
+    else:
+        print("YES")
+        print(result_string)
+
+# Input reading
 n = int(input())
 s = input().strip()
 t = input().strip()
 
-# Create a list of characters to use
-chars = ['a'] * n + ['b'] * n + ['c'] * n
-
-# Function to check if the current string contains forbidden substrings
-def contains_forbidden_substrings(res):
-    return s in res or t in res
-
-# Generate a valid string without forbidden substrings
-def generate_valid_string(n, s, t):
-    # Start with a base pattern that avoids the forbidden substrings
-    base = "abc" * n
-    # Check if the base contains forbidden substrings
-    if contains_forbidden_substrings(base):
-        # If it does, we can try to rearrange
-        # We can use a simple strategy to avoid forbidden pairs
-        # by cycling through the characters
-        res = []
-        for i in range(n):
-            if i % 2 == 0:
-                res.append('a')
-                res.append('b')
-                res.append('c')
-            else:
-                res.append('c')
-                res.append('a')
-                res.append('b')
-        res = ''.join(res)
-        if contains_forbidden_substrings(res):
-            return "NO"
-        return res
-    return base
-
-result = generate_valid_string(n, s, t)
-if result == "NO":
-    print("NO")
-else:
-    print("YES")
-    print(result)
+generate_string(n, s, t)

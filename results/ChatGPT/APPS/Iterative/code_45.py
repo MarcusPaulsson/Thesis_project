@@ -1,26 +1,40 @@
 def find_sequence(n, k):
-    # Minimum sum of first k positive integers
+    # Minimum sum of the first k positive integers
     min_sum = k * (k + 1) // 2
     
     if n < min_sum:
         return -1
     
-    # The maximum GCD we can use
-    g = (n - min_sum) // k + 1
+    # The maximum GCD we can use is n // k
+    max_gcd = n // k
     
-    # Create the sequence
-    sequence = [i + g for i in range(1, k + 1)]
+    # We can construct the sequence
+    sequence = [(i + 1) for i in range(k)]
+    
+    # Calculate the current sum of the sequence
+    current_sum = sum(sequence)
+    
+    # Calculate the difference needed to reach n
+    difference = n - current_sum
+    
+    # Distribute the difference evenly to maximize GCD
+    for i in range(k):
+        sequence[i] += difference // k
+    
+    # Distribute any remaining difference to the last elements
+    for i in range(difference % k):
+        sequence[k - 1 - i] += 1
+    
+    # Scale the sequence by the maximum GCD
+    sequence = [x * max_gcd for x in sequence]
     
     return sequence
 
-# Read input
+# Input reading
 n, k = map(int, input().split())
-
-# Get the result
 result = find_sequence(n, k)
 
-# Print the result
 if result == -1:
     print(-1)
 else:
-    print(' '.join(map(str, result)))
+    print(" ".join(map(str, result)))

@@ -1,4 +1,4 @@
-def moves_to_transform(n, m):
+def transform_moves(n, m):
     if m % n != 0:
         return -1
     
@@ -8,15 +8,15 @@ def moves_to_transform(n, m):
     while quotient > 1:
         if quotient % 2 == 0:
             quotient //= 2
+            moves += 1
         elif quotient % 3 == 0:
             quotient //= 3
+            moves += 1
         else:
             return -1
-        moves += 1
     
     return moves
 
-# Input
+# Input reading
 n, m = map(int, input().split())
-# Output
-print(moves_to_transform(n, m))
+print(transform_moves(n, m))

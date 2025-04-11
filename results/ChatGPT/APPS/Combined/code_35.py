@@ -6,22 +6,19 @@ def is_valid_flag(n, m, field):
     stripe_height = n // 3
     colors = set()
     
-    # Check for horizontal stripes
+    # Check horizontal stripes
     for i in range(3):
         stripe = field[i * stripe_height:(i + 1) * stripe_height]
-        first_color = stripe[0][0]
+        first_row_color = stripe[0][0]
         
-        # Check if all characters in the stripe are the same and equal to the first color
-        if any(row != first_color * m for row in stripe):
+        # Check if all rows in the stripe are the same color
+        if any(row != first_row_color * m for row in stripe):
             return "NO"
         
-        colors.add(first_color)
+        colors.add(first_row_color)
     
     # Check if we have exactly three different colors
-    if len(colors) != 3:
-        return "NO"
-    
-    return "YES"
+    return "YES" if len(colors) == 3 else "NO"
 
 # Input reading
 n, m = map(int, input().split())

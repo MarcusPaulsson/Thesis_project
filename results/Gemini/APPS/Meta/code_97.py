@@ -3,8 +3,8 @@ def solve():
     x = list(map(int, input().split()))
 
     min_cost = float('inf')
-    
-    for target in sorted(list(set(x))):
+
+    for target in set(x):
         cost = 0
         for val in x:
             cost += abs(val - target) % 2

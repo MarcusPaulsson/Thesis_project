@@ -6,10 +6,10 @@ def solve():
         painters.append((l, r))
 
     def calculate_painted_sections(selected_painters):
-        painted = [0] * n
+        painted = [False] * n
         for l, r in selected_painters:
             for i in range(l - 1, r):
-                painted[i] = 1
+                painted[i] = True
         return sum(painted)
 
     max_painted = 0

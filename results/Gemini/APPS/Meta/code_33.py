@@ -21,22 +21,44 @@ def solve():
         return
 
     d, x, y = extended_gcd(a1, a2)
-    x *= (b2 - b1) // d
-    y *= (b2 - b1) // d
+    x *= (b2 - b1) // g
+    y *= (b2 - b1) // g
 
     lcm = (a1 * a2) // g
 
-    x0 = (x * a1 + b1)
-    
-    
-    k = (L - x0 + lcm - 1) // lcm
-    first = x0 + k * lcm
-    
-    if first > R:
-        print(0)
-        return
+    x0 = x
+    y0 = y
 
-    ans = (R - first) // lcm + 1
-    print(ans)
+    k = (L - b1)
+    if k % a1 != 0:
+      k = (k // a1 + 1) * a1
+    else:
+      k = k
+    
+    first_x = -1
+    
+    for i in range(100000):
+      curr_x = a1 * (x0 + (a2 // g) * i) + b1
+      if curr_x >= L:
+        first_x = curr_x
+        break
+    
+    if first_x == -1:
+      for i in range(100000):
+        curr_x = a1 * (x0 - (a2 // g) * i) + b1
+        if curr_x >= L:
+          first_x = curr_x
+          break
+    
+    if first_x == -1:
+      print(0)
+      return
+    
+    if first_x > R:
+      print(0)
+      return
+
+    count = (R - first_x) // lcm + 1
+    print(count)
 
 solve()

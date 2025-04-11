@@ -4,26 +4,23 @@ def solve():
     digits = 0
     count = 0
     power_of_10 = 1
-    num_digits = 1
+    length = 1
     
     while True:
-        num_numbers = 9 * power_of_10
-        digits_in_numbers = num_numbers * num_digits
-        
-        if count + digits_in_numbers >= k:
+        num_digits = 9 * power_of_10 * length
+        if digits + num_digits >= k:
             break
-        
-        count += digits_in_numbers
+        digits += num_digits
         power_of_10 *= 10
-        num_digits += 1
+        length += 1
     
-    remaining = k - count
-    number_index = (remaining - 1) // num_digits
-    digit_index = (remaining - 1) % num_digits
+    remaining = k - digits
     
-    number = power_of_10 + number_index
-    number_str = str(number)
+    num_index = (remaining - 1) // length
+    digit_index = (remaining - 1) % length
     
-    print(number_str[digit_index])
+    number = power_of_10 + num_index
+    
+    print(str(number)[digit_index])
 
 solve()

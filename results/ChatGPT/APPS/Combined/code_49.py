@@ -10,14 +10,12 @@ def find_kth_digit(k):
         count *= 10
         start *= 10
 
-    # Find the actual number containing the k-th digit
+    # Find the actual number that contains the k-th digit
     start += (k - 1) // length
     num_str = str(start)
-
+    
     # Find the specific digit
-    digit_index = (k - 1) % length
-    return num_str[digit_index]
+    return num_str[(k - 1) % length]
 
-if __name__ == "__main__":
-    k = int(input().strip())
-    print(find_kth_digit(k))
+k = int(input().strip())
+print(find_kth_digit(k))

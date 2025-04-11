@@ -6,7 +6,7 @@ def solve():
     
     def check(num_colors):
         
-        def possible_to_sort(coloring):
+        def possible(coloring):
             temp_s = list(s)
             
             for _ in range(n * (n - 1) // 2):
@@ -19,16 +19,17 @@ def solve():
                     break
             
             return "".join(temp_s) == "".join(sorted(s))
+
         
         
         import itertools
         
         for coloring in itertools.product(range(1, num_colors + 1), repeat=n):
-            if possible_to_sort(coloring):
+            if possible(coloring):
                 return True, list(coloring)
         
         return False, None
-
+    
     for num_colors in range(1, n + 1):
         possible, coloring = check(num_colors)
         if possible:

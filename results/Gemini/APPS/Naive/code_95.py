@@ -3,24 +3,32 @@ def solve():
     s = input()
     t = input()
 
-    def check(res, s, t):
-        for i in range(len(res) - 1):
-            sub = res[i:i+2]
-            if sub == s or sub == t:
-                return False
-        return True
+    chars = ['a', 'b', 'c']
 
     import itertools
     
-    chars = ['a'] * n + ['b'] * n + ['c'] * n
-    
     for perm in itertools.permutations(chars):
-        res = "".join(perm)
-        if check(res, s, t):
+        base_string = "".join(perm)
+        
+        res = ""
+        for _ in range(n):
+            res += base_string
+        
+        s_found = False
+        t_found = False
+        
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s:
+                s_found = True
+            if sub == t:
+                t_found = True
+        
+        if not s_found and not t_found:
             print("YES")
             print(res)
             return
-    
+            
     print("NO")
 
 solve()

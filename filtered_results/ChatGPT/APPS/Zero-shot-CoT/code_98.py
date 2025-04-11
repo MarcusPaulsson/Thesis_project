@@ -1,13 +1,12 @@
-def min_moves_to_n(n):
+def min_moves_to_reach_n(N):
     moves = float('inf')
     
-    # Iterate over possible values for i from 1 to sqrt(n)
-    for i in range(1, int(n**0.5) + 1):
-        if n % i == 0:
-            j = n // i
+    for i in range(1, int(N**0.5) + 1):
+        if N % i == 0:
+            j = N // i
             moves = min(moves, (i - 1) + (j - 1))
     
     return moves
 
-N = int(input())
-print(min_moves_to_n(N))
+N = int(input().strip())
+print(min_moves_to_reach_n(N))

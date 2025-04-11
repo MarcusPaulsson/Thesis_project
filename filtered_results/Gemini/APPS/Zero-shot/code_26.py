@@ -1,22 +1,45 @@
+import math
+
 x, y, z = map(float, input().split())
 
-a1 = x ** (y ** z)
-a2 = x ** (z ** y)
-a3 = (x ** y) ** z
-a4 = (x ** z) ** y
-a5 = y ** (x ** z)
-a6 = y ** (z ** x)
-a7 = (y ** x) ** z
-a8 = (y ** z) ** x
-a9 = z ** (x ** y)
-a10 = z ** (y ** x)
-a11 = (z ** x) ** y
-a12 = (z ** y) ** x
+a1 = y**z * math.log(x) if x > 0 else -float('inf')
+a2 = z**y * math.log(x) if x > 0 else -float('inf')
+a3 = y * z * math.log(x) if x > 0 else -float('inf')
+a4 = z * y * math.log(x) if x > 0 else -float('inf')
+a5 = x**z * math.log(y) if y > 0 else -float('inf')
+a6 = z**x * math.log(y) if y > 0 else -float('inf')
+a7 = x * z * math.log(y) if y > 0 else -float('inf')
+a8 = z * x * math.log(y) if y > 0 else -float('inf')
+a9 = x**y * math.log(z) if z > 0 else -float('inf')
+a10 = y**x * math.log(z) if z > 0 else -float('inf')
+a11 = x * y * math.log(z) if z > 0 else -float('inf')
+a12 = y * x * math.log(z) if z > 0 else -float('inf')
 
 values = [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12]
-expressions = ["x^y^z", "x^z^y", "(x^y)^z", "(x^z)^y", "y^x^z", "y^z^x", "(y^x)^z", "(y^z)^x", "z^x^y", "z^y^x", "(z^x)^y", "(z^y)^x"]
-
 max_val = max(values)
 index = values.index(max_val)
 
-print(expressions[index])
+if index == 0:
+    print("x^y^z")
+elif index == 1:
+    print("x^z^y")
+elif index == 2:
+    print("(x^y)^z")
+elif index == 3:
+    print("(x^z)^y")
+elif index == 4:
+    print("y^x^z")
+elif index == 5:
+    print("y^z^x")
+elif index == 6:
+    print("(y^x)^z")
+elif index == 7:
+    print("(y^z)^x")
+elif index == 8:
+    print("z^x^y")
+elif index == 9:
+    print("z^y^x")
+elif index == 10:
+    print("(z^x)^y")
+elif index == 11:
+    print("(z^y)^x")
