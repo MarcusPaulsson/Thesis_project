@@ -1,21 +1,24 @@
 def can_see_white_sheet(x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6):
-    # Check if there is any part of the white sheet that is visible
-    # A point is visible if it is not in the white sheet and not covered by both black sheets
+    # Check if there is any part of the white sheet that is not covered by both black sheets
+    # The white sheet can be seen if there is at least one point that is:
+    # 1. Not strictly inside the white sheet (i.e., outside or on the boundary)
+    # 2. Strictly outside both black sheets
+
+    # Check the left side of the white sheet
+    if x1 > x4 and x1 > x6:  # left of white is to the right of both black sheets
+        return "YES"
     
-    # Check the four corners of the white sheet
-    corners = [
-        (x1, y1),  # Bottom left
-        (x1, y2),  # Top left
-        (x2, y1),  # Bottom right
-        (x2, y2)   # Top right
-    ]
+    # Check the right side of the white sheet
+    if x2 < x3 and x2 < x5:  # right of white is to the left of both black sheets
+        return "YES"
     
-    for x, y in corners:
-        # Check if the point (x, y) is outside the white sheet
-        if not (x1 < x < x2 and y1 < y < y2):
-            # Check if the point (x, y) is strictly outside both black sheets
-            if not (x3 < x < x4 and y3 < y < y4) and not (x5 < x < x6 and y5 < y < y6):
-                return "YES"
+    # Check the bottom side of the white sheet
+    if y1 > y4 and y1 > y6:  # bottom of white is above both black sheets
+        return "YES"
+    
+    # Check the top side of the white sheet
+    if y2 < y3 and y2 < y5:  # top of white is below both black sheets
+        return "YES"
     
     return "NO"
 
@@ -24,6 +27,5 @@ x1, y1, x2, y2 = map(int, input().split())
 x3, y3, x4, y4 = map(int, input().split())
 x5, y5, x6, y6 = map(int, input().split())
 
-# Get the result and print it
-result = can_see_white_sheet(x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6)
-print(result)
+# Output the result
+print(can_see_white_sheet(x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6))

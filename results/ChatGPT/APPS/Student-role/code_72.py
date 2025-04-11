@@ -1,9 +1,8 @@
 def max_intersection_length(n, segments):
-    # Extract the left and right endpoints of the segments
-    lefts = [seg[0] for seg in segments]
-    rights = [seg[1] for seg in segments]
+    lefts = [l for l, r in segments]
+    rights = [r for l, r in segments]
 
-    # Precompute the maximum left endpoint and minimum right endpoint
+    # Precompute the maximum left and minimum right excluding each segment
     max_left = [0] * n
     min_right = [0] * n
 
@@ -15,21 +14,21 @@ def max_intersection_length(n, segments):
     for i in range(n - 2, -1, -1):
         min_right[i] = min(min_right[i + 1], rights[i])
 
-    # Calculate the maximum possible length of the intersection after removing one segment
     max_length = 0
+
     for i in range(n):
         if i == 0:
-            l = max_left[1]
-            r = min_right[1]
+            current_left = max_left[1]
+            current_right = min_right[1]
         elif i == n - 1:
-            l = max_left[n - 2]
-            r = min_right[n - 2]
+            current_left = max_left[n - 2]
+            current_right = min_right[n - 2]
         else:
-            l = max(max_left[i - 1], lefts[i + 1])
-            r = min(min_right[i + 1], rights[i - 1])
+            current_left = max(max_left[i - 1], lefts[i + 1])
+            current_right = min(min_right[i + 1], rights[i - 1])
 
-        if r >= l:
-            max_length = max(max_length, r - l)
+        if current_right >= current_left:
+            max_length = max(max_length, current_right - current_left)
 
     return max_length
 
@@ -37,6 +36,5 @@ def max_intersection_length(n, segments):
 n = int(input())
 segments = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Get the result and print it
-result = max_intersection_length(n, segments)
-print(result)
+# Output the result
+print(max_intersection_length(n, segments))

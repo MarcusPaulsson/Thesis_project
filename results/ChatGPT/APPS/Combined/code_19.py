@@ -1,26 +1,22 @@
-def is_stats_correct(test_cases):
+def is_records_correct(test_cases):
     results = []
     
-    for n, records in test_cases:
-        is_correct = True
-        prev_plays, prev_clears = 0, 0
+    for n, stats in test_cases:
+        valid = True
         
-        for plays, clears in records:
-            if plays < prev_plays or clears < prev_clears or clears > plays:
-                is_correct = False
+        for i in range(1, n):
+            p_prev, c_prev = stats[i - 1]
+            p_i, c_i = stats[i]
+            
+            if p_i < p_prev or c_i < c_prev or c_i > p_i:
+                valid = False
                 break
             
-            # Calculate differences
-            plays_diff = plays - prev_plays
-            clears_diff = clears - prev_clears
-            
-            if clears_diff > plays_diff:
-                is_correct = False
+            if (p_i - p_prev) < (c_i - c_prev):
+                valid = False
                 break
-            
-            prev_plays, prev_clears = plays, clears
         
-        results.append("YES" if is_correct else "NO")
+        results.append("YES" if valid else "NO")
     
     return results
 
@@ -30,11 +26,9 @@ test_cases = []
 
 for _ in range(T):
     n = int(input())
-    records = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, records))
+    stats = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, stats))
 
-# Get results
-results = is_stats_correct(test_cases)
-
-# Output results
+# Get results and print
+results = is_records_correct(test_cases)
 print("\n".join(results))

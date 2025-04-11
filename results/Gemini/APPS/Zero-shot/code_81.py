@@ -16,10 +16,10 @@ def solve():
 
     import itertools
     
-    for permutation in itertools.permutations(strings):
-        if check_order(list(permutation)):
+    for perm in itertools.permutations(strings):
+        if check_order(list(perm)):
             print("YES")
-            for s in permutation:
+            for s in perm:
                 print(s)
             return
     

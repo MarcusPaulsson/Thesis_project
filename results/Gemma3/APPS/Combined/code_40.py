@@ -20,7 +20,7 @@ def solve():
         if ratings[i][0] < ratings[i+1][0]:
             out_of_order = True
             break
-            
+    
     if out_of_order:
         print("unrated")
         return

@@ -5,7 +5,10 @@ def solve():
         print("NO")
         return
 
-    a = [i + 1 for i in range(k)]
+    a = [0] * k
+    for i in range(k):
+        a[i] = i + 1
+
     remaining = n - k * (k + 1) // 2
 
     for i in range(k):
@@ -21,20 +24,16 @@ def solve():
             diff = a[i + 1] - 2 * a[i]
             a[i + 1] -= diff
             a[k - 1] += diff
-            if a[i+1] > 2* a[i]:
+            if a[i + 1] > 2 * a[i]:
                 print("NO")
                 return
-    
-    is_valid = True
+            
     for i in range(k - 1):
-        if not (a[i] < a[i+1] <= 2 * a[i]):
-            is_valid = False
-            break
+        if a[i + 1] <= a[i]:
+            print("NO")
+            return
 
-    if is_valid:
-        print("YES")
-        print(*a)
-    else:
-        print("NO")
+    print("YES")
+    print(*a)
 
 solve()

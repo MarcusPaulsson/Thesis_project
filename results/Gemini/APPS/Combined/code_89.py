@@ -12,26 +12,22 @@ def solve():
     positive_projects.sort()
     negative_projects.sort(key=lambda x: x[0] + x[1], reverse=True)
 
-    def check_projects(projects, initial_rating):
-        current_rating = initial_rating
+    def check_projects(projects):
+        nonlocal r
+        initial_r = r
         for a, b in projects:
-            if current_rating < a:
+            if r < a:
+                r = initial_r
                 return False
-            current_rating += b
-            if current_rating < 0:
+            r += b
+            if r < 0:
+                r = initial_r
                 return False
         return True
 
-    if not check_projects(positive_projects, r):
+    if check_projects(positive_projects) and check_projects(negative_projects):
+        print("YES")
+    else:
         print("NO")
-        return
-
-    r += sum(b for a, b in positive_projects)
-
-    if not check_projects(negative_projects, r):
-        print("NO")
-        return
-
-    print("YES")
 
 solve()

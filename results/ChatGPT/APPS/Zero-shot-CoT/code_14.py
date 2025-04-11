@@ -1,54 +1,45 @@
 def is_stack_sortable(n, k, p):
-    # Create a set of used elements
+    # Create a set of used numbers from the first k elements
     used = set(p)
-    # Create a stack and the result array
-    s = []
-    b = []
-    # Pointer for the next element to be added to b
-    next_needed = 1
     
-    # Process the first k elements
+    # Create the remaining elements that need to be added to the permutation
+    remaining = [i for i in range(1, n + 1) if i not in used]
+    
+    # Initialize the stack and the result array
+    stack = []
+    result = p[:]
+    
+    # We will iterate over the first k elements and simulate the stack operations
     for i in range(k):
-        # While we can pop from the stack to b
-        while s and s[-1] == next_needed:
-            b.append(s.pop())
-            next_needed += 1
-        # Push current element onto the stack
-        s.append(p[i])
+        while stack and (not remaining or stack[-1] < remaining[-1]):
+            result.append(stack.pop())
+        stack.append(p[i])
     
-    # Now we need to fill the remaining elements in a way that keeps it stack-sortable
-    remaining = []
-    for i in range(1, n + 1):
-        if i not in used:
-            remaining.append(i)
+    # Now we need to add the remaining elements in a way that keeps the stack sortable
+    for num in reversed(remaining):
+        while stack and stack[-1] < num:
+            result.append(stack.pop())
+        stack.append(num)
     
-    # Fill remaining elements in reverse order to maximize lexicographical order
-    remaining.reverse()
+    # Finally, pop all remaining elements from the stack
+    while stack:
+        result.append(stack.pop())
     
-    # Add remaining elements
-    for elem in remaining:
-        while s and s[-1] == next_needed:
-            b.append(s.pop())
-            next_needed += 1
-        s.append(elem)
-
-    # Final pop from the stack
-    while s and s[-1] == next_needed:
-        b.append(s.pop())
-        next_needed += 1
-    
-    # If we have added all numbers in order 1 to n
-    if next_needed - 1 == n:
-        return p + remaining
+    # Check if the result is stack-sortable
+    if result == sorted(result):
+        return result
     else:
         return -1
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 p = list(map(int, input().split()))
 
+# Get the result
 result = is_stack_sortable(n, k, p)
+
+# Print the result
 if result == -1:
-    print(result)
+    print(-1)
 else:
-    print(" ".join(map(str, result)))
+    print(' '.join(map(str, result)))

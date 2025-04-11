@@ -1,16 +1,20 @@
 def max_chocolates(n, a, b, p, q):
-    red_tiles = n // a
-    blue_tiles = n // b
-    common_tiles = n // (a * b)  # Tiles that are both red and blue
-
-    # Calculate the number of tiles that can only be painted red or blue
-    only_red = red_tiles - common_tiles
-    only_blue = blue_tiles - common_tiles
-
-    # Calculate total chocolates
-    total_chocolates = (only_red * p) + (only_blue * q) + (common_tiles * max(p, q))
+    count_a = n // a
+    count_b = n // b
+    count_ab = n // (a * b // gcd(a, b))
     
-    return total_chocolates
+    # Calculate chocolates if we prioritize Red tiles
+    chocolates_red_first = (count_a - count_ab) * p + (count_b - count_ab) * q + count_ab * max(p, q)
+    
+    # Calculate chocolates if we prioritize Blue tiles
+    chocolates_blue_first = (count_b - count_ab) * q + (count_a - count_ab) * p + count_ab * max(p, q)
+    
+    return max(chocolates_red_first, chocolates_blue_first)
+
+def gcd(x, y):
+    while y:
+        x, y = y, x % y
+    return x
 
 # Input reading
 n, a, b, p, q = map(int, input().split())

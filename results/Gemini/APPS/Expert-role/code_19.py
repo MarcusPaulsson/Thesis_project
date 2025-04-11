@@ -13,7 +13,7 @@ def solve():
             if pairs[i][0] < pairs[i-1][0] or pairs[i][1] < pairs[i-1][1]:
                 possible = False
                 break
-            if (pairs[i][0] - pairs[i-1][0]) < (pairs[i][1] - pairs[i-1][1]):
+            if pairs[i][0] - pairs[i-1][0] < pairs[i][1] - pairs[i-1][1]:
                 possible = False
                 break
 

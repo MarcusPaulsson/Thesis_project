@@ -1,32 +1,35 @@
-def can_see_white_sheet(white_coords, black1_coords, black2_coords):
-    x1, y1, x2, y2 = white_coords
-    x3, y3, x4, y4 = black1_coords
-    x5, y5, x6, y6 = black2_coords
+def is_white_sheet_visible(white_sheet, black_sheets):
+    x1, y1, x2, y2 = white_sheet
 
-    # Check visibility conditions
-    left_visible = (x3 >= x2 or x4 >= x2) or (x5 >= x2 or x6 >= x2)
-    right_visible = (x3 <= x1 or x4 <= x1) or (x5 <= x1 or x6 <= x1)
-    bottom_visible = (y3 >= y2 or y4 >= y2) or (y5 >= y2 or y6 >= y2)
-    top_visible = (y3 <= y1 or y4 <= y1) or (y5 <= y1 or y6 <= y1)
+    # Check if the white sheet is completely covered by either black sheet
+    covered_by_first_black = (black_sheets[0][0] <= x1 < black_sheets[0][2] and 
+                               black_sheets[0][1] <= y1 < black_sheets[0][3] and 
+                               black_sheets[0][0] <= x2 < black_sheets[0][2] and 
+                               black_sheets[0][1] <= y2 < black_sheets[0][3])
+    
+    covered_by_second_black = (black_sheets[1][0] <= x1 < black_sheets[1][2] and 
+                                black_sheets[1][1] <= y1 < black_sheets[1][3] and 
+                                black_sheets[1][0] <= x2 < black_sheets[1][2] and 
+                                black_sheets[1][1] <= y2 < black_sheets[1][3])
 
-    if left_visible or right_visible or bottom_visible or top_visible:
-        return "YES"
+    # Check if the white sheet is completely covered by both black sheets
+    if (black_sheets[0][0] <= x1 and black_sheets[0][2] >= x2 and 
+        black_sheets[0][1] <= y1 and black_sheets[0][3] >= y2) or \
+       (black_sheets[1][0] <= x1 and black_sheets[1][2] >= x2 and 
+        black_sheets[1][1] <= y1 and black_sheets[1][3] >= y2):
+        return "NO"
 
-    # Check if the black sheets completely cover the white sheet
-    fully_covered = (
-        (x3 <= x1 and x4 >= x2 and y3 <= y1 and y4 >= y2) or
-        (x5 <= x1 and x6 >= x2 and y5 <= y1 and y6 >= y2) or
-        (x3 <= x1 and x4 >= x2 and y5 <= y1 and y6 >= y2) or
-        (x5 <= x1 and x6 >= x2 and y3 <= y1 and y4 >= y2)
+    # Check if there is any part of the white sheet that is visible
+    visible = (
+        (x1 > black_sheets[0][2] or x2 < black_sheets[0][0] or y1 > black_sheets[0][3] or y2 < black_sheets[0][1]) or
+        (x1 > black_sheets[1][2] or x2 < black_sheets[1][0] or y1 > black_sheets[1][3] or y2 < black_sheets[1][1])
     )
 
-    return "NO" if fully_covered else "YES"
+    return "YES" if visible else "NO"
 
-# Read input values
-white_coords = list(map(int, input().split()))
-black1_coords = list(map(int, input().split()))
-black2_coords = list(map(int, input().split()))
+# Input reading
+white_sheet = list(map(int, input().split()))
+black_sheets = [list(map(int, input().split())) for _ in range(2)]
 
-# Get the result and print it
-result = can_see_white_sheet(white_coords, black1_coords, black2_coords)
-print(result)
+# Output the result
+print(is_white_sheet_visible(white_sheet, black_sheets))

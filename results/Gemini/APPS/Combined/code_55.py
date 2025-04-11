@@ -1,36 +1,31 @@
-def calculate_intersection_area(x1, y1, x2, y2, x3, y3, x4, y4):
+def intersection_area(x1, y1, x2, y2, x3, y3, x4, y4):
     """Calculates the area of intersection between two rectangles."""
-    intersection_x1 = max(x1, x3)
-    intersection_y1 = max(y1, y3)
-    intersection_x2 = min(x2, x4)
-    intersection_y2 = min(y2, y4)
-
-    width = max(0, intersection_x2 - intersection_x1)
-    height = max(0, intersection_y2 - intersection_y1)
-
-    return width * height
+    x_overlap = max(0, min(x2, x4) - max(x1, x3))
+    y_overlap = max(0, min(y2, y4) - max(y1, y3))
+    return x_overlap * y_overlap
 
 
 def solve():
-    """Solves the problem of determining if a white sheet is fully covered by two black sheets."""
+    """Reads input, calculates visible area, and prints the result."""
     x1, y1, x2, y2 = map(int, input().split())
     x3, y3, x4, y4 = map(int, input().split())
     x5, y5, x6, y6 = map(int, input().split())
 
     white_area = (x2 - x1) * (y2 - y1)
+    intersection1 = intersection_area(x1, y1, x2, y2, x3, y3, x4, y4)
+    intersection2 = intersection_area(x1, y1, x2, y2, x5, y5, x6, y6)
 
-    intersection1_area = calculate_intersection_area(x1, y1, x2, y2, x3, y3, x4, y4)
-    intersection2_area = calculate_intersection_area(x1, y1, x2, y2, x5, y5, x6, y6)
-    intersection12_area = calculate_intersection_area(x3, y3, x4, y4, x5, y5, x6, y6)
-    intersection_all_area = calculate_intersection_area(x1, y1, x2, y2, min(x3,x5), min(y3,y5),max(x4,x6),max(y4,y6))
+    # Calculate the intersection of the two black rectangles
+    x_overlap_black = max(0, min(x4, x6) - max(x3, x5))
+    y_overlap_black = max(0, min(y4, y6) - max(y3, y5))
+    intersection_black = x_overlap_black * y_overlap_black
 
-    
-    total_covered_area = intersection1_area + intersection2_area - calculate_intersection_area(
-        max(x1, x3, x5), max(y1, y3, y5), min(x2, x4, x6), min(y2, y4, y6),x1,y1,x2,y2
-    )
-    
+    # Calculate the intersection of the white rectangle with the intersection of the two black rectangles
+    intersection12 = intersection_area(x1, y1, x2, y2, max(x3, x5), max(y3, y5), min(x4, x6), min(y4, y6))
 
-    if white_area > total_covered_area:
+    covered_area = intersection1 + intersection2 - intersection12
+
+    if white_area > covered_area:
         print("YES")
     else:
         print("NO")

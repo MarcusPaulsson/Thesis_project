@@ -1,32 +1,30 @@
 def max_acordion_length(s):
-    # Initialize variables to track positions of brackets and colons
-    open_bracket = -1
+    # Initialize variables to track the positions of the required characters
+    left_bracket = -1
     first_colon = -1
     last_colon = -1
-    close_bracket = -1
+    right_bracket = -1
     
-    # Iterate over the string to find positions
-    for i in range(len(s)):
-        if s[i] == '[' and open_bracket == -1:
-            open_bracket = i
-        elif s[i] == ':' and open_bracket != -1 and first_colon == -1:
+    # Iterate through the string to find the required characters
+    for i, char in enumerate(s):
+        if char == '[' and left_bracket == -1:
+            left_bracket = i
+        elif char == ':' and left_bracket != -1 and first_colon == -1:
             first_colon = i
-        elif s[i] == ':' and first_colon != -1:
+        elif char == ':' and first_colon != -1:
             last_colon = i
-        elif s[i] == ']' and open_bracket != -1 and last_colon != -1:
-            close_bracket = i
-            break
-    
-    # Check if we have found a valid accordion structure
-    if open_bracket == -1 or first_colon == -1 or last_colon == -1 or close_bracket == -1:
+        elif char == ']' and last_colon != -1 and right_bracket == -1:
+            right_bracket = i
+            
+    # Check if we found a valid accordion structure
+    if left_bracket == -1 or first_colon == -1 or last_colon == -1 or right_bracket == -1:
         return -1
     
-    # Calculate the number of vertical lines
-    vertical_lines = last_colon - first_colon - 1
+    # Calculate the maximum length of the accordion
+    vertical_lines_count = last_colon - first_colon - 1
+    accordion_length = 4 + vertical_lines_count  # 4 for [::]
     
-    # The length of the accordion is the sum of the components
-    max_length = 4 + vertical_lines
-    return max_length
+    return accordion_length
 
 # Read input
 s = input().strip()

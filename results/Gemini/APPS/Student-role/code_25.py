@@ -13,7 +13,7 @@ def solve():
         if matrix[i][i] == 0 and k > 0:
             matrix[i][i] = 1
             k -= 1
-    
+            
     for i in range(n):
         for j in range(i + 1, n):
             if k >= 2:

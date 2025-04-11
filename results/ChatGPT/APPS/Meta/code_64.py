@@ -1,41 +1,43 @@
 def schedule_exams(n, m, exams):
     days = [0] * n  # Initialize days with 0 (rest days)
-    preparation_needed = [0] * m  # Track preparation days needed for each exam
+    exam_days = set()  # To keep track of exam days
+    prepare_needed = [0] * m  # To track preparation days needed for each exam
 
-    # Fill preparation_needed with the required preparation days
+    # Fill exam days and preparation needs
     for i in range(m):
-        preparation_needed[i] = exams[i][2]
+        s, d, c = exams[i]
+        exam_days.add(d - 1)  # Store exam day (0-indexed)
+        prepare_needed[i] = c
 
-    # Check if we can allocate preparation days before each exam
+    # Prepare for exams
     for i in range(m):
-        s_i, d_i, c_i = exams[i]
-        s_i -= 1  # Convert to 0-based index
-        d_i -= 1  # Convert to 0-based index
+        s, d, c = exams[i]
+        s -= 1  # Convert to 0-indexed
+        for j in range(s, d - 1):
+            if prepare_needed[i] > 0 and days[j] == 0:
+                days[j] = i + 1  # Mark preparation for exam i
+                prepare_needed[i] -= 1
 
-        # Try to allocate the preparation days
-        allocated_days = 0
-        for day in range(s_i, d_i):
-            if allocated_days < c_i and days[day] == 0:  # If we still need preparation days and the day is free
-                days[day] = i + 1  # Mark this day for exam i
-                allocated_days += 1
-
-        # If we didn't allocate enough days, it's impossible
-        if allocated_days < c_i:
-            return -1
-
-    # Now fill the exam days
+    # Check if all preparations are done
     for i in range(m):
-        d_i = exams[i][1] - 1  # Convert to 0-based index
-        days[d_i] = m + 1  # Mark this day for the exam
+        if prepare_needed[i] > 0:
+            return -1  # Not enough days to prepare for exam i
+
+    # Fill in exam days
+    for i in range(m):
+        d = exams[i][1] - 1  # Convert to 0-indexed
+        days[d] = m + 1  # Mark exam day
 
     return days
 
-# Reading input
+# Input reading
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
 
+# Get the schedule
 result = schedule_exams(n, m, exams)
 
+# Output the result
 if result == -1:
     print(-1)
 else:

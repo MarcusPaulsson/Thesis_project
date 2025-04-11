@@ -1,4 +1,4 @@
-def check_records(test_cases):
+def is_records_correct(test_cases):
     results = []
     
     for case in test_cases:
@@ -10,7 +10,12 @@ def check_records(test_cases):
             
             if i > 0:
                 p_prev, c_prev = stats[i - 1]
-                if p_i < p_prev or c_i < c_prev or (c_i > p_i) or (c_i - c_prev > p_i - p_prev):
+                
+                if p_i < p_prev or c_i < c_prev or c_i > p_i:
+                    valid = False
+                    break
+                
+                if p_i - p_prev < c_i - c_prev:
                     valid = False
                     break
         
@@ -18,7 +23,7 @@ def check_records(test_cases):
     
     return results
 
-# Input reading
+# Read input
 T = int(input())
 test_cases = []
 
@@ -27,7 +32,7 @@ for _ in range(T):
     stats = [tuple(map(int, input().split())) for _ in range(n)]
     test_cases.append((n, stats))
 
-# Process and output results
-results = check_records(test_cases)
+# Get results and print them
+results = is_records_correct(test_cases)
 for result in results:
     print(result)

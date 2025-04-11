@@ -1,33 +1,33 @@
 def construct_tree(n, d, k):
-    # Check for impossible conditions
-    if d > 2 * k or (d == 1 and n > 2) or (d == 0 and n > 1):
+    # Step 1: Check for impossible conditions
+    if d > 2 * (k - 1) + 1 or (d == 1 and n > 2) or (n > k + 1 and d == 1):
         return "NO"
-
+    
+    # Step 2: Initialize the tree structure
     edges = []
     
-    # Create the main path for the diameter
-    for i in range(1, d + 2):
+    # Step 3: Create the main path for the diameter
+    for i in range(1, d + 1):
         edges.append((i, i + 1))
     
-    # We have d + 1 nodes in the main path
+    # Step 4: Add additional nodes to maintain the degree constraint
     current_node = d + 2
-
-    for i in range(1, d + 2):
-        # Add branches if we have remaining nodes
-        for _ in range(1, k):
-            if current_node > n:
-                break
+    for i in range(1, d + 1):
+        while len([e for e in edges if e[0] == i or e[1] == i]) < k and current_node <= n:
             edges.append((i, current_node))
             current_node += 1
-
+            if current_node > n:
+                break
+    
+    # Step 5: Check if we have used all nodes
     if current_node <= n:
         return "NO"
     
+    # Step 6: Return the result
     result = ["YES"]
-    result.extend(f"{a} {b}" for a, b in edges)
+    result.extend(f"{u} {v}" for u, v in edges)
     return "\n".join(result)
 
-# Read input
+# Input reading
 n, d, k = map(int, input().split())
-result = construct_tree(n, d, k)
-print(result)
+print(construct_tree(n, d, k))

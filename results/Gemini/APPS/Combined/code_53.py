@@ -2,47 +2,32 @@ def solve():
     n = int(input())
     a = list(map(int, input().split()))
 
-    def find_longest_increasing_subsequence(arr):
-        n = len(arr)
-        dp = {}
+    def find_longest_increasing_sequence(arr):
+        max_len = 0
+        best_moves = ""
 
-        def solve_dp(left, right, last):
-            if (left, right, last) in dp:
-                return dp[(left, right, last)]
+        def backtrack(current_sequence, remaining_arr, moves):
+            nonlocal max_len, best_moves
 
-            if left > right:
-                return 0, ""
+            if len(current_sequence) > max_len:
+                max_len = len(current_sequence)
+                best_moves = moves
 
-            ans1 = 0
-            moves1 = ""
-            if arr[left] > last:
-                len1, moves_str1 = solve_dp(left + 1, right, arr[left])
-                ans1 = 1 + len1
-                moves1 = "L" + moves_str1
+            if not remaining_arr:
+                return
 
-            ans2 = 0
-            moves2 = ""
-            if arr[right] > last:
-                len2, moves_str2 = solve_dp(left, right - 1, arr[right])
-                ans2 = 1 + len2
-                moves2 = "R" + moves_str2
+            last_val = current_sequence[-1] if current_sequence else 0  # Initialize to 0 for empty sequence
 
-            if ans1 > ans2:
-                dp[(left, right, last)] = ans1, moves1
-            elif ans2 > ans1:
-                dp[(left, right, last)] = ans2, moves2
-            else:
-                if ans1 == 0:
-                    dp[(left, right, last)] = 0, ""
-                else:
-                    dp[(left, right, last)] = ans1, (moves1 if moves1 < moves2 else moves2)
-            
-            return dp[(left, right, last)]
-        
-        length, moves = solve_dp(0, n - 1, 0)
-        return length, moves
+            if remaining_arr[0] > last_val:
+                backtrack(current_sequence + [remaining_arr[0]], remaining_arr[1:], moves + "L")
 
-    length, moves = find_longest_increasing_subsequence(a)
+            if len(remaining_arr) > 1 and remaining_arr[-1] > last_val:
+                backtrack(current_sequence + [remaining_arr[-1]], remaining_arr[:-1], moves + "R")
+
+        backtrack([], arr, "")
+        return max_len, best_moves
+
+    length, moves = find_longest_increasing_sequence(a)
     print(length)
     print(moves)
 

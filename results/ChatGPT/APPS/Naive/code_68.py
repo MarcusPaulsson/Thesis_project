@@ -1,42 +1,39 @@
 def min_cost_to_obtain_set(n, k, s):
-    from collections import defaultdict
+    from collections import Counter
     
-    # Count frequency of each character in the string
-    freq = defaultdict(int)
-    for char in s:
-        freq[char] += 1
+    # Count the frequency of each character in the string
+    freq = Counter(s)
     
-    # Calculate all unique subsequences and their costs
-    unique_subsequences = set()
+    # Calculate the maximum number of unique subsequences we can form
+    unique_subsequences = 0
     total_cost = 0
-    max_possible_subsequences = 0
     
-    # Generate subsequences using bit masking
-    for i in range(1 << n):
-        subsequence = []
-        for j in range(n):
-            if i & (1 << j):
-                subsequence.append(s[j])
-        subsequence_str = ''.join(subsequence)
-        if subsequence_str not in unique_subsequences:
-            unique_subsequences.add(subsequence_str)
-            cost = n - len(subsequence_str)
-            total_cost += cost
-            max_possible_subsequences += 1
-            
-            if max_possible_subsequences >= k:
-                return total_cost
+    # To store the costs of subsequences of different lengths
+    costs = []
     
-    # If we can't create enough unique subsequences
-    if max_possible_subsequences < k:
+    # Generate all possible subsequences and their costs
+    for length in range(1, n + 1):
+        # Calculate the number of unique subsequences of this length
+        count = sum(1 for c in freq if freq[c] >= length)
+        if count > 0:
+            unique_subsequences += count
+            costs.append((n - length) * count)
+    
+    # If we cannot form at least k unique subsequences
+    if unique_subsequences < k:
         return -1
+    
+    # Sort costs to minimize total cost
+    costs.sort()
+    
+    # Calculate the minimum cost to obtain exactly k unique subsequences
+    total_cost = sum(costs[:k])
     
     return total_cost
 
-# Read inputs
+# Input reading
 n, k = map(int, input().split())
 s = input().strip()
 
-# Get the result and print it
-result = min_cost_to_obtain_set(n, k, s)
-print(result)
+# Output the result
+print(min_cost_to_obtain_set(n, k, s))

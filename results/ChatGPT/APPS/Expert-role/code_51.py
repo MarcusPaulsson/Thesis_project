@@ -1,24 +1,26 @@
 from collections import Counter
-import math
+import sys
 
-def find_x_y(n, divisors):
-    counter = Counter(divisors)
-    common_divisors = [d for d, count in counter.items() if count > 1]
-
-    gcd = 1
-    for d in common_divisors:
-        gcd = math.gcd(gcd, d)
-
-    x = gcd
-    y = 1
-    for d in divisors:
-        if d % x == 0:
-            y *= d // x
-
-    return (x, y)
+def find_x_y(divisors):
+    count = Counter(divisors)
+    # The largest number must be either x or y
+    max_divisor = max(count)
+    
+    # Remove the largest number from the count
+    count[max_divisor] -= 1
+    if count[max_divisor] == 0:
+        del count[max_divisor]
+    
+    # Now we need to find the second number
+    # The second number must be the product of the remaining divisors
+    product = 1
+    for d in count:
+        product *= d ** count[d]
+    
+    return max_divisor, product
 
 n = int(input().strip())
 divisors = list(map(int, input().strip().split()))
 
-x, y = find_x_y(n, divisors)
+x, y = find_x_y(divisors)
 print(x, y)

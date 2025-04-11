@@ -4,5 +4,4 @@ def minimum_difference(n):
 
 if __name__ == "__main__":
     n = int(input().strip())
-    result = minimum_difference(n)
-    print(result)
+    print(minimum_difference(n))

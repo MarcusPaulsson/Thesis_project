@@ -1,12 +1,11 @@
 x = float(input().strip())
 
-# Calculate the integers a and b
-a = 1
-b = int(round(x * 10 / a))
+# Calculate the integers a and b based on the input x
+a = int(x) + 1
+b = int((x - int(x)) * 10) + 1
 
-# Ensure b is within the range [1, 10]
-while b < 1 or b > 10:
-    a += 1
-    b = int(round(x * 10 / a))
+# Ensure a and b are within the range of 1 to 10
+a = min(max(a, 1), 10)
+b = min(max(b, 1), 10)
 
 print(a, b)

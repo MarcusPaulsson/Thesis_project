@@ -6,18 +6,24 @@ def gcd(a, b):
 def lcm(a, b):
     return (a * b) // gcd(a, b)
 
-def solve():
-    n, a, b, p, q = map(int, input().split())
-    
-    red_count = n // a
-    blue_count = n // b
-    both_count = n // lcm(a, b)
-    
-    if p > q:
-        result = red_count * p + (blue_count - both_count) * q
-    else:
-        result = blue_count * q + (red_count - both_count) * p
-        
-    print(result)
+n, a, b, p, q = map(int, input().split())
 
-solve()
+red_count = n // a
+blue_count = n // b
+common_count = n // lcm(a, b)
+
+red_only = red_count - common_count
+blue_only = blue_count - common_count
+
+total_chocolates = 0
+
+if p > q:
+    total_chocolates += red_only * p
+    total_chocolates += common_count * p
+    total_chocolates += blue_only * q
+else:
+    total_chocolates += blue_only * q
+    total_chocolates += common_count * q
+    total_chocolates += red_only * p
+
+print(total_chocolates)

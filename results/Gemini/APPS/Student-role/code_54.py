@@ -6,28 +6,28 @@ def solve():
         print(0)
         return
 
-    distinct_values = sorted(list(set(a)))
+    unique_values = sorted(list(set(a)))
 
-    if len(distinct_values) > 3:
+    if len(unique_values) > 3:
         print(-1)
         return
 
-    if len(distinct_values) == 1:
+    if len(unique_values) == 1:
         print(0)
         return
 
-    if len(distinct_values) == 2:
-        x, y = distinct_values
-        if (x + y) % 2 == 0:
-            print((y - x) // 2)
+    if len(unique_values) == 2:
+        val1, val2 = unique_values
+        if (val1 + val2) % 2 == 0:
+            print((val2 - val1) // 2)
         else:
-            print(y - x)
+            print(val2 - val1)
         return
 
-    if len(distinct_values) == 3:
-        x, y, z = distinct_values
-        if y - x == z - y:
-            print(y - x)
+    if len(unique_values) == 3:
+        val1, val2, val3 = unique_values
+        if val2 - val1 == val3 - val2:
+            print(val2 - val1)
         else:
             print(-1)
         return

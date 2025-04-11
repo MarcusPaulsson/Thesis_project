@@ -1,37 +1,36 @@
 def minimum_length_string(n, k, t):
     # Find the longest prefix which is also a suffix
-    # This is used to minimize overlaps
     lps = [0] * n
-    j = 0
-    
+    j = 0  # length of previous longest prefix suffix
+    i = 1
+
     # Preprocess the pattern to create the lps array
-    for i in range(1, n):
-        while (j > 0 and t[i] != t[j]):
-            j = lps[j - 1]
+    while i < n:
         if t[i] == t[j]:
             j += 1
             lps[i] = j
+            i += 1
         else:
-            lps[i] = 0
+            if j != 0:
+                j = lps[j - 1]
+            else:
+                lps[i] = 0
+                i += 1
 
-    # Length of the longest prefix which is also a suffix
+    # The length of the longest prefix which is also a suffix
     overlap_length = lps[-1]
-    
-    # Calculate the minimum length of the resultant string
-    # Start with the first occurrence of t
+
+    # Construct the result string
     result = t
-    
-    # Add (k-1) occurrences of the remaining part of t after the overlap
-    result += (t[overlap_length:] * (k - 1))
-    
+    for _ in range(k - 1):
+        result += t[overlap_length:]
+
     return result
 
 # Read input
 n, k = map(int, input().split())
 t = input().strip()
 
-# Get the result
+# Get the result and print it
 result = minimum_length_string(n, k, t)
-
-# Print the result
 print(result)

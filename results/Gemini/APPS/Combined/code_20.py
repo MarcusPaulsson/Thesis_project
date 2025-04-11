@@ -14,12 +14,12 @@ def solve():
             print(minutes)
             return
 
+        minutes += 1
         mm += 1
         if mm == 60:
             mm = 0
             hh += 1
             if hh == 24:
                 hh = 0
-        minutes += 1
 
 solve()

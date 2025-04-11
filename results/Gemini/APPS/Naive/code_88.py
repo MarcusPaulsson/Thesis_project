@@ -40,31 +40,28 @@ def solve():
         
         for num in list(counts.keys()):
             if counts[num] > 0:
-                counts[num] -= 1
+                
                 matrix[row][col] = num
+                matrix[n-1-row][col] = num
+                matrix[row][n-1-col] = num
+                matrix[n-1-row][n-1-col] = num
                 
-                row_sym = n - 1 - row
-                col_sym = n - 1 - col
-                
-                matrix[row_sym][col] = num
-                matrix[row][col_sym] = num
-                matrix[row_sym][col_sym] = num
+                counts[num] -= 1
+                if counts[num] == 0:
+                    del counts[num]
                 
                 if backtrack(row, col + 1):
                     return True
                 
-                counts[num] += 1
+                counts[num] = counts.get(num, 0) + 1
                 matrix[row][col] = 0
-                matrix[row_sym][col] = 0
-                matrix[row][col_sym] = 0
-                matrix[row_sym][col_sym] = 0
+                matrix[n-1-row][col] = 0
+                matrix[row][n-1-col] = 0
+                matrix[n-1-row][n-1-col] = 0
         
         return False
-
     
-    if backtrack(0, 0):
-        return
-    else:
+    if not backtrack(0, 0):
         print("NO")
 
 solve()

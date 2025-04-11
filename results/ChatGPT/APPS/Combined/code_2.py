@@ -1,7 +1,7 @@
 def is_lucky_year(year):
-    """Check if a year is lucky based on the number of non-zero digits."""
-    non_zero_count = sum(1 for digit in str(year) if digit != '0')
-    return non_zero_count <= 1
+    """Check if the year is lucky (has at most one non-zero digit)."""
+    non_zero_digits = sum(1 for digit in str(year) if digit != '0')
+    return non_zero_digits <= 1
 
 def next_lucky_year(current_year):
     """Find the next lucky year after the current year."""
@@ -10,6 +10,7 @@ def next_lucky_year(current_year):
         next_year += 1
     return next_year - current_year
 
-if __name__ == "__main__":
-    n = int(input().strip())
-    print(next_lucky_year(n))
+# Input
+n = int(input().strip())
+# Output
+print(next_lucky_year(n))

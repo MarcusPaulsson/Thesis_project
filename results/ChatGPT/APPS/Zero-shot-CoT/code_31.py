@@ -3,52 +3,45 @@ def gcd(a, b):
         a, b = b, a % b
     return a
 
-def main():
-    import sys
-    input = sys.stdin.read
-    n, k = map(int, input().strip().split())
+def mod_inverse(a, m):
+    m0, x0, x1 = m, 0, 1
+    if m == 1:
+        return 0
+    while a > 1:
+        q = a // m
+        m, a = a % m, m
+        x0, x1 = x1 - q * x0, x0
+    if x1 < 0:
+        x1 += m0
+    return x1
 
+def birthday_paradox(n, k):
     MOD = 1000003
     days = 1 << n  # 2^n
-
     if k > days:
-        print(1, 1)
-        return
+        return 1, 1  # Guaranteed collision
 
-    # Calculate the probability of at least two having the same birthday
-    # P(at least two share a birthday) = 1 - P(no one shares a birthday)
-    
-    # P(no one shares a birthday) = days / days * (days - 1) / days * ... * (days - k + 1) / days
-    # = (days * (days - 1) * ... * (days - k + 1)) / days^k
-    # = (days * (days - 1) * ... * (days - k + 1)) / (days^k)
-
-    P_no_shared = 1
+    # Calculate the probability of no collision
+    numerator = 1
+    denominator = 1
     for i in range(k):
-        P_no_shared *= (days - i)
-        P_no_shared %= MOD
+        numerator *= (days - i)
+        denominator *= days
+        numerator %= MOD
+        denominator %= MOD
 
-    P_no_shared = (P_no_shared * pow(days, MOD - 2, MOD)) % MOD  # Modular inverse of days^k
+    # Probability of at least one collision
+    A = (denominator - numerator) % MOD
+    B = denominator
 
-    # P(shared) = 1 - P(no shared)
-    P_shared = (1 - P_no_shared) % MOD
+    # Reduce A/B to irreducible form
+    common_gcd = gcd(A, B)
+    A //= common_gcd
+    B //= common_gcd
 
-    # P(shared) = A / B
-    A = P_shared
-    B = 1
-    # Find the denominator B
-    for i in range(k):
-        B *= days
-        B %= MOD
+    return A % MOD, B % MOD
 
-    # A = B - P(no shared)
-    A = (B - P_no_shared + MOD) % MOD
-
-    # Reduce A and B by their gcd
-    g = gcd(A, B)
-    A //= g
-    B //= g
-
-    print(A, B)
-
-if __name__ == "__main__":
-    main()
+# Input reading
+n, k = map(int, input().split())
+result = birthday_paradox(n, k)
+print(result[0], result[1])

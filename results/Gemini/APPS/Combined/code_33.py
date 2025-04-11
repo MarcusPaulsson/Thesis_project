@@ -1,12 +1,16 @@
 def gcd(a, b):
-    """Computes the greatest common divisor of a and b."""
+    """Calculates the greatest common divisor (GCD) of two integers."""
     while b:
         a, b = b, a % b
     return a
 
 def extended_gcd(a, b):
-    """Computes the extended greatest common divisor of a and b,
-    and finds coefficients x and y such that ax + by = gcd(a, b).
+    """
+    Calculates the extended GCD of two integers a and b.
+
+    Returns:
+        A tuple (d, x, y) where d is the GCD of a and b, and x and y are
+        integers such that ax + by = d.
     """
     if a == 0:
         return b, 0, 1
@@ -16,8 +20,10 @@ def extended_gcd(a, b):
     return d, x, y
 
 def solve():
-    """Solves the problem of finding the number of integers x in the range [L, R] that
-    satisfy x = a1*k + b1 = a2*l + b2 for some integers k and l.
+    """
+    Solves the problem of finding the number of integers x in the range [L, R]
+    that can be expressed in the form a1*k + b1 and a2*l + b2, where k and l
+    are non-negative integers.
     """
     a1, b1, a2, b2, L, R = map(int, input().split())
 
@@ -29,24 +35,30 @@ def solve():
 
     d, x, y = extended_gcd(a1, a2)
     x *= (b2 - b1) // d
+    y *= (b2 - b1) // d
 
     lcm = (a1 * a2) // g
-    
-    # Ensure x is a valid solution
-    x0 = (x * a1 + b1)
 
-    # Find the smallest value >= L that satisfies the condition
-    if lcm == 0:
-        first_val = x0
-    else:
-        k = (L - x0 + lcm - 1) // lcm
-        first_val = x0 + k * lcm
-    
-    if first_val > R:
-        print(0)
-        return
+    # x = a1 * k + b1 = a2 * l + b2
+    # k = k0 + (a2 // g) * t
+    # l = l0 + (a1 // g) * t
+    # x = a1 * (k0 + (a2 // g) * t) + b1
+    # x = a1 * k0 + b1 + (a1 * a2 // g) * t
+    # x = a1 * k0 + b1 + lcm * t
 
-    count = (R - first_val) // lcm + 1
+    x0 = a1 * x + b1  # Initial value of x
+
+    # Find the range of t such that L <= x0 + lcm * t <= R
+    t_min = (L - x0 + lcm - 1) // lcm
+    t_max = (R - x0) // lcm
+
+    count = 0
+    for t in range(t_min, t_max + 1):
+        k = x + (a2 // g) * t
+        l = y + (a1 // g) * t
+        if k >= 0 and l >= 0:
+            count += 1
+
     print(count)
 
 solve()

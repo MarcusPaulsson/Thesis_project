@@ -1,29 +1,31 @@
 def solve():
-    n = int(input())
-    s = input()
+    n, k = map(int, input().split())
+    a = list(map(int, input().split()))
     
-    def check(num_colors, coloring):
-        colored_chars = [[] for _ in range(num_colors)]
-        for i in range(n):
-            colored_chars[coloring[i] - 1].append(s[i])
-        
-        combined_chars = []
-        for i in range(num_colors):
-            combined_chars.extend(colored_chars[i])
-        
-        if ''.join(sorted(s)) == ''.join(sorted(combined_chars)):
-            return True
+    l = 0
+    r = n - 1
+    count = 0
+    
+    while l <= r:
+        if a[l] <= k:
+            count += 1
+            l += 1
+        elif a[r] <= k:
+            count += 1
+            r -= 1
         else:
-            return False
-
-    for num_colors in range(1, n + 1):
-        
-        import itertools
-        for coloring in itertools.product(range(1, num_colors + 1), repeat=n):
+            break
             
-            if check(num_colors, list(coloring)):
-                print(num_colors)
-                print(*coloring)
-                return
+        if l > r:
+            break
+        
+        can_solve_left = a[l] <= k if l <= r else False
+        can_solve_right = a[r] <=k if l <= r else False
+        
+        if not can_solve_left and not can_solve_right:
+            break
+        
+
+    print(count)
 
 solve()

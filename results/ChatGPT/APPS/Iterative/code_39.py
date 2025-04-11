@@ -3,7 +3,6 @@ def is_palindrome(s):
 
 s = input().strip()
 
-# If the entire string is not a palindrome, return its length
 if not is_palindrome(s):
     print(len(s))
 else:
@@ -13,5 +12,4 @@ else:
     if s.count(s[0]) == n:
         print(0)
     else:
-        # The longest non-palindrome substring can be at least n-1
-        print(n - 1)
+        print(n - 1)  # The longest non-palindrome substring can be of length n-1

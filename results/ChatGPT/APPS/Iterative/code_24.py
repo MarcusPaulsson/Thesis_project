@@ -1,26 +1,39 @@
-def can_win(matrix):
-    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
-    
-    def check_direction(x, y, dx, dy):
-        count = 0
-        for i in range(-4, 1):
-            nx, ny = x + i * dx, y + i * dy
-            if 0 <= nx < 10 and 0 <= ny < 10 and matrix[nx][ny] == 'X':
-                count += 1
-            else:
-                count = 0
-            if count >= 4:
-                return True
-        return False
+def can_win(board):
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # horizontal, vertical, diagonal, anti-diagonal
+    n = 10
 
-    for i in range(10):
-        for j in range(10):
-            if matrix[i][j] == '.':
+    for i in range(n):
+        for j in range(n):
+            if board[i][j] == '.':
+                # Temporarily place 'X' in the empty cell
+                board[i][j] = 'X'
+                
+                # Check all directions for a winning line
                 for dx, dy in directions:
-                    if check_direction(i, j, dx, dy):
-                        return 'YES'
-    return 'NO'
+                    count = 1
+                    
+                    # Check in the positive direction
+                    x, y = i + dx, j + dy
+                    while 0 <= x < n and 0 <= y < n and board[x][y] == 'X':
+                        count += 1
+                        x += dx
+                        y += dy
+                    
+                    # Check in the negative direction
+                    x, y = i - dx, j - dy
+                    while 0 <= x < n and 0 <= y < n and board[x][y] == 'X':
+                        count += 1
+                        x -= dx
+                        y -= dy
+                    
+                    if count >= 5:
+                        return "YES"
+                
+                # Restore the empty cell
+                board[i][j] = '.'
+    
+    return "NO"
 
 # Read input
-matrix = [input().strip() for _ in range(10)]
-print(can_win(matrix))
+board = [input().strip() for _ in range(10)]
+print(can_win(board))

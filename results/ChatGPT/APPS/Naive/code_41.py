@@ -1,10 +1,10 @@
-def nearest_zero_distance(n, array):
+def nearest_zero_distance(n, arr):
     distances = [float('inf')] * n
     last_zero_index = -1
 
     # Forward pass to find distances to the nearest zero on the left
     for i in range(n):
-        if array[i] == 0:
+        if arr[i] == 0:
             last_zero_index = i
             distances[i] = 0
         elif last_zero_index != -1:
@@ -12,8 +12,8 @@ def nearest_zero_distance(n, array):
 
     # Backward pass to find distances to the nearest zero on the right
     last_zero_index = -1
-    for i in range(n-1, -1, -1):
-        if array[i] == 0:
+    for i in range(n - 1, -1, -1):
+        if arr[i] == 0:
             last_zero_index = i
         elif last_zero_index != -1:
             distances[i] = min(distances[i], last_zero_index - i)
@@ -21,9 +21,9 @@ def nearest_zero_distance(n, array):
     return distances
 
 # Input reading
-n = int(input())
-array = list(map(int, input().split()))
+n = int(input().strip())
+arr = list(map(int, input().strip().split()))
 
-# Calculate distances and print the result
-result = nearest_zero_distance(n, array)
+# Get distances and print them
+result = nearest_zero_distance(n, arr)
 print(' '.join(map(str, result)))

@@ -1,66 +1,103 @@
 def solve():
     n = int(input())
     s = input()
-    len_s = len(s)
     mod = 10**9 + 7
+    len_s = len(s)
+    len_seq = 2 * n
 
     dp = {}
 
-    def count_regular_sequences(length, balance, contains_s):
-        if length == 2 * n:
+    def count_regular(index, balance, contains_s):
+        if index == len_seq:
             if balance == 0 and contains_s:
                 return 1
             else:
                 return 0
 
-        if (length, balance, contains_s) in dp:
-            return dp[(length, balance, contains_s)]
+        if (index, balance, contains_s) in dp:
+            return dp[(index, balance, contains_s)]
 
         count = 0
         
-        # Add '('
-        if balance + 1 <= n:
-            new_contains_s = contains_s
-            temp_seq = ""
-            if length < len_s:
-                temp_seq = '(' + s[length+1:] if length + 1 < len_s else '('
-                if len(temp_seq) > 0 and s[:length+1] == temp_seq[:length+1]:
-                  new_contains_s = True
+        # Try adding '('
+        new_contains_s = contains_s
+        if not contains_s:
+            if index < len_s and s[index] != '(':
+                pass
+            elif index >= len_s or s[index] == '(':
+                count = (count + count_regular(index + 1, balance + 1, contains_s)) % mod
             else:
-              
-                new_contains_s = contains_s
+                pass
+        else:
+            count = (count + count_regular(index + 1, balance + 1, contains_s)) % mod
             
-            
-            seq = ('(' + s[length+1:]) if length + 1 < len_s else '('
-            if not contains_s and len_s <= 2 * n and length < len_s and len(seq) > 0 and s.startswith(seq):
-                new_contains_s = True
+        # Try adding ')'
+        new_contains_s = contains_s
+        if not contains_s:
+            if balance > 0:
+                if index < len_s and s[index] != ')':
+                    pass
+                elif index >= len_s or s[index] == ')':
+                    count = (count + count_regular(index + 1, balance - 1, contains_s)) % mod
+                else:
+                    pass
+        else:
+            if balance > 0:
+                count = (count + count_regular(index + 1, balance - 1, contains_s)) % mod
 
-            count = (count + count_regular_sequences(length + 1, balance + 1, new_contains_s)) % mod
-        
-        # Add ')'
-        if balance > 0:
-            new_contains_s = contains_s
-            temp_seq = ""
-            if length < len_s:
-                temp_seq = ')' + s[length+1:]  if length + 1 < len_s else ')'
-                if len(temp_seq) > 0 and s[:length+1] == temp_seq[:length+1]:
-                  new_contains_s = True
-            else:
-                new_contains_s = contains_s
+        dp[(index, balance, contains_s)] = count
 
-            seq = (')' + s[length+1:]) if length + 1 < len_s else ')'
-            if not contains_s and len_s <= 2 * n and length < len_s and len(seq) > 0 and s.startswith(seq):
-                new_contains_s = True
-            
-            count = (count + count_regular_sequences(length + 1, balance - 1, new_contains_s)) % mod
-
-        dp[(length, balance, contains_s)] = count
         return count
 
-    contains_s = False
-    if len_s == 0:
-      contains_s = True
-    
-    print(count_regular_sequences(0, 0, False))
+    def check_substring(seq, sub):
+        for i in range(len(seq) - len(sub) + 1):
+            if seq[i:i+len(sub)] == sub:
+                return True
+        return False
+
+    def count_regular_optimized():
+        dp = {}
+
+        def solve_recursive(idx, balance, has_substring):
+            if idx == 2 * n:
+                if balance == 0 and has_substring:
+                    return 1
+                else:
+                    return 0
+
+            if (idx, balance, has_substring) in dp:
+                return dp[(idx, balance, has_substring)]
+
+            count = 0
+
+            # Option 1: Add '('
+            new_has_substring = has_substring
+            if not has_substring and idx < len_s and s[idx] != '(':
+                pass
+            else:
+                if not has_substring and idx < len_s and s[idx] == '(':
+                    new_has_substring = (idx == len_s - 1)
+                elif not has_substring and idx >= len_s:
+                    pass
+                count = (count + solve_recursive(idx + 1, balance + 1, new_has_substring)) % mod
+
+            # Option 2: Add ')'
+            if balance > 0:
+                new_has_substring = has_substring
+                if not has_substring and idx < len_s and s[idx] != ')':
+                    pass
+                else:
+                    if not has_substring and idx < len_s and s[idx] == ')':
+                        new_has_substring = (idx == len_s - 1)
+                    elif not has_substring and idx >= len_s:
+                        pass
+                count = (count + solve_recursive(idx + 1, balance - 1, new_has_substring)) % mod
+
+            dp[(idx, balance, has_substring)] = count
+            return count
+
+        return solve_recursive(0, 0, False)
+
+    print(count_regular_optimized())
 
 solve()

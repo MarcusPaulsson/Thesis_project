@@ -1,20 +1,23 @@
-x = int(input())
-hh, mm = map(int, input().split())
+def solve():
+    n, pos, l, r = map(int, input().split())
+    
+    if l == 1 and r == n:
+        print(0)
+        return
+    
+    if l == 1:
+        print(abs(pos - r) + 1)
+        return
+    
+    if r == n:
+        print(abs(pos - l) + 1)
+        return
+    
+    
+    ans1 = abs(pos - l) + 1 + abs(r - l) + 1
+    ans2 = abs(pos - r) + 1 + abs(r - l) + 1
+    
+    print(min(ans1, ans2))
 
-count = 0
-while True:
-    h_str = str(hh).zfill(2)
-    m_str = str(mm).zfill(2)
-    
-    if '7' in h_str or '7' in m_str:
-        print(count)
-        break
-    
-    mm -= x
-    if mm < 0:
-        mm += 60
-        hh -= 1
-        if hh < 0:
-            hh += 24
-    
-    count += 1
+
+solve()

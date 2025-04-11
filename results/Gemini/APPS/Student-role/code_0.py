@@ -13,15 +13,15 @@ def solve():
                             for l in range(k + 1, j):
                                 if s[l] == ':':
                                     
-                                    
-                                    vertical_bars_count = 0
+                                    count = 0
                                     for m in range(k + 1, l):
                                         if s[m] == '|':
-                                            vertical_bars_count += 1
+                                            count += 1
                                     
-                                    current_len = 2 + 2 + vertical_bars_count
-                                    max_len = max(max_len, current_len)
+                                    curr_len = 2 + 2 + count
                                     
+                                    max_len = max(max_len, curr_len)
+    
     print(max_len)
 
 solve()

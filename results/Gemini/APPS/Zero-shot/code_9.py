@@ -3,112 +3,53 @@ def solve():
     n, m = map(int, input().split())
     sofas = []
     for _ in range(d):
-        sofas.append(list(map(int, input().split())))
+        x1, y1, x2, y2 = map(int, input().split())
+        sofas.append((x1, y1, x2, y2))
     cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
 
-    def count_left(sofa, other_sofas):
-        count = 0
-        for other_sofa in other_sofas:
-            if sofa == other_sofa:
-                continue
-            
-            x1_sofa = min(sofa[0], sofa[2])
-            x2_sofa = max(sofa[0], sofa[2])
-            y1_sofa = min(sofa[1], sofa[3])
-            y2_sofa = max(sofa[1], sofa[3])
-
-            x1_other = min(other_sofa[0], other_sofa[2])
-            x2_other = max(other_sofa[0], other_sofa[2])
-            y1_other = min(other_sofa[1], other_sofa[3])
-            y2_other = max(other_sofa[1], other_sofa[3])
-            
-            
-            min_x_sofa = min(sofa[0], sofa[2])
-            min_x_other = min(other_sofa[0], other_sofa[2])
-        
-            if min_x_sofa > x1_other:
-                count += 1
-        return count
-
-    def count_right(sofa, other_sofas):
-        count = 0
-        for other_sofa in other_sofas:
-            if sofa == other_sofa:
-                continue
-
-            
-            x1_sofa = min(sofa[0], sofa[2])
-            x2_sofa = max(sofa[0], sofa[2])
-            y1_sofa = min(sofa[1], sofa[3])
-            y2_sofa = max(sofa[1], sofa[3])
-
-            x1_other = min(other_sofa[0], other_sofa[2])
-            x2_other = max(other_sofa[0], other_sofa[2])
-            y1_other = min(other_sofa[1], other_sofa[3])
-            y2_other = max(other_sofa[1], other_sofa[3])
-            
-            max_x_sofa = max(sofa[0], sofa[2])
-            max_x_other = max(other_sofa[0], other_sofa[2])
-            
-            if max_x_sofa < x2_other:
-                count += 1
-        return count
-
-    def count_top(sofa, other_sofas):
-        count = 0
-        for other_sofa in other_sofas:
-            if sofa == other_sofa:
-                continue
-
-            x1_sofa = min(sofa[0], sofa[2])
-            x2_sofa = max(sofa[0], sofa[2])
-            y1_sofa = min(sofa[1], sofa[3])
-            y2_sofa = max(sofa[1], sofa[3])
-
-            x1_other = min(other_sofa[0], other_sofa[2])
-            x2_other = max(other_sofa[0], other_sofa[2])
-            y1_other = min(other_sofa[1], other_sofa[3])
-            y2_other = max(other_sofa[1], other_sofa[3])
-            
-            min_y_sofa = min(sofa[1], sofa[3])
-            min_y_other = min(other_sofa[1], other_sofa[3])
-            
-            if min_y_sofa > y1_other:
-                count += 1
-        return count
-
-    def count_bottom(sofa, other_sofas):
-        count = 0
-        for other_sofa in other_sofas:
-            if sofa == other_sofa:
-                continue
-            
-            x1_sofa = min(sofa[0], sofa[2])
-            x2_sofa = max(sofa[0], sofa[2])
-            y1_sofa = min(sofa[1], sofa[3])
-            y2_sofa = max(sofa[1], sofa[3])
-
-            x1_other = min(other_sofa[0], other_sofa[2])
-            x2_other = max(other_sofa[0], other_sofa[2])
-            y1_other = min(other_sofa[1], other_sofa[3])
-            y2_other = max(other_sofa[1], other_sofa[3])
-            
-            max_y_sofa = max(sofa[1], sofa[3])
-            max_y_other = max(other_sofa[1], other_sofa[3])
-
-            if max_y_sofa < y2_other:
-                count += 1
-        return count
-
     for i in range(d):
-        sofa = sofas[i]
-        other_sofas = sofas[:]
-        
-        
-        l = count_left(sofa, other_sofas)
-        r = count_right(sofa, other_sofas)
-        t = count_top(sofa, other_sofas)
-        b = count_bottom(sofa, other_sofas)
+        l, r, t, b = 0, 0, 0, 0
+        for j in range(d):
+            if i == j:
+                continue
+
+            x1_i, y1_i, x2_i, y2_i = sofas[i]
+            x1_j, y1_j, x2_j, y2_j = sofas[j]
+
+            min_x_i = min(y1_i, y2_i)
+            max_x_i = max(y1_i, y2_i)
+            min_y_i = min(x1_i, x2_i)
+            max_y_i = max(x1_i, x2_i)
+            
+            min_x_j = min(y1_j, y2_j)
+            max_x_j = max(y1_j, y2_j)
+            min_y_j = min(x1_j, x2_j)
+            max_y_j = max(x1_j, x2_j)
+            
+            
+            
+            is_left = False
+            is_right = False
+            is_top = False
+            is_bottom = False
+            
+            if min_x_i > max_x_j:
+                is_left = True
+            if max_x_i < min_x_j:
+                is_right = True
+            if min_y_i > max_y_j:
+                is_top = True
+            if max_y_i < min_y_j:
+                is_bottom = True
+
+            if is_left:
+                l += 1
+            if is_right:
+                r += 1
+            if is_top:
+                t += 1
+            if is_bottom:
+                b += 1
 
         if l == cnt_l and r == cnt_r and t == cnt_t and b == cnt_b:
             print(i + 1)

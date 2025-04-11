@@ -12,12 +12,14 @@ def solve():
     
     for i in range(n):
         t.append(s[i])
-        while t and t[-1] <= suffix_min[i if i < n-1 else i]:
-            u += t.pop()
+        while len(t) > 0 and t[-1] <= suffix_min[i] if i < n - 1 else len(t) > 0:
+            u += t[-1]
+            t.pop()
             
-    while t:
-        u += t.pop()
-    
+    while len(t) > 0:
+        u += t[-1]
+        t.pop()
+        
     print(u)
 
 solve()

@@ -1,12 +1,16 @@
 n = int(input())
-s = input().strip()
+s = input()
 
-min_operations = n  # Start with the assumption that typing all characters one by one is the minimum
+# Initialize the minimum operations to the length of the string (typing all characters one by one)
+min_operations = n
 
+# Check for all possible prefixes
 for i in range(1, n):
-    if s[:i] == s[i:2*i]:  # Check if the prefix is the same as the next segment
-        # Calculate the operations: type the first i characters, copy, and type the rest
-        operations = i + 1 + (n - 2 * i)
+    # Check if the prefix can be doubled and still fit in the string
+    if s[:i] == s[i:i+i] and i + i <= n:
+        # Calculate operations: type prefix + copy + remaining characters
+        operations = i + 1 + (n - (i + i))
         min_operations = min(min_operations, operations)
 
+# Print the minimum operations found
 print(min_operations)

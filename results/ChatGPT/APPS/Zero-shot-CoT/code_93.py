@@ -1,36 +1,42 @@
 def construct_tree(n, d, k):
-    if d >= n or k < 1 or (d > 2 * (k - 1) + 1):
+    if d > 2 * (k - 1) + 1:
         print("NO")
+        return
+    
+    if d == 1 and n > 1:
+        print("NO")
+        return
+    
+    if n == 1:
+        print("YES")
         return
     
     edges = []
     
-    # Create the main path for the diameter
+    # Create the main path of length d
     for i in range(1, d + 1):
         edges.append((i, i + 1))
     
-    # Keep track of the vertices used
-    used_vertices = d + 1
+    # Now we have d + 1 vertices in the path
+    current_vertex = d + 2
     
-    # Now we need to connect the remaining vertices
-    for i in range(1, d + 1):
-        if used_vertices < n:
-            # Add a new vertex as a child of the current vertex
-            edges.append((i, used_vertices + 1))
-            used_vertices += 1
+    # Attach remaining vertices to the first vertex in the path
+    for i in range(current_vertex, n + 1):
+        edges.append((1, i))
     
-    # If we still have more vertices to add, we must add them
-    for i in range(1, d + 1):
-        while used_vertices < n and edges.count((i, used_vertices + 1)) < k:
-            edges.append((i, used_vertices + 1))
-            used_vertices += 1
+    # Check if any vertex exceeds degree k
+    degree_count = [0] * (n + 1)
+    for u, v in edges:
+        degree_count[u] += 1
+        degree_count[v] += 1
     
-    if used_vertices < n:
+    if any(degree > k for degree in degree_count[1:]):
         print("NO")
-    else:
-        print("YES")
-        for u, v in edges:
-            print(u, v)
+        return
+    
+    print("YES")
+    for u, v in edges:
+        print(u, v)
 
 # Read input
 n, d, k = map(int, input().split())

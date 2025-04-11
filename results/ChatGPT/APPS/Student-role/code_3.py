@@ -1,25 +1,39 @@
 def max_painted_sections(n, q, painters):
-    def painted_length(painters):
-        painted = [0] * (n + 1)
-        for l, r in painters:
-            painted[l] += 1
-            if r + 1 <= n:
-                painted[r + 1] -= 1
-        for i in range(1, n + 1):
-            painted[i] += painted[i - 1]
-        return sum(1 for x in painted[1:] if x > 0)
+    # Create a list to track the coverage of each section
+    coverage = [0] * (n + 1)
 
-    max_sections = 0
+    # Count the coverage for each painter
+    for l, r in painters:
+        for i in range(l, r + 1):
+            coverage[i] += 1
+
+    # Calculate the total painted sections with all painters
+    total_painted = sum(1 for i in range(1, n + 1) if coverage[i] > 0)
+
+    # If we hire q - 2 painters, we need to find the two painters that cover the most sections
+    # and remove their coverage from the total painted sections
+    max_painted = total_painted
+
     for i in range(q):
-        for j in range(i + 1, q):
-            selected_painters = [painters[k] for k in range(q) if k != i and k != j]
-            max_sections = max(max_sections, painted_length(selected_painters))
+        # Temporarily remove the coverage of the i-th painter
+        l_i, r_i = painters[i]
+        for j in range(l_i, r_i + 1):
+            coverage[j] -= 1
 
-    return max_sections
+        # Calculate the new number of painted sections
+        painted_after_removal = sum(1 for k in range(1, n + 1) if coverage[k] > 0)
+        max_painted = max(max_painted, painted_after_removal)
 
-# Input reading
+        # Restore the coverage of the i-th painter
+        for j in range(l_i, r_i + 1):
+            coverage[j] += 1
+
+    return max_painted
+
+# Read input
 n, q = map(int, input().split())
 painters = [tuple(map(int, input().split())) for _ in range(q)]
 
-# Output the result
-print(max_painted_sections(n, q, painters))
+# Get the result and print it
+result = max_painted_sections(n, q, painters)
+print(result)

@@ -1,27 +1,29 @@
 def max_sum_divisible_by_k(n, m, k, matrix):
-    max_elements = m // 2
-    dp = [[0] * k for _ in range(max_elements + 1)]
-    
+    max_choose = m // 2
+    dp = [[-1] * k for _ in range(max_choose + 1)]
+    dp[0][0] = 0
+
     for row in matrix:
         row.sort(reverse=True)
-        new_dp = [dp[:] for dp in dp]
+        current_dp = [dp[i][:] for i in range(max_choose + 1)]
         
-        for count in range(max_elements + 1):
-            for j in range(k):
-                if dp[count][j] > 0 or count == 0:  # Account for the initial 0 sum
-                    for x in range(1, min(max_elements - count, len(row)) + 1):
-                        sum_selected = sum(row[:x])
-                        new_remainder = (j + sum_selected) % k
-                        new_dp[count + x][new_remainder] = max(new_dp[count + x][new_remainder], dp[count][j] + sum_selected)
+        for count in range(max_choose + 1):
+            for j in range(min(count, len(row)) + 1):
+                if j > 0:
+                    new_sum = sum(row[:j])
+                    for mod in range(k):
+                        if current_dp[count - j][mod] != -1:
+                            new_mod = (mod + new_sum) % k
+                            new_value = current_dp[count - j][mod] + new_sum
+                            current_dp[count][new_mod] = max(current_dp[count][new_mod], new_value)
         
-        dp = new_dp
-    
-    return max(dp[count][0] for count in range(max_elements + 1))
+        dp = current_dp
 
-# Input handling
+    return max(dp[i][0] for i in range(max_choose + 1))
+
+# Input reading
 n, m, k = map(int, input().split())
 matrix = [list(map(int, input().split())) for _ in range(n)]
 
-# Calculate and print the result
-result = max_sum_divisible_by_k(n, m, k, matrix)
-print(result)
+# Output the result
+print(max_sum_divisible_by_k(n, m, k, matrix))

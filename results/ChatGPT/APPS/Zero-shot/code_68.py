@@ -1,38 +1,40 @@
-def minimum_cost_to_obtain_set(n, k, s):
-    # Count the number of unique subsequences of the string s
-    unique_chars = set(s)
-    unique_count = len(unique_chars)
-
-    # Calculate the maximum number of unique subsequences
-    max_unique_subsequences = (1 << unique_count) - 1  # 2^unique_count - 1
-    if k > max_unique_subsequences:
-        return -1
-
-    # Generate all subsequences
-    subsequences = set()
-    for i in range(1 << n):
-        subsequence = []
-        for j in range(n):
-            if i & (1 << j):
-                subsequence.append(s[j])
-        subsequences.add(''.join(subsequence))
-
-    subsequences = list(subsequences)
-    subsequences.sort(key=len)  # Sort by length
-
+def min_cost_to_obtain_set(n, k, s):
+    from collections import defaultdict
+    
+    # Count the frequency of each character in the string
+    freq = defaultdict(int)
+    for char in s:
+        freq[char] += 1
+    
+    # Calculate the number of unique subsequences we can generate
+    unique_subsequences = 0
     total_cost = 0
-    for i in range(k):
-        if i < len(subsequences):
-            total_cost += n - len(subsequences[i])
-        else:
-            return -1
+    costs = []
+    
+    # Generate subsequences and their costs
+    for length in range(1, n + 1):
+        # For each unique character, we can create subsequences of this length
+        for char, count in freq.items():
+            if count >= length:
+                # The number of ways to choose 'length' characters from 'count' is C(count, length)
+                # This is equivalent to the number of unique subsequences of this length
+                unique_subsequences += 1
+                costs.append(n - length)  # Cost of adding this subsequence
+    
+    # If we can't generate enough unique subsequences
+    if unique_subsequences < k:
+        return -1
+    
+    # Sort costs to minimize total cost
+    costs.sort()
+    
+    # Calculate the minimum total cost to obtain k unique subsequences
+    return sum(costs[:k])
 
-    return total_cost
-
-# Input handling
+# Read input
 n, k = map(int, input().split())
 s = input().strip()
 
-# Calculate the result and print it
-result = minimum_cost_to_obtain_set(n, k, s)
+# Get the result and print it
+result = min_cost_to_obtain_set(n, k, s)
 print(result)

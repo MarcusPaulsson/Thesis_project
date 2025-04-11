@@ -9,7 +9,7 @@ def solve():
     for i in range(1, n):
         found = False
         for j in range(i):
-            if strings[i-1] in strings[i]:
+            if strings[j] in strings[i]:
                 found = True
                 break
         if not found:

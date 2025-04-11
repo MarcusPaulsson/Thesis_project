@@ -1,21 +1,27 @@
 def assign_gifts(n, f):
-    result = f[:]  # Create a copy of the input list to store results
-    givers = set(range(1, n + 1)) - set(f)  # Friends who want to give gifts (0 in f)
-    receivers = [i + 1 for i in range(n) if result[i] == 0]  # Friends who need to assign gifts
+    # Identify givers and receivers
+    givers = set(range(1, n + 1)) - set(f)  # Friends who have not been assigned a gift
+    receivers = {gift for gift in f if gift != 0}  # Friends who are already assigned a gift
 
-    # Assign gifts to receivers
-    for receiver in receivers:
-        # Find a giver that is not the same as the receiver
+    # Prepare to fill in the zeros
+    result = f[:]  # Copy the original list to result
+    zero_indices = [i for i in range(n) if f[i] == 0]  # Indices of friends who have not chosen a gift
+
+    # Assign gifts to friends with f_i = 0
+    for i in zero_indices:
         for giver in givers:
-            if giver != receiver:
-                result[receiver - 1] = giver  # Assign the gift
-                givers.remove(giver)  # Remove the assigned giver from the pool
+            if giver != i + 1:  # Ensure the giver does not give to themselves
+                result[i] = giver
+                givers.remove(giver)  # Remove the giver from the available set
+                receivers.add(giver)  # Add the giver to the receivers
                 break
 
     return result
 
-# Example of usage
+# Input reading
 n = int(input())
 f = list(map(int, input().split()))
+
+# Get the result and print it
 result = assign_gifts(n, f)
 print(' '.join(map(str, result)))

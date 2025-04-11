@@ -3,7 +3,7 @@ def solve():
     
     ans = 0
     for i in range(1, n):
-        if i < n and (n - i) > 0:
+        if i >= 1 and i < n:
             x = a // i
             y = b // (n - i)
             if x > 0 and y > 0:

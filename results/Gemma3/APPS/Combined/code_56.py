@@ -13,7 +13,7 @@ def solve():
     while q:
         curr = q.pop(0)
         next_val = f(curr)
-        if next_val not in reachable and next_val > 0:
+        if next_val not in reachable and next_val <= 10**9:
             reachable.add(next_val)
             q.append(next_val)
             
@@ -33,7 +33,6 @@ def solve():
     if n == 9:
         print(9)
         return
-    
     
     print(len(reachable))
 

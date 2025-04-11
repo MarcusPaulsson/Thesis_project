@@ -6,26 +6,27 @@ def solve():
     dp[0][0] = 1
 
     for i in range(1, n + 1):
-        for j in range(i + 1):
-            dp[i][0] = 1
-            if j > 0:
-                dp[i][j] = dp[i - 1][j] + dp[i - 1][j - 1]
-            else:
-                dp[i][j] = dp[i - 1][j]
+        dp[i][0] = 1
+        for j in range(1, i + 1):
+            dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j]
 
-            dp[i][j] = min(dp[i][j], k)
+    total_subsequences = sum(dp[n])
+    
+    if k > total_subsequences:
+        print("-1")
+        return
 
-    total_cost = 0
+    cost = 0
     for length in range(n, -1, -1):
-        take = min(k, dp[n][length])
-        total_cost += (n - length) * take
+        num_subsequences = dp[n][length]
+        
+        take = min(k, num_subsequences)
+        cost += (n - length) * take
         k -= take
-
+        
         if k == 0:
-            print(total_cost)
-            return
+            break
 
-    print("-1")
-
+    print(cost)
 
 solve()

@@ -1,18 +1,19 @@
 def count_cyclic_strings(n, s):
     from itertools import product
-
-    def is_valid_cyclic(t):
-        # Check if s is a substring in any cyclic shift of t
-        doubled_t = t + t
-        return s in doubled_t
-
+    
+    m = len(s)
+    total_count = 0
+    seen = set()
+    
     # Generate all binary strings of length n
-    all_binary_strings = [''.join(p) for p in product('01', repeat=n)]
+    for bits in product('01', repeat=n):
+        t = ''.join(bits)
+        # Check if s is a substring in any cyclic shift of t
+        if any(s in t[i:] + t[:i] for i in range(n)):
+            # Add to seen to avoid duplicates
+            seen.add(t)
     
-    # Count valid cyclic strings
-    valid_count = sum(1 for t in all_binary_strings if is_valid_cyclic(t))
-    
-    return valid_count
+    return len(seen)
 
 # Input reading
 n = int(input().strip())

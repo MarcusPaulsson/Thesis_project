@@ -1,32 +1,42 @@
+from collections import Counter
+from math import comb
+
 def min_cost_to_obtain_set(n, k, s):
-    # To store unique subsequences and their costs
-    unique_subsequences = set()
-    total_cost = 0
+    freq = Counter(s)
     
-    # Generate all possible subsequences using a bitmask approach
-    for i in range(1 << n):  # 2^n possible subsequences
-        subsequence = []
-        for j in range(n):
-            if i & (1 << j):
-                subsequence.append(s[j])
-        subsequence_str = ''.join(subsequence)
-        
-        # Add unique subsequences
-        if subsequence_str not in unique_subsequences:
-            unique_subsequences.add(subsequence_str)
-            total_cost += n - len(subsequence_str)  # Calculate cost of the subsequence
-            
-            # Stop if we have reached the required number of unique subsequences
-            if len(unique_subsequences) == k:
-                break
-
-    # Check if we have enough unique subsequences
-    if len(unique_subsequences) < k:
+    # Calculate the number of unique subsequences we can generate
+    unique_subsequences = 0
+    costs = []
+    
+    # Generate all possible subsequences and their costs
+    for length in range(1, n + 1):
+        subseq_count = sum(comb(freq[char], length) for char in freq)
+        if subseq_count > 0:
+            unique_subsequences += subseq_count
+            costs.append((length, subseq_count * (n - length)))
+    
+    # If we cannot generate enough unique subsequences
+    if unique_subsequences < k:
         return -1
-
+    
+    # Sort costs by length
+    costs.sort()
+    
+    # Calculate the minimum cost to obtain k unique subsequences
+    total_cost = 0
+    remaining_k = k
+    
+    for length, cost in costs:
+        if remaining_k <= 0:
+            break
+        # Calculate how many we can take from this length
+        take = min(remaining_k, cost // (n - length))
+        total_cost += take * (n - length)
+        remaining_k -= take
+    
     return total_cost
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 s = input().strip()
 

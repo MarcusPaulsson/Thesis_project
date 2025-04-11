@@ -6,34 +6,34 @@ def solve():
 
     dp = {}
 
-    def get_max_sum(row_idx, current_sum):
+    def get_dp(row_idx, total_sum_mod_k):
+        if (row_idx, total_sum_mod_k) in dp:
+            return dp[(row_idx, total_sum_mod_k)]
+
         if row_idx == n:
-            if current_sum % k == 0:
-                return current_sum
+            if total_sum_mod_k == 0:
+                return 0
             else:
-                return -float('inf')
+                return float('-inf')
 
-        if (row_idx, current_sum % k) in dp:
-            return dp[(row_idx, current_sum % k)]
+        max_sum = float('-inf')
+        
+        # Option 1: Don't pick any elements from the current row
+        max_sum = max(max_sum, get_dp(row_idx + 1, total_sum_mod_k))
 
+        # Option 2: Pick some elements from the current row
+        row = a[row_idx]
         max_elements = m // 2
-        max_sum_for_row = -float('inf')
+        
+        for num_elements in range(1, max_elements + 1):
+            for combination in combinations(row, num_elements):
+                current_sum = sum(combination)
+                max_sum = max(max_sum, current_sum + get_dp(row_idx + 1, (total_sum_mod_k + current_sum) % k))
 
-        for i in range(1 << m):
-            count = 0
-            row_sum = 0
-            for j in range(m):
-                if (i >> j) & 1:
-                    count += 1
-                    row_sum += a[row_idx][j]
+        dp[(row_idx, total_sum_mod_k)] = max_sum
+        return max_sum
 
-            if count <= max_elements:
-                max_sum_for_row = max(max_sum_for_row, get_max_sum(row_idx + 1, current_sum + row_sum))
-
-        dp[(row_idx, current_sum % k)] = max_sum_for_row
-        return max_sum_for_row
-
-    result = get_max_sum(0, 0)
-    print(result)
+    from itertools import combinations
+    print(get_dp(0, 0))
 
 solve()

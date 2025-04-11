@@ -4,10 +4,11 @@ def solve():
     t = []
     u = ""
     
-    suffix_min = [""] * (n + 1)
-    suffix_min[n] = chr(ord('z') + 1)
+    suffix_min = [0] * (n + 1)
+    suffix_min[n] = 'z'
     for i in range(n - 1, -1, -1):
         suffix_min[i] = min(s[i], suffix_min[i+1])
+        
     
     for i in range(n):
         while t and t[-1] <= suffix_min[i]:

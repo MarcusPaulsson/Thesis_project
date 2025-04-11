@@ -2,13 +2,10 @@ n, x, y = map(int, input().split())
 number = input().strip()
 
 # We need to check the last x digits of the number
-target_remainder = ['0'] * x
-target_remainder[y] = '1'  # We want the y-th position to be '1'
+target_remainder = '0' * (x - y - 1) + '1' + '0' * y  # This is the desired pattern
+current_remainder = number[-x:]  # The last x digits of the number
 
 # Count the number of changes needed
-changes_needed = 0
-for i in range(x):
-    if number[n - 1 - i] != target_remainder[x - 1 - i]:
-        changes_needed += 1
+operations = sum(1 for i in range(x) if current_remainder[i] != target_remainder[i])
 
-print(changes_needed)
+print(operations)

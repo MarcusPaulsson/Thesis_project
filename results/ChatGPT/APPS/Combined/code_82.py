@@ -18,6 +18,5 @@ def max_problems_solved(n, k, difficulties):
 n, k = map(int, input().split())
 difficulties = list(map(int, input().split()))
 
-# Get and print the result
-result = max_problems_solved(n, k, difficulties)
-print(result)
+# Output the result
+print(max_problems_solved(n, k, difficulties))

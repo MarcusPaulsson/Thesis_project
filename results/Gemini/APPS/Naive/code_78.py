@@ -2,8 +2,7 @@ def solve():
     n = int(input())
     s = input()
     mod = 10**9 + 7
-    len_s = len(s)
-
+    
     def is_regular(seq):
         balance = 0
         for char in seq:
@@ -15,38 +14,25 @@ def solve():
                 return False
         return balance == 0
 
-    def contains_substring(seq, sub):
-        return sub in seq
+    def count_regular_sequences(n, s):
+        count = 0
+        
+        def generate_sequences(current_seq, open_count, close_count):
+            nonlocal count
+            
+            if len(current_seq) == 2 * n:
+                if is_regular(current_seq) and s in current_seq:
+                    count = (count + 1) % mod
+                return
+            
+            if open_count < n:
+                generate_sequences(current_seq + '(', open_count + 1, close_count)
+            if close_count < open_count:
+                generate_sequences(current_seq + ')', open_count, close_count + 1)
 
-    count = 0
-    
-    def generate_sequences(length):
-      sequences = []
-      def backtrack(current_sequence, open_count, close_count):
-          if len(current_sequence) == length:
-              sequences.append("".join(current_sequence))
-              return
-          
-          if open_count < length // 2:
-              current_sequence.append("(")
-              backtrack(current_sequence, open_count + 1, close_count)
-              current_sequence.pop()
-          
-          if close_count < open_count:
-              current_sequence.append(")")
-              backtrack(current_sequence, open_count, close_count + 1)
-              current_sequence.pop()
-      
-      backtrack([], 0, 0)
-      return sequences
+        generate_sequences("", 0, 0)
+        return count
 
-
-    all_sequences = generate_sequences(2 * n)
-
-    for seq in all_sequences:
-        if is_regular(seq) and contains_substring(seq, s):
-            count = (count + 1) % mod
-
-    print(count)
+    print(count_regular_sequences(n, s))
 
 solve()

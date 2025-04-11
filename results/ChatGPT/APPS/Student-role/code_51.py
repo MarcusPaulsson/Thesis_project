@@ -2,35 +2,24 @@ from collections import Counter
 import sys
 import math
 
-n = int(input())
-divisors = list(map(int, input().split()))
+def find_x_y(divisors):
+    count = Counter(divisors)
+    x, y = 1, 1
+    
+    for d in count:
+        if count[d] == 2:
+            x *= d
+            y *= d
+        elif count[d] == 1:
+            if x == 1:
+                x *= d
+            else:
+                y *= d
 
-# Count the occurrences of each divisor
-count = Counter(divisors)
+    return x, y
 
-# Get the unique divisors
-unique_divisors = list(count.keys())
+n = int(input().strip())
+divisors = list(map(int, input().strip().split()))
 
-# Initialize x and y
-x = 1
-y = 1
-
-# Calculate x and y using the count of divisors
-for d in unique_divisors:
-    if count[d] == 1:
-        # d is a divisor of only one of the two numbers
-        if x == 1:
-            x = d
-        else:
-            y = d
-    elif count[d] == 2:
-        # d is a divisor of both numbers
-        x *= d
-        y *= d
-
-# Adjust x and y if they are not set correctly
-if x == 1 and y == 1:
-    x = unique_divisors[0]
-    y = unique_divisors[1]
-
+x, y = find_x_y(divisors)
 print(x, y)

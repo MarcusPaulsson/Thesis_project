@@ -1,35 +1,35 @@
 def rename_files(n, files):
     examples = []
     regulars = []
-
-    # Split files into examples and regular tests
+    
+    # Separate files into examples and regular tests
     for name, type_ in files:
         if type_ == '1':
             examples.append(name)
         else:
             regulars.append(name)
-
-    # Prepare the result
+    
+    # Prepare the output script
     moves = []
     
-    # Rename examples to 1, 2, ..., e
-    for i, example_name in enumerate(examples):
+    # Rename example files to 1, 2, ..., e
+    for i, example in enumerate(examples):
         new_name = str(i + 1)
-        moves.append(f"move {example_name} {new_name}")
-
-    # Rename regular tests to e + 1, e + 2, ..., n
-    e = len(examples)
-    for i, regular_name in enumerate(regulars):
-        new_name = str(e + i + 1)
-        current_name = regular_name if i == 0 else str(e + i)
-        moves.append(f"move {current_name} {new_name}")
-
-    # Output results
+        moves.append(f"move {example} {new_name}")
+    
+    # Rename regular files to e + 1, e + 2, ..., n
+    for i, regular in enumerate(regulars):
+        new_name = str(len(examples) + i + 1)
+        moves.append(f"move {regular} {new_name}")
+    
+    # Output the results
     print(len(moves))
-    print("\n".join(moves))
+    for move in moves:
+        print(move)
 
 # Read input
-n = int(input().strip())
-files = [input().strip().split() for _ in range(n)]
+n = int(input())
+files = [input().split() for _ in range(n)]
 
+# Call the function
 rename_files(n, files)

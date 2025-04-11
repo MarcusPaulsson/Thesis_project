@@ -1,22 +1,18 @@
-def has_palindromic_subsequence(t, test_cases):
+def has_palindrome_subsequence(test_cases):
     results = []
-    
     for n, a in test_cases:
         found = False
-        # Check for any repeated element that is at least 2 indices apart
-        seen = {}
+        # Use a dictionary to track the first occurrence of each number
+        first_occurrence = {}
         for i in range(n):
-            if a[i] in seen:
-                if i - seen[a[i]] >= 2:
+            if a[i] in first_occurrence:
+                # If we find the same number again, we can form a palindrome
+                if i - first_occurrence[a[i]] >= 2:
                     found = True
                     break
-            seen[a[i]] = i
-        
-        if found:
-            results.append("YES")
-        else:
-            results.append("NO")
-    
+            else:
+                first_occurrence[a[i]] = i
+        results.append("YES" if found else "NO")
     return results
 
 # Read input
@@ -28,8 +24,8 @@ for _ in range(t):
     test_cases.append((n, a))
 
 # Get results
-results = has_palindromic_subsequence(t, test_cases)
+results = has_palindrome_subsequence(test_cases)
 
-# Output results
+# Print results
 for result in results:
     print(result)

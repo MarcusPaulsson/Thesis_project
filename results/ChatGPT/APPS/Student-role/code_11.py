@@ -1,16 +1,14 @@
+def max_chocolates(n, a, b, p, q):
+    count_a = n // a
+    count_b = n // b
+    count_ab = n // (a * b)  # Count of tiles that are divisible by both a and b
+
+    # Calculate chocolates if we paint common tiles Red or Blue
+    chocolates_if_red = count_a * p + (count_b - count_ab) * q
+    chocolates_if_blue = count_b * q + (count_a - count_ab) * p
+
+    return max(chocolates_if_red, chocolates_if_blue)
+
+# Input
 n, a, b, p, q = map(int, input().split())
-
-# Calculate the number of tiles painted Red and Blue
-red_count = n // a
-blue_count = n // b
-both_count = n // (a * b)
-
-# Tiles painted Red and not Blue
-only_red_count = red_count - both_count
-# Tiles painted Blue and not Red
-only_blue_count = blue_count - both_count
-
-# Calculate total chocolates
-total_chocolates = (only_red_count * p) + (only_blue_count * q) + (both_count * max(p, q))
-
-print(total_chocolates)
+print(max_chocolates(n, a, b, p, q))

@@ -13,16 +13,21 @@ def solve():
             if j < n:
                 temp_s += s[j:]
             
-            k = 0
-            l = 0
-            while k < len(temp_s) and l < m:
-                if temp_s[k] == t[l]:
-                    l += 1
-                k += 1
             
-            if l == m:
+            ti = 0
+            tsi = 0
+            
+            possible = True
+            while ti < m and tsi < len(temp_s):
+                if t[ti] == temp_s[tsi]:
+                    ti += 1
+                    tsi += 1
+                else:
+                    tsi += 1
+            
+            if ti == m:
                 ans = max(ans, j - i)
-    
+                
     print(ans)
 
 solve()

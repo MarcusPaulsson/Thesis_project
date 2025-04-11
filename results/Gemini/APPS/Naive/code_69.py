@@ -13,33 +13,52 @@ def solve():
 
     def find_spanning_tree(edges, n, d):
         import itertools
-        for r in range(n, len(edges) + 1):
-            for combination in itertools.combinations(edges, n - 1):
-                
-                parent = list(range(n + 1))
+        for i in range(1 << m):
+            tree_edges = []
+            for j in range(m):
+                if (i >> j) & 1:
+                    tree_edges.append(edges[j])
 
-                def find(i):
-                    if parent[i] == i:
-                        return i
-                    parent[i] = find(parent[i])
-                    return parent[i]
+            if len(tree_edges) != n - 1:
+                continue
 
-                def union(i, j):
-                    root_i = find(i)
-                    root_j = find(j)
-                    if root_i != root_j:
-                        parent[root_i] = root_j
-                        return True
-                    return False
-                
-                num_edges = 0
-                for u, v in combination:
-                    if union(u, v):
-                        num_edges += 1
-                
-                if num_edges == n - 1:
-                    if check_degree(combination) == d:
-                        return combination
+            parent = list(range(n + 1))
+
+            def find(i):
+                if parent[i] == i:
+                    return i
+                parent[i] = find(parent[i])
+                return parent[i]
+
+            def union(i, j):
+                root_i = find(i)
+                root_j = find(j)
+                if root_i != root_j:
+                    parent[root_i] = root_j
+                    return True
+                return False
+
+            num_edges_added = 0
+            for u, v in tree_edges:
+                if union(u, v):
+                    num_edges_added += 1
+
+            if num_edges_added != n - 1:
+                continue
+            
+            is_connected = True
+            root = find(1)
+            for k in range(2, n + 1):
+                if find(k) != root:
+                    is_connected = False
+                    break
+            
+            if not is_connected:
+                continue
+
+            if check_degree(tree_edges) == d:
+                return tree_edges
+
         return None
 
     spanning_tree = find_spanning_tree(edges, n, d)

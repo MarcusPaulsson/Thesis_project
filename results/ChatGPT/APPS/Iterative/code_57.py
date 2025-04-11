@@ -1,31 +1,22 @@
-def fill_gifts(n, f):
-    # Determine the set of givers and receivers
-    givers = set(range(1, n + 1)) - set(f[i] for i in range(n) if f[i] != 0)
-    receivers = [i + 1 for i in range(n) if f[i] == 0]
-
-    # Create a mapping of known gift givers
-    gift_map = {i + 1: f[i] for i in range(n) if f[i] != 0}
-
-    # Fill in the undecided gifts
-    undecided_givers = list(givers)
-    idx = 0
-
-    for i in range(n):
-        if f[i] == 0:
-            # Find a receiver who is not the current giver
-            while idx < len(undecided_givers) and undecided_givers[idx] == (i + 1):
-                idx += 1
-                
-            if idx < len(undecided_givers):
-                f[i] = undecided_givers[idx]
-                idx += 1
-            
-    return f
-
-# Input reading
 n = int(input())
 f = list(map(int, input().split()))
 
-# Fill gifts and output the result
-result = fill_gifts(n, f)
-print(" ".join(map(str, result)))
+# Determine the friends who want to give gifts (those who have f_i != 0)
+givers = set(range(1, n + 1)) - set(f)
+# Determine the friends who are already assigned to receive gifts
+receivers = set(f) - {0}
+
+# Convert givers to a list for easier manipulation
+givers = list(givers)
+
+# Fill the unknown values (f_i = 0)
+for i in range(n):
+    if f[i] == 0:
+        # Find a giver who hasn't been assigned yet
+        for giver in givers:
+            if giver != i + 1 and giver not in receivers:
+                f[i] = giver
+                receivers.add(giver)
+                break
+
+print(' '.join(map(str, f)))

@@ -1,53 +1,45 @@
 def solve():
     n = int(input())
     f = list(map(int, input().split()))
+
+    assigned = [False] * (n + 1)
+    for i in range(n):
+        if f[i] != 0:
+            assigned[f[i]] = True
     
-    f_copy = f[:]
-    
-    assigned = [False] * n
-    for val in f:
-        if val != 0:
-            assigned[val-1] = True
-    
-    unassigned = []
+    unassigned_givers = []
     for i in range(n):
         if f[i] == 0:
-            unassigned.append(i)
+            unassigned_givers.append(i)
     
-    available = []
-    for i in range(n):
+    unassigned_receivers = []
+    for i in range(1, n + 1):
         if not assigned[i]:
-            available.append(i)
+            unassigned_receivers.append(i)
     
-    for i in range(len(unassigned)):
-        f[unassigned[i]] = available[i] + 1
+    for i in range(len(unassigned_givers)):
+        giver_index = unassigned_givers[i]
         
-    
-    
-    conflicts = []
-    for i in range(n):
-        if f[i] == i+1:
-            conflicts.append(i)
-            
-    
-    if len(conflicts) > 0:
-        if len(conflicts) == 1:
-            
-            for i in range(n):
-              if f_copy[i] == 0 and i != conflicts[0]:
-                temp = f[conflicts[0]]
-                f[conflicts[0]] = f[i]
-                f[i] = temp
-                break
-        else:
-            for i in range(0,len(conflicts)):
-                temp = f[conflicts[i]]
+        receiver = unassigned_receivers[i]
+        
+        if receiver == giver_index + 1:
+            if i + 1 < len(unassigned_givers):
+                next_receiver = unassigned_receivers[i+1]
+                unassigned_receivers[i] = next_receiver
+                unassigned_receivers[i+1] = receiver
+                receiver = unassigned_receivers[i]
+            else:
                 
-                f[conflicts[i]] = f[conflicts[(i+1)%len(conflicts)]]
-                f[conflicts[(i+1)%len(conflicts)]] = temp
-                    
-                    
-                
+                for j in range(len(unassigned_receivers)):
+                    if unassigned_receivers[j] != giver_index+1 and unassigned_receivers[j] != receiver:
+                        
+                        unassigned_receivers[i] = unassigned_receivers[j]
+                        unassigned_receivers[j] = receiver
+                        receiver = unassigned_receivers[i]
+                        break
+        
+        f[giver_index] = receiver
+
     print(*f)
 
 solve()

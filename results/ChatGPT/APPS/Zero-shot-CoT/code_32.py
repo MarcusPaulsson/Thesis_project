@@ -1,37 +1,29 @@
 n = int(input())
-position = 0  # position relative to the North Pole (0 is North Pole, 20000 is South Pole)
+current_position = 0  # Position in kilometers from the North Pole (0 to 20000)
+valid = True
 
 for _ in range(n):
-    t_i, dir_i = input().split()
-    t_i = int(t_i)
+    t, direction = input().split()
+    t = int(t)
 
-    if position == 0:  # If at North Pole
-        if dir_i == "South":
-            position += t_i
-        else:
-            print("NO")
-            exit()
-    elif position == 20000:  # If at South Pole
-        if dir_i == "North":
-            position -= t_i
-        else:
-            print("NO")
-            exit()
-    else:  # If somewhere in between
-        if dir_i == "South":
-            position += t_i
-        elif dir_i == "North":
-            position -= t_i
-        elif dir_i == "East" or dir_i == "West":
-            continue  # East and West do not affect the position
+    if direction == "South":
+        if current_position == 0:  # At North Pole
+            valid = False
+        current_position += t
+    elif direction == "North":
+        if current_position == 20000:  # At South Pole
+            valid = False
+        current_position -= t
+    elif direction in ["West", "East"]:
+        # Moving West or East does not change the position in terms of North/South
+        pass
 
-    # Check for invalid movement
-    if position < 0 or position > 20000:
-        print("NO")
-        exit()
+    # Check if current position is valid
+    if current_position < 0 or current_position > 20000:
+        valid = False
 
-# Check if ended at North Pole
-if position == 0:
-    print("YES")
-else:
-    print("NO")
+# Final check if we end at the North Pole
+if current_position != 0:
+    valid = False
+
+print("YES" if valid else "NO")

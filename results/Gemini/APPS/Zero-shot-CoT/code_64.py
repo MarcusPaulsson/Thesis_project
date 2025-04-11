@@ -9,29 +9,33 @@ def solve():
   exam_days = {}
   for s, d, c, i in exams:
     exam_days[d - 1] = i + m
-    schedule[d - 1] = i + m
-  
-  exam_preps = [0] * m
+
+  for day in exam_days:
+    schedule[day] = exam_days[day]
+
+  preparation_counts = [0] * m
   
   for day in range(n):
-    if schedule[day] == 0:
-      best_exam = -1
-      for s, d, c, i in exams:
-        if s <= day + 1 < d and exam_preps[i - 1] < c:
+    if schedule[day] != 0:
+      continue
+
+    best_exam = -1
+    for i, (s, d, c, exam_num) in enumerate(exams):
+      if s - 1 <= day < d - 1 and preparation_counts[i] < c:
           if best_exam == -1:
-            best_exam = i
-          else:
-            s_best, d_best, c_best, i_best = exams[best_exam - 1]
-            if d < d_best:
               best_exam = i
-      
-      if best_exam != -1:
-        schedule[day] = best_exam
-        exam_preps[best_exam - 1] += 1
-  
+          else:
+              s_best, d_best, c_best, exam_num_best = exams[best_exam]
+              if d > d_best:
+                  best_exam = i
+
+    if best_exam != -1:
+      schedule[day] = exams[best_exam][3]
+      preparation_counts[best_exam] += 1
+
   for i in range(m):
-    if exam_preps[exams[i][3] - 1] != exams[i][2]:
-      print("-1")
+    if exams[i][2] != preparation_counts[i]:
+      print(-1)
       return
   
   print(*schedule)

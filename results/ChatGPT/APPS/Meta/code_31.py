@@ -3,31 +3,45 @@ def gcd(a, b):
         a, b = b, a % b
     return a
 
+def mod_inverse(a, m):
+    m0, x0, x1 = m, 0, 1
+    if m == 1:
+        return 0
+    while a > 1:
+        q = a // m
+        m, a = a % m, m
+        x0, x1 = x1 - q * x0, x0
+    if x1 < 0:
+        x1 += m0
+    return x1
+
 def birthday_paradox(n, k):
     MOD = 1000003
-    
-    if k > (1 << n):
-        return (1, 1)
+    days = 1 << n  # 2^n
+    if k > days:
+        return 1, 1  # Guaranteed collision
 
-    total_outcomes = (1 << (n * k))
-    favorable_outcomes = 1
-
+    # Calculate the probability of no collision
+    numerator = 1
+    denominator = 1
     for i in range(k):
-        favorable_outcomes *= (1 << n) - i
-        favorable_outcomes //= (1 << n)
+        numerator *= (days - i)
+        denominator *= days
+        numerator %= MOD
+        denominator %= MOD
 
-    A = total_outcomes - favorable_outcomes
-    B = total_outcomes
+    # Probability of at least one collision
+    A = (denominator - numerator) % MOD
+    B = denominator
 
-    g = gcd(A, B)
-    A //= g
-    B //= g
+    # Reduce A/B to irreducible form
+    common_gcd = gcd(A, B)
+    A //= common_gcd
+    B //= common_gcd
 
-    A %= MOD
-    B %= MOD
+    return A % MOD, B % MOD
 
-    return (A, B)
-
+# Input reading
 n, k = map(int, input().split())
 result = birthday_paradox(n, k)
 print(result[0], result[1])

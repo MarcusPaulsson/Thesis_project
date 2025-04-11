@@ -3,6 +3,7 @@ def solve():
     s = input()
     
     count = 0
+    
     for i in range(2**n):
         binary_string = bin(i)[2:].zfill(n)
         
@@ -15,7 +16,7 @@ def solve():
         
         if is_substring:
             count += 1
-    
+            
     print(count)
 
 solve()

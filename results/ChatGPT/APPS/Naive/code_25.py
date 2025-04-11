@@ -1,26 +1,30 @@
 def create_symmetric_matrix(n, k):
-    # Check if it's possible to place k ones
-    max_ones = n * (n + 1) // 2
-    if k > max_ones:
+    # Check if k is valid for a symmetric matrix
+    if k > n * (n + 1) // 2:
         return -1
-
+    
     # Initialize the matrix with zeros
     matrix = [[0] * n for _ in range(n)]
-
-    # Fill the matrix symmetrically and lexicographically maximal
+    
+    # Fill the matrix to make it lexicographically maximal
     for i in range(n):
-        if k <= 0:
-            break
         for j in range(i, n):
             if k > 0:
-                matrix[i][j] = 1
-                if i != j:
+                if i == j:  # Diagonal element
+                    matrix[i][j] = 1
+                    k -= 1
+                elif k >= 2:  # Symmetric pair
+                    matrix[i][j] = 1
                     matrix[j][i] = 1
-                k -= 2 if i != j else 1
-
+                    k -= 2
+    
+    # If there are still ones left to place, return -1
+    if k > 0:
+        return -1
+    
     return matrix
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 result = create_symmetric_matrix(n, k)
 

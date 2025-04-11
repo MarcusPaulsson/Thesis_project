@@ -1,64 +1,43 @@
+from collections import Counter
+
 def solve():
     a = input()
     b = input()
     
-    a_digits = sorted(list(a), reverse=True)
-    b_digits = list(b)
+    a_len = len(a)
+    b_len = len(b)
     
-    if len(a) < len(b):
-        print("".join(a_digits))
+    if a_len > b_len:
+        print("".join(sorted(a, reverse=True)))
         return
     
-    def find_max(index, current_digits, current_num, used):
-        if index == len(a):
-            return "".join(current_num)
+    a_counts = Counter(a)
+    
+    def find_max(index, current_num, remaining_counts, is_smaller):
+        if index == a_len:
+            return current_num
         
-        best_num = None
+        best_num = ""
         
-        available_digits = []
-        for i in range(len(a_digits)):
-            if not used[i]:
-                available_digits.append(a_digits[i])
+        possible_digits = sorted(remaining_counts.keys(), reverse=True)
         
-        available_digits = sorted(available_digits, reverse=True)
-        
-        for digit in available_digits:
-            digit_index = -1
-            for i in range(len(a_digits)):
-                if a_digits[i] == digit and not used[i]:
-                    digit_index = i
-                    break
-            
-            if digit <= b_digits[index]:
-                new_used = used[:]
-                new_used[digit_index] = True
-                new_num = current_num[:]
-                new_num.append(digit)
+        for digit in possible_digits:
+            if is_smaller or digit <= b[index]:
+                new_counts = remaining_counts.copy()
+                new_counts[digit] -= 1
+                if new_counts[digit] == 0:
+                    del new_counts[digit]
                 
-                if digit < b_digits[index]:
-                    remaining_digits = []
-                    for i in range(len(a_digits)):
-                        if not new_used[i]:
-                            remaining_digits.append(a_digits[i])
-                    
-                    new_num.extend(sorted(remaining_digits, reverse=True))
-                    
-                    candidate = "".join(new_num)
-                    if best_num is None or candidate > best_num:
-                        best_num = candidate
-                else:
-                    candidate = find_max(index + 1, a_digits, new_num, new_used)
-                    if candidate is not None and (best_num is None or candidate > best_num):
-                        best_num = candidate
+                new_is_smaller = is_smaller or digit < b[index]
+                
+                temp_num = find_max(index + 1, current_num + digit, new_counts, new_is_smaller)
+                
+                if len(temp_num) == a_len and (best_num == "" or temp_num > best_num):
+                    best_num = temp_num
         
         return best_num
-
-    used = [False] * len(a)
-    result = find_max(0, a_digits, [], used)
     
-    if result is None:
-        print("".join(sorted(list(a), reverse=True)))
-    else:
-      print(result)
+    result = find_max(0, "", a_counts, False)
+    print(result)
 
 solve()

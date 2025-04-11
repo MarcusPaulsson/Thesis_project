@@ -18,10 +18,15 @@ def solve():
     def catalan(n):
         if n == 0:
             return 1
-        c = 1
-        for i in range(n):
-            c = c * (2 * n - i) // (i + 1)
-        return c // (n + 1)
+        
+        dp = [0] * (n + 1)
+        dp[0] = 1
+        
+        for i in range(1, n + 1):
+            for j in range(i):
+                dp[i] = (dp[i] + (dp[j] * dp[i - 1 - j]) % MOD) % MOD
+        
+        return dp[n]
     
     count = 0
     
@@ -29,6 +34,7 @@ def solve():
     
     for seq in itertools.product(['(', ')'], repeat=2 * n):
         seq_str = "".join(seq)
+        
         if is_regular(seq_str) and s in seq_str:
             count = (count + 1) % MOD
             

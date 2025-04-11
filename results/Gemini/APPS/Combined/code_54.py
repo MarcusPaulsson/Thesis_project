@@ -2,32 +2,29 @@ def solve():
     n = int(input())
     a = list(map(int, input().split()))
 
-    if n == 1:
-        print(0)
-        return
+    unique_values = sorted(list(set(a)))
 
-    unique_a = sorted(list(set(a)))
-
-    if len(unique_a) > 3:
+    if len(unique_values) > 3:
         print(-1)
         return
 
-    if len(unique_a) == 1:
+    if len(unique_values) <= 1:
         print(0)
         return
 
-    if len(unique_a) == 2:
-        diff = abs(unique_a[0] - unique_a[1])
+    if len(unique_values) == 2:
+        val1, val2 = unique_values
+        diff = abs(val1 - val2)
         if diff % 2 == 0:
             print(diff // 2)
         else:
             print(diff)
         return
 
-    if len(unique_a) == 3:
-        x, y, z = unique_a
-        if y - x == z - y:
-            print(y - x)
+    if len(unique_values) == 3:
+        val1, val2, val3 = unique_values
+        if val2 - val1 == val3 - val2:
+            print(val2 - val1)
         else:
             print(-1)
         return

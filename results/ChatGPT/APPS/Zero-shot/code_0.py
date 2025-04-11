@@ -1,47 +1,45 @@
-def max_length_accordion(s):
+def max_acordion_length(s):
     n = len(s)
-    left_bracket_index = -1
-    right_bracket_index = -1
-    
+    left_bracket = -1
+    right_bracket = -1
+    colon_count = 0
+    vertical_lines = 0
+
+    # Find the first opening bracket
     for i in range(n):
         if s[i] == '[':
-            left_bracket_index = i
+            left_bracket = i
             break
-            
+
+    # If no opening bracket found
+    if left_bracket == -1:
+        return -1
+
+    # Find the last closing bracket
     for i in range(n - 1, -1, -1):
         if s[i] == ']':
-            right_bracket_index = i
+            right_bracket = i
             break
-            
-    if left_bracket_index == -1 or right_bracket_index == -1 or left_bracket_index >= right_bracket_index:
+
+    # If no closing bracket found
+    if right_bracket == -1 or right_bracket <= left_bracket:
         return -1
-    
-    # Now we need to check for colons and vertical bars between the brackets
-    colon_count = 0
-    pipe_count = 0
-    found_first_colon = False
-    
-    for i in range(left_bracket_index + 1, right_bracket_index):
+
+    # Count colons and vertical lines between the brackets
+    for i in range(left_bracket + 1, right_bracket):
         if s[i] == ':':
-            if not found_first_colon:
-                found_first_colon = True
-                colon_count += 1
-            else:
-                if pipe_count > 0:
-                    # We found the second colon after some pipes
-                    colon_count += 1
-                    break
+            colon_count += 1
         elif s[i] == '|':
-            if found_first_colon:
-                pipe_count += 1
-    
+            vertical_lines += 1
+
+    # We need exactly 2 colons for a valid accordion
     if colon_count < 2:
         return -1
-    
-    # The length of the accordion is the brackets and the colons plus the pipes
-    return 2 + colon_count + pipe_count
+
+    # The maximum length of the accordion
+    return 4 + vertical_lines  # 4 for [::] + vertical lines
 
 # Read input
 s = input().strip()
-# Calculate and print the result
-print(max_length_accordion(s))
+# Output the result
+print(max_acordion_length(s))

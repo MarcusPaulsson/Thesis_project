@@ -2,7 +2,7 @@ def solve():
     x = int(input())
     
     best_num = x
-    best_sum = sum_digits(x)
+    max_sum = sum_digits(x)
     
     s = str(x)
     n = len(s)
@@ -14,14 +14,17 @@ def solve():
         num_str = s[:i] + str(int(s[i]) - 1) + '9' * (n - i - 1)
         num = int(num_str)
         
-        if num > 0:
-            current_sum = sum_digits(num)
-            if current_sum > best_sum:
-                best_sum = current_sum
-                best_num = num
-            elif current_sum == best_sum and num > best_num:
-                best_num = num
-    
+        if num <= 0:
+            continue
+        
+        current_sum = sum_digits(num)
+        
+        if current_sum > max_sum:
+            max_sum = current_sum
+            best_num = num
+        elif current_sum == max_sum and num > best_num:
+            best_num = num
+            
     print(best_num)
 
 def sum_digits(n):

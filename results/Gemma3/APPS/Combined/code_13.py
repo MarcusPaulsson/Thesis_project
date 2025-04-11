@@ -9,8 +9,8 @@ def solve():
     graph = [[] for _ in range(n + 1)]
     
     for i in range(n):
-        if dependencies[i][0] > 0:
-            for dependency in dependencies[i][1:]:
+        if len(dependencies[i]) > 0:
+            for dependency in dependencies[i]:
                 graph[dependency].append(i + 1)
                 in_degree[i + 1] += 1
     
@@ -20,25 +20,22 @@ def solve():
             queue.append(i)
     
     result = []
-    passed_main_courses = set()
+    passed_main = [False] * k
     
     while queue:
-        node = queue.pop(0)
-        result.append(node)
+        course = queue.pop(0)
+        result.append(course)
         
-        if node in main_courses:
-            passed_main_courses.add(node)
+        for i in range(k):
+            if main_courses[i] == course:
+                passed_main[i] = True
         
-        for neighbor in graph[node]:
+        for neighbor in graph[course]:
             in_degree[neighbor] -= 1
             if in_degree[neighbor] == 0:
                 queue.append(neighbor)
     
-    if len(passed_main_courses) != k:
-        print(-1)
-        return
-    
-    if len(result) != n:
+    if not all(passed_main):
         print(-1)
         return
     

@@ -1,40 +1,46 @@
 def solve():
-    n = int(input())
-    f = list(map(int, input().split()))
-
-    assigned = [False] * (n + 1)
-    for i in range(n):
-        if f[i] != 0:
-            assigned[f[i]] = True
-
-    unassigned_givers = []
-    unassigned_receivers = []
-    for i in range(n):
-        if f[i] == 0:
-            unassigned_givers.append(i)
-
-    for i in range(1, n + 1):
-        if not assigned[i]:
-            unassigned_receivers.append(i)
-
+  n = int(input())
+  f = list(map(int, input().split()))
+  
+  givers = [i + 1 for i in range(n)]
+  receivers = [i + 1 for i in range(n)]
+  
+  given = set()
+  
+  for i in range(n):
+    if f[i] != 0:
+      given.add(f[i])
+  
+  not_given = []
+  for i in range(1, n + 1):
+    if i not in given:
+      not_given.append(i)
+      
+  zeros = []
+  for i in range(n):
+    if f[i] == 0:
+      zeros.append(i)
+  
+  
+  for i in range(len(zeros)):
+    idx = zeros[i]
     
-    for i in range(len(unassigned_givers)):
-        f[unassigned_givers[i]] = unassigned_receivers[i]
-
+    candidates = []
+    for val in not_given:
+      if val != idx + 1:
+        candidates.append(val)
     
-    for i in range(n):
-        if f[i] == i + 1:
-            for j in range(n):
-                if f[j] != j + 1 and f[j] != f[i]:
-                    f[i], f[j] = f[j], f[i]
-                    break
-            else:
-                for j in range(n):
-                   if j!=i:
-                       f[i],f[j]=f[j],f[i]
-                       break
-
-
-    print(*f)
+    if not candidates:
+      print("Error: No candidates")
+      return
+    
+    best_candidate = candidates[0]
+    
+    f[idx] = best_candidate
+    not_given.remove(best_candidate)
+  
+  
+  
+  print(*f)
 
 solve()

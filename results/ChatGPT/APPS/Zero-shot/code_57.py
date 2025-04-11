@@ -1,28 +1,32 @@
-def fill_gift_preferences(n, f):
-    # Track who has received a gift
-    gift_received = set(f_i for f_i in f if f_i != 0)
-    
-    # Friends who don't know whom to give the gift to
-    unknown_givers = [i + 1 for i in range(n) if f[i] == 0]
-    
-    # Friends who are not receiving gifts
-    all_friends = set(range(1, n + 1))
-    not_giving_gifts = all_friends - gift_received
-    
-    # Create a list of pairs of unknown givers and not giving gifts
-    result = f[:]
-    
-    for giver in unknown_givers:
-        for receiver in not_giving_gifts:
-            if giver != receiver:  # Ensure no one gives a gift to themselves
-                result[giver - 1] = receiver
-                not_giving_gifts.remove(receiver)  # Remove the receiver from available ones
-                break
+def fill_gift_givers(n, f):
+    # Find the friends who have not been assigned a gift
+    assigned = set(f) - {0}
+    unassigned = [i for i in range(1, n + 1) if i not in assigned]
+    zero_indices = [i for i in range(n) if f[i] == 0]
 
-    print(" ".join(map(str, result)))
+    # Create a result list initialized with the original values
+    result = f[:]
+
+    # Fill in the unassigned values
+    for i in range(len(zero_indices)):
+        # Assign the unassigned friend to the current zero index
+        result[zero_indices[i]] = unassigned[i]
+
+    # Ensure no one gives a gift to themselves
+    for i in range(len(zero_indices)):
+        if result[zero_indices[i]] == zero_indices[i] + 1:
+            # Swap with the next unassigned if possible
+            if i + 1 < len(zero_indices):
+                result[zero_indices[i]], result[zero_indices[i + 1]] = result[zero_indices[i + 1]], result[zero_indices[i]]
+
+    return result
 
 # Input reading
 n = int(input())
 f = list(map(int, input().split()))
 
-fill_gift_preferences(n, f)
+# Get the result
+result = fill_gift_givers(n, f)
+
+# Print the result
+print(' '.join(map(str, result)))

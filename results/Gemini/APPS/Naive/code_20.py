@@ -1,3 +1,6 @@
+def is_palindrome(time_str):
+    return time_str == time_str[::-1]
+
 def solve():
     time_str = input()
     hh = int(time_str[:2])
@@ -5,19 +8,17 @@ def solve():
     
     minutes = 0
     while True:
-        hh_str = str(hh).zfill(2)
-        mm_str = str(mm).zfill(2)
-        
-        if hh_str == mm_str[::-1]:
+        time_str = "{:02d}:{:02d}".format(hh, mm)
+        if is_palindrome(time_str):
             print(minutes)
             return
         
+        minutes += 1
         mm += 1
         if mm == 60:
             mm = 0
             hh += 1
             if hh == 24:
                 hh = 0
-        minutes += 1
 
 solve()

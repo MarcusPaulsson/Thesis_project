@@ -1,29 +1,24 @@
 def can_construct_symmetric_square(t, test_cases):
     results = []
-    
     for case in test_cases:
         n, m, tiles = case
-        if m % 2 != 0:  # m must be even for a symmetric square
+        if m % 2 != 0:
             results.append("NO")
             continue
         
-        # Check for valid pairs
-        valid_pairs = set()
+        # Check for pairs of tiles that can form a symmetric structure
+        tile_set = set()
+        can_form_symmetric = False
+        
         for tile in tiles:
             top_left, top_right = tile[0]
             bottom_left, bottom_right = tile[1]
-            valid_pairs.add((top_right, bottom_left))  # This must match for symmetry
+            tile_set.add((top_left, top_right, bottom_left, bottom_right))
+            # Check for the symmetric counterpart
+            if (top_right, top_left, bottom_right, bottom_left) in tile_set:
+                can_form_symmetric = True
         
-        # We need at least one tile that can form a symmetric pair
-        found_symmetric_pair = False
-        for tile in tiles:
-            top_left, top_right = tile[0]
-            bottom_left, bottom_right = tile[1]
-            if (top_left, bottom_right) in valid_pairs:
-                found_symmetric_pair = True
-                break
-        
-        results.append("YES" if found_symmetric_pair else "NO")
+        results.append("YES" if can_form_symmetric else "NO")
     
     return results
 
@@ -33,10 +28,10 @@ test_cases = []
 for _ in range(t):
     n, m = map(int, input().split())
     tiles = []
-    for __ in range(n):
-        tile_top = list(map(int, input().split()))
-        tile_bottom = list(map(int, input().split()))
-        tiles.append((tile_top, tile_bottom))
+    for _ in range(n):
+        top = tuple(map(int, input().split()))
+        bottom = tuple(map(int, input().split()))
+        tiles.append((top, bottom))
     test_cases.append((n, m, tiles))
 
 # Get results

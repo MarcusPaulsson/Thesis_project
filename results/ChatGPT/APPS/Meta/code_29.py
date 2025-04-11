@@ -8,37 +8,32 @@ def min_replacements_to_lucky(ticket):
     sum_second = sum(second_half)
     
     # Calculate the difference
-    difference = abs(sum_first - sum_second)
+    diff = abs(sum_first - sum_second)
     
-    # If the sums are already equal, no replacements are needed
-    if difference == 0:
+    # If the ticket is already lucky
+    if diff == 0:
         return 0
     
-    # Prepare a list of possible maximum contributions to reduce the difference
-    contributions = []
+    # Create a list of possible changes
+    changes = []
+    for digit in first_half:
+        changes.append(9 - digit)  # Max change possible for first half
+    for digit in second_half:
+        changes.append(digit)  # Max change possible for second half
     
-    # Calculate the maximum possible changes
-    if sum_first > sum_second:
-        contributions = [9 - digit for digit in second_half] + [digit for digit in first_half]
-    else:
-        contributions = [digit for digit in first_half] + [9 - digit for digit in second_half]
-
-    # Sort contributions in descending order
-    contributions.sort(reverse=True)
+    # Sort changes in descending order
+    changes.sort(reverse=True)
     
-    # Count the minimum number of replacements needed
+    # Calculate the minimum number of replacements needed
     replacements = 0
-    for contribution in contributions:
-        difference -= contribution
+    for change in changes:
+        diff -= change
         replacements += 1
-        if difference <= 0:
+        if diff <= 0:
             break
-            
+    
     return replacements
 
-# Example inputs
-print(min_replacements_to_lucky("000000"))  # Output: 0
-print(min_replacements_to_lucky("123456"))  # Output: 2
-print(min_replacements_to_lucky("111000"))  # Output: 1
-print(min_replacements_to_lucky("120111"))  # Output: 0
-print(min_replacements_to_lucky("999999"))  # Output: 0
+# Example usage
+ticket = input().strip()
+print(min_replacements_to_lucky(ticket))

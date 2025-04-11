@@ -8,7 +8,10 @@ else:
   else:
     num_breaks = (d - 1) // k
     
-    if num_breaks * t + d * a < k * a + (d - k) * b + (num_breaks - 1 )*t:
-        print(num_breaks * t + d * a)
-    else:
-        print(k * a + (d - k) * b + num_breaks * t)
+    total_time = num_breaks * (k * a + t)
+    
+    remaining_distance = d - num_breaks * k
+    
+    total_time += remaining_distance * a
+    
+    print(total_time)

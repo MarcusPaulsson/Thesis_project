@@ -1,59 +1,48 @@
 def count_common_integers(a1, b1, a2, b2, L, R):
     from math import gcd
 
-    def generate_ap(a, b, start, end):
+    # Calculate the step size and the least common multiple
+    step = abs(a1 * a2 // gcd(a1, a2))
+
+    # Function to find the first valid x in the range [L, R] for a given progression
+    def first_valid_x(a, b):
         if a == 0:
-            return [b] if start <= b <= end else []
-        
-        if a > 0:
-            first = (start - b + a - 1) // a
-            last = (end - b) // a
-        else:
-            first = (end - b) // a
-            last = (start - b + a - 1) // a
+            return b if L <= b <= R else None
+        k = (L - b + a - 1) // a
+        x = a * k + b
+        return x if L <= x <= R else None
 
-        first_value = a * first + b
-        last_value = a * last + b
-        
-        if first_value > end or last_value < start:
-            return []
-        return list(range(first_value, last_value + a, a))
+    # Function to find the last valid x in the range [L, R] for a given progression
+    def last_valid_x(a, b):
+        if a == 0:
+            return b if L <= b <= R else None
+        k = (R - b) // a
+        x = a * k + b
+        return x if L <= x <= R else None
 
-    d = b2 - b1
-    a = a1
-    b = -a2
+    # Get the first and last valid x from both progressions
+    x1 = first_valid_x(a1, b1)
+    x2 = first_valid_x(a2, b2)
 
-    g = gcd(a, -b)
-    if d % g != 0:
-        print(0)
-        return
+    if x1 is None or x2 is None:
+        return 0
 
-    a //= g
-    b //= g
-    d //= g
+    # Calculate the first common x
+    first_common = max(x1, x2)
+    if (first_common - b1) % a1 != 0 or (first_common - b2) % a2 != 0:
+        return 0
 
-    def extended_gcd(a, b):
-        if b == 0:
-            return a, 1, 0
-        g, x1, y1 = extended_gcd(b, a % b)
-        return g, y1, x1 - (a // b) * y1
+    # Calculate the last valid x
+    last_common = min(last_valid_x(a1, b1), last_valid_x(a2, b2))
+    if last_common is None or last_common < first_common:
+        return 0
 
-    g, x0, y0 = extended_gcd(a, b)
-    x0 *= d
-    y0 *= d
+    # Count the number of valid integers in the range
+    return (last_common - first_common) // step + 1
 
-    k_min = (L - b1) // a1
-    k_max = (R - b1) // a1
-
-    t_min = (x0 - k_max * b) // a if b != 0 else (x0 // a)
-    t_max = (x0 - k_min * b) // a if b != 0 else (x0 // a)
-
-    t_start = (t_min + (b - 1)) // b if b > 0 else (t_min // b)
-    t_end = t_max // b
-
-    count = max(0, t_end - t_start + 1)
-    print(count)
-
-# Example input
-count_common_integers(2, 0, 3, 3, 5, 21)
-count_common_integers(2, 4, 3, 0, 6, 17)
+# Read input
+a1, b1, a2, b2, L, R = map(int, input().split())
+# Get the result
+result = count_common_integers(a1, b1, a2, b2, L, R)
+# Print the result
+print(result)

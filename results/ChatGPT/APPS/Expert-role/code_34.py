@@ -12,7 +12,5 @@ def max_min_pieces(n, a, b):
 
 # Read input
 n, a, b = map(int, input().split())
-# Get the result
-result = max_min_pieces(n, a, b)
-# Print the result
-print(result)
+# Output the result
+print(max_min_pieces(n, a, b))

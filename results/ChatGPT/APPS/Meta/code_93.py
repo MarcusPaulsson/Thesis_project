@@ -1,37 +1,33 @@
 def construct_tree(n, d, k):
-    # Check for impossibility conditions
-    if d > 2 * (k - 1) + 1:
-        return "NO"
-    if d == 1 and n > 2:
-        return "NO"
-    if n > (k * (d + 1)) // 2 + (k - 1):
-        return "NO"
+    if d > 2 * (k - 1) + 1 or (d == 1 and n > 1) or (n > k + 1 and d == 1):
+        print("NO")
+        return
 
     edges = []
     
-    # Create the main path for the diameter d
+    # Create the main path for the diameter
     for i in range(1, d + 1):
         edges.append((i, i + 1))
-
-    # Now we have d + 1 vertices in the main path
+    
+    # Now we have d edges, and we need to connect the remaining vertices
     current_vertex = d + 2
-
-    # Add additional vertices
-    for i in range(1, d + 2):
-        # While we can add more edges from the current vertex
+    for i in range(1, d + 1):
+        if current_vertex > n:
+            break
+        # Connect remaining vertices to the path
         while len([e for e in edges if e[0] == i or e[1] == i]) < k and current_vertex <= n:
             edges.append((i, current_vertex))
             current_vertex += 1
-            if current_vertex > n:
-                break
 
-    # Check if we used all vertices
-    if current_vertex <= n:
-        return "NO"
+    # If we still have vertices left, we can connect them to any of the previous vertices
+    while current_vertex <= n:
+        edges.append((1, current_vertex))
+        current_vertex += 1
 
-    result = ["YES"] + [f"{u} {v}" for u, v in edges]
-    return "\n".join(result)
+    print("YES")
+    for u, v in edges:
+        print(u, v)
 
-# Input reading
+# Read input
 n, d, k = map(int, input().split())
-print(construct_tree(n, d, k))
+construct_tree(n, d, k)

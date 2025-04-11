@@ -1,34 +1,30 @@
 def min_operations(t, test_cases):
     results = []
+    
     for a, b, c in test_cases:
-        min_moves = float('inf')
+        min_ops = float('inf')
         best_triple = (0, 0, 0)
         
-        for A in range(1, c + 1):
-            if A > a:
-                moves_a = A - a
-            else:
-                moves_a = a - A
+        # Iterate over possible values for A
+        for A in range(1, a + 1):
+            # B must be a multiple of A
+            B = ((b + A - 1) // A) * A  # smallest multiple of A >= b
+            if B < b:
+                B = (b // A) * A  # largest multiple of A <= b
             
-            if A > 0:
-                # B should be a multiple of A
-                B = ((b + A - 1) // A) * A  # smallest multiple of A >= b
-                moves_b = abs(B - b)
-            else:
-                B = 1
-                moves_b = abs(B - b)
-            
-            # C should be a multiple of B
+            # C must be a multiple of B
             C = ((c + B - 1) // B) * B  # smallest multiple of B >= c
-            moves_c = abs(C - c)
+            if C < c:
+                C = (c // B) * B  # largest multiple of B <= c
             
-            total_moves = moves_a + moves_b + moves_c
+            # Calculate operations needed
+            ops = abs(A - a) + abs(B - b) + abs(C - c)
             
-            if total_moves < min_moves:
-                min_moves = total_moves
+            if ops < min_ops:
+                min_ops = ops
                 best_triple = (A, B, C)
         
-        results.append((min_moves, best_triple))
+        results.append((min_ops, best_triple))
     
     return results
 
@@ -36,10 +32,10 @@ def min_operations(t, test_cases):
 t = int(input())
 test_cases = [tuple(map(int, input().split())) for _ in range(t)]
 
-# Getting results
+# Get results
 results = min_operations(t, test_cases)
 
 # Output results
-for res in results:
-    print(res[0])
-    print(*res[1])
+for ops, (A, B, C) in results:
+    print(ops)
+    print(A, B, C)

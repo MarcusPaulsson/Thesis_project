@@ -8,31 +8,24 @@ for i in range(d):
 
 cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
 
-def count_sofas(sofa, sofas):
-    x1, y1, x2, y2 = sofa
+def count_sofas(sofas, x1, y1, x2, y2):
     left = right = top = bottom = 0
-    
-    for other in sofas:
-        if other == sofa:
-            continue
-        ox1, oy1, ox2, oy2 = other
-        
-        if x1 == x2:  # vertical sofa
-            if oy1 < y1 < oy2 or oy1 < y2 < oy2:  # Other is above
-                top += 1
-            if oy1 > y2 or oy2 > y2:  # Other is below
-                bottom += 1
-        else:  # horizontal sofa
-            if ox1 < x1 < ox2 or ox1 < x2 < ox2:  # Other is to the left
+    for (sx1, sy1, sx2, sy2) in sofas:
+        if (sx1, sy1) != (x1, y1) and (sx1, sy1) != (x2, y2):
+            if sx2 < x1:  # sofa is to the left
                 left += 1
-            if ox1 > x2 or ox2 > ox2:  # Other is to the right
+            elif sx1 > x2:  # sofa is to the right
                 right += 1
-
+            if sy2 < y1:  # sofa is above
+                top += 1
+            elif sy1 > y2:  # sofa is below
+                bottom += 1
     return left, right, top, bottom
 
 for i in range(d):
-    left, right, top, bottom = count_sofas(sofas[i], sofas)
-    if (left == cnt_l and right == cnt_r and top == cnt_t and bottom == cnt_b):
+    x1, y1, x2, y2 = sofas[i]
+    left, right, top, bottom = count_sofas(sofas, x1, y1, x2, y2)
+    if left == cnt_l and right == cnt_r and top == cnt_t and bottom == cnt_b:
         print(i + 1)
         break
 else:

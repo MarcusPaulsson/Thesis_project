@@ -1,34 +1,34 @@
 n = int(input())
-position = 0  # Position in kilometers from the North Pole
+position = 0  # Position in kilometers from the North Pole (0 = North Pole, 20000 = South Pole)
+
+valid = True
 
 for _ in range(n):
     t, direction = input().split()
     t = int(t)
 
-    # Check movement constraints
     if position == 0 and direction != "South":
-        print("NO")
-        exit()
+        valid = False
+        break
     elif position == 20000 and direction != "North":
-        print("NO")
-        exit()
+        valid = False
+        break
 
-    # Update position based on direction
     if direction == "South":
         position += t
     elif direction == "North":
         position -= t
-    # East and West do not change the position in terms of North/South
-    elif direction in ["East", "West"]:
+    # West and East do not affect the North/South position
+    elif direction in ("West", "East"):
         continue
 
-    # Check for valid position range
+    # Check if the position is out of bounds
     if position < 0 or position > 20000:
-        print("NO")
-        exit()
+        valid = False
+        break
 
-# Check if ending at the North Pole
-if position == 0:
+# Check if the journey ends at the North Pole
+if valid and position == 0:
     print("YES")
 else:
     print("NO")

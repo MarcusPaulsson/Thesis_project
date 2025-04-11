@@ -1,22 +1,22 @@
-def can_tracks_coincide(n, L, kefa_distances, sasha_distances):
-    # Calculate the distances between barriers for Kefa and Sasha
-    kefa_diffs = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
-    sasha_diffs = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
+def can_coincide(n, L, kefa_distances, sasha_distances):
+    # Calculate the distances between consecutive barriers for Kefa and Sasha
+    kefa_gaps = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
+    sasha_gaps = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
     
-    # Double the Sasha's differences to handle circular matching
-    sasha_diffs_extended = sasha_diffs + sasha_diffs
-
-    # Check if Kefa's differences exist as a contiguous subsequence in the extended Sasha's differences
+    # Double the kefa_gaps to account for circular shifts
+    kefa_gaps_doubled = kefa_gaps * 2
+    
+    # Check if sasha_gaps can be found in the doubled kefa_gaps
     for i in range(n):
-        if kefa_diffs == sasha_diffs_extended[i:i+n]:
+        if kefa_gaps_doubled[i:i + n] == sasha_gaps:
             return "YES"
     
     return "NO"
 
-# Input handling
+# Input reading
 n, L = map(int, input().split())
 kefa_distances = list(map(int, input().split()))
 sasha_distances = list(map(int, input().split()))
 
 # Output the result
-print(can_tracks_coincide(n, L, kefa_distances, sasha_distances))
+print(can_coincide(n, L, kefa_distances, sasha_distances))

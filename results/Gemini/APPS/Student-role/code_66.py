@@ -12,9 +12,7 @@ def solve():
             overlap = n - i
             break
     
-    if k == 1:
-        print(t)
-    else:
-        print(t + t[overlap:] * (k - 1))
+    result = t + t[overlap:] * (k - 1)
+    print(result)
 
 solve()

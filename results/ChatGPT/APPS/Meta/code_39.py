@@ -4,18 +4,18 @@ def is_palindrome(s):
 def longest_non_palindrome_substring(s):
     n = len(s)
     
-    # If the string itself is not a palindrome
+    # Check if the entire string is a palindrome
     if not is_palindrome(s):
         return n
     
-    # Check for non-palindrome by removing one character from either end
+    # Check for the longest non-palindrome substring by removing one character from either end
     for i in range(n):
-        if s[i] != s[0]:  # Remove the first character
+        if s[i] != s[0]:  # Check if removing the first character makes it non-palindrome
             return n - 1
-        if s[i] != s[-1]:  # Remove the last character
+        if s[i] != s[-1]:  # Check if removing the last character makes it non-palindrome
             return n - 1
     
-    # If all characters are the same, there is no valid non-palindrome substring
+    # If all characters are the same, return 0
     return 0
 
 # Input

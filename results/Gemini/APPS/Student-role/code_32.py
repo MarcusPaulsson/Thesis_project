@@ -17,13 +17,14 @@ def solve():
         
         if direction == "South":
             current_pos += t
-            if current_pos > 20000:
-                current_pos = 20000
         elif direction == "North":
             current_pos -= t
-            if current_pos < 0:
-                current_pos = 0
         
+        if current_pos < 0:
+            current_pos = 0
+        if current_pos > 20000:
+            current_pos = 20000
+            
     if current_pos == 0:
         print("YES")
     else:

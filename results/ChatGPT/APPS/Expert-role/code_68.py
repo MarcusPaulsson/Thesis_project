@@ -1,48 +1,42 @@
 def min_cost_to_obtain_set(n, k, s):
-    from collections import Counter
-
-    # Count frequencies of each character
-    freq = Counter(s)
+    from collections import defaultdict
     
-    # Count how many distinct subsequences we can generate
-    subseq_count = 0
-    cost = 0
+    # Count the frequency of each character
+    freq = defaultdict(int)
+    for char in s:
+        freq[char] += 1
+    
+    # Calculate the maximum number of unique subsequences we can generate
+    unique_subsequences_count = 0
     total_cost = 0
     
-    # We will keep track of how many subsequences we can generate
-    for length in range(n + 1):  # Consider all lengths from 0 to n
-        # Calculate how many subsequences of this length we can create
-        # The number of distinct subsequences of a given length can be calculated as:
-        # 2^(number of distinct characters) - 1 (the empty subsequence)
-        # But we need to consider not exceeding k
-        if length > 0:
-            current_subseq_count = 1
-            for count in freq.values():
-                current_subseq_count *= (count + 1)  # Each character can be used 0 to count times
-            
-            current_subseq_count -= 1  # Exclude the empty subsequence
-            
-            if subseq_count + current_subseq_count >= k:
-                # We can fulfill the requirement of k subsequences
-                remaining_needed = k - subseq_count
-                total_cost += remaining_needed * (n - length)
-                break
-            else:
-                # Accumulate the cost for all subsequences of this length
-                total_cost += current_subseq_count * (n - length)
-                subseq_count += current_subseq_count
-
-    # If we exit the loop and have not reached k subsequences
-    if subseq_count < k:
-        return -1
+    # We can generate subsequences of lengths from 0 to n
+    for length in range(n + 1):
+        # The number of subsequences of length `length` is C(n, length)
+        # We can use the formula for combinations to calculate this
+        if length == 0:
+            count = 1  # only the empty subsequence
+        else:
+            count = 0
+            for char in freq:
+                count += freq[char] * (1 << (n - freq[char]))  # 2^(n - freq[char])
+        
+        if unique_subsequences_count + count >= k:
+            # We can reach or exceed k with this length
+            total_cost += (n - length) * (k - unique_subsequences_count)
+            return total_cost
+        
+        unique_subsequences_count += count
+        total_cost += (n - length) * count
     
-    return total_cost
-
+    return -1
 
 # Read input
 n, k = map(int, input().split())
 s = input().strip()
 
-# Get the result and print it
+# Get the result
 result = min_cost_to_obtain_set(n, k, s)
+
+# Print the result
 print(result)

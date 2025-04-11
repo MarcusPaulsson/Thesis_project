@@ -1,4 +1,7 @@
 import math
 
 a = int(input())
-print(math.ceil(math.log2(a)))
+if a == 1:
+    print(0)
+else:
+    print(math.ceil(math.log2(a)))

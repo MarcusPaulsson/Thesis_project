@@ -12,64 +12,29 @@ def solve():
         if index == len(a):
             return current_num
         
-        best_num = ""
+        max_num = ""
         
         for i in range(len(remaining_digits)):
             digit = remaining_digits[i]
             
-            if int(current_num + digit) <= int(b[:index+1]):
-                new_num = current_num + digit
-                new_remaining = remaining_digits[:i] + remaining_digits[i+1:]
+            new_num = current_num + digit
+            
+            if int(new_num) <= int(b[:index+1]):
+                new_remaining_digits = remaining_digits[:i] + remaining_digits[i+1:]
                 
-                if int(new_num) > int(b[:index+1]):
-                    continue
-                
-                result = find_max_permutation(index + 1, new_num, new_remaining)
-                
-                if result != "" and (best_num == "" or int(result) > int(best_num)):
-                    best_num = result
+                if int(b[:index+1]) > int(new_num):
+                    temp_digits = sorted(new_remaining_digits, reverse=True)
+                    temp_num = new_num + "".join(temp_digits)
+                    if len(max_num) == 0 or int(temp_num) > int(max_num):
+                        max_num = temp_num
+                else:
+                    temp_num = find_max_permutation(index + 1, new_num, new_remaining_digits)
+                    if len(temp_num) > 0 and (len(max_num) == 0 or int(temp_num) > int(max_num)):
+                        max_num = temp_num
         
-        return best_num
-
-    import collections
-    a_counts = collections.Counter(a)
+        return max_num
     
-    
-    if len(a) > len(b):
-        print("".join(sorted(a, reverse=True)))
-        return
-    
-    
-    
-    
-    def find_permutation(index, current_num, remaining_counts):
-        if index == len(a):
-            return current_num
-        
-        best_num = ""
-        
-        for digit in sorted(remaining_counts.keys(), reverse=True):
-            if remaining_counts[digit] > 0:
-                new_num = current_num + digit
-                
-                if int(new_num) <= int(b[:index+1]):
-                    new_counts = remaining_counts.copy()
-                    new_counts[digit] -= 1
-                    if new_counts[digit] == 0:
-                        del new_counts[digit]
-                    
-                    result = find_permutation(index + 1, new_num, new_counts)
-                    
-                    if result != "" and (best_num == "" or int(result) > int(best_num)):
-                        best_num = result
-        
-        return best_num
-
-    
-    a_counts = collections.Counter(a)
-    result = find_permutation(0, "", a_counts)
-    
+    result = find_max_permutation(0, "", a_digits)
     print(result)
-    
 
 solve()

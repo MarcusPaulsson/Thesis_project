@@ -1,42 +1,41 @@
 def construct_tree(n, d, k):
-    if d > 2 * (k - 1) + 1:  # Check the maximum diameter possible with given degree
+    if d > 2 * (k - 1) + 1:
         return "NO"
     
-    if d == 1 and n > 2:      # If diameter is 1, we can only have a 2-vertex tree
+    if d == 1 and n > 2:
+        return "NO"
+    
+    if d == 1:
+        if n == 2:
+            return "YES\n1 2"
+        else:
+            return "NO"
+    
+    if n <= k + 1 and d > 1:
         return "NO"
     
     edges = []
     
-    # Create a linear path of length d
+    # Create the main path of length d
     for i in range(1, d + 1):
         edges.append((i, i + 1))
-        
-    # The last vertex added in the path
-    last_vertex = d + 1
     
-    # Now we need to connect the remaining vertices
-    for i in range(last_vertex + 1, n + 1):
-        # Connect each new vertex to the first vertex in the path
-        edges.append((1, i))
+    # Now we have d + 1 vertices in the path
+    current_vertex = d + 2
     
-    # Check if any vertex exceeds the degree k
-    degree_count = [0] * (n + 1)
+    # We can add branches to the vertices in the path
+    for i in range(1, d + 1):
+        while len([e for e in edges if e[0] == i or e[1] == i]) < k and current_vertex <= n:
+            edges.append((i, current_vertex))
+            current_vertex += 1
+            if current_vertex > n:
+                break
     
-    for u, v in edges:
-        degree_count[u] += 1
-        degree_count[v] += 1
+    if current_vertex <= n:
+        return "NO"
     
-    for i in range(1, n + 1):
-        if degree_count[i] > k:
-            return "NO"
-    
-    result = ["YES"]
-    for u, v in edges:
-        result.append(f"{u} {v}")
-    
-    return "\n".join(result)
+    result = "YES\n" + "\n".join(f"{u} {v}" for u, v in edges)
+    return result
 
-# Read input
 n, d, k = map(int, input().split())
-# Output result
 print(construct_tree(n, d, k))

@@ -1,15 +1,11 @@
 x = float(input().strip())
 
-# The formula to determine the integers a and b based on the input x
-# is derived from the formula x = (a * b) / (a + b).
-# We will search for integers a and b in the range [1, 10].
+# We need to find two integers a and b such that 1 <= a, b <= 10
+# and a * b is approximately equal to x
 
-found = False
+# We can iterate through possible values of a and b
 for a in range(1, 11):
     for b in range(1, 11):
-        if abs(x - (a * b) / (a + b)) < 1e-6:
+        if abs(a * b - x) < 1e-6:  # Check if the product is close to x
             print(a, b)
-            found = True
             break
-    if found:
-        break

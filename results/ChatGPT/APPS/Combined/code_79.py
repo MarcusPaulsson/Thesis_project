@@ -1,28 +1,40 @@
 def min_moves_to_divisible_by_25(n: int) -> int:
     s = str(n)
     length = len(s)
-    target_pairs = ['00', '25', '50', '75']
-    min_moves = float('inf')
+    moves = float('inf')
 
-    for pair in target_pairs:
-        pos1 = pos2 = -1
+    # Check for pairs of digits that can form 25 or 00
+    for target in ['00', '25']:
+        last_index = -1
         
-        # Iterate through the string in reverse to find the required digits
+        # Find the last occurrence of the last_digit
         for i in range(length - 1, -1, -1):
-            if s[i] == pair[1] and pos2 == -1:
-                pos2 = i
-            elif s[i] == pair[0] and pos2 != -1:
-                pos1 = i
+            if s[i] == target[1]:
+                last_index = i
                 break
         
-        # Calculate moves if both positions are valid
-        if pos1 != -1 and pos2 != -1:
-            moves = (length - 1 - pos2) + (pos2 - pos1 - 1)
-            min_moves = min(min_moves, moves)
+        if last_index == -1:
+            continue  # If we can't find the last_digit, skip this target
+        
+        second_last_index = -1
+        
+        # Now find the second_last_digit before the last_index
+        for i in range(last_index - 1, -1, -1):
+            if s[i] == target[0]:
+                second_last_index = i
+                break
+        
+        if second_last_index == -1:
+            continue  # If we can't find the second_last_digit, skip this target
+        
+        # Calculate moves to bring second_last_index to the front of last_index
+        moves_needed = (last_index - second_last_index) + (last_index - 1 - second_last_index)
+        moves = min(moves, moves_needed)
 
-    return min_moves if min_moves != float('inf') else -1
+    return moves if moves != float('inf') else -1
 
-# Example usage
-if __name__ == "__main__":
-    n = int(input().strip())
-    print(min_moves_to_divisible_by_25(n))
+# Read input
+n = int(input().strip())
+# Get the result and print it
+result = min_moves_to_divisible_by_25(n)
+print(result)

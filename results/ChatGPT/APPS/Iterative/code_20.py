@@ -1,23 +1,21 @@
 def is_palindrome(time):
     return time == time[::-1]
 
-def add_minutes(hh, mm, minutes):
-    mm += minutes
-    hh += mm // 60
-    mm %= 60
-    hh %= 24
-    return hh, mm
-
-def minimum_sleep_minutes(current_time):
-    hh, mm = map(int, current_time.split(':'))
-    minutes = 0
-    
+def next_palindrome_time(hh, mm):
+    minutes_passed = 0
     while True:
-        formatted_time = f"{hh:02d}:{mm:02d}"
-        if is_palindrome(formatted_time):
-            return minutes
-        minutes += 1
-        hh, mm = add_minutes(hh, mm, 1)
+        mm += 1
+        if mm == 60:
+            mm = 0
+            hh += 1
+            if hh == 24:
+                hh = 0
+        minutes_passed += 1
+        time_str = f"{hh:02}:{mm:02}"
+        if is_palindrome(time_str):
+            return minutes_passed
 
 current_time = input().strip()
-print(minimum_sleep_minutes(current_time))
+hh, mm = map(int, current_time.split(':'))
+result = next_palindrome_time(hh, mm)
+print(result)

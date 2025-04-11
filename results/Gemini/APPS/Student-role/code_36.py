@@ -1,57 +1,45 @@
 def solve():
     n = int(input())
-    
+
     if n == 0:
         print(0, 0)
         return
 
+    l, r = 0, 10**9
     k = 0
-    while True:
-        if 3 * k * (k + 1) >= n:
-            break
-        k += 1
+    while l <= r:
+        mid = (l + r) // 2
+        if 3 * mid * (mid + 1) >= n:
+            k = mid
+            r = mid - 1
+        else:
+            l = mid + 1
 
-    moves_in_prev_layer = 3 * (k - 1) * k if k > 0 else 0
-    rem = n - moves_in_prev_layer
+    n -= 3 * k * (k - 1)
     
-    x = 2 * k
-    y = 0
-
-    if rem <= k:
-        x -= 2 * rem
-        print(x, y)
-    elif rem <= 2 * k:
+    x, y = 2 * k, 0
+    
+    if n <= k:
+        x -= 2 * n
+    elif n <= 2 * k:
         x -= 2 * k
-        rem -= k
-        x += rem
-        y += 2 * rem
-        print(x, y)
-    elif rem <= 3 * k:
-        rem -= 2 * k
-        x += k
+        x += 2 * (n - k)
+        y += 2 * (n - k)
+    elif n <= 3 * k:
+        x -= 2 * (3 * k - n)
         y += 2 * k
-        x -= rem
-        print(x, y)
-    elif rem <= 4 * k:
-        rem -= 3 * k
-        x += k
+    elif n <= 4 * k:
+        x += 2 * (n - 3 * k)
         y += 2 * k
-        x -= 2 * rem
-        y -= rem * 2
-        print(x, y)
-    elif rem <= 5 * k:
-        rem -= 4 * k
-        x -= k 
-        y -= 2 * k
-        x -= rem
-        y -= 2 * rem
-        print(x, y)
+        y -= 2 * (n - 3 * k)
+    elif n <= 5 * k:
+        x += 2 * k
+        y -= 2 * (n - 4 * k)
     else:
-        rem -= 5 * k
-        x -= 2 * k
-        y -= 0
-        x += rem * 1
-        y -= rem * 2
-        print(x, y)
+        x += 2 * k
+        x -= 2 * (n - 5 * k)
+        y -= 2 * k
+    
+    print(x, y)
 
 solve()

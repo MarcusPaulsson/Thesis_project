@@ -1,32 +1,34 @@
+def check_journey(n, journey):
+    position = 0  # Position on the meridian, starting at the North Pole (0 km)
+    
+    for t, direction in journey:
+        if position == 0 and direction != "South":
+            return "NO"  # At North Pole, can only move South
+        if position == 20000 and direction != "North":
+            return "NO"  # At South Pole, can only move North
+        
+        if direction == "North":
+            position -= t
+        elif direction == "South":
+            position += t
+        elif direction == "East" or direction == "West":
+            # East and West do not change the position on the meridian
+            continue
+        
+        # Check if position goes out of bounds
+        if position < 0 or position > 20000:
+            return "NO"
+    
+    # Final position must be back at the North Pole
+    if position != 0:
+        return "NO"
+    
+    return "YES"
+
+# Input reading
 n = int(input())
-current_distance = 0  # Distance from the North Pole in kilometers
+journey = [tuple(input().split()) for _ in range(n)]
+journey = [(int(t), dir) for t, dir in journey]
 
-valid = True
-
-for _ in range(n):
-    t_i, dir_i = input().split()
-    t_i = int(t_i)
-    
-    if current_distance == 0 and dir_i != "South":
-        valid = False
-        break
-    if current_distance == 20000 and dir_i != "North":
-        valid = False
-        break
-    
-    if dir_i == "South":
-        current_distance += t_i
-    elif dir_i == "North":
-        current_distance -= t_i
-    elif dir_i == "West" or dir_i == "East":
-        # Moving West or East does not affect the distance from the poles
-        pass
-    
-    if current_distance < 0 or current_distance > 20000:
-        valid = False
-        break
-
-if valid and current_distance == 0:
-    print("YES")
-else:
-    print("NO")
+# Output result
+print(check_journey(n, journey))

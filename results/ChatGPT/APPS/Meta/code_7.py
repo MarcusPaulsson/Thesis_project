@@ -1,25 +1,16 @@
-def find_empty_day(n, m):
+def day_when_barn_empty(n, m):
     day = 0
-    total_eaten = 0
-
-    while n > 0:
+    grains = n
+    
+    while grains > 0:
         day += 1
-        # Grains brought to the barn
-        n += m
+        grains += m  # grains brought to the barn
+        if grains > n:
+            grains = n  # barn is full, excess grains are ignored
+        grains -= day  # sparrows eat grains
         
-        # Sparrows eat grains
-        total_eaten += day
-        
-        # If grains are eaten, reduce the barn's grain count
-        n -= total_eaten
-        
-        # If barn is empty, break the loop
-        if n <= 0:
-            break
-            
     return day
 
-# Read input
+# Input reading
 n, m = map(int, input().split())
-# Output the result
-print(find_empty_day(n, m))
+print(day_when_barn_empty(n, m))

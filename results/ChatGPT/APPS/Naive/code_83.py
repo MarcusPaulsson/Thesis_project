@@ -1,23 +1,29 @@
 def minimal_perimeter(a, b):
     total_tiles = a + b
     min_perimeter = float('inf')
-
-    for height in range(1, int(total_tiles**0.5) + 1):
-        if total_tiles % height == 0:
-            width = total_tiles // height
+    
+    for width in range(1, int(total_tiles**0.5) + 1):
+        if total_tiles % width == 0:
+            height = total_tiles // width
             
-            # Check if we can fit red and blue
-            for w in range(1, width + 1):
-                h_r = (a + w - 1) // w  # Minimum height for red
-                h_b = (b + (width - w) - 1) // (width - w) if (width - w) > 0 else float('inf')
-
-                if h_r + h_b <= height:
-                    perimeter = 2 * (width + height)
-                    min_perimeter = min(min_perimeter, perimeter)
+            # Check rectangles for red tiles
+            for red_width in range(1, int(a**0.5) + 1):
+                if a % red_width == 0:
+                    red_height = a // red_width
+                    if red_width <= width and red_height <= height:
+                        perimeter = 2 * (width + height)
+                        min_perimeter = min(min_perimeter, perimeter)
+            
+            # Check rectangles for blue tiles
+            for blue_width in range(1, int(b**0.5) + 1):
+                if b % blue_width == 0:
+                    blue_height = b // blue_width
+                    if blue_width <= width and blue_height <= height:
+                        perimeter = 2 * (width + height)
+                        min_perimeter = min(min_perimeter, perimeter)
 
     return min_perimeter
 
-# Read input
+# Input reading
 a, b = map(int, input().split())
-# Calculate and print the minimal perimeter
 print(minimal_perimeter(a, b))

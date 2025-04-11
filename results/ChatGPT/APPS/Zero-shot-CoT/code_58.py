@@ -3,25 +3,30 @@ a = list(map(int, input().split()))
 
 from collections import defaultdict
 
-coloring = [0] * n
-frequency = defaultdict(list)
+# Count occurrences of each number
+count = defaultdict(int)
+for num in a:
+    count[num] += 1
 
-# Store the indices of each unique number in the array
+# If any number occurs more than k times, it's impossible
+if any(c > k for c in count.values()):
+    print("NO")
+    exit()
+
+# Prepare to assign colors
+color_assignment = [0] * n
+color_used = defaultdict(int)
+
+# Assign colors
 for i in range(n):
-    frequency[a[i]].append(i)
+    num = a[i]
+    # Use the next color for this number
+    color_used[num] += 1
+    color_assignment[i] = color_used[num] if color_used[num] <= k else 0
 
-# If any number occurs more than k times, it's impossible to color it
-if any(len(indices) > k for indices in frequency.values()):
+# Check if we used all colors
+if len(set(color_assignment)) < k:
     print("NO")
 else:
     print("YES")
-    current_color = 1
-    # Assign colors to each index based on the frequency list
-    for indices in frequency.values():
-        for idx in indices:
-            coloring[idx] = current_color
-            current_color += 1
-            if current_color > k:
-                current_color = 1
-
-    print(" ".join(map(str, coloring)))
+    print(" ".join(map(str, color_assignment)))

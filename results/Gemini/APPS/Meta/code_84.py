@@ -26,24 +26,39 @@ def solve():
         idx1 = 0
         
         temp_merged = []
+        
+        coloring_check = ""
 
         for k in range(n):
-          if coloring[k] == '0':
-            if idx0 < len(sorted_s0):
-              temp_merged.append(sorted_s0[idx0])
-              idx0 += 1
-          else:
-            if idx1 < len(sorted_s1):
-              temp_merged.append(sorted_s1[idx1])
-              idx1 += 1
+            if coloring[k] == '0':
+                if idx0 < len(sorted_s0):
+                    temp_merged.append((sorted_s0[idx0],0))
+                    idx0 += 1
+                else:
+                    break
+            else:
+                if idx1 < len(sorted_s1):
+                    temp_merged.append((sorted_s1[idx1],1))
+                    idx1 += 1
+                else:
+                    break
         
-        merged = "".join(temp_merged)
-
-        if "".join(sorted(list(s))) == merged:
+        if len(temp_merged) != n:
+            continue
+        
+        temp_merged.sort()
+        
+        is_sorted = True
+        for k in range(n - 1):
+            if temp_merged[k][0] > temp_merged[k+1][0]:
+                is_sorted = False
+                break
+        
+        if is_sorted:
             print("YES")
             print(coloring)
             return
-    
+
     print("NO")
 
 solve()

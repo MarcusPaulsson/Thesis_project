@@ -15,7 +15,7 @@ def solve():
         
         if found:
             count += 1
-            
+    
     print(count)
 
 solve()

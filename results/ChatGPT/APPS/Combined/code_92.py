@@ -1,20 +1,20 @@
 def find_integers(x):
-    # Iterate over possible integer pairs (a, b) where 1 <= a, b <= 10
+    # Iterate through possible values for a and b
     for a in range(1, 11):
         for b in range(1, 11):
-            # Calculate the value of a * b / (a + b) and compare with x
-            if abs(a * b / (a + b) - x) < 1e-6:  # Tolerance for floating-point comparison
+            # Check if the product of a and b is approximately equal to x
+            if abs(a * b - x) < 1e-6:  # Using a small epsilon for floating-point comparison
                 return a, b
 
 def main():
     # Read input
     x = float(input().strip())
     
-    # Find integers
-    a, b = find_integers(x)
+    # Get the result
+    result = find_integers(x)
     
-    # Print output
-    print(a, b)
+    # Print the output
+    print(result[0], result[1])
 
 if __name__ == "__main__":
     main()

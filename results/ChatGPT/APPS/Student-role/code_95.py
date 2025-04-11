@@ -1,40 +1,55 @@
 def generate_string(n, s, t):
-    # Create a list that will hold the result
+    # Create a list to hold the result
     res = []
     
-    # Characters count
-    count = {'a': n, 'b': n, 'c': n}
+    # Count of characters
+    count_a = n
+    count_b = n
+    count_c = n
     
-    # Function to check if last two characters form a forbidden substring
-    def is_forbidden(last_two):
-        return last_two == s or last_two == t
+    # Function to check if the last two characters form a forbidden substring
+    def is_forbidden():
+        if len(res) < 2:
+            return False
+        return ''.join(res[-2:]) == s or ''.join(res[-2:]) == t
     
-    # Fill the result string
-    for _ in range(3 * n):
+    # Build the result string
+    while count_a > 0 or count_b > 0 or count_c > 0:
         for char in 'abc':
-            if count[char] > 0:
-                # Check if adding this character would create a forbidden substring
-                if len(res) >= 2 and is_forbidden(res[-2] + char):
-                    continue
-                # Append the character and decrease the count
-                res.append(char)
-                count[char] -= 1
-                break
-        else:
-            # If we couldn't add any character, then it means it's impossible
-            return "NO", ""
+            if char == 'a' and count_a > 0:
+                res.append('a')
+                count_a -= 1
+            elif char == 'b' and count_b > 0:
+                res.append('b')
+                count_b -= 1
+            elif char == 'c' and count_c > 0:
+                res.append('c')
+                count_c -= 1
+            
+            # Check if the last two characters form a forbidden substring
+            if is_forbidden():
+                res.pop()  # Remove the last character
+                if char == 'a':
+                    count_a += 1
+                elif char == 'b':
+                    count_b += 1
+                elif char == 'c':
+                    count_c += 1
+                break  # Restart the loop to try the next character
     
-    return "YES", ''.join(res)
+    # Join the list into a string
+    result_string = ''.join(res)
+    
+    # Check if we have the right length
+    if len(result_string) == 3 * n:
+        print("YES")
+        print(result_string)
+    else:
+        print("NO")
 
 # Input reading
-n = int(input())
+n = int(input().strip())
 s = input().strip()
 t = input().strip()
 
-# Generate the result
-result = generate_string(n, s, t)
-
-# Output the result
-print(result[0])
-if result[0] == "YES":
-    print(result[1])
+generate_string(n, s, t)

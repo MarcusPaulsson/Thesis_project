@@ -1,52 +1,41 @@
 def generate_string(n, s, t):
-    # Create a base string with n 'a's, n 'b's, and n 'c's
-    base = 'a' * n + 'b' * n + 'c' * n
+    # Create a list of characters to use in the result
+    chars = ['a'] * n + ['b'] * n + ['c'] * n
     
-    # Check if the strings s or t can be formed
-    # We need to avoid generating those substrings
-    for i in range(0, len(base) - 1):
-        if base[i:i+2] == s or base[i:i+2] == t:
-            return "NO"
+    # Function to check if the last two characters of the result form a forbidden substring
+    def is_forbidden(res):
+        return res[-2:] == s or res[-2:] == t
     
-    # Now we will create the result while avoiding both substrings
+    # Initialize the result string
     res = []
-    count_a = count_b = count_c = n
     
-    # Create a list of characters
-    chars = ['a', 'b', 'c']
+    # Try to build the result string
+    for char in chars:
+        res.append(char)
+        # If the last two characters form a forbidden substring, we need to adjust
+        while len(res) >= 2 and is_forbidden(res):
+            # Remove the last character and try to replace it with a different character
+            last_char = res.pop()
+            # Find a different character to replace it
+            for replacement in ['a', 'b', 'c']:
+                if replacement != last_char and (len(res) < 1 or res[-1] != replacement):
+                    res.append(replacement)
+                    break
+            else:
+                # If we can't find a valid replacement, return "NO"
+                return "NO", ""
     
-    while count_a > 0 or count_b > 0 or count_c > 0:
-        for char in chars:
-            if char == 'a' and count_a > 0:
-                if len(res) >= 1 and (res[-1] == 'a' or (len(res) >= 1 and res[-1] + char in (s, t))):
-                    continue
-                res.append(char)
-                count_a -= 1
-            elif char == 'b' and count_b > 0:
-                if len(res) >= 1 and (res[-1] == 'b' or (len(res) >= 1 and res[-1] + char in (s, t))):
-                    continue
-                res.append(char)
-                count_b -= 1
-            elif char == 'c' and count_c > 0:
-                if len(res) >= 1 and (res[-1] == 'c' or (len(res) >= 1 and res[-1] + char in (s, t))):
-                    continue
-                res.append(char)
-                count_c -= 1
-    
-    # Join the result list to form the final string
-    result_string = ''.join(res)
-    
-    # Final check for substrings
-    for i in range(len(result_string) - 1):
-        if result_string[i:i + 2] == s or result_string[i:i + 2] == t:
-            return "NO"
-    
-    return "YES\n" + result_string
+    return "YES", ''.join(res)
 
-# Input reading
+# Read input
 n = int(input())
 s = input().strip()
 t = input().strip()
 
-# Generate the string and print the result
-print(generate_string(n, s, t))
+# Generate the string
+result = generate_string(n, s, t)
+
+# Print the result
+print(result[0])
+if result[0] == "YES":
+    print(result[1])

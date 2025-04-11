@@ -6,23 +6,24 @@ def solve():
     else:
         start = 1
     
-    res = ""
+    s = ""
     
-    while x > 1:
-        res += str(start)
+    for i in range(x):
+        s += str(start)
         if start == 0:
-            a -= 1
             start = 1
-        else:
             b -= 1
+        else:
             start = 0
-        x -= 1
+            a -= 1
     
     if start == 0:
-        res += "0" * a + "1" * b
+        s += "0" * a
+        s += "1" * b
     else:
-        res += "1" * b + "0" * a
-        
-    print(res)
+        s += "1" * b
+        s += "0" * a
+    
+    print(s)
 
 solve()

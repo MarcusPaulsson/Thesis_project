@@ -1,33 +1,38 @@
-def can_win(field):
-    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # Vertical, Horizontal, Diagonal /
-    
-    for i in range(10):
-        for j in range(10):
-            if field[i][j] == '.':
-                # Try placing 'X' in the empty cell
-                for di, dj in directions:
-                    count = 1  # Count the placed 'X'
+def can_win(board):
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # vertical, horizontal, diagonal, anti-diagonal
+    n = 10
+
+    for i in range(n):
+        for j in range(n):
+            if board[i][j] == '.':
+                # Temporarily place 'X' in the empty cell
+                board[i][j] = 'X'
+                
+                for dx, dy in directions:
+                    count = 1
                     
                     # Check in the positive direction
-                    ni, nj = i + di, j + dj
-                    while 0 <= ni < 10 and 0 <= nj < 10 and field[ni][nj] == 'X':
+                    x, y = i + dx, j + dy
+                    while 0 <= x < n and 0 <= y < n and board[x][y] == 'X':
                         count += 1
-                        ni += di
-                        nj += dj
+                        x += dx
+                        y += dy
                     
                     # Check in the negative direction
-                    ni, nj = i - di, j - dj
-                    while 0 <= ni < 10 and 0 <= nj < 10 and field[ni][nj] == 'X':
+                    x, y = i - dx, j - dy
+                    while 0 <= x < n and 0 <= y < n and board[x][y] == 'X':
                         count += 1
-                        ni -= di
-                        nj -= dj
+                        x -= dx
+                        y -= dy
                     
-                    # Check if Alice can win
                     if count >= 5:
                         return "YES"
-    
+                
+                # Remove the temporary 'X'
+                board[i][j] = '.'
+
     return "NO"
 
-# Reading the 10x10 game field input
-field = [input().strip() for _ in range(10)]
-print(can_win(field))
+# Read the input
+board = [input().strip() for _ in range(10)]
+print(can_win(board))

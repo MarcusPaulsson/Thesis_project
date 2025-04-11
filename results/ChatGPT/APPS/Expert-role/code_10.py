@@ -1,16 +1,12 @@
-n = int(input().strip())
+n = int(input())
 
-work_days = n // 7 * 5
-days_off = n // 7 * 2
+# Calculate maximum days off
+max_days_off = (n // 7) * 2 + min(2, n % 7)
 
-remaining_days = n % 7
-
-if remaining_days > 5:
-    days_off += 2
-elif remaining_days > 0:
-    days_off += remaining_days
-
-min_days_off = days_off
-max_days_off = days_off + (2 if remaining_days > 0 else 0)
+# Calculate minimum days off
+if n < 5:
+    min_days_off = 0
+else:
+    min_days_off = (n // 7) * 2
 
 print(min_days_off, max_days_off)

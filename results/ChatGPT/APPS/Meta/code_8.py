@@ -1,53 +1,44 @@
-def minimum_draws(tiles):
-    # Convert input to a list of tuples for easier processing
-    tiles = [(int(t[0]), t[1]) for t in tiles]
+def min_tiles_to_draw(tiles):
+    suits = {'m': [], 'p': [], 's': []}
+    
+    # Parse the input tiles and categorize them by suit
+    for tile in tiles:
+        number = int(tile[0])
+        suit = tile[1]
+        suits[suit].append(number)
     
     # Check for koutsu (triplet)
-    count = {}
-    for value, suit in tiles:
-        count[(value, suit)] = count.get((value, suit), 0) + 1
-    
-    # If we have a triplet
-    if any(c == 3 for c in count.values()):
-        return 0
+    for suit in suits.values():
+        if len(suit) == 3 and suit[0] == suit[1] == suit[2]:
+            return 0  # Already has a koutsu
     
     # Check for shuntsu (sequence)
-    suits = {'m': [], 'p': [], 's': []}
-    for value, suit in tiles:
-        suits[suit].append(value)
+    for suit in suits.values():
+        if len(suit) >= 3:
+            suit.sort()
+            for i in range(len(suit) - 2):
+                if suit[i] + 1 == suit[i + 1] and suit[i + 1] + 1 == suit[i + 2]:
+                    return 0  # Already has a shuntsu
     
-    # Sort the values for each suit
-    for suit in suits:
-        suits[suit].sort()
+    # Check for potential shuntsu with one draw
+    for suit in suits.values():
+        if len(suit) == 2:
+            # Check if we can form a shuntsu by drawing one tile
+            if (suit[0] + 1 == suit[1] or suit[0] + 2 == suit[1] or suit[1] + 1 == suit[0] or suit[1] + 2 == suit[0]):
+                return 1  # Can form a shuntsu with one draw
     
-    # Function to check if we can form a shuntsu
-    def can_form_shuntsu(values):
-        for i in range(len(values) - 2):
-            if values[i] + 1 == values[i + 1] and values[i + 1] + 1 == values[i + 2]:
-                return True
-        return False
+    # Check for potential shuntsu with two draws
+    for suit in suits.values():
+        if len(suit) == 1:
+            # If we have one tile, we need two more to form a shuntsu
+            if suit[0] > 1 and suit[0] < 9:
+                return 2  # Need two draws to form a shuntsu
+            else:
+                return 2  # Need two draws to form a shuntsu (1 or 9 case)
     
-    # If we can already form a shuntsu
-    for suit in suits:
-        if can_form_shuntsu(suits[suit]):
-            return 0
-    
-    # Check if we can form a shuntsu by drawing one tile
-    for suit in suits:
-        if len(suits[suit]) == 2:
-            if abs(suits[suit][0] - suits[suit][1]) == 1:
-                return 1
-            if suits[suit][0] == 1 or suits[suit][1] == 9:
-                return 1
-    
-    # If we have two tiles of the same suit, we need one more tile
-    for suit in suits:
-        if len(suits[suit]) == 1:
-            return 2
-    
-    return 2  # If no condition is satisfied, at least 2 more tiles are needed
+    return 2  # If we have no tiles or all are different, we need two draws
 
 # Read input
 tiles = input().strip().split()
 # Output the result
-print(minimum_draws(tiles))
+print(min_tiles_to_draw(tiles))

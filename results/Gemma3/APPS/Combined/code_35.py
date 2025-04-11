@@ -1,6 +1,6 @@
 def solve():
     n, m = map(int, input().split())
-    grid = [input() for _ in range(n)]
+    grid = [list(input()) for _ in range(n)]
     
     if n % 3 != 0:
         print("NO")

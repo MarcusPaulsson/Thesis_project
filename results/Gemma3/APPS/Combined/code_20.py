@@ -13,13 +13,17 @@ def solve():
         print(0)
         return
     
+    min_minutes = float('inf')
+    
     for i in range(1, 1441):
-        future_minutes = current_minutes + i
-        future_hours = (future_minutes // 60) % 24
-        future_minutes = future_minutes % 60
+        next_minutes = current_minutes + i
+        next_hours = (next_minutes // 60) % 24
+        next_minutes %= 60
         
-        if is_palindrome(future_hours, future_minutes):
-            print(i)
-            return
+        if is_palindrome(next_hours, next_minutes):
+            min_minutes = i
+            break
+            
+    print(min_minutes)
 
 solve()

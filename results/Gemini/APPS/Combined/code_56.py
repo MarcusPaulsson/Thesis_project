@@ -1,3 +1,9 @@
+def f(x):
+    x += 1
+    while x % 10 == 0:
+        x //= 10
+    return x
+
 def solve():
     n = int(input())
     reachable = set()
@@ -5,15 +11,11 @@ def solve():
     
     current = n
     while True:
-        current += 1
-        while current % 10 == 0:
-            current //= 10
-        
+        current = f(current)
         if current in reachable:
             break
-        else:
-            reachable.add(current)
-            
+        reachable.add(current)
+    
     print(len(reachable))
 
 solve()

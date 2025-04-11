@@ -1,18 +1,18 @@
 n, k = map(int, input().split())
-problems = list(map(int, input().split()))
+a = list(map(int, input().split()))
 
-solved = 0
+count = 0
 
 # Solve from the left
-while solved < n and problems[solved] <= k:
-    solved += 1
+while count < n and a[count] <= k:
+    count += 1
 
 # Solve from the right
-while solved < n and problems[n - 1 - (solved - 1)] <= k:
-    solved += 1
+while count < n and a[n - 1 - (count - (n - count))] <= k:
+    count += 1
 
-# If we counted the same problem from both ends, subtract it
-if solved > n and problems[solved - 1] <= k:
-    solved -= 1
+# Adjust for double counting if both ends are solvable
+if count > n:
+    count = n
 
-print(solved)
+print(count)

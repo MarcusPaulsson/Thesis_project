@@ -7,27 +7,28 @@ def solve():
     def check(num_colors):
         
         def possible_to_sort(coloring):
-            arr = list(s)
+            temp_s = list(s)
             
             for _ in range(n * (n - 1) // 2):
                 swapped = False
                 for i in range(n - 1):
-                    if arr[i] > arr[i+1] and coloring[i] != coloring[i+1]:
-                        arr[i], arr[i+1] = arr[i+1], arr[i]
+                    if temp_s[i] > temp_s[i+1] and coloring[i] != coloring[i+1]:
+                        temp_s[i], temp_s[i+1] = temp_s[i+1], temp_s[i]
                         swapped = True
                 if not swapped:
                     break
-
-            return arr == sorted(list(s))
-
+            
+            return "".join(temp_s) == "".join(sorted(s))
+        
         
         import itertools
         
         for coloring in itertools.product(range(1, num_colors + 1), repeat=n):
-            if possible_to_sort(list(coloring)):
+            if possible_to_sort(coloring):
                 return True, list(coloring)
+        
         return False, None
-    
+
     for num_colors in range(1, n + 1):
         possible, coloring = check(num_colors)
         if possible:

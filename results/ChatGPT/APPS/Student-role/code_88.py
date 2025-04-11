@@ -1,45 +1,51 @@
-n = int(input())
-a = list(map(int, input().split()))
-
-from collections import Counter
-
-count = Counter(a)
-matrix = [[0] * n for _ in range(n)]
-
-# Check if it is possible to fill the matrix
-odd_count = 0
-for value, freq in count.items():
-    if freq % 2 == 1:
-        odd_count += 1
-
-# For odd n, we can have one odd frequency; for even n, we cannot have any
-if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
-    print("NO")
-else:
-    # Fill the matrix
-    half_matrix = []
+def create_palindromic_matrix(n, numbers):
+    from collections import Counter
+    
+    count = Counter(numbers)
+    matrix = [[0] * n for _ in range(n)]
+    
+    # Check if we can form a palindromic matrix
+    odd_count = 0
     center_value = None
     
     for value, freq in count.items():
         if freq % 2 == 1:
+            odd_count += 1
             center_value = value
-        half_matrix.extend([value] * (freq // 2))
+        if odd_count > 1:
+            return "NO"
     
-    half_size = len(half_matrix)
+    # Fill the matrix
+    half = []
+    for value, freq in count.items():
+        half.extend([value] * (freq // 2))
     
-    # Arrange values in a palindromic way
-    for i in range(n):
-        for j in range(n):
-            if i < n // 2:
-                matrix[i][j] = half_matrix[i] if j < n // 2 else half_matrix[i]
-                matrix[n - 1 - i][j] = matrix[i][j]
-            elif i == n // 2 and n % 2 == 1:
-                if j == n // 2:
-                    matrix[i][j] = center_value
-                else:
-                    matrix[i][j] = half_matrix[i]
-                    matrix[i][n - 1 - j] = matrix[i][j]
+    if n % 2 == 1 and center_value is not None:
+        center_row = n // 2
+        center_col = n // 2
+        matrix[center_row][center_col] = center_value
+    
+    # Fill the top half and bottom half
+    index = 0
+    for i in range((n + 1) // 2):
+        for j in range(n // 2):
+            if index < len(half):
+                matrix[i][j] = half[index]
+                matrix[i][n - j - 1] = half[index]
+                matrix[n - i - 1][j] = half[index]
+                matrix[n - i - 1][n - j - 1] = half[index]
+                index += 1
+    
+    return "YES", matrix
 
-    print("YES")
-    for row in matrix:
-        print(' '.join(map(str, row)))
+n = int(input())
+numbers = list(map(int, input().split()))
+
+result = create_palindromic_matrix(n, numbers)
+
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    for row in result[1]:
+        print(" ".join(map(str, row)))

@@ -13,77 +13,60 @@ def solve():
             regular.append((files[i][0], i))
 
     moves = []
-    num_examples = len(examples)
+    e = len(examples)
 
-    def find_unused_name(files):
-        temp_name = "temp"
-        temp_idx = 0
+    temp_names = []
+    for i in range(n):
+        temp_name = f"temp{i}"
+        while temp_name in [f[0] for f in files]:
+            temp_name = f"temp{i+n}"
+        temp_names.append(temp_name)
+
+    
+    def find_temp_name(existing_names):
+        i = 0
         while True:
-            temp_file_name = temp_name + str(temp_idx)
-            is_used = False
-            for file in files:
-                if file[0] == temp_file_name:
-                    is_used = True
-                    break
-            if not is_used:
-                return temp_file_name
-            temp_idx += 1
+            temp_name = f"temp{i}"
+            if temp_name not in existing_names:
+                return temp_name
+            i += 1
 
-    def move_file(source, destination):
-        moves.append(f"move {source} {destination}")
-
-    for i in range(num_examples):
-        expected_name = str(i + 1)
-        if examples[i][0] != expected_name:
-            temp_name = find_unused_name(files)
-            move_file(examples[i][0], temp_name)
-            
-            target_index = -1
-            for j in range(n):
-                if files[j][0] == expected_name:
-                    target_index = j
-                    break
-            
-            if target_index != -1:
-                move_file(expected_name, examples[i][0])
-            else:
+    
+    existing_names = [f[0] for f in files]
+    
+    
+    for i in range(e):
+        if examples[i][0] != str(i + 1):
+            if str(i + 1) in existing_names:
+                temp_name = find_temp_name(existing_names)
+                moves.append(f"move {str(i + 1)} {temp_name}")
+                moves.append(f"move {examples[i][0]} {i + 1}")
+                moves.append(f"move {temp_name} {examples[i][0]}")
+                existing_names.remove(str(i+1))
+                existing_names.append(str(i+1))
+                existing_names.remove(examples[i][0])
+                existing_names.append(str(i+1))
                 
-                file_index = examples[i][1]
-                files[file_index][0] = temp_name
-                for j in range(len(examples)):
-                    if examples[j][1] == file_index:
-                        examples[j] = (temp_name, file_index)
-                for j in range(len(regular)):
-                    if regular[j][1] == file_index:
-                        regular[j] = (temp_name, file_index)
-            
-            move_file(temp_name, expected_name)
+            else:
+                moves.append(f"move {examples[i][0]} {i + 1}")
+                existing_names.remove(examples[i][0])
+                existing_names.append(str(i+1))
 
     for i in range(len(regular)):
-        expected_name = str(num_examples + i + 1)
-        if regular[i][0] != expected_name:
-            temp_name = find_unused_name(files)
-            move_file(regular[i][0], temp_name)
-
-            target_index = -1
-            for j in range(n):
-                if files[j][0] == expected_name:
-                    target_index = j
-                    break
-            
-            if target_index != -1:
-                move_file(expected_name, regular[i][0])
+        if regular[i][0] != str(e + i + 1):
+            if str(e + i + 1) in existing_names:
+                temp_name = find_temp_name(existing_names)
+                moves.append(f"move {str(e + i + 1)} {temp_name}")
+                moves.append(f"move {regular[i][0]} {e + i + 1}")
+                moves.append(f"move {temp_name} {regular[i][0]}")
+                existing_names.remove(str(e+i+1))
+                existing_names.append(str(e+i+1))
+                existing_names.remove(regular[i][0])
+                existing_names.append(str(e+i+1))
             else:
-                file_index = regular[i][1]
-                files[file_index][0] = temp_name
-                for j in range(len(examples)):
-                    if examples[j][1] == file_index:
-                        examples[j] = (temp_name, file_index)
-                for j in range(len(regular)):
-                    if regular[j][1] == file_index:
-                        regular[j] = (temp_name, file_index)
-
-            move_file(temp_name, expected_name)
+                moves.append(f"move {regular[i][0]} {e + i + 1}")
+                existing_names.remove(regular[i][0])
+                existing_names.append(str(e+i+1))
 
     print(len(moves))
     for move in moves:

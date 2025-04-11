@@ -1,78 +1,86 @@
 def solve():
     n = int(input())
     a = list(map(int, input().split()))
-    
+
     counts = {}
     for x in a:
         counts[x] = counts.get(x, 0) + 1
-    
-    matrix = [[0] * n for _ in range(n)]
-    
-    for i in range(n // 2):
-        for j in range(n // 2):
-            found = False
-            for num, count in list(counts.items()):
-                if count >= 4:
-                    matrix[i][j] = num
-                    matrix[i][n - 1 - j] = num
-                    matrix[n - 1 - i][j] = num
-                    matrix[n - 1 - i][n - 1 - j] = num
-                    counts[num] -= 4
-                    if counts[num] == 0:
-                        del counts[num]
-                    found = True
-                    break
-            if not found:
-                print("NO")
-                return
-    
-    if n % 2 == 1:
-        mid = n // 2
-        for i in range(n // 2):
-            found = False
-            for num, count in list(counts.items()):
-                if count >= 2:
-                    matrix[i][mid] = num
-                    matrix[n - 1 - i][mid] = num
-                    counts[num] -= 2
-                    if counts[num] == 0:
-                        del counts[num]
-                    found = True
-                    break
-            if not found:
-                print("NO")
-                return
 
-        for j in range(n // 2):
-            found = False
-            for num, count in list(counts.items()):
-                if count >= 2:
-                    matrix[mid][j] = num
-                    matrix[mid][n - 1 - j] = num
-                    counts[num] -= 2
-                    if counts[num] == 0:
-                        del counts[num]
-                    found = True
-                    break
-            if not found:
-                print("NO")
-                return
-        
-        found = False
-        for num, count in list(counts.items()):
-            if count >= 1:
-                matrix[mid][mid] = num
-                counts[num] -= 1
-                if counts[num] == 0:
-                    del counts[num]
-                found = True
-                break
-        if not found:
-            print("NO")
-            return
-    
-    print("YES")
-    for row in matrix:
-        print(*row)
+    matrix = [[0] * n for _ in range(n)]
+
+    def can_place(row, col, num):
+        r_sym = n - 1 - row
+        c_sym = n - 1 - col
+
+        if row == r_sym and col == c_sym:
+            return counts[num] >= 1
+        elif row == r_sym or col == c_sym:
+            return counts[num] >= 2
+        else:
+            return counts[num] >= 4
+
+    def place(row, col, num):
+        r_sym = n - 1 - row
+        c_sym = n - 1 - col
+
+        matrix[row][col] = num
+        if row != r_sym or col != c_sym:
+            matrix[r_sym][col] = num
+        if row != r_sym or col != c_sym:
+            matrix[row][c_sym] = num
+        if row != r_sym and col != c_sym:
+            matrix[r_sym][c_sym] = num
+
+        if row == r_sym and col == c_sym:
+            counts[num] -= 1
+        elif row == r_sym or col == c_sym:
+            counts[num] -= 2
+        else:
+            counts[num] -= 4
+
+    def remove(row, col, num):
+        r_sym = n - 1 - row
+        c_sym = n - 1 - col
+
+        matrix[row][col] = 0
+        if row != r_sym or col != c_sym:
+            matrix[r_sym][col] = 0
+        if row != r_sym or col != c_sym:
+            matrix[row][c_sym] = 0
+        if row != r_sym and col != c_sym:
+            matrix[r_sym][c_sym] = 0
+
+        if row == r_sym and col == c_sym:
+            counts[num] += 1
+        elif row == r_sym or col == c_sym:
+            counts[num] += 2
+        else:
+            counts[num] += 4
+
+    def backtrack(row, col):
+        if row == n:
+            return True
+
+        if col == n:
+            return backtrack(row + 1, 0)
+
+        if matrix[row][col] != 0:
+            return backtrack(row, col + 1)
+
+        for num in list(counts.keys()):
+            if counts[num] > 0 and can_place(row, col, num):
+                place(row, col, num)
+                if backtrack(row, col + 1):
+                    return True
+                remove(row, col, num)
+
+        return False
+
+    if backtrack(0, 0):
+        print("YES")
+        for row in matrix:
+            print(*row)
+    else:
+        print("NO")
 
 solve()

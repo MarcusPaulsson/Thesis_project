@@ -1,39 +1,46 @@
-def count_common_terms(a1, b1, a2, b2, L, R):
+def count_common_integers(a1, b1, a2, b2, L, R):
     from math import gcd
 
-    if a1 == a2:
-        if b1 == b2:
-            # Both sequences are the same
-            start = max(L, b1)
-            end = min(R, b1 + ((R - b1) // a1) * a1)
-            return (end - start) // a1 + 1 if start <= end else 0
-        else:
-            # Different sequences with the same step
-            return 0
+    # Calculate the step size and the offset
+    step = abs(a1 * a2 // gcd(a1, a2))
+    
+    # Find the first valid x in the range [L, R]
+    def first_valid_x():
+        for k in range((L - b1) // a1, (R - b1) // a1 + 2):
+            x = a1 * k + b1
+            if L <= x <= R:
+                return x
+        return None
 
-    # Ensure a1 < a2 for simplicity
-    if a1 > a2:
-        a1, b1, a2, b2 = a2, b2, a1, b1
+    # Find the first valid x for the second progression
+    def first_valid_y():
+        for l in range((L - b2) // a2, (R - b2) // a2 + 2):
+            y = a2 * l + b2
+            if L <= y <= R:
+                return y
+        return None
 
-    # Calculate the difference and gcd
-    D = a2 - a1
-    G = gcd(a1, D)
+    x_start = first_valid_x()
+    y_start = first_valid_y()
 
-    # Find the range for valid x
-    result = 0
+    if x_start is None or y_start is None:
+        return 0
 
-    # Check for the start point
-    for k in range(0, (R - b1) // a1 + 1):
-        x = a1 * k + b1
-        if x > R:
-            break
-        if x >= L:
-            # Check if (x - b2) is a multiple of a2
-            if (x - b2) % a2 == 0:
-                result += 1
+    # Find the first common x
+    if x_start < y_start:
+        x_start = ((y_start - b1 + a1 - 1) // a1) * a1 + b1
+    else:
+        y_start = ((x_start - b2 + a2 - 1) // a2) * a2 + b2
 
-    return result
+    # Count the number of valid integers in the range
+    count = 0
+    for x in range(x_start, R + 1, step):
+        if L <= x <= R:
+            count += 1
+
+    return count
 
 # Read input
 a1, b1, a2, b2, L, R = map(int, input().split())
-print(count_common_terms(a1, b1, a2, b2, L, R))
+# Output the result
+print(count_common_integers(a1, b1, a2, b2, L, R))

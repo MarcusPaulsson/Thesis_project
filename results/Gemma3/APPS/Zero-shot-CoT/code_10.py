@@ -40,6 +40,7 @@ def solve():
     
     
     
+    
     print(min_off, max_off)
 
 solve()

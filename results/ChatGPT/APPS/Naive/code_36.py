@@ -1,39 +1,42 @@
-def hex_spiral_coordinates(n):
+def hexagon_coordinates(n):
     if n == 0:
         return (0, 0)
 
-    # Determine the layer of the spiral
     layer = 0
-    while n > 6 * layer * (layer + 1) // 2:
+    moves_in_layer = 1
+
+    # Determine the layer in which the move n is located
+    while n >= moves_in_layer:
+        n -= moves_in_layer
         layer += 1
+        moves_in_layer = 6 * layer
 
-    # Calculate the position in the current layer
-    position_in_layer = n - 6 * (layer - 1) * layer // 2
-    side_length = layer
+    # Calculate the coordinates based on the layer and remaining moves
+    x, y = layer, 0
+    if n > 0:
+        # Move in the hexagonal pattern
+        direction = n // layer
+        steps = n % layer
 
-    # Calculate hexagon coordinates based on the layer and position
-    x, y = 0, 0
-    if position_in_layer <= side_length:
-        x = side_length
-        y = position_in_layer - side_length
-    elif position_in_layer <= 2 * side_length:
-        x = side_length - (position_in_layer - side_length)
-        y = side_length
-    elif position_in_layer <= 3 * side_length:
-        x = -side_length
-        y = side_length - (position_in_layer - 2 * side_length)
-    elif position_in_layer <= 4 * side_length:
-        x = -side_length + (position_in_layer - 3 * side_length)
-        y = -side_length
-    elif position_in_layer <= 5 * side_length:
-        x = side_length
-        y = -side_length + (position_in_layer - 4 * side_length)
-    else:
-        x = side_length - (position_in_layer - 5 * side_length)
-        y = side_length
+        if direction == 0:  # Right
+            x += steps
+        elif direction == 1:  # Top-right
+            x += steps
+            y += steps
+        elif direction == 2:  # Top-left
+            x -= steps
+            y += steps
+        elif direction == 3:  # Left
+            x -= steps
+        elif direction == 4:  # Bottom-left
+            x -= steps
+            y -= steps
+        elif direction == 5:  # Bottom-right
+            x += steps
+            y -= steps
 
     return (x, y)
 
-n = int(input())
-x, y = hex_spiral_coordinates(n)
+n = int(input().strip())
+x, y = hexagon_coordinates(n)
 print(x, y)

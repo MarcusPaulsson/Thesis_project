@@ -1,26 +1,30 @@
 def solve():
-    s = input()
-    h, m = map(int, s.split(':'))
+    time_str = input()
+    hours, minutes = map(int, time_str.split(':'))
     
-    def is_palindrome(time_str):
-        return time_str == time_str[::-1]
-    
-    current_time = h * 60 + m
+    def is_palindrome(h, m):
+        h_str = str(h).zfill(2)
+        m_str = str(m).zfill(2)
+        return h_str == m_str[::-1]
     
     min_minutes = float('inf')
     
-    for i in range(1440):
-        next_time = (current_time + i) % (24 * 60)
-        next_h = next_time // 60
-        next_m = next_time % 60
+    # Check current time
+    if is_palindrome(hours, minutes):
+        print(0)
+        return
+    
+    # Find next palindrome
+    current_minutes = hours * 60 + minutes
+    
+    for i in range(1, 1441):
+        next_minutes = current_minutes + i
+        next_hours = (next_minutes // 60) % 24
+        next_minutes_val = next_minutes % 60
         
-        next_h_str = str(next_h).zfill(2)
-        next_m_str = str(next_m).zfill(2)
-        
-        next_time_str = next_h_str + next_m_str
-        
-        if is_palindrome(next_time_str):
-            min_minutes = min(min_minutes, i)
+        if is_palindrome(next_hours, next_minutes_val):
+            min_minutes = i
+            break
             
     print(min_minutes)
 

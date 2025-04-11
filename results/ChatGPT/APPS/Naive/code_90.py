@@ -1,42 +1,46 @@
-def can_reach_end(n, m, d, c):
+def can_cross_river(n, m, d, c):
     # Calculate the total length of platforms
     total_length = sum(c)
     
-    # If total length of platforms is less than n, check the jump distance
-    if total_length < n:
-        # The maximum position we can reach is determined by d
-        if d <= 1:
+    # If the maximum jump distance is greater than or equal to the river width
+    if d >= n + 1:
+        print("YES")
+        print("0 " + "0 " * (n - 1) + str(m))
+        return
+    
+    # Initialize the river representation
+    river = [0] * n
+    current_position = 0
+    
+    # Place platforms in the river
+    for i in range(m):
+        # Check if we can place the platform
+        if current_position + c[i] > n:
             print("NO")
             return
-        # If we can jump more than 1 cell, we can fill the gaps
-        # with enough platforms to reach the end
-        print("YES")
-        # Create the river representation
-        river = [0] * n
-        position = 0
         
-        for i in range(m):
-            for j in range(c[i]):
-                river[position] = i + 1  # 1-indexed platform
-                position += 1
-        
-        print(" ".join(map(str, river)))
-        return
-
-    # If we can jump beyond the width of the river
-    print("YES")
-    river = [0] * n
-    position = 0
-    
-    for i in range(m):
+        # Place the platform
         for j in range(c[i]):
-            river[position] = i + 1  # 1-indexed platform
-            position += 1
+            river[current_position + j] = i + 1
+        
+        # Move the current position to the end of the current platform
+        current_position += c[i]
+        
+        # Ensure there is enough space for the next jump
+        if i < m - 1:
+            current_position += 1  # Leave at least one cell gap between platforms
     
-    print(" ".join(map(str, river)))
+    # Check if we can reach the end
+    last_platform_end = current_position - 1
+    if last_platform_end + d >= n:
+        print("YES")
+        print(" ".join(map(str, river)))
+    else:
+        print("NO")
 
-# Input reading
+# Read input
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
 
-can_reach_end(n, m, d, c)
+# Call the function
+can_cross_river(n, m, d, c)

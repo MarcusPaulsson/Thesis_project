@@ -1,4 +1,5 @@
 def sum_digits(n):
+    """Calculates the sum of the digits of a non-negative integer."""
     s = 0
     while n:
         s += n % 10
@@ -6,10 +7,11 @@ def sum_digits(n):
     return s
 
 def solve():
+    """Finds the integer not exceeding x with the maximum sum of digits."""
     x = int(input())
     
     best_num = x
-    max_sum = sum_digits(x)
+    best_sum = sum_digits(x)
     
     s = str(x)
     n = len(s)
@@ -23,12 +25,12 @@ def solve():
         
         if num > 0:
             current_sum = sum_digits(num)
-            if current_sum > max_sum:
-                max_sum = current_sum
+            if current_sum > best_sum:
+                best_sum = current_sum
                 best_num = num
-            elif current_sum == max_sum and num > best_num:
+            elif current_sum == best_sum and num > best_num:
                 best_num = num
-    
+                
     print(best_num)
 
 solve()

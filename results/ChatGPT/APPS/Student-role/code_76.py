@@ -1,4 +1,4 @@
-def can_construct_square(t, test_cases):
+def can_construct_symmetric_square(t, test_cases):
     results = []
     for case in test_cases:
         n, m, tiles = case
@@ -6,43 +6,35 @@ def can_construct_square(t, test_cases):
             results.append("NO")
             continue
         
-        # Prepare to check for symmetry
-        top_left = set()
-        top_right = set()
-        bottom_left = set()
-        bottom_right = set()
-
-        for tile in tiles:
-            top_left.add(tile[0][0])
-            top_right.add(tile[0][1])
-            bottom_left.add(tile[1][0])
-            bottom_right.add(tile[1][1])
-
-        # Check symmetry conditions
-        can_form_symmetric = False
-        for tl in top_left:
-            if tl in bottom_right and tl in top_right and tl in bottom_left:
-                can_form_symmetric = True
+        # Check for pairs of tiles that can form the symmetric structure
+        can_form = False
+        for i in range(n):
+            for j in range(n):
+                if tiles[i][1][0] == tiles[j][0][0] and tiles[i][1][1] == tiles[j][0][1]:
+                    can_form = True
+                    break
+            if can_form:
                 break
         
-        results.append("YES" if can_form_symmetric else "NO")
+        results.append("YES" if can_form else "NO")
     
     return results
 
-# Reading input
+# Input reading
 t = int(input())
 test_cases = []
 for _ in range(t):
     n, m = map(int, input().split())
     tiles = []
-    for __ in range(n):
-        tile = [list(map(int, input().split())), list(map(int, input().split()))]
-        tiles.append(tile)
+    for _ in range(n):
+        top = tuple(map(int, input().split()))
+        bottom = tuple(map(int, input().split()))
+        tiles.append((top, bottom))
     test_cases.append((n, m, tiles))
 
-# Getting results
-results = can_construct_square(t, test_cases)
+# Get results
+results = can_construct_symmetric_square(t, test_cases)
 
-# Printing results
+# Output results
 for result in results:
     print(result)

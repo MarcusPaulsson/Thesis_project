@@ -6,8 +6,8 @@ nice_indices = []
 
 for i in range(n):
     remaining_sum = total_sum - a[i]
-    if a[i] == remaining_sum:
-        nice_indices.append(i + 1)  # +1 for 1-based index
+    if remaining_sum == a[i] * 2:
+        nice_indices.append(i + 1)
 
 print(len(nice_indices))
 if nice_indices:

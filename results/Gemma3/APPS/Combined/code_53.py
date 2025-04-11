@@ -6,23 +6,23 @@ def solve():
         max_len = 0
         best_moves = ""
         
-        def backtrack(current_seq, moves, current_arr):
+        def backtrack(current_seq, moves, remaining_arr):
             nonlocal max_len, best_moves
             
             if len(current_seq) > max_len:
                 max_len = len(current_seq)
                 best_moves = moves
             
-            if not current_arr:
+            if not remaining_arr:
                 return
             
             # Take leftmost
-            if not current_seq or current_arr[0] > current_seq[-1]:
-                backtrack(current_seq + [current_arr[0]], moves + "L", current_arr[1:])
+            if not current_seq or remaining_arr[0] > current_seq[-1]:
+                backtrack(current_seq + [remaining_arr[0]], moves + "L", remaining_arr[1:])
             
             # Take rightmost
-            if not current_seq or current_arr[-1] > current_seq[-1]:
-                backtrack(current_seq + [current_arr[-1]], moves + "R", current_arr[:-1])
+            if not current_seq or remaining_arr[-1] > current_seq[-1]:
+                backtrack(current_seq + [remaining_arr[-1]], moves + "R", remaining_arr[:-1])
         
         backtrack([], "", arr)
         return max_len, best_moves

@@ -1,41 +1,34 @@
 def min_colors_to_sort(n, s):
-    color_count = 1
+    # Create a list to store the color assignments
     colors = [0] * n
+    # Dictionary to track the last position of each character
     last_position = {}
-
+    
+    # Count the number of colors needed
+    color_count = 0
+    
     for i in range(n):
         char = s[i]
         if char in last_position:
-            # If the character was seen before, check if we need a new color
-            if last_position[char] != -1:
-                for j in range(last_position[char] + 1, i):
-                    if s[j] < char and colors[j] == 0:
-                        # If we find a character that is less than the current character
-                        # and is not yet colored, we need a new color
-                        color_count += 1
-                        break
-                colors[i] = color_count
-            else:
-                colors[i] = colors[last_position[char]]
+            # If the character has appeared before, assign the same color
+            colors[i] = colors[last_position[char]]
         else:
+            # New character, increment color count and assign a new color
+            color_count += 1
             colors[i] = color_count
         
+        # Update the last position of the character
         last_position[char] = i
-
-    # Assign colors based on the previous assignments
-    for i in range(n):
-        if colors[i] == 0:
-            colors[i] = color_count
-
+    
     return color_count, colors
 
-# Read input
-n = int(input())
+# Input reading
+n = int(input().strip())
 s = input().strip()
 
 # Get the result
-res, coloring = min_colors_to_sort(n, s)
+result_count, result_colors = min_colors_to_sort(n, s)
 
-# Print output
-print(res)
-print(' '.join(map(str, coloring)))
+# Output the result
+print(result_count)
+print(' '.join(map(str, result_colors)))

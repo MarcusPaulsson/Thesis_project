@@ -1,40 +1,35 @@
 def min_colors_to_sort(n, s):
     from collections import defaultdict
 
-    # Create a list of positions for each character
-    positions = defaultdict(list)
-    for index, char in enumerate(s):
-        positions[char].append(index)
-    
-    # Determine the number of colors needed
-    max_color = 1
-    coloring = [0] * n
-    color_map = {}
+    # Create a mapping of character positions
+    char_positions = defaultdict(list)
+    for i, char in enumerate(s):
+        char_positions[char].append(i)
 
-    for char in sorted(positions.keys()):  # Process characters in alphabetical order
-        indices = positions[char]
-        current_color = max_color
+    # Create a list to store the color for each character
+    colors = [0] * n
+    color = 1
 
-        for idx in indices:
-            if coloring[idx] == 0:  # If not colored yet
-                coloring[idx] = current_color
-                
-        max_color += 1  # Increment color for the next character
+    # Iterate through the characters in sorted order
+    for char in sorted(char_positions.keys()):
+        positions = char_positions[char]
+        # Assign the same color to all occurrences of the character
+        for pos in positions:
+            colors[pos] = color
+        color += 1
 
-    # We need to adjust the colors to ensure we can sort via swaps
-    color_to_use = [0] * (max_color - 1)
-    for i in range(n):
-        color_to_use[coloring[i] - 1] = max(color_to_use[coloring[i] - 1], coloring[i])
+    # The number of colors used is the last color - 1
+    num_colors = color - 1
 
-    # Finalize the coloring
-    final_color = []
-    for i in range(n):
-        final_color.append(color_to_use[coloring[i] - 1])
+    return num_colors, colors
 
-    print(max_color - 1)
-    print(' '.join(map(str, final_color)))
-
-# Example inputs
-n = int(input().strip())
+# Input reading
+n = int(input())
 s = input().strip()
-min_colors_to_sort(n, s)
+
+# Get the result
+num_colors, coloring = min_colors_to_sort(n, s)
+
+# Output the result
+print(num_colors)
+print(' '.join(map(str, coloring)))

@@ -1,22 +1,29 @@
 def construct_binary_string(a, b, x):
-    # Initialize variables for the result and remaining counts
+    # Initialize the result list
     result = []
-    first_char, second_char = ('0', '1') if a > b else ('1', '0')
-    first_count, second_count = (a, b) if a > b else (b, a)
-
-    # Create the alternating pattern
+    
+    # Determine the starting character based on the counts of a and b
+    if a > b:
+        current_char = '0'
+        a -= 1
+    else:
+        current_char = '1'
+        b -= 1
+    
+    # Create the alternating pattern based on x transitions
     for _ in range(x):
-        if first_count > 0:
-            result.append(first_char)
-            first_count -= 1
-        if second_count > 0:
-            result.append(second_char)
-            second_count -= 1
-
-    # Add the remaining characters of the majority type
-    result.append(first_char * first_count)
-    result.append(second_char * second_count)
-
+        result.append(current_char)
+        if current_char == '0':
+            current_char = '1'
+            b -= 1
+        else:
+            current_char = '0'
+            a -= 1
+    
+    # Append remaining characters
+    result.extend(['0'] * a)
+    result.extend(['1'] * b)
+    
     # Join the list into a string and return
     return ''.join(result)
 

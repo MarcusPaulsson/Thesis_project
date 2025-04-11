@@ -2,8 +2,8 @@ def solve():
     n = int(input())
     s = input()
     mod = 10**9 + 7
-    ls = len(s)
-    
+    len_s = len(s)
+
     def is_regular(seq):
         balance = 0
         for char in seq:

@@ -1,4 +1,4 @@
-def min_replacements(ticket):
+def min_replacements_to_lucky(ticket):
     first_half = list(map(int, ticket[:3]))
     second_half = list(map(int, ticket[3:]))
     
@@ -11,25 +11,32 @@ def min_replacements(ticket):
     # Calculate the difference
     diff = abs(sum_first - sum_second)
     
-    # Create lists of possible changes
-    changes_first = sorted([9 - d for d in first_half], reverse=True)
-    changes_second = sorted([9 - d for d in second_half], reverse=True)
+    # Create a list of possible changes
+    changes = []
     
-    # Combine the changes and sort in descending order
-    changes = changes_first + changes_second
+    if sum_first > sum_second:
+        # We need to decrease the first half or increase the second half
+        changes += [9 - digit for digit in first_half]  # Maximize decrease from first half
+        changes += [digit for digit in second_half]     # Maximize increase from second half
+    else:
+        # We need to decrease the second half or increase the first half
+        changes += [9 - digit for digit in second_half]  # Maximize decrease from second half
+        changes += [digit for digit in first_half]       # Maximize increase from first half
+    
+    # Sort changes in descending order
     changes.sort(reverse=True)
     
-    # Determine the minimum number of changes needed
-    replacements = 0
+    # Calculate the minimum number of replacements
+    count = 0
     for change in changes:
         diff -= change
-        replacements += 1
+        count += 1
         if diff <= 0:
-            return replacements
+            break
     
-    return replacements
+    return count
 
-# Read input
+# Input
 ticket = input().strip()
-# Output the result
-print(min_replacements(ticket))
+# Output
+print(min_replacements_to_lucky(ticket))

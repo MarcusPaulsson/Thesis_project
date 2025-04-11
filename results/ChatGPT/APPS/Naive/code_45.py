@@ -1,26 +1,32 @@
 def find_sequence(n, k):
-    # Minimum sum required for k distinct positive integers
+    # Minimum sum of first k positive integers is k * (k + 1) // 2
     min_sum = k * (k + 1) // 2
     
     if n < min_sum:
-        return -1  # Not enough to form k distinct positive integers
+        return -1
     
-    # Calculate the maximum GCD that can be used
-    g = (n - min_sum) // k + 1
+    # The maximum GCD we can use is n // k
+    max_gcd = n // k
     
-    # Generate the sequence
-    sequence = [(i + g) for i in range(1, k + 1)]
+    # We need to find the largest GCD that allows us to create a valid sequence
+    for g in range(max_gcd, 0, -1):
+        # Calculate the adjusted sum we need to reach
+        adjusted_n = n // g
+        
+        # Check if we can form the sequence with this GCD
+        if adjusted_n >= min_sum:
+            # Create the sequence
+            sequence = [(i + 1) * g for i in range(k)]
+            return sequence
     
-    return sequence
+    return -1
 
 # Input reading
-n, k = map(int, input().strip().split())
-
-# Finding the sequence
+n, k = map(int, input().split())
 result = find_sequence(n, k)
 
-# Output the result
+# Output result
 if result == -1:
     print(-1)
 else:
-    print(" ".join(map(str, result)))
+    print(' '.join(map(str, result)))

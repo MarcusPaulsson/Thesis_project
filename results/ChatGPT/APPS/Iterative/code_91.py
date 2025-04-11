@@ -1,35 +1,34 @@
 def max_removable_length(s, t):
     n, m = len(s), len(t)
-    
-    # Create arrays to store the position of match for t in s
-    left = [-1] * m
-    right = [-1] * m
-    
-    # Fill the left array
+
+    # Precompute the leftmost and rightmost positions of t in s
+    left = [0] * m
+    right = [0] * m
+
+    # Fill left array
     j = 0
     for i in range(n):
         if j < m and s[i] == t[j]:
             left[j] = i
             j += 1
-            
-    # Fill the right array
+
+    # Fill right array
     j = m - 1
     for i in range(n - 1, -1, -1):
         if j >= 0 and s[i] == t[j]:
             right[j] = i
             j -= 1
-    
-    # Calculate the maximum removable substring length
+
+    # Calculate the maximum removable length
     max_length = 0
-    
     for i in range(m - 1):
-        if left[i] != -1 and right[i + 1] != -1:
-            max_length = max(max_length, right[i + 1] - left[i] - 1)
-    
-    # Also consider removing from the start or the end
-    max_length = max(max_length, right[0] + 1)  # remove from the start
-    max_length = max(max_length, n - left[m - 1] - 1)  # remove from the end
-    
+        max_length = max(max_length, right[i + 1] - left[i] - 1)
+
+    # Consider removing from the start to the first character of t
+    max_length = max(max_length, right[0])
+    # Consider removing from the last character of t to the end
+    max_length = max(max_length, n - 1 - left[m - 1])
+
     return max_length
 
 # Input reading

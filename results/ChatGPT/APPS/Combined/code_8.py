@@ -1,42 +1,52 @@
-def minimum_draws(tiles):
-    # Count occurrences of tiles using a dictionary
-    counts = {}
-    for tile in tiles:
-        num = int(tile[0])
-        suit = tile[1]
-        counts[(num, suit)] = counts.get((num, suit), 0) + 1
-    
-    # Check for koutsu (triplet)
-    if any(count >= 3 for count in counts.values()):
-        return 0  # No draws needed if we have a triplet
-    
-    # Organize tiles by suit
-    suits = {'m': [], 'p': [], 's': []}
-    for (num, suit), count in counts.items():
-        suits[suit].append(num)
-    
-    # Check for shuntsu (sequences) in each suit
-    for suit, numbers in suits.items():
+def min_tiles_to_draw(tiles):
+    hand = [(int(tile[0]), tile[1]) for tile in tiles]
+
+    def has_koutsu(hand):
+        counts = {}
+        for number, suit in hand:
+            counts[(number, suit)] = counts.get((number, suit), 0) + 1
+        return any(count == 3 for count in counts.values())
+
+    def has_shuntsu(hand):
+        suits = {}
+        for number, suit in hand:
+            suits.setdefault(suit, []).append(number)
+
+        for numbers in suits.values():
+            numbers.sort()
+            for i in range(len(numbers) - 2):
+                if (numbers[i] + 1 in numbers) and (numbers[i] + 2 in numbers):
+                    return True
+        return False
+
+    if has_koutsu(hand) or has_shuntsu(hand):
+        return 0
+
+    needed = float('inf')
+
+    # Check for koutsu formation
+    for number, suit in hand:
+        needed = min(needed, 1)
+
+    # Check for shuntsu formation
+    suits = {}
+    for number, suit in hand:
+        suits.setdefault(suit, []).append(number)
+
+    for numbers in suits.values():
         numbers.sort()
-        n = len(numbers)
-        
-        # Check for existing shuntsu
-        for i in range(n - 2):
-            if numbers[i + 2] - numbers[i] == 2 and numbers[i + 1] - numbers[i] == 1:
-                return 0  # No draws needed if we have a sequence
+        for i in range(len(numbers)):
+            if i > 0 and i < len(numbers) - 1:
+                if numbers[i - 1] + 1 == numbers[i] and numbers[i] + 1 == numbers[i + 1]:
+                    needed = min(needed, 0)
+            if i == 0 and numbers[i] + 1 not in numbers:
+                needed = min(needed, 1)
+            if i == len(numbers) - 1 and numbers[i] - 1 not in numbers:
+                needed = min(needed, 1)
 
-        # Check for draws needed to form a shuntsu
-        for number in numbers:
-            needed_tiles = [(number - 1, suit), (number + 1, suit)]
-            if all(tile not in counts for tile in needed_tiles):
-                return 2  # Need 2 draws
-            elif any(tile not in counts for tile in needed_tiles):
-                return 1  # Need 1 draw
+    return needed
 
-    return 2  # If no koutsu or shuntsu can be formed, need 2 draws
-
-# Read input
+# Input reading
 tiles = input().strip().split()
-# Get the result and print
-result = minimum_draws(tiles)
-print(result)
+# Output the result
+print(min_tiles_to_draw(tiles))

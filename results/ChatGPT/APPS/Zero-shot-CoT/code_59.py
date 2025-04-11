@@ -1,7 +1,11 @@
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# We want the last x digits of the number to be '0' * (x - y - 1) + '1' + '0' * y
+# We need to ensure that the last x digits of the number have the form:
+# ...000...010...0 (where there are y zeros followed by a 1 and then (x-y-1) zeros)
+# This means we need to check the last x digits of the number.
+
+# The target pattern we want for the last x digits
 target = ['0'] * x
 target[y] = '1'
 

@@ -1,29 +1,36 @@
-n = int(input())
-s = input()
-
-# Count occurrences of each character
-from collections import Counter
-count = Counter(s)
-
-# Check for the maximum frequency of any character
-max_freq = max(count.values())
-
-# If max frequency is greater than (n + 1) // 2, it's impossible to color
-if max_freq > (n + 1) // 2:
-    print("NO")
-else:
-    print("YES")
-    # Generate coloring
+def can_color_string(n, s):
+    # Count the frequency of each character
+    from collections import Counter
+    count = Counter(s)
+    
+    # Check if any character appears more than twice
+    if any(freq > 2 for freq in count.values()):
+        return "NO"
+    
+    # Initialize the coloring array
     coloring = ['0'] * n
-    # Fill in the first half with '0' and the second half with '1'
-    half = (n + 1) // 2
-    used = Counter()
     
+    # Assign colors based on the characters
+    color = 0
     for i in range(n):
-        if used[s[i]] < count[s[i]] // 2:
-            coloring[i] = '0'
+        if i > 0 and s[i] == s[i - 1]:
+            coloring[i] = coloring[i - 1]  # Same color as previous
         else:
-            coloring[i] = '1'
-        used[s[i]] += 1
+            coloring[i] = str(color)  # Alternate colors
+            color = 1 - color  # Switch color
     
-    print(''.join(coloring))
+    return "YES", ''.join(coloring)
+
+# Input reading
+n = int(input())
+s = input().strip()
+
+# Get the result
+result = can_color_string(n, s)
+
+# Print the result
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    print(result[1])

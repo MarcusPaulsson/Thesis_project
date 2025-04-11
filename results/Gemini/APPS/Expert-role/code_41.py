@@ -1,18 +1,18 @@
 def nearest_zero(arr):
   """
-  Finds the distance to the nearest zero for each element in the array.
+  Calculates the distance to the nearest zero for each element in an array.
 
   Args:
     arr: A list of integers.
 
   Returns:
-    A list of integers, where each element is the distance to the nearest zero.
+    A list of integers representing the distances to the nearest zero for each element.
   """
 
   n = len(arr)
   distances = [float('inf')] * n
 
-  # Iterate from left to right
+  # Forward pass: find distances to the nearest zero from the left
   last_zero = float('-inf')
   for i in range(n):
     if arr[i] == 0:
@@ -20,7 +20,7 @@ def nearest_zero(arr):
     if last_zero != float('-inf'):
       distances[i] = min(distances[i], i - last_zero)
 
-  # Iterate from right to left
+  # Backward pass: find distances to the nearest zero from the right
   last_zero = float('inf')
   for i in range(n - 1, -1, -1):
     if arr[i] == 0:
@@ -34,5 +34,6 @@ def nearest_zero(arr):
 if __name__ == "__main__":
   n = int(input())
   arr = list(map(int, input().split()))
-  result = nearest_zero(arr)
-  print(*result)
+
+  distances = nearest_zero(arr)
+  print(*distances)

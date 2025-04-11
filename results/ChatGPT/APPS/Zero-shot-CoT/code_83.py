@@ -1,19 +1,33 @@
 def minimal_perimeter(a, b):
     min_perimeter = float('inf')
     
-    # Iterate through all possible widths of the rectangle
-    for width in range(1, int((a + b) ** 0.5) + 2):
-        if (a + b) % width == 0:
-            height = (a + b) // width
+    # Iterate over all possible widths for the red rectangle
+    for width_r in range(1, int(a**0.5) + 1):
+        if a % width_r == 0:
+            height_r = a // width_r
             
-            # Check both orientations
-            for w, h in [(width, height), (height, width)]:
-                # Check if we can fit red and blue rectangles
-                if (a % w == 0 and a // w <= h) or (b % w == 0 and b // w <= h):
-                    perimeter = 2 * (w + h)
+            # Now iterate over all possible widths for the blue rectangle
+            for width_b in range(1, int(b**0.5) + 1):
+                if b % width_b == 0:
+                    height_b = b // width_b
+                    
+                    # Calculate the total width and height of the combined rectangle
+                    total_width = max(width_r, width_b)
+                    total_height = height_r + height_b
+                    
+                    # Calculate the perimeter
+                    perimeter = 2 * (total_width + total_height)
+                    min_perimeter = min(min_perimeter, perimeter)
+                    
+                    # Also check the other orientation for blue rectangle
+                    total_width = width_r + width_b
+                    total_height = max(height_r, height_b)
+                    
+                    perimeter = 2 * (total_width + total_height)
                     min_perimeter = min(min_perimeter, perimeter)
     
     return min_perimeter
 
+# Input reading
 a, b = map(int, input().split())
 print(minimal_perimeter(a, b))

@@ -1,38 +1,43 @@
+def can_reach_end(n, m, d, c):
+    # Calculate the total length of platforms
+    total_length = sum(c)
+    
+    # If the maximum jump distance is greater than or equal to the river width, we can always reach the end
+    if d >= n + 1:
+        result = [0] * n
+        pos = 0
+        for i in range(m):
+            for j in range(c[i]):
+                result[pos] = i + 1
+                pos += 1
+        return "YES", result
+    
+    # Check if we can place the platforms such that we can jump across
+    result = [0] * n
+    pos = 0
+    for i in range(m):
+        # Place the platform at the current position
+        for j in range(c[i]):
+            result[pos] = i + 1
+            pos += 1
+    
+    # Check if we can jump from the last position of the last platform to n + 1
+    last_platform_end = sum(c)
+    if last_platform_end + d >= n + 1:
+        return "YES", result
+    
+    return "NO", []
+
+# Read input
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
 
-# Calculate the total length of all platforms
-total_length = sum(c)
+# Get the result
+result = can_reach_end(n, m, d, c)
 
-# If the max jump distance d is greater than or equal to n, we can always reach the end
-if d >= n:
-    result = [0] * n
-    position = 0
-    for i in range(m):
-        for j in range(c[i]):
-            result[position] = i + 1
-            position += 1
-    print("YES")
-    print(" ".join(map(str, result)))
+# Print the result
+if result[0] == "NO":
+    print("NO")
 else:
-    # Try to place the platforms
-    result = [0] * n
-    position = 0
-    
-    for i in range(m):
-        # If the current platform can fit within the jump distance
-        if position + c[i] - 1 <= n and (i == 0 or position - (c[i-1] if i > 0 else 0) <= d):
-            for j in range(c[i]):
-                result[position] = i + 1
-                position += 1
-        else:
-            print("NO")
-            exit(0)
-        
-        # Move the position to the next platform start
-        if i < m - 1:
-            position += d - c[i]
-            position = max(position, sum(c[:i+1])) # Ensure we don't overlap
-    
     print("YES")
-    print(" ".join(map(str, result)))
+    print(" ".join(map(str, result[1])))

@@ -1,38 +1,46 @@
-def max_beauty_with_swap(n, trophies):
-    # Step 1: Calculate the maximum length of golden trophies without any swaps
-    max_length = 0
-    current_length = 0
+def max_beauty_after_swap(n, trophies):
+    # Find the lengths of contiguous segments of 'G'
     segments = []
+    current_length = 0
     
     for trophy in trophies:
         if trophy == 'G':
             current_length += 1
         else:
-            segments.append(current_length)
-            max_length = max(max_length, current_length)
+            if current_length > 0:
+                segments.append(current_length)
             current_length = 0
-    segments.append(current_length)
-    max_length = max(max_length, current_length)
+            
+    if current_length > 0:
+        segments.append(current_length)
     
-    # If there are no silver trophies, return max_length immediately
-    if 'S' not in trophies:
+    # If there are no golden trophies
+    if not segments:
+        return 0
+    
+    # Calculate the maximum length of 'G' segments
+    max_length = max(segments)
+    
+    # If there is only one segment, no swap can increase its length
+    if len(segments) == 1:
         return max_length
     
-    # Step 2: Check for the possibility of increasing the length by one swap
+    # Check for possible swaps between segments
     max_possible_length = max_length
     
-    # We need to check adjacent segments of 'G's separated by 'S'
     for i in range(len(segments) - 1):
-        if segments[i] > 0 and segments[i + 1] > 0:
-            # If there is an S between two segments of Gs
-            combined_length = segments[i] + segments[i + 1]
-            max_possible_length = max(max_possible_length, combined_length + 1)
+        # If we swap a 'S' between two segments of 'G', we can combine them
+        combined_length = segments[i] + segments[i + 1]
+        max_possible_length = max(max_possible_length, combined_length)
+    
+    # If we can swap a 'S' with a 'G' to increase the length of the longest segment
+    max_possible_length = min(max_possible_length + 1, n)
     
     return max_possible_length
 
 # Input reading
-n = int(input())
+n = int(input().strip())
 trophies = input().strip()
 
-# Calculate and print the result
-print(max_beauty_with_swap(n, trophies))
+# Output the result
+print(max_beauty_after_swap(n, trophies))

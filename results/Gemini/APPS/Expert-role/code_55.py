@@ -4,37 +4,31 @@ def solve():
   x5, y5, x6, y6 = map(int, input().split())
 
   white_area = (x2 - x1) * (y2 - y1)
-
-  # Calculate intersection with black sheet 1
+  
+  # Calculate overlap between white and black1
   x_overlap1 = max(0, min(x2, x4) - max(x1, x3))
   y_overlap1 = max(0, min(y2, y4) - max(y1, y3))
   overlap_area1 = x_overlap1 * y_overlap1
 
-  # Calculate intersection with black sheet 2
+  # Calculate overlap between white and black2
   x_overlap2 = max(0, min(x2, x6) - max(x1, x5))
   y_overlap2 = max(0, min(y2, y6) - max(y1, y5))
   overlap_area2 = x_overlap2 * y_overlap2
 
-  # Calculate intersection between black sheets and white sheet
-  x_overlap12 = max(0, min(x2, x4, x6) - max(x1, x3, x5))
-  y_overlap12 = max(0, min(y2, y4, y6) - max(y1, y3, y5))
-  overlap_area12 = x_overlap12 * y_overlap12
+  # Calculate overlap between all three rectangles (white, black1, black2)
+  x_overlap_all = max(0, min(x2, x4, x6) - max(x1, x3, x5))
+  y_overlap_all = max(0, min(y2, y4, y6) - max(y1, y3, y5))
+  overlap_area_all = x_overlap_all * y_overlap_all
 
-  # Calculate intersection between black sheets
-  x_black_overlap = max(0, min(x4, x6) - max(x3, x5))
-  y_black_overlap = max(0, min(y4, y6) - max(y3, y5))
-  black_overlap_area = x_black_overlap * y_black_overlap
+  # Calculate overlap between black1 and black2
+  x_overlap_blacks = max(0, min(x4, x6) - max(x3, x5))
+  y_overlap_blacks = max(0, min(y4, y6) - max(y3, y5))
+  overlap_area_blacks = x_overlap_blacks * y_overlap_blacks
 
-  # Calculate covered area
-  total_covered_area = overlap_area1 + overlap_area2 - max(0, min(x4,x6)-max(x3,x5))*max(0,min(y4,y6)-max(y3,y5))
+  # Calculate area of union of black sheets within the white sheet
+  union_area = overlap_area1 + overlap_area2 - overlap_area_all
   
-  x_intersect = max(0, min(x2,x4,x6) - max(x1,x3,x5))
-  y_intersect = max(0, min(y2,y4,y6) - max(y1,y3,y5))
-  intersection_area = x_intersect * y_intersect
-
-  covered_area = overlap_area1 + overlap_area2 - intersection_area
-
-  if white_area > covered_area:
+  if white_area > union_area:
     print("YES")
   else:
     print("NO")

@@ -1,30 +1,22 @@
-def min_time_to_post_office(d, k, a, b, t):
-    time = float('inf')
-
-    # Case 1: Walk the entire distance
-    time = min(time, d * b)
-
-    # Case 2: Use the car as much as possible
-    full_cycles = d // k
+def minimal_time(d, k, a, b, t):
+    # Calculate the time if Vasiliy walks the entire distance
+    time_if_walk = d * b
+    
+    # Calculate the number of full segments the car can drive
+    full_segments = d // k
     remaining_distance = d % k
+    
+    # Calculate the time if Vasiliy uses the car for full segments and walks the remaining distance
+    time_using_car = full_segments * (k * a + t) + remaining_distance * a
+    
+    # If there are full segments, we need to subtract the last repair time
+    if full_segments > 0:
+        time_using_car -= t
+    
+    # Compare the two strategies and return the minimum time
+    return min(time_if_walk, time_using_car)
 
-    # Calculate time if using the car for full cycles
-    if full_cycles > 0:
-        time_using_car = (full_cycles * k * a) + (full_cycles - 1) * t + (remaining_distance * a if remaining_distance > 0 else 0)
-        time = min(time, time_using_car)
-
-    # Add walking time for remaining distance after using the car
-    time_using_car = (full_cycles * k * a) + (full_cycles * t) + (remaining_distance * b)
-    time = min(time, time_using_car)
-
-    # Add time for using car and then walking
-    if full_cycles > 0:
-        time_using_car_and_walk = (full_cycles * k * a) + (full_cycles - 1) * t + (remaining_distance * b)
-        time = min(time, time_using_car_and_walk)
-
-    return time
-
-# Input
+# Read input
 d, k, a, b, t = map(int, input().split())
-# Output
-print(min_time_to_post_office(d, k, a, b, t))
+# Print the result
+print(minimal_time(d, k, a, b, t))

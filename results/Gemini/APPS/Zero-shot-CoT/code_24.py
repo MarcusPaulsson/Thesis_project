@@ -4,42 +4,41 @@ def solve():
         board.append(list(input()))
 
     def check_win(board):
-        def check_horizontal(board):
-            for row in board:
-                for i in range(len(row) - 4):
-                    if all(row[i + j] == 'X' for j in range(5)):
-                        return True
-            return False
+        # Check horizontal
+        for row in board:
+            for i in range(len(row) - 4):
+                if row[i] == 'X' and row[i+1] == 'X' and row[i+2] == 'X' and row[i+3] == 'X' and row[i+4] == 'X':
+                    return True
 
-        def check_vertical(board):
-            for col in range(len(board[0])):
-                for i in range(len(board) - 4):
-                    if all(board[i + j][col] == 'X' for j in range(5)):
-                        return True
-            return False
+        # Check vertical
+        for col in range(10):
+            for i in range(10 - 4):
+                if board[i][col] == 'X' and board[i+1][col] == 'X' and board[i+2][col] == 'X' and board[i+3][col] == 'X' and board[i+4][col] == 'X':
+                    return True
 
-        def check_diagonal(board):
-            for row in range(len(board) - 4):
-                for col in range(len(board[0]) - 4):
-                    if all(board[row + j][col + j] == 'X' for j in range(5)):
-                        return True
+        # Check diagonal (top-left to bottom-right)
+        for i in range(10 - 4):
+            for j in range(10 - 4):
+                if board[i][j] == 'X' and board[i+1][j+1] == 'X' and board[i+2][j+2] == 'X' and board[i+3][j+3] == 'X' and board[i+4][j+4] == 'X':
+                    return True
 
-            for row in range(len(board) - 4):
-                for col in range(4, len(board[0])):
-                    if all(board[row + j][col - j] == 'X' for j in range(5)):
-                        return True
-            return False
+        # Check diagonal (top-right to bottom-left)
+        for i in range(10 - 4):
+            for j in range(4, 10):
+                if board[i][j] == 'X' and board[i+1][j-1] == 'X' and board[i+2][j-2] == 'X' and board[i+3][j-3] == 'X' and board[i+4][j-4] == 'X':
+                    return True
 
-        return check_horizontal(board) or check_vertical(board) or check_diagonal(board)
+        return False
 
-    for r in range(10):
-        for c in range(10):
-            if board[r][c] == '.':
-                board[r][c] = 'X'
+    for i in range(10):
+        for j in range(10):
+            if board[i][j] == '.':
+                board[i][j] = 'X'
                 if check_win(board):
                     print('YES')
                     return
-                board[r][c] = '.'
+                board[i][j] = '.'
+
     print('NO')
 
 solve()

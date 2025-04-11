@@ -31,31 +31,37 @@ def solve():
         
         selected_edges = []
         
-        # First, add edges connected to vertex 1 until its degree is D
-        degree_one = 0
+        # First, try to connect the first vertex to D other vertices
+        count = 0
         for u, v in edges:
-            if u == 1 or v == 1:
+            if u == 1:
                 if union(u, v):
                     selected_edges.append((u, v))
-                    if u == 1 or v == 1:
-                        degree_one += 1
-                    if degree_one == target_degree:
-                        break
+                    count += 1
+                if count == target_degree:
+                    break
         
-        if degree_one != target_degree:
+        # If we couldn't connect the first vertex to D other vertices, return None
+        if count != target_degree:
             return None
         
         # Then, add the remaining edges to form a spanning tree
         for u, v in edges:
-            if union(u, v):
-                selected_edges.append((u, v))
+            if (u, v) not in selected_edges and (v, u) not in selected_edges:
+                if union(u, v):
+                    selected_edges.append((u, v))
         
-        # Check if it's a spanning tree
-        num_edges = len(selected_edges)
-        if num_edges != n - 1:
+        # Check if we have a spanning tree
+        num_components = 0
+        for i in range(1, n + 1):
+            if parent[i] == 0:
+                num_components += 1
+                find(i)
+        
+        if num_components == 1:
+            return selected_edges
+        else:
             return None
-        
-        return selected_edges
     
     spanning_tree = find_spanning_tree(d)
     

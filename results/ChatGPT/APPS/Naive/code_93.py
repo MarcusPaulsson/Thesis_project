@@ -1,40 +1,31 @@
 def construct_tree(n, d, k):
-    if d > 2 * (k - 1) + 1:
+    if d > 2 * (k - 1) + 1 or d >= n:
         return "NO"
-    
-    if d == 1 and n > 2:
-        return "NO"
-    
-    if n == 1:
-        return "YES\n"
     
     edges = []
     
-    # Create the main path for the diameter
+    # Create a path of length d
     for i in range(1, d + 1):
         edges.append((i, i + 1))
     
-    # Create a list of nodes that are part of the main path
-    last_node = d + 1
+    # Now we have d + 1 vertices in the path
+    current_vertex = d + 2
     
-    # For each node in the main path, add remaining nodes
-    for i in range(1, d + 1):
-        if last_node >= n:
+    # Connect remaining vertices
+    for i in range(1, d + 2):
+        if current_vertex > n:
             break
-        while len([x for x, y in edges if x == i]) < k - 1 and last_node < n:
-            edges.append((i, last_node))
-            last_node += 1
+        while len([e for e in edges if e[0] == i or e[1] == i]) < k and current_vertex <= n:
+            edges.append((i, current_vertex))
+            current_vertex += 1
     
-    # If there are still nodes left, we need to attach them
-    if last_node <= n:
+    if current_vertex <= n:
         return "NO"
     
-    result = "YES\n" + "\n".join(f"{u} {v}" for u, v in edges)
-    return result
+    result = ["YES"]
+    result.extend(f"{u} {v}" for u, v in edges)
+    return "\n".join(result)
 
-
-# Read input
+# Input reading
 n, d, k = map(int, input().split())
-
-# Construct tree and print the result
 print(construct_tree(n, d, k))

@@ -1,47 +1,42 @@
-def get_coordinates(n):
+def hexagonal_coordinates(n):
     if n == 0:
         return (0, 0)
 
-    # Determine which layer of the spiral the move is in
     layer = 0
-    while n > 6 * layer:
-        n -= 6 * layer
-        layer += 1
+    moves_in_layer = 6 * layer
 
-    # Calculate the coordinates based on the layer and position within the layer
-    x, y = layer, 0  # Start at the rightmost point of the current layer
+    while n > moves_in_layer:
+        n -= moves_in_layer
+        layer += 1
+        moves_in_layer = 6 * layer
+
+    x, y = layer, 0
 
     if n == 0:
         return (x, y)
 
-    # Move counter-clockwise through the layer
-    for direction in range(6):
-        if n <= layer:
-            if direction == 0:
-                x -= n
-            elif direction == 1:
-                x -= layer
-                y += n
-            elif direction == 2:
-                x -= layer
-                y += layer
-            elif direction == 3:
-                x += n
-                y += layer
-            elif direction == 4:
-                x += layer
-                y -= n
-            elif direction == 5:
-                x += layer
-                y -= layer
-            break
-        n -= layer
+    # Determine the position in the current layer
+    direction = n // layer
+    steps = n % layer
+
+    if direction == 0:  # Right
+        x += steps
+    elif direction == 1:  # Top-right
+        x += steps
+        y += steps
+    elif direction == 2:  # Top-left
+        y += steps
+    elif direction == 3:  # Left
+        x -= steps
+        y += steps
+    elif direction == 4:  # Bottom-left
+        x -= steps
+        y -= steps
+    elif direction == 5:  # Bottom-right
+        y -= steps
 
     return (x, y)
 
-# Read input
-n = int(input())
-# Get coordinates
-result = get_coordinates(n)
-# Print output
-print(result[0], result[1])
+n = int(input().strip())
+x, y = hexagonal_coordinates(n)
+print(x, y)

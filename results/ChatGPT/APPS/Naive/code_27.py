@@ -1,19 +1,21 @@
 def min_operations(n, s):
-    # The default number of operations is to type all characters
+    # Initialize the minimum operations to the length of the string
     min_ops = n
     
-    # Try every possible split point
-    for i in range(1, n):
-        # Check if the prefix (s[:i]) can be doubled to match the beginning of the string
-        if s[:i] == s[i:i+i]:
-            # Calculate operations: type prefix + 1 for copy + remaining characters
-            min_ops = min(min_ops, i + 1 + (n - i - i))
+    # Check for all possible prefixes
+    for i in range(1, n + 1):
+        prefix = s[:i]
+        # Check if the prefix can be repeated to form the beginning of the string
+        if s.startswith(prefix * (n // i)) and n % i == 0:
+            # Calculate operations: typing the prefix + 1 copy + remaining characters
+            operations = i + 1 + (n - len(prefix * (n // i)))
+            min_ops = min(min_ops, operations)
     
     return min_ops
 
-# Read input
+# Input reading
 n = int(input())
 s = input().strip()
 
-# Print the result
+# Output the result
 print(min_operations(n, s))

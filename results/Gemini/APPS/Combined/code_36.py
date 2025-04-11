@@ -24,53 +24,38 @@ def solve():
         print(x, y)
         return
 
-    # Segment 1
     if remaining <= segment_length:
-        x -= 2 * remaining
-        print(x, y)
-        return
-    else:
-        x -= 2 * segment_length
+        x -= remaining
+        y += 2 * remaining
+    elif remaining <= 2 * segment_length:
         remaining -= segment_length
-
-    # Segment 2
-    y += 2 * remaining
-    if remaining <= segment_length:
-        print(x, y)
-        return
-    else:
+        x -= 2 * segment_length
         y += 2 * segment_length
-        remaining -= segment_length
-
-    # Segment 3
-    x += 2 * remaining
-    if remaining <= segment_length:
-        print(x, y)
-        return
-    else:
-        x += 2 * segment_length
-        remaining -= segment_length
-
-    # Segment 4
-    y -= 2 * remaining
-    if remaining <= segment_length:
-        print(x, y)
-        return
-    else:
-        y -= 2 * segment_length
-        remaining -= segment_length
-
-    # Segment 5
-    x -= 2 * remaining
-    if remaining <= segment_length:
-        print(x, y)
-        return
-    else:
+        x -= remaining
+        y -= remaining
+    elif remaining <= 3 * segment_length:
+        remaining -= 2 * segment_length
         x -= 2 * segment_length
-        remaining -= segment_length
-    
-    # Segment 6
-    y += 2 * remaining
+        y += 2 * segment_length
+        x += remaining
+        y -= remaining * 2
+    elif remaining <= 4 * segment_length:
+        remaining -= 3 * segment_length
+        x += remaining
+        y -= 2 * segment_length
+    elif remaining <= 5 * segment_length:
+        remaining -= 4 * segment_length
+        x += 2 * segment_length
+        y -= 2 * segment_length
+        x += remaining
+        y += 2 * remaining
+    else:
+        remaining -= 5 * segment_length
+        x += 2 * segment_length
+        y -= 2 * segment_length
+        x -= remaining
+        y += 2 * remaining
+
     print(x, y)
 
 solve()

@@ -1,20 +1,16 @@
-def remove_trailing_zeros(x):
+def f(x):
+    x += 1
     while x % 10 == 0:
         x //= 10
     return x
 
-def f(x):
-    return remove_trailing_zeros(x + 1)
-
-def count_reachable_numbers(n):
+def reachable_count(n):
     reachable = set()
     current = n
-    
     while current not in reachable:
         reachable.add(current)
         current = f(current)
-    
     return len(reachable)
 
 n = int(input())
-print(count_reachable_numbers(n))
+print(reachable_count(n))

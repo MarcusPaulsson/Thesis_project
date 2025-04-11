@@ -1,30 +1,20 @@
-def count_common_integers(a1, b1, a2, b2, L, R):
+def count_common_terms(a1, b1, a2, b2, L, R):
     from math import gcd
 
-    def count_in_range(a, b, L, R):
-        if a == 0:
-            if b < L or b > R:
-                return 0
-            return R - L + 1
-        start = (L - b + a - 1) // a  # ceil((L - b) / a)
-        end = (R - b) // a            # floor((R - b) / a)
-        return max(0, end - start + 1)
+    # Calculate the difference and the initial offset
+    d1 = a1
+    d2 = a2
+    b_diff = b2 - b1
 
-    # Calculate the gcd of the differences
-    g = gcd(a1, a2)
-    
-    # Check if the equations can have common solutions
-    if (b2 - b1) % g != 0:
+    # Calculate the gcd of the two differences
+    g = gcd(d1, d2)
+
+    # Check if the difference is divisible by gcd
+    if b_diff % g != 0:
         return 0
 
-    # Calculate the values for k and l
-    a1_g = a1 // g
-    a2_g = a2 // g
-    b_diff = b2 - b1
-    b_diff_g = b_diff // g
-
-    # Use the extended Euclidean algorithm to find a solution for modular equation
-    # a1 * x ≡ b_diff (mod a2)
+    # Find the first solution to the equation a1 * k' + b1 = a2 * l' + b2
+    # We can use the extended Euclidean algorithm to find one solution
     def extended_gcd(a, b):
         if b == 0:
             return a, 1, 0
@@ -33,23 +23,29 @@ def count_common_integers(a1, b1, a2, b2, L, R):
         y = x1 - (a // b) * y1
         return g, x, y
 
-    _, x0, y0 = extended_gcd(a1_g, a2_g)
+    _, x0, y0 = extended_gcd(d1, d2)
+    x0 *= b_diff // g
+    y0 *= b_diff // g
 
-    # Scale the solution to the specific b_diff
-    x0 *= b_diff_g
-    y0 *= b_diff_g
+    # Now we have one solution (x0, y0)
+    # General solution is:
+    # x = x0 + (d2/g) * t
+    # y = y0 - (d1/g) * t for integer t
 
-    # General solution
-    x0 = (x0 % (a2_g)) * (g) + b1
-    step = (a2_g * g)
+    # We need to find the range of t such that L <= x <= R
+    t_min = (L - (x0 + (d2 // g) * 0)) // (d2 // g)
+    t_max = (R - (x0 + (d2 // g) * 0)) // (d2 // g)
 
-    # Count valid x in range [L, R]
-    count1 = count_in_range(step, x0, L, R)
-    count2 = count_in_range(step, x0 + step, L, R)
+    if (x0 + (d2 // g) * t_min) < L:
+        t_min += 1
+    if (x0 + (d2 // g) * t_max) > R:
+        t_max -= 1
 
-    return count1 + count2
+    return max(0, t_max - t_min + 1)
 
 # Read input
 a1, b1, a2, b2, L, R = map(int, input().split())
-# Calculate and print the result
-print(count_common_integers(a1, b1, a2, b2, L, R))
+# Get the result
+result = count_common_terms(a1, b1, a2, b2, L, R)
+# Print the result
+print(result)

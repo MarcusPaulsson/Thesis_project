@@ -4,7 +4,8 @@ def can_complete_wall(n, heights):
     
     for height in heights:
         total_bricks_needed += max_height - height
-        
+    
+    # Check if the total number of bricks needed is even
     return total_bricks_needed % 2 == 0
 
 # Input reading

@@ -5,32 +5,37 @@ def max_acc_length(s):
     colon_count = 0
     pipe_count = 0
 
+    # Find the first opening bracket
     for i in range(n):
-        if s[i] == '[' and left_bracket == -1:
+        if s[i] == '[':
             left_bracket = i
-        elif s[i] == ':' and left_bracket != -1:
-            colon_count += 1
-        elif s[i] == ']' and left_bracket != -1:
+            break
+
+    # Find the last closing bracket
+    for i in range(n - 1, -1, -1):
+        if s[i] == ']':
             right_bracket = i
             break
 
-    if left_bracket == -1 or right_bracket == -1 or right_bracket < left_bracket:
+    # If we don't have both brackets
+    if left_bracket == -1 or right_bracket == -1 or left_bracket >= right_bracket:
         return -1
 
-    # Count pipes between the first colon after the left bracket and the second colon before the right bracket
-    for i in range(left_bracket + 1, right_bracket):
-        if s[i] == '|':
+    # Count colons and pipes between the brackets
+    for i in range(left_bracket, right_bracket + 1):
+        if s[i] == ':':
+            colon_count += 1
+        elif s[i] == '|':
             pipe_count += 1
-        elif s[i] == ':':
-            # We should only count pipes between the two colons
-            colon_count -= 1
 
+    # We need at least two colons to form an accordion
     if colon_count < 2:
         return -1
 
     # The maximum length of the accordion
-    return 4 + pipe_count
+    return 2 + pipe_count  # 2 for the colons, plus the number of pipes
 
-# Example usage:
+# Read input
 s = input().strip()
+# Output the result
 print(max_acc_length(s))

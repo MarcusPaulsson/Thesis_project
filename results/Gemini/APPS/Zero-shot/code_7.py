@@ -1,19 +1,15 @@
 n, m = map(int, input().split())
 
-low = 0
-high = 2 * 10**9
+left = 0
+right = 2 * 10**9
 
-ans = high
-
-while low <= high:
-    mid = (low + high) // 2
-    
+while left <= right:
+    mid = (left + right) // 2
     total_sparrows = mid * (mid + 1) // 2
     
-    if n + mid * m >= total_sparrows:
-        ans = mid
-        high = mid - 1
+    if total_sparrows >= n + (n // m) * m:
+        right = mid - 1
     else:
-        low = mid + 1
+        left = mid + 1
 
-print(ans)
+print(left)

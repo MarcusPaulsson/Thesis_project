@@ -1,30 +1,20 @@
 def solve():
     n, m = map(int, input().split())
 
-    left = 0
-    right = 2 * 10**9 
+    l, r = 0, 2 * 10**9
+    ans = r
 
-    ans = -1
-
-    while left <= right:
-        mid = (left + right) // 2
+    while l <= r:
+        mid = (l + r) // 2
         
         total_sparrows = mid * (mid + 1) // 2
         
         
-        
-        full_barns = (total_sparrows - n + (n + m - 1)) // (n + m) if total_sparrows > n else 0
-       
-
-        
-        remaining_grains = n + full_barns * m - total_sparrows
-        
-        if remaining_grains <= 0:
+        if n + mid * m >= total_sparrows:
             ans = mid
-            right = mid - 1
+            r = mid - 1
         else:
-            left = mid + 1
-            
+            l = mid + 1
     print(ans)
 
 solve()

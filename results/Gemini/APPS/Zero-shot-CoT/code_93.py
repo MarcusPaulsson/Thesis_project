@@ -1,89 +1,81 @@
 def solve():
-  n, d, k = map(int, input().split())
+    n, d, k = map(int, input().split())
 
-  if d >= n:
-    print("NO")
-    return
+    if d >= n:
+        print("NO")
+        return
 
-  if d == 1 and n > 2:
-    if k <= 1:
-      print("NO")
-      return
-  
-  if d > 1 and k == 1:
-      print("NO")
-      return
+    if d == 1 and n > 2:
+        if k <= 1:
+            print("NO")
+            return
+    if d == 1 and n == 2 and k < 1:
+        print("NO")
+        return
 
-  if d > 1 and n > 2 and k ==1:
-      print("NO")
-      return
+    if d > 1 and k == 1:
+        print("NO")
+        return
 
-  if d > n -1:
-      print("NO")
-      return
-  
-  edges = []
-  nodes = list(range(1, n + 1))
-  
-  # Create the diameter path
-  for i in range(d):
-    edges.append((i + 1, i + 2))
-
-  remaining_nodes = nodes[d+1:]
-  
-  
-  if k == 1 and d > 1 and n > 2:
-      print("NO")
-      return
-
-  if len(remaining_nodes) > 0:
-    if k == 1:
-      print("NO")
-      return
+    edges = []
     
-    degree = [0] * (n + 1)
+    # Create a path of length d
+    for i in range(d):
+        edges.append((i + 1, i + 2))
+
+    remaining_nodes = n - (d + 1)
+    
+    degrees = [0] * (n + 1)
     for u, v in edges:
-        degree[u] += 1
-        degree[v] += 1
+        degrees[u] += 1
+        degrees[v] += 1
+    
+    available_nodes = list(range(1, n + 1))
+    
+    def find_node_with_degree_less_than_k():
+        for node in available_nodes:
+            if degrees[node] < k:
+                return node
+        return None
+    
+    current_node_index = 1
+    
+    for _ in range(remaining_nodes):
+        node_to_connect = find_node_with_degree_less_than_k()
+        if node_to_connect is None:
+            print("NO")
+            return
         
-    
-    for node in remaining_nodes:
-      
-      found_parent = False
-      for i in range(1,d+2):
-        if degree[i] < k:
-          edges.append((node, i))
-          degree[node] += 1
-          degree[i] += 1
-          found_parent = True
-          break
-      
-      if not found_parent:
-          print("NO")
-          return
-    
-    
-  
-  degrees_valid = True
-  degree = [0] * (n + 1)
-  for u, v in edges:
-      degree[u] += 1
-      degree[v] += 1
-  
-  for i in range(1, n+1):
-      if degree[i] > k:
-          degrees_valid = False
-          break
+        new_node = len(degrees)
+        while new_node in available_nodes:
+          new_node += 1
+        
+        
+        if new_node > n:
+          
+          new_node = 0
+          for i in range(1, n+1):
+            
+            if i not in [node[0] for node in edges]:
+                
+                new_node = i
+                break
+          
+          if new_node == 0:
+            print("NO")
+            return
 
-  if len(edges) != n - 1:
-    print("NO")
-    return
+        edges.append((node_to_connect, current_node_index + d +1))
+        degrees[node_to_connect] += 1
+        degrees[current_node_index + d + 1] = 1
+        current_node_index += 1
+    
+    if any(degree > k for degree in degrees[1:]):
+        print("NO")
+        return
+    
+    print("YES")
+    for u, v in edges:
+        print(u, v)
 
-
-  if degrees_valid:
-      print("YES")
-      for u, v in edges:
-          print(u, v)
-  else:
-      print("NO")
 solve()

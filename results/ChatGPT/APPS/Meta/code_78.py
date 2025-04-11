@@ -3,7 +3,15 @@ MOD = 10**9 + 7
 def count_regular_sequences(n, s):
     m = len(s)
     
-    # Check if s can be a valid substring in regular bracket sequences
+    # Precompute the number of valid sequences of length 2k
+    dp = [0] * (n + 1)
+    dp[0] = 1  # Base case: one way to form an empty sequence
+    
+    for k in range(1, n + 1):
+        for j in range(k):
+            dp[k] = (dp[k] + dp[j] * dp[k - 1 - j]) % MOD
+    
+    # Check if the given string s can be part of a valid sequence
     balance = 0
     min_balance = 0
     for char in s:
@@ -12,49 +20,24 @@ def count_regular_sequences(n, s):
         else:
             balance -= 1
         min_balance = min(min_balance, balance)
-
-    if balance < 0 or min_balance < 0:
-        return 0
-
-    # dp[i][j] means the number of valid sequences of length i with balance j
-    dp = [[0] * (n + 1) for _ in range(2 * n + 1)]
-    dp[0][0] = 1
-
-    for i in range(1, 2 * n + 1):
-        for j in range(n + 1):
-            # Add '('
-            if j + 1 <= n:
-                dp[i][j + 1] = (dp[i][j + 1] + dp[i - 1][j]) % MOD
-            # Add ')'
-            if j - 1 >= 0:
-                dp[i][j - 1] = (dp[i][j - 1] + dp[i - 1][j]) % MOD
-
-    total_sequences = 0
     
-    # Now we need to count valid sequences that contain s as a substring
-    for start in range(2 * n - m + 1):
-        valid = True
-        temp_balance = 0
-        for i in range(m):
-            if s[i] == '(':
-                temp_balance += 1
-            else:
-                temp_balance -= 1
-            if temp_balance < 0:
-                valid = False
-                break
-        
-        if valid:
-            # Check remaining positions
-            remaining_length = 2 * n - (start + m)
-            left_balance = balance
-            right_balance = n - left_balance
-            
-            if remaining_length % 2 == 0 and left_balance <= n and right_balance <= n:
-                total_sequences = (total_sequences + dp[remaining_length][left_balance]) % MOD
+    if balance < 0 or balance > 2 * n or min_balance < 0:
+        return 0
+    
+    # Count the number of valid sequences containing s
+    total_count = 0
+    
+    for prefix_length in range(max(0, -min_balance), n - (balance // 2) + 1):
+        suffix_length = n - prefix_length - (m - balance)
+        if suffix_length < 0:
+            continue
+        total_count = (total_count + dp[prefix_length] * dp[suffix_length]) % MOD
+    
+    return total_count
 
-    return total_sequences
-
-n = int(input())
+# Input reading
+n = int(input().strip())
 s = input().strip()
+
+# Output the result
 print(count_regular_sequences(n, s))

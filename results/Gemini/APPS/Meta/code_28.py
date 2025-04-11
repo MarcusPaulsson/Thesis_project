@@ -3,7 +3,7 @@ def solve():
     files = []
     for _ in range(n):
         files.append(input().split())
-    
+
     examples = []
     regular = []
     for i in range(n):
@@ -11,57 +11,53 @@ def solve():
             examples.append((files[i][0], i))
         else:
             regular.append((files[i][0], i))
-    
-    e = len(examples)
-    
+
     moves = []
-    
+    e = len(examples)
+
     # Move examples to 1, 2, ..., e
     for i in range(e):
         if examples[i][0] != str(i + 1):
-            if any(f[0] == str(i + 1) for f in files):
-                # Need a temporary file
-                temp_name = "temp_" + str(i)
-                while any(f[0] == temp_name for f in files):
-                    temp_name = "temp_" + temp_name
-                moves.append(f"move {examples[i][0]} {temp_name}")
-                
-                target_idx = -1
-                for j in range(n):
-                    if files[j][0] == str(i+1):
-                        target_idx = j
-                        break
-                
-                moves.append(f"move {str(i + 1)} {examples[i][0]}")
-                moves.append(f"move {temp_name} {str(i + 1)}")
-            else:
-                moves.append(f"move {examples[i][0]} {str(i + 1)}")
-                
-    
-    # Move regular tests to e + 1, e + 2, ..., n
+            moves.append(("move", examples[i][0], str(i + 1)))
+
+    # Move regular tests to e+1, e+2, ..., n
     for i in range(len(regular)):
         if regular[i][0] != str(e + i + 1):
-            if any(f[0] == str(e + i + 1) for f in files):
-                # Need a temporary file
-                temp_name = "temp_reg_" + str(i)
-                while any(f[0] == temp_name for f in files):
-                    temp_name = "temp_reg_" + temp_name
-                    
-                moves.append(f"move {regular[i][0]} {temp_name}")
-                
-                target_idx = -1
-                for j in range(n):
-                    if files[j][0] == str(e + i + 1):
-                        target_idx = j
-                        break
-                
-                moves.append(f"move {str(e + i + 1)} {regular[i][0]}")
-                moves.append(f"move {temp_name} {str(e + i + 1)}")
-            else:
-                moves.append(f"move {regular[i][0]} {str(e + i + 1)}")
-    
-    print(len(moves))
-    for move in moves:
-        print(move)
+            moves.append(("move", regular[i][0], str(e + i + 1)))
+
+    # Resolve conflicts using temporary names
+    conflicts = {}
+    for i in range(e):
+        if examples[i][0] != str(i + 1):
+            conflicts[str(i + 1)] = examples[i][0]
+    for i in range(len(regular)):
+        if regular[i][0] != str(e + i + 1):
+            conflicts[str(e + i + 1)] = regular[i][0]
+
+    temp_names = []
+    for i in range(n + 1, n + 1 + len(conflicts)):
+        temp_names.append(str(i))
+
+    conflict_moves = []
+    conflict_map = {}
+    k = 0
+    for target, original in conflicts.items():
+        conflict_map[target] = temp_names[k]
+        conflict_moves.append(("move", target, temp_names[k]))
+        k += 1
+
+    final_moves = []
+    for move_type, file1, file2 in moves:
+        if file2 in conflict_map:
+            final_moves.append(("move", file1, conflict_map[file2]))
+        else:
+            final_moves.append(("move", file1, file2))
+
+    for move_type, file1, file2 in conflict_moves:
+        final_moves.insert(0, ("move", file1, file2))
+
+    print(len(final_moves))
+    for move_type, file1, file2 in final_moves:
+        print(move_type, file1, file2)
 
 solve()

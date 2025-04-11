@@ -1,3 +1,5 @@
+def count_set_bits(n):
+    return bin(n).count('1')
+
 a = int(input())
-output = (a - 1) // 6 + 1
-print(output)
+print(count_set_bits(a))

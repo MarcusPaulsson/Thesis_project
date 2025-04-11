@@ -1,20 +1,27 @@
-def lexicographically_minimal_string(s: str) -> str:
-    t = []  # Stack to hold characters from s
-    u = []  # Result string as a list of characters
-    s = list(s)  # Convert string to a list for efficient operations
+def lexicographically_minimal_string(s):
+    t = []
+    u = []
+    n = len(s)
+    index = 0
 
-    while s or t:
-        # While there are characters in s, we compare and move characters
-        while s and (not t or s[0] <= t[-1]):
-            t.append(s.pop(0))  # Move character from s to t
+    while index < n or t:
+        if index < n:
+            t.append(s[index])
+            index += 1
+        
+        # Move characters from t to u if possible
+        while t:
+            # Check if we can pop from t to u
+            if not u or t[-1] <= u[-1]:
+                u.append(t.pop())
+            else:
+                break
 
-        if t:
-            u.append(t.pop())  # Move character from t to u
+    return ''.join(u)
 
-    return ''.join(u)  # Join list u into a string and return
-
-# Input and output handling
-if __name__ == "__main__":
-    s = input().strip()
-    result = lexicographically_minimal_string(s)
-    print(result)
+# Read input
+s = input().strip()
+# Get the result
+result = lexicographically_minimal_string(s)
+# Print the result
+print(result)

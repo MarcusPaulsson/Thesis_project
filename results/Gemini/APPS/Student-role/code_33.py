@@ -1,5 +1,3 @@
-import math
-
 def gcd(a, b):
     if b == 0:
         return a
@@ -26,26 +24,37 @@ def solve():
     x *= (b2 - b1) // d
     y *= (b2 - b1) // d
 
-    lcm = a1 * a2 // g
+    lcm = (a1 * a2) // g
 
-    x0 = x
-    y0 = y
-
-    t = math.ceil((-x0) / (a2 // g))
-    x0 += (a2 // g) * t
-    y0 -= (a1 // g) * t
-
-    val = a1 * x0 + b1
+    x0 = (x * a1 + b1)
     
-    if val < L:
-        t = math.ceil((L - val) / lcm)
-        val += lcm * t
     
-    if val > R:
+    def find_min_val(a1, b1, a2, b2, L, R):
+        g = gcd(a1, a2)
+        if (b2 - b1) % g != 0:
+            return float('inf')
+
+        d, x, y = extended_gcd(a1, a2)
+        x *= (b2 - b1) // d
+        y *= (b2 - b1) // d
+
+        lcm = (a1 * a2) // g
+        x0 = (x * a1 + b1)
+        
+        k = (L - x0 + lcm - 1) // lcm
+        first = x0 + k * lcm
+        
+        if first > R:
+            return float('inf')
+        return first
+    
+    first = find_min_val(a1, b1, a2, b2, L, R)
+    
+    if first == float('inf'):
         print(0)
         return
-
-    count = (R - val) // lcm + 1
+    
+    count = (R - first) // lcm + 1
     print(count)
 
 solve()

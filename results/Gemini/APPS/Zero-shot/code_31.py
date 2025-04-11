@@ -5,32 +5,38 @@ def solve():
     if n < 63 and k > (1 << n):
         print(1, 1)
         return
-    
+
     if k > mod:
         print(0, 1)
         return
 
     num = 1
     den = 1
-    
-    for i in range(int(k)):
+    twos = 0
+
+    for i in range(k):
         if i == 0:
             continue
-        num = (num * ((pow(2, n, mod) - i + mod) % mod)) % mod
-        den = (den * pow(2, n, mod)) % mod
+        val = (pow(2, n, mod) - i) % mod
+        num = (num * val) % mod
+        
+        temp = i
+        while temp % 2 == 0 and temp > 0:
+            twos += 1
+            temp //= 2
+
+    den = pow(pow(2, n, mod), k - 1, mod) % mod
+    
+
+    two_pow = min(n * (k - 1), twos)
 
     
+    num = (num * pow(pow(2, two_pow, mod), mod - 2, mod)) % mod
+    den = (den * pow(pow(2, two_pow, mod), mod - 2, mod)) % mod
     
-    a = (den - num + mod) % mod if num != den else 0
-    
-    
-    gcd_val = gcd(a,den)
-    
-    print(a // gcd_val, den // gcd_val)
+    a = (den - num) % mod
+    b = den % mod
 
-def gcd(a, b):
-    if b == 0:
-        return a
-    return gcd(b, a % b)
+    print(a, b)
 
 solve()

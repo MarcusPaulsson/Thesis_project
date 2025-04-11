@@ -2,7 +2,7 @@ def solve():
     n, x = map(int, input().split())
     blows = []
     for _ in range(n):
-        blows.append(tuple(map(int, input().split())))
+        blows.append(list(map(int, input().split())))
 
     max_damage = 0
     for d, h in blows:

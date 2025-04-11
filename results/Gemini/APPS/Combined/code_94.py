@@ -1,23 +1,25 @@
 def solve():
     a, b, x = map(int, input().split())
 
+    s = ""
+    
     if a > b:
         start = 0
     else:
         start = 1
 
-    s = ""
-    for i in range(x):
-        if start == 0:
-            s += "0"
+    curr = start
+    
+    for _ in range(x):
+        s += str(curr)
+        if curr == 0:
             a -= 1
-            start = 1
+            curr = 1
         else:
-            s += "1"
             b -= 1
-            start = 0
+            curr = 0
 
-    if start == 0:
+    if curr == 0:
         s += "0" * a
         s += "1" * b
     else:

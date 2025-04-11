@@ -2,12 +2,10 @@ n = int(input())
 a = list(map(int, input().split()))
 
 max_height = max(a)
-# Check if the wall can be completed
-can_complete = True
+total_bricks_needed = sum(max_height - height for height in a)
 
-for height in a:
-    if height < max_height and (height % 2) != (max_height % 2):
-        can_complete = False
-        break
-
-print("YES" if can_complete else "NO")
+# Check if the total number of bricks needed is even
+if total_bricks_needed % 2 == 0:
+    print("YES")
+else:
+    print("NO")

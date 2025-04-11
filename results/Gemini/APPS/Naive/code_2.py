@@ -1,6 +1,5 @@
 def solve():
     n = int(input())
-    
     s = str(n)
     l = len(s)
     

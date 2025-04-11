@@ -4,47 +4,50 @@ def solve():
     sorted_s = sorted(s)
 
     for i in range(2**n):
-        coloring = ""
-        for j in range(n):
-            if (i >> j) & 1:
-                coloring += '1'
-            else:
-                coloring += '0'
-        coloring = coloring[::-1]
-
+        coloring = bin(i)[2:].zfill(n)
+        
         s0 = []
         s1 = []
-        for k in range(n):
-            if coloring[k] == '0':
-                s0.append(s[k])
+        
+        for j in range(n):
+            if coloring[j] == '0':
+                s0.append(s[j])
             else:
-                s1.append(s[k])
-
+                s1.append(s[j])
+        
         s0.sort()
         s1.sort()
-
+        
         merged = []
-        i = 0
-        j = 0
+        idx0 = 0
+        idx1 = 0
+        
+        possible = True
+        
         for k in range(n):
             if coloring[k] == '0':
-                if i < len(s0):
-                    merged.append(s0[i])
-                    i += 1
+                if idx0 < len(s0):
+                    merged.append(s0[idx0])
+                    idx0 += 1
                 else:
+                    possible = False
                     break
             else:
-                if j < len(s1):
-                    merged.append(s1[j])
-                    j += 1
+                if idx1 < len(s1):
+                    merged.append(s1[idx1])
+                    idx1 += 1
                 else:
+                    possible = False
                     break
         
-        if "".join(merged) == "".join(sorted_s):
+        if not possible:
+            continue
+        
+        if merged == sorted_s:
             print("YES")
             print(coloring)
             return
-
+    
     print("NO")
 
 solve()

@@ -4,15 +4,19 @@ def is_palindrome(s):
 def longest_non_palindrome_substring(s):
     n = len(s)
     
+    # If the entire string is not a palindrome, return its length
     if not is_palindrome(s):
         return n
     
-    for length in range(n - 1, 0, -1):
-        for start in range(n - length + 1):
-            if not is_palindrome(s[start:start + length]):
-                return length
+    # Check for the longest non-palindrome substring by removing one character
+    for i in range(n):
+        if not is_palindrome(s[:i] + s[i+1:]):
+            return n - 1
     
+    # If all characters are the same, return 0
     return 0
 
+# Input
 s = input().strip()
+# Output
 print(longest_non_palindrome_substring(s))

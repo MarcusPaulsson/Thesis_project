@@ -14,20 +14,27 @@ def solve():
                 return False
         return balance == 0
     
-    def count_regular_sequences(n, s):
+    def count_substring(seq, sub):
         count = 0
-        for i in range(1 << (2 * n)):
-            seq = ""
-            for j in range(2 * n):
-                if (i >> j) & 1:
-                    seq += "("
-                else:
-                    seq += ")"
-            
-            if is_regular(seq) and s in seq:
+        for i in range(len(seq) - len(sub) + 1):
+            if seq[i:i+len(sub)] == sub:
                 count += 1
-        return count % mod
+        return count > 0
 
-    print(count_regular_sequences(n, s))
+    count = 0
+    
+    def generate_sequences(current_seq, remaining_length):
+        nonlocal count
+        
+        if remaining_length == 0:
+            if is_regular(current_seq) and count_substring(current_seq, s):
+                count = (count + 1) % mod
+            return
+        
+        generate_sequences(current_seq + '(', remaining_length - 1)
+        generate_sequences(current_seq + ')', remaining_length - 1)
+    
+    generate_sequences("", 2 * n)
+    print(count)
 
 solve()

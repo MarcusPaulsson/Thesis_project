@@ -5,15 +5,7 @@ def solve():
         print(t)
     else:
         time_since_peak = t - k
-        standing = k
-        if time_since_peak < k:
-            standing -= time_since_peak % k
-        else:
-            standing -= k
-        
-        if standing < 0:
-            standing += k
-        
+        standing = k - (time_since_peak % k)
         print(standing)
 
 solve()

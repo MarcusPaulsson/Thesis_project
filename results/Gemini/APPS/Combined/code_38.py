@@ -7,11 +7,11 @@ def solve():
         shifted_sasha = [(sasha[i] - sasha[0] + l) % l for i in range(n)]
         shifted_sasha.sort()
 
-        kefa_shifted = [(kefa[i] - kefa[0] + l) % l for i in range(n)]
-        kefa_shifted.sort()
-        
+        diff = kefa[0]
+        shifted_kefa = [(kefa[i] - diff + l) % l for i in range(n)]
+        shifted_kefa.sort()
 
-        if shifted_sasha == kefa_shifted:
+        if shifted_kefa == shifted_sasha:
             print("YES")
             return
 

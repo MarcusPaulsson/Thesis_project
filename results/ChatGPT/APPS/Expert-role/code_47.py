@@ -1,28 +1,39 @@
-def max_subarray_sum(arr):
-    max_ending_here = max_so_far = 0
-    for x in arr:
-        max_ending_here = max(0, max_ending_here + x)
-        max_so_far = max(max_so_far, max_ending_here)
-    return max_so_far
+def max_beauty(n, x, a):
+    # Function to calculate the maximum subarray sum using Kadane's algorithm
+    def kadane(arr):
+        max_sum = 0
+        current_sum = 0
+        for value in arr:
+            current_sum += value
+            max_sum = max(max_sum, current_sum)
+            current_sum = max(current_sum, 0)
+        return max_sum
 
-def max_beauty_with_subarray(n, x, a):
-    original_beauty = max_subarray_sum(a)
+    # Calculate the original beauty of the array
+    original_beauty = kadane(a)
 
-    # Calculate the effect of multiplying a subarray by x
-    max_gain = 0
-    current_gain = 0
+    # If x is 0, we can only take the original beauty
+    if x == 0:
+        return original_beauty
 
+    # Calculate the maximum beauty after multiplying a subarray by x
+    max_increase = 0
+    current_sum = 0
     for i in range(n):
-        current_gain += a[i] * x
-        # Calculate potential beauty when including the original array sum
-        max_gain = max(max_gain, current_gain + original_beauty)
+        current_sum += a[i]
+        # Calculate the potential increase if we multiply the subarray ending at i
+        potential_increase = current_sum * (x - 1)
+        max_increase = max(max_increase, potential_increase)
+        # Reset current_sum if it drops below 0
+        if current_sum < 0:
+            current_sum = 0
 
-        # Reset current_gain if it drops below 0 (similar to max subarray logic)
-        if current_gain < 0:
-            current_gain = 0
+    # The maximum beauty after the operation
+    return max(original_beauty, original_beauty + max_increase)
 
-    return max(max_gain, original_beauty)
-
+# Input reading
 n, x = map(int, input().split())
 a = list(map(int, input().split()))
-print(max_beauty_with_subarray(n, x, a))
+
+# Output the result
+print(max_beauty(n, x, a))

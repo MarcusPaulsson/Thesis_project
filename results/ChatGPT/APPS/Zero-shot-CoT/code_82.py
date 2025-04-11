@@ -8,10 +8,11 @@ while count < n and a[count] <= k:
     count += 1
 
 # Solve from the right
-while count < n and a[n - 1 - (count - count)] <= k:
+while count < n and a[n - 1 - (count - (n - count))] <= k:
     count += 1
 
-# Subtract the number of problems that were counted twice
-count = min(count, n)
+# If we counted the same problem from both ends, we need to adjust
+if count > n:
+    count = n
 
 print(count)

@@ -4,7 +4,7 @@ def is_s_palindrome(s):
               'b': 'd', 'd': 'b', 'o': 'o', 'p': 'q', 'q': 'p', 'v': 'v', 'w': 'w', 'x': 'x'}
     
     for i in range(n // 2):
-        if s[i] not in mirror or mirror[s[i]] != s[n - 1 - i]:
+        if s[i] not in mirror or s[n - 1 - i] not in mirror or mirror[s[i]] != s[n - 1 - i]:
             return False
     
     if n % 2 == 1:

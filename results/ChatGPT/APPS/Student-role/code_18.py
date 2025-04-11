@@ -1,4 +1,4 @@
-def minimal_lexicographic_u(s):
+def minimal_lexicographic_string(s):
     t = []
     u = []
     
@@ -12,4 +12,4 @@ def minimal_lexicographic_u(s):
 # Input
 s = input().strip()
 # Output
-print(minimal_lexicographic_u(s))
+print(minimal_lexicographic_string(s))

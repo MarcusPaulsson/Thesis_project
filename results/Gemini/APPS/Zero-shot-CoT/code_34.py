@@ -1,16 +1,14 @@
 def solve():
   n, a, b = map(int, input().split())
   
-  max_x = 0
+  ans = 0
   for i in range(1, n):
-    if i > a or n - i > b:
-        continue
-    
-    x1 = a // i
-    x2 = b // (n - i)
-    
-    max_x = max(max_x, min(x1, x2))
+    if i >= 1 and i < n:
+      plate_a = i
+      plate_b = n - i
+      
+      x = min(a // plate_a, b // plate_b)
+      ans = max(ans, x)
+  print(ans)
   
-  print(max_x)
-
 solve()

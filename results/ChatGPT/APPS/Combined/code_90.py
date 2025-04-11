@@ -1,35 +1,45 @@
 def can_cross_river(n, m, d, c):
+    total_length = sum(c)
+    
+    # If the maximum jump distance allows reaching the end directly
+    if d >= n + 1:
+        result = [0] * n
+        position = 0
+        for i in range(m):
+            for j in range(c[i]):
+                result[position] = i + 1
+                position += 1
+        return "YES", result
+    
+    # Calculate the minimum required gaps between platforms
+    min_required_gaps = (m - 1) * (d - 1)
+    
+    # Check if the total length of platforms and required gaps fit in the river
+    if total_length + min_required_gaps > n:
+        return "NO", []
+    
+    # Construct the result array
     result = [0] * n
-    current_position = 0
-
+    position = 0
     for i in range(m):
-        platform_length = c[i]
-        start_position = current_position + 1
-
-        # Place the platform in the result array
-        for j in range(platform_length):
-            if start_position + j < n:
-                result[start_position + j] = i + 1  # 1-based index
-
-        # Update the current position to the end of the current platform
-        current_position = start_position + platform_length - 1
-
-        # Check if we can reach the next platform
-        if i < m - 1 and (current_position + 1 + d < n):
-            return "NO"
-
+        # Place the platform
+        for j in range(c[i]):
+            result[position] = i + 1
+            position += 1
+        # Add a gap if it's not the last platform
+        if i < m - 1:
+            position += (d - 1)  # Leave space for the next jump
+    
     return "YES", result
 
-# Read input values
+# Input reading
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
 
-# Call the function and get the result
+# Function call
 result = can_cross_river(n, m, d, c)
 
-# Print the result
-if result == "NO":
-    print(result)
-else:
-    print(result[0])
-    print(' '.join(map(str, result[1])))
+# Output result
+print(result[0])
+if result[0] == "YES":
+    print(" ".join(map(str, result[1])))

@@ -3,36 +3,22 @@ a = list(map(int, input().split()))
 
 left, right = 0, n - 1
 last = -1
-sequence = []
+result = []
 moves = []
 
 while left <= right:
-    if a[left] <= a[right]:
-        if a[left] > last:
-            last = a[left]
-            sequence.append(a[left])
-            moves.append('L')
-            left += 1
-        elif a[right] > last:
-            last = a[right]
-            sequence.append(a[right])
-            moves.append('R')
-            right -= 1
-        else:
-            break
+    if a[left] > last and (a[right] <= last or a[left] < a[right]):
+        result.append(a[left])
+        moves.append('L')
+        last = a[left]
+        left += 1
+    elif a[right] > last:
+        result.append(a[right])
+        moves.append('R')
+        last = a[right]
+        right -= 1
     else:
-        if a[right] > last:
-            last = a[right]
-            sequence.append(a[right])
-            moves.append('R')
-            right -= 1
-        elif a[left] > last:
-            last = a[left]
-            sequence.append(a[left])
-            moves.append('L')
-            left += 1
-        else:
-            break
+        break
 
-print(len(sequence))
+print(len(result))
 print(''.join(moves))

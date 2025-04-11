@@ -3,18 +3,20 @@ def can_be_same_track(n, L, kefa_distances, sasha_distances):
     kefa_diffs = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
     sasha_diffs = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
     
-    # Check if sasha_diffs can be found in the doubled kefa_diffs
-    combined_diffs = kefa_diffs * 2  # Concatenate to allow rotation
+    # Create a double version of Sasha's differences for easier rotation checking
+    sasha_diffs_extended = sasha_diffs * 2
+    
+    # Check if Kefa's differences can match Sasha's differences by rotation
     for i in range(n):
-        if combined_diffs[i:i + n] == sasha_diffs:
+        if kefa_diffs == sasha_diffs_extended[i:i+n]:
             return "YES"
+    
     return "NO"
 
-# Read input
+# Input reading
 n, L = map(int, input().split())
 kefa_distances = list(map(int, input().split()))
 sasha_distances = list(map(int, input().split()))
 
-# Get result and print
-result = can_be_same_track(n, L, kefa_distances, sasha_distances)
-print(result)
+# Output the result
+print(can_be_same_track(n, L, kefa_distances, sasha_distances))

@@ -1,34 +1,53 @@
 def construct_binary_string(a, b, x):
-    # Start with an empty list for the result
-    result = []
+    # Start with the maximum number of transitions
+    transitions = min(x, a + b - 1)
     
-    # Determine the starting character based on x
-    if x % 2 == 1:
-        # Start with '1' if x is odd, else start with '0'
-        start_with_one = True
+    # Determine the base pattern
+    pattern = []
+    if transitions % 2 == 0:
+        # Start with 0 if we have an even number of transitions
+        start_with_zero = True
     else:
-        start_with_one = False
+        # Start with 1 if we have an odd number of transitions
+        start_with_zero = False
     
-    # Fill the string with alternating characters
-    while a > 0 or b > 0:
-        if (start_with_one and b > 0) or (not start_with_one and a == 0):
-            result.append('1')
-            b -= 1
-        elif (not start_with_one and a > 0) or (start_with_one and b == 0):
-            result.append('0')
-            a -= 1
-        start_with_one = not start_with_one  # Toggle the starting character
+    # Create the alternating pattern
+    for i in range(transitions + 1):
+        if (i % 2 == 0) == start_with_zero:
+            pattern.append('0')
+        else:
+            pattern.append('1')
     
-    # After placing the alternating characters, we may still have some 0s or 1s left
-    # Repeat the last added character if there are remaining characters
-    if a > 0:
-        result.extend('0' * a)
-    if b > 0:
-        result.extend('1' * b)
+    # Count how many 0s and 1s we have used
+    used_zeros = pattern.count('0')
+    used_ones = pattern.count('1')
     
-    return ''.join(result)
+    # Calculate remaining 0s and 1s
+    remaining_zeros = a - used_zeros
+    remaining_ones = b - used_ones
+    
+    # Fill the remaining 0s and 1s
+    if remaining_zeros > 0:
+        if pattern[0] == '0':
+            pattern = ['0'] * remaining_zeros + pattern
+        else:
+            pattern = ['0'] * remaining_zeros + pattern + ['0'] * remaining_zeros
+    
+    if remaining_ones > 0:
+        if pattern[0] == '1':
+            pattern = ['1'] * remaining_ones + pattern
+        else:
+            pattern = ['1'] * remaining_ones + pattern + ['1'] * remaining_ones
+    
+    # Join the pattern into a string
+    result = ''.join(pattern)
+    
+    # Ensure the string has exactly a zeros and b ones
+    result = result[:a + b]
+    
+    return result
 
 # Input reading
 a, b, x = map(int, input().split())
-# Construct and print the binary string
+# Output the result
 print(construct_binary_string(a, b, x))

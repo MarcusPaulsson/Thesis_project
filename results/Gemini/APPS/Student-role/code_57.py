@@ -18,20 +18,27 @@ def solve():
             unassigned_receivers.append(i)
 
     for i in range(len(unassigned_givers)):
-        giver_index = unassigned_givers[i]
-        receiver = unassigned_receivers[i]
-        
-        if giver_index + 1 == receiver:
-            if i + 1 < len(unassigned_givers):
-                unassigned_receivers[i], unassigned_receivers[i+1] = unassigned_receivers[i+1], unassigned_receivers[i]
-                
-            else:
-                for j in range(len(unassigned_givers)):
-                    if unassigned_givers[j] + 1 != unassigned_receivers[i]:
-                         unassigned_receivers[i], unassigned_receivers[j] = unassigned_receivers[j], unassigned_receivers[i]
-                         break
+        f[unassigned_givers[i]] = unassigned_receivers[i]
 
-        f[giver_index] = unassigned_receivers[i]
+    
+    for i in range(n):
+        if f[i] == i + 1:
+            for j in range(n):
+                if i != j and f[j] != j + 1 and f[j] != 0:
+                    f[i], f[j] = f[j], f[i]
+                    break
+            else:
+                for j in range(n):
+                    if i != j and f[j] != j + 1:
+                        f[i], f[j] = f[j], f[i]
+                        break
+    
+    for i in range(n):
+        if f[i] == i + 1:
+            for j in range(n):
+                if i != j and f[j] != j + 1:
+                    f[i], f[j] = f[j], f[i]
+                    break
 
     print(*f)
 

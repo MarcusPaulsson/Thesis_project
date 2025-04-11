@@ -4,60 +4,47 @@ def solve():
     for _ in range(m):
         edges.append(list(map(int, input().split())))
 
-    def build_graph(edge_list):
-        graph = {i: [] for i in range(1, n + 1)}
-        for u, v in edge_list:
-            graph[u].append(v)
-            graph[v].append(u)
-        return graph
+    def check_degree(tree):
+        degree = 0
+        for u, v in tree:
+            if u == 1 or v == 1:
+                degree += 1
+        return degree
 
-    def is_connected(edge_list):
-        if not edge_list:
-            return False if n > 1 else True
+    def is_connected(tree, num_nodes):
+        if not tree:
+            return False if num_nodes > 1 else True
         
-        graph = build_graph(edge_list)
-        visited = set()
+        adj = [[] for _ in range(num_nodes + 1)]
+        for u, v in tree:
+            adj[u].append(v)
+            adj[v].append(u)
+        
+        visited = [False] * (num_nodes + 1)
         
         def dfs(node):
-            visited.add(node)
-            for neighbor in graph[node]:
-                if neighbor not in visited:
+            visited[node] = True
+            for neighbor in adj[node]:
+                if not visited[neighbor]:
                     dfs(neighbor)
         
-        dfs(edge_list[0][0])
-        return len(visited) == n
+        dfs(1)
+        
+        for i in range(1, num_nodes + 1):
+            if not visited[i]:
+                return False
+        return True
 
-    def find_spanning_tree(edges, d):
-        import itertools
-        for i in itertools.combinations(edges, n - 1):
-            spanning_tree_edges = list(i)
-            if is_connected(spanning_tree_edges):
-                degree = 0
-                for u, v in spanning_tree_edges:
-                    if u == 1 or v == 1:
-                        degree += (u == 1) + (v == 1)
-                
-                degree = sum(1 for u, v in spanning_tree_edges if u == 1 or v == 1)
-                
-                count = 0
-                for u, v in spanning_tree_edges:
-                    if u == 1 or v == 1:
-                        count+=1
-                
-                first_node_degree = 0
-                graph = build_graph(spanning_tree_edges)
-                first_node_degree = len(graph[1])
-                
-                if first_node_degree == d:
-                    return spanning_tree_edges
-        return None
+    import itertools
+    
+    for i in itertools.combinations(edges, n - 1):
+        tree = list(i)
+        if is_connected(tree, n) and check_degree(tree) == d:
+            print("YES")
+            for u, v in tree:
+                print(u, v)
+            return
 
-    spanning_tree = find_spanning_tree(edges, d)
+    print("NO")
 
-    if spanning_tree:
-        print("YES")
-        for u, v in spanning_tree:
-            print(u, v)
-    else:
-        print("NO")
 solve()

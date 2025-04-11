@@ -1,70 +1,69 @@
 from collections import deque, defaultdict
 
-def main_courses_sequence(n, k, main_courses, dependencies):
+def find_courses(n, k, main_courses, dependencies):
+    # Create a graph and in-degree count
     graph = defaultdict(list)
     in_degree = [0] * (n + 1)
     
-    # Build the graph and compute in-degrees
-    for course_id in range(1, n + 1):
-        for dep in dependencies[course_id - 1]:
-            graph[dep].append(course_id)
-            in_degree[course_id] += 1
-
-    # Queue for courses that can be taken (in-degree of 0)
+    # Build the graph and in-degree array
+    for i in range(1, n + 1):
+        for dep in dependencies[i - 1]:
+            graph[dep].append(i)
+            in_degree[i] += 1
+    
+    # Queue for courses with no dependencies
     queue = deque()
-    for course_id in range(1, n + 1):
-        if in_degree[course_id] == 0:
-            queue.append(course_id)
-
+    for course in range(1, n + 1):
+        if in_degree[course] == 0:
+            queue.append(course)
+    
+    # To track the courses we need to take
     order = []
-    taken_courses = set()
-
-    # Process the courses in topological order
+    courses_taken = set()
+    
     while queue:
-        course_id = queue.popleft()
-        order.append(course_id)
-        taken_courses.add(course_id)
-
-        for neighbor in graph[course_id]:
-            in_degree[neighbor] -= 1
-            if in_degree[neighbor] == 0:
-                queue.append(neighbor)
-
+        course = queue.popleft()
+        order.append(course)
+        courses_taken.add(course)
+        
+        for next_course in graph[course]:
+            in_degree[next_course] -= 1
+            if in_degree[next_course] == 0:
+                queue.append(next_course)
+    
     # Check if we can take all main courses
-    if not all(course in taken_courses for course in main_courses):
+    if not all(course in courses_taken for course in main_courses):
         return -1
-
-    # Find all courses needed to take
-    needed_courses = set(main_courses)
+    
+    # Collect the necessary courses to take
+    necessary_courses = set(main_courses)
     for course in main_courses:
+        # Traverse dependencies to find all necessary courses
         stack = [course]
         while stack:
-            curr = stack.pop()
-            for dep in dependencies[curr - 1]:
-                if dep not in needed_courses:
-                    needed_courses.add(dep)
+            current = stack.pop()
+            for dep in dependencies[current - 1]:
+                if dep not in necessary_courses:
+                    necessary_courses.add(dep)
                     stack.append(dep)
-
-    # Filter the courses to include only the needed ones
-    result = [course for course in order if course in needed_courses]
-    return len(result), result
+    
+    # Filter the order to only include necessary courses
+    final_order = [course for course in order if course in necessary_courses]
+    
+    return len(final_order), final_order
 
 # Input reading
 n, k = map(int, input().split())
 main_courses = list(map(int, input().split()))
-dependencies = []
+dependencies = [list(map(int, input().split()[1:])) for _ in range(n)]
 
-for _ in range(n):
-    line = list(map(int, input().split()))
-    dependencies.append(line[1:])
+# Find the courses
+result = find_courses(n, k, main_courses, dependencies)
 
-# Get the result
-result = main_courses_sequence(n, k, main_courses, dependencies)
-
-# Output
+# Output the result
 if result == -1:
     print(-1)
 else:
     m, course_order = result
     print(m)
-    print(" ".join(map(str, course_order)))
+    print(' '.join(map(str, course_order)))

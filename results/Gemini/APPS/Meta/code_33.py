@@ -13,44 +13,30 @@ def extended_gcd(a, b):
 
 def solve():
     a1, b1, a2, b2, L, R = map(int, input().split())
-    
+
     g = gcd(a1, a2)
     
     if (b2 - b1) % g != 0:
         print(0)
         return
-    
+
     d, x, y = extended_gcd(a1, a2)
-    
     x *= (b2 - b1) // d
     y *= (b2 - b1) // d
-    
+
     lcm = (a1 * a2) // g
-    
-    x0 = x
-    y0 = y
-    
-    x0 = (x0 % (a2 // g) + (a2 // g)) % (a2 // g)
-        
-    val = a1 * x0 + b1
+
+    x0 = (x * a1 + b1)
     
     
-    k_min = (L - val + lcm - 1) // lcm
-    k_max = (R - val) // lcm
+    k = (L - x0 + lcm - 1) // lcm
+    first = x0 + k * lcm
     
-    if k_min > k_max:
+    if first > R:
         print(0)
         return
-    
-    first = val + k_min * lcm
-    last = val + k_max * lcm
-    
-    if first > R or last < L:
-        print(0)
-        return
-    
-    count = k_max - k_min + 1
-    
-    print(count)
+
+    ans = (R - first) // lcm + 1
+    print(ans)
 
 solve()

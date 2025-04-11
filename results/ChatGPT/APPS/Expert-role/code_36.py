@@ -1,42 +1,45 @@
-def hex_spiral_coordinates(n):
+def hexagonal_coordinates(n):
     if n == 0:
         return (0, 0)
 
     layer = 0
-    moves_in_layer = 1
+    moves_in_layer = 6 * layer
 
-    # Find the layer
-    while n >= moves_in_layer:
+    while n > moves_in_layer:
         n -= moves_in_layer
         layer += 1
         moves_in_layer = 6 * layer
 
-    # Calculate the coordinates
     x, y = layer, 0
+
     if n == 0:
         return (x, y)
 
-    # The starting point of the current layer is at (layer, 0)
-    # Each segment of the layer is 1 step in the direction of the hexagon
-    for i in range(n):
-        if i < layer:
-            x -= 1  # Move left
-        elif i < 2 * layer:
-            x -= 1  # Move left
-            y += 1  # Move up
-        elif i < 3 * layer:
-            y += 1  # Move up
-        elif i < 4 * layer:
-            x += 1  # Move right
-            y += 1  # Move up
-        elif i < 5 * layer:
-            x += 1  # Move right
-        else:
-            x += 1  # Move right
-            y -= 1  # Move down
+    # Calculate the position in the current layer
+    direction = n // layer
+    steps = n % layer
+
+    if direction == 0:  # Right
+        x += steps
+        y += 0
+    elif direction == 1:  # Up-right
+        x += steps
+        y += steps
+    elif direction == 2:  # Up-left
+        x -= steps
+        y += steps
+    elif direction == 3:  # Left
+        x -= steps
+        y += 0
+    elif direction == 4:  # Down-left
+        x -= steps
+        y -= steps
+    elif direction == 5:  # Down-right
+        x += steps
+        y -= steps
 
     return (x, y)
 
-n = int(input())
-x, y = hex_spiral_coordinates(n)
+n = int(input().strip())
+x, y = hexagonal_coordinates(n)
 print(x, y)

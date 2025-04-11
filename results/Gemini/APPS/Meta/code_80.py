@@ -2,36 +2,35 @@ def solve():
     n = int(input())
     s = input()
     
-    def check(k):
-        colors = [0] * n
+    def check(colors):
+        colored_chars = []
+        for i in range(n):
+            colored_chars.append((s[i], colors[i]))
         
-        def can_sort(coloring):
-            arr = list(s)
+        def is_sortable(arr):
+            arr = arr[:]
+            for i in range(len(arr)):
+                for j in range(len(arr) - 1):
+                    if arr[j][0] > arr[j+1][0] and arr[j][1] != arr[j+1][1]:
+                        arr[j], arr[j+1] = arr[j+1], arr[j]
             
-            for _ in range(n * (n - 1) // 2):
-                swapped = False
-                for i in range(n - 1):
-                    if arr[i] > arr[i+1] and coloring[i] != coloring[i+1]:
-                        arr[i], arr[i+1] = arr[i+1], arr[i]
-                        swapped = True
-                if not swapped:
-                    break
+            sorted_chars = sorted([char for char, _ in arr])
+            current_chars = [char for char, _ in arr]
+            return current_chars == sorted_chars
+        
+        return is_sortable(colored_chars)
+
+    for num_colors in range(1, n + 1):
+        for i in range(num_colors**n):
+            colors = []
+            temp = i
+            for _ in range(n):
+                colors.append(temp % num_colors + 1)
+                temp //= num_colors
             
-            return "".join(arr) == "".join(sorted(s))
-
-        
-        import itertools
-        
-        for coloring in itertools.product(range(1, k + 1), repeat=n):
-            if can_sort(coloring):
-                return True, list(coloring)
-        return False, None
-
-    for k in range(1, n + 1):
-        possible, coloring = check(k)
-        if possible:
-            print(k)
-            print(*coloring)
-            return
+            if check(colors):
+                print(num_colors)
+                print(*colors)
+                return
 
 solve()

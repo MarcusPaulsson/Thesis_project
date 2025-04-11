@@ -2,37 +2,50 @@ def solve():
     n = int(input())
     s = input()
     
-    def check(k):
-        colors = [0] * n
-        
-        def backtrack(index):
-            if index == n:
-                return colors
-            
-            for color in range(1, k + 1):
-                colors[index] = color
-                
-                # Check if valid so far
-                valid = True
-                for i in range(index):
-                    if s[i] > s[index] and colors[i] == colors[index]:
-                        valid = False
-                        break
-                
-                if valid:
-                    result = backtrack(index + 1)
-                    if result:
-                        return result
-            
-            colors[index] = 0  # Reset for backtracking
-            return None
-        
-        return backtrack(0)
+    colors = [0] * n
     
-    for k in range(1, n + 1):
-        coloring = check(k)
-        if coloring:
-            print(k)
+    def check(num_colors):
+        coloring = [0] * n
+        
+        def is_sortable(coloring):
+            arr = list(s)
+            
+            swapped = True
+            while swapped:
+                swapped = False
+                for i in range(n - 1):
+                    if arr[i] > arr[i+1] and coloring[i] != coloring[i+1]:
+                        arr[i], arr[i+1] = arr[i+1], arr[i]
+                        swapped = True
+            
+            return "".join(arr) == "".join(sorted(s))
+        
+        
+        def find_coloring(index):
+            if index == n:
+                if is_sortable(coloring):
+                    return True
+                else:
+                    return False
+            
+            for color in range(1, num_colors + 1):
+                coloring[index] = color
+                if find_coloring(index + 1):
+                    return True
+                coloring[index] = 0
+            
+            return False
+
+        if find_coloring(0):
+            return True, coloring
+        else:
+            return False, None
+
+    
+    for num_colors in range(1, n + 1):
+        possible, coloring = check(num_colors)
+        if possible:
+            print(num_colors)
             print(*coloring)
             return
 

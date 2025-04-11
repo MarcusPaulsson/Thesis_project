@@ -1,33 +1,35 @@
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
 
-# Calculate the maximum distance we need to cover
-max_distance = n + 1
-
 # Calculate the total length of platforms
 total_length = sum(c)
 
-if total_length > n:
-    print("NO")
-    exit()
-
-# Initialize the river cells
-a = [0] * n
-
-# We will place platforms in a way that maximizes the distance between them
-position = 0
-for i in range(m):
-    # Place platform i at the current position
-    for j in range(c[i]):
-        a[position] = i + 1
-        position += 1
-    # Move position to the right to ensure platforms do not intersect
-    if i < m - 1:
-        position += d - c[i]  # Leave a gap of d between platforms
-
-# Check if we can reach n + 1
-if position > n:
-    print("NO")
-else:
+# If the maximum jump distance is greater than or equal to the width of the river,
+# we can always reach the other side.
+if d >= n + 1:
     print("YES")
-    print(" ".join(map(str, a)))
+    print("0 " + "0 " * (n - total_length) + " ".join(str(i + 1) for i in range(m)))
+else:
+    # We need to check if we can place the platforms such that we can jump across
+    # We will try to place the platforms with at least `d` distance between them
+    positions = []
+    current_position = 0
+
+    for i in range(m):
+        positions.append(current_position)
+        current_position += c[i]
+
+        # Ensure there's enough space for the next platform
+        if i < m - 1:
+            current_position += d
+
+    # Check if the last platform can reach the end
+    if positions[-1] + c[-1] + d < n + 1:
+        print("NO")
+    else:
+        print("YES")
+        result = [0] * n
+        for i in range(m):
+            for j in range(c[i]):
+                result[positions[i] + j] = i + 1
+        print(" ".join(map(str, result)))

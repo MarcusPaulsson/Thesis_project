@@ -1,33 +1,43 @@
-def min_replacements_to_lucky_ticket(ticket: str) -> int:
-    # Calculate the sums of the first and last three digits
-    first_half_sum = sum(int(ticket[i]) for i in range(3))
-    second_half_sum = sum(int(ticket[i]) for i in range(3, 6))
+def min_replacements_to_lucky(ticket: str) -> int:
+    # Split the ticket into two halves and convert to integers
+    first_half = list(map(int, ticket[:3]))
+    second_half = list(map(int, ticket[3:]))
     
-    # Calculate the difference between the two halves
-    difference = abs(first_half_sum - second_half_sum)
+    # Calculate the sums of both halves
+    sum_first = sum(first_half)
+    sum_second = sum(second_half)
     
-    # If the ticket is already lucky
+    # Calculate the difference
+    difference = abs(sum_first - sum_second)
+    
+    # If the sums are already equal, no replacements are needed
     if difference == 0:
         return 0
     
-    # Get the maximum adjustments possible from each half
-    first_half_adjustments = sorted(9 - int(ticket[i]) for i in range(3))
-    second_half_adjustments = sorted(int(ticket[i]) for i in range(3, 6))
+    # Create a list of possible changes (max change per digit)
+    changes = []
+    if sum_first < sum_second:
+        # Need to increase the first half or decrease the second half
+        changes.extend(9 - digit for digit in first_half)  # Max increase for first half
+        changes.extend(digit for digit in second_half)     # Max decrease for second half
+    else:
+        # Need to decrease the first half or increase the second half
+        changes.extend(digit for digit in first_half)      # Max decrease for first half
+        changes.extend(9 - digit for digit in second_half) # Max increase for second half
     
-    # Combine adjustments and sort in descending order
-    all_adjustments = sorted(first_half_adjustments + second_half_adjustments, reverse=True)
+    # Sort changes in descending order to maximize the effect of each change
+    changes.sort(reverse=True)
     
-    # Try to minimize the number of replacements
+    # Calculate the minimum number of replacements needed
     replacements = 0
-    for adjustment in all_adjustments:
-        difference -= adjustment
+    for change in changes:
+        difference -= change
         replacements += 1
         if difference <= 0:
-            return replacements
-            
-    return replacements  # In case we didn't reach zero
+            break
+    
+    return replacements
 
 # Example usage
-if __name__ == "__main__":
-    ticket = input().strip()
-    print(min_replacements_to_lucky_ticket(ticket))
+ticket = input().strip()
+print(min_replacements_to_lucky(ticket))

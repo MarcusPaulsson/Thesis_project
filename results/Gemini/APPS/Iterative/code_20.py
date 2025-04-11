@@ -3,17 +3,14 @@ def solve():
     hh = int(s[:2])
     mm = int(s[3:])
     
-    ans = float('inf')
-    
-    for i in range(24 * 60):
-        cur_hh = hh
-        cur_mm = mm
+    ans = 0
+    while True:
+        hh_str = str(hh).zfill(2)
+        mm_str = str(mm).zfill(2)
         
-        time_str = "{:02d}:{:02d}".format(cur_hh, cur_mm)
-        
-        if time_str == time_str[::-1]:
-            ans = min(ans, i)
-            break
+        if hh_str == mm_str[::-1]:
+            print(ans)
+            return
         
         mm += 1
         if mm == 60:
@@ -21,7 +18,7 @@ def solve():
             hh += 1
             if hh == 24:
                 hh = 0
-            
-    print(ans)
+        
+        ans += 1
 
 solve()

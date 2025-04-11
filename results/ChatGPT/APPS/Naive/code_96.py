@@ -1,20 +1,21 @@
 def restore_permutation(n, q):
-    # Initialize p with the first element
+    # Initialize the first element of the permutation
     p = [0] * n
-    p[0] = 0  # We will adjust this later
+    p[0] = 0  # We can start from any arbitrary number, we'll adjust later
 
-    # Calculate p based on the differences in q
+    # Calculate the permutation based on the differences
     for i in range(1, n):
         p[i] = p[i - 1] + q[i - 1]
 
-    # Find the minimum value in p to normalize the values
+    # Find the minimum value in p to adjust the permutation to start from 1
     min_p = min(p)
+    adjustment = 1 - min_p
 
-    # Normalize p so that the smallest value becomes 1
+    # Adjust the permutation
     for i in range(n):
-        p[i] -= min_p - 1
+        p[i] += adjustment
 
-    # Check if p is a valid permutation
+    # Check if the adjusted permutation is valid
     if len(set(p)) == n and all(1 <= x <= n for x in p):
         print(" ".join(map(str, p)))
     else:

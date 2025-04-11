@@ -1,16 +1,17 @@
-def min_operations_to_modulo(n, x, y, number):
-    # Define the target pattern based on y and x
-    target_pattern = ['0'] * x
-    target_pattern[y] = '1'  # Set the y-th digit from the right to '1'
+def min_operations_to_remainder(n, x, y, number):
+    # Construct the target pattern for the last x digits
+    target_remainder = '0' * (x - y - 1) + '1' + '0' * y
+    current_remainder = number[-x:]  # Get the last x digits of the number
     
-    # Count the number of operations needed to match the target pattern
-    operations = sum(1 for i in range(x) if number[n - 1 - i] != target_pattern[x - 1 - i])
+    # Count the number of changes needed
+    operations_needed = sum(1 for i in range(x) if current_remainder[i] != target_remainder[i])
     
-    return operations
+    return operations_needed
 
-# Read input
+# Input reading
 n, x, y = map(int, input().split())
 number = input().strip()
 
-# Output the result
-print(min_operations_to_modulo(n, x, y, number))
+# Calculate and print the result
+result = min_operations_to_remainder(n, x, y, number)
+print(result)

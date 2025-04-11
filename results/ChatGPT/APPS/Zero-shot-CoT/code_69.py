@@ -1,61 +1,70 @@
 def find_spanning_tree(n, m, D, edges):
     from collections import defaultdict, deque
     
-    # Create adjacency list
+    # Build the graph
     graph = defaultdict(list)
-    for v, u in edges:
-        graph[v].append(u)
+    for u, v in edges:
         graph[u].append(v)
+        graph[v].append(u)
     
-    # If D is greater than the number of edges connected to vertex 1, return NO
-    if D > len(graph[1]):
-        return "NO"
+    # Check if we can have degree D for vertex 1
+    if len(graph[1]) < D:
+        print("NO")
+        return
     
-    # Start forming the spanning tree
-    selected_edges = []
-    visited = set()
-    visited.add(1)
+    # Start building the spanning tree
+    spanning_tree_edges = []
+    visited = [False] * (n + 1)
+    visited[1] = True
+    queue = deque([1])
     
-    # First, we want to pick D edges from vertex 1
+    # First, connect vertex 1 to D neighbors
     degree_count = 0
     for neighbor in graph[1]:
         if degree_count < D:
-            selected_edges.append((1, neighbor))
-            visited.add(neighbor)
+            spanning_tree_edges.append((1, neighbor))
+            visited[neighbor] = True
             degree_count += 1
         else:
             break
     
-    if degree_count < D:
-        return "NO"
+    # Now, we need to add the rest of the edges to form a spanning tree
+    for neighbor in graph[1]:
+        if degree_count >= D:
+            break
+        if not visited[neighbor]:
+            spanning_tree_edges.append((1, neighbor))
+            visited[neighbor] = True
+            degree_count += 1
     
-    # Use BFS/DFS to add the remaining edges
-    queue = deque()
-    queue.append(1)
-    
-    while queue:
-        current = queue.popleft()
-        
-        for neighbor in graph[current]:
-            if neighbor not in visited:
-                selected_edges.append((current, neighbor))
-                visited.add(neighbor)
-                queue.append(neighbor)
-                if len(selected_edges) == n - 1:
+    # BFS to add remaining edges to the spanning tree
+    for start in range(2, n + 1):
+        if not visited[start]:
+            queue.append(start)
+            visited[start] = True
+            while queue:
+                current = queue.popleft()
+                for neighbor in graph[current]:
+                    if not visited[neighbor]:
+                        visited[neighbor] = True
+                        spanning_tree_edges.append((current, neighbor))
+                        queue.append(neighbor)
+                        if len(spanning_tree_edges) == n - 1:
+                            break
+                if len(spanning_tree_edges) == n - 1:
                     break
+    
+    # Check if we have a valid spanning tree
+    if len(spanning_tree_edges) == n - 1:
+        print("YES")
+        for u, v in spanning_tree_edges:
+            print(u, v)
+    else:
+        print("NO")
 
-    # Check if we have exactly n-1 edges
-    if len(selected_edges) != n - 1:
-        return "NO"
+# Read input
+n, m, D = map(int, input().split())
+edges = [tuple(map(int, input().split())) for _ in range(m)]
 
-    # Return the result
-    result = ["YES"]
-    result.extend(f"{v} {u}" for v, u in selected_edges)
-    return "\n".join(result)
-
-# Input reading
-n, m, D = map(int, input().strip().split())
-edges = [tuple(map(int, input().strip().split())) for _ in range(m)]
-
-# Execute the function and print the result
-print(find_spanning_tree(n, m, D, edges))
+# Find and print the spanning tree
+find_spanning_tree(n, m, D, edges)

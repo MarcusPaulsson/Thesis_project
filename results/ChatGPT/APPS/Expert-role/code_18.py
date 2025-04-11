@@ -4,14 +4,14 @@ def lexicographically_minimal_string(s):
     
     for char in s:
         t.append(char)
-        while t:
-            if len(u) == 0 or t[-1] <= u[-1]:
-                u.append(t.pop())
-            else:
-                break
+        while t and (not u or t[-1] <= u[-1]):
+            u.append(t.pop())
     
     return ''.join(u)
 
+# Read input
 s = input().strip()
+# Get the result
 result = lexicographically_minimal_string(s)
+# Print the result
 print(result)

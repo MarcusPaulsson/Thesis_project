@@ -1,6 +1,7 @@
 def solve():
     n = int(input())
     s = input()
+    len_s = len(s)
     
     count = 0
     
@@ -16,7 +17,7 @@ def solve():
         
         if is_substring:
             count += 1
-    
+                
     print(count)
 
 solve()

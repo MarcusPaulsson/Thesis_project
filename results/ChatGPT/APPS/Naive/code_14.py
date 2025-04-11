@@ -1,43 +1,45 @@
-def is_stack_sortable_and_restore(n, k, p):
-    # Create a set for quick lookup of the first k elements
+def is_stack_sortable(n, k, p):
+    # Create a set of used elements from the first k elements
     used = set(p)
-    # Initialize the result with the first k elements
+    # Initialize the result array with the first k elements
     result = p[:]
     
-    # The next value we can use to fill the remaining array
-    next_value = n
+    # The next available number to use in the permutation
+    next_available = n
     
-    # We will use a stack to keep track of the order of elements
+    # A stack to simulate the stack operations
     stack = []
     
-    # Check the conditions for stack sortability
+    # Iterate through the first k elements
     for i in range(k):
-        # Ensure that the stack is always non-decreasing
-        while stack and stack[-1] < result[i]:
+        # Push elements onto the stack until we can pop
+        while next_available > 0 and (len(stack) == 0 or stack[-1] < p[i]):
+            if next_available not in used:
+                stack.append(next_available)
+            next_available -= 1
+        
+        # If the stack's top is not equal to the current element, it's not sortable
+        if len(stack) > 0 and stack[-1] == p[i]:
             stack.pop()
-        
-        # If the top of the stack is greater than the current element,
-        # it means we can't place the current element in a non-decreasing order
-        if stack and stack[-1] > result[i]:
+        elif len(stack) > 0 and stack[-1] > p[i]:
             return -1
-        
-        # Push the next available values into the stack until we reach the current element
-        while next_value > 0 and next_value > result[i]:
-            if next_value not in used:
-                stack.append(next_value)
-            next_value -= 1
     
-    # Now we have filled the stack, we need to fill in the remaining values
-    while next_value > 0:
-        if next_value not in used:
-            stack.append(next_value)
-        next_value -= 1
+    # Fill the remaining elements in the result
+    while next_available > 0:
+        if next_available not in used:
+            result.append(next_available)
+        next_available -= 1
     
-    # Now we can append the remaining values from the stack
-    while stack:
-        if stack[-1] < result[-1] if result else float('inf'):
-            return -1
-        result.append(stack.pop())
+    # Now we need to ensure the result is stack-sortable
+    stack = []
+    for num in result:
+        while stack and stack[-1] < num:
+            stack.pop()
+        stack.append(num)
+    
+    # If the stack is not empty, we can check if we can pop all elements
+    if len(stack) != len(result):
+        return -1
     
     return result
 
@@ -46,7 +48,7 @@ n, k = map(int, input().split())
 p = list(map(int, input().split()))
 
 # Get the result
-result = is_stack_sortable_and_restore(n, k, p)
+result = is_stack_sortable(n, k, p)
 
 # Print the result
 if result == -1:

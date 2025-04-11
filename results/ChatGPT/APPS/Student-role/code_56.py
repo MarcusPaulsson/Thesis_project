@@ -7,11 +7,9 @@ def f(x):
 def reachable_count(n):
     reachable = set()
     current = n
-    
     while current not in reachable:
         reachable.add(current)
         current = f(current)
-    
     return len(reachable)
 
 n = int(input())

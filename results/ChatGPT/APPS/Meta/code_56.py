@@ -4,7 +4,7 @@ def f(x):
         x //= 10
     return x
 
-def count_reachable_numbers(n):
+def reachable_count(n):
     reachable = set()
     current = n
     
@@ -15,4 +15,4 @@ def count_reachable_numbers(n):
     return len(reachable)
 
 n = int(input())
-print(count_reachable_numbers(n))
+print(reachable_count(n))

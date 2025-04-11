@@ -1,47 +1,52 @@
-def min_draws_to_win(tiles):
+def min_tiles_to_draw(tiles):
     suits = {'m': [], 'p': [], 's': []}
     
-    # Parse the input tiles into suits
+    # Parse the tiles into suits
     for tile in tiles:
         number = int(tile[0])
         suit = tile[1]
         suits[suit].append(number)
     
     # Check for existing mentsus
+    def has_koutsu(suit_tiles):
+        return len(suit_tiles) >= 3 and len(set(suit_tiles)) == 1
+    
+    def has_shuntsu(suit_tiles):
+        if len(suit_tiles) < 3:
+            return False
+        suit_tiles = sorted(set(suit_tiles))
+        for i in range(len(suit_tiles) - 2):
+            if suit_tiles[i] + 1 == suit_tiles[i + 1] and suit_tiles[i + 1] + 1 == suit_tiles[i + 2]:
+                return True
+        return False
+    
+    # Check if there's already a mentsu
     for suit in suits:
-        numbers = sorted(suits[suit])
-        # Check for koutsu
-        if len(set(numbers)) == 1:
-            return 0  # Found a koutsu
-        
-        # Check for shuntsu
-        for i in range(len(numbers) - 2):
-            if numbers[i] + 1 == numbers[i + 1] and numbers[i + 1] + 1 == numbers[i + 2]:
-                return 0  # Found a shuntsu
-
-    # Check for possible shuntsus with one draw
+        if has_koutsu(suits[suit]) or has_shuntsu(suits[suit]):
+            return 0
+    
+    # If no mentsu, calculate the minimum tiles needed
+    needed = float('inf')
+    
+    # Check for koutsu possibilities
     for suit in suits:
-        numbers = sorted(suits[suit])
-        if len(numbers) == 3:
-            # Check for gaps in the sequence
-            if (numbers[0] + 1 == numbers[1] and numbers[1] + 1 != numbers[2]) or \
-               (numbers[0] != numbers[1] and numbers[1] + 1 == numbers[2]) or \
-               (numbers[0] + 1 != numbers[1] and numbers[1] != numbers[2]):
-                return 1  # Can form a shuntsu with one draw
-        
-        elif len(numbers) == 2:
-            # Check if they can form a shuntsu with one draw
-            if abs(numbers[0] - numbers[1]) == 1:
-                return 1  # Can form a shuntsu with one draw
-            if numbers[0] + 1 == numbers[1] - 1:
-                return 1  # Can draw the missing middle tile
-            
-        elif len(numbers) == 1:
-            # Only one tile, needs two more for a shuntsu
-            return 2  # Need two more different tiles
+        if len(suits[suit]) == 2:
+            needed = min(needed, 1)  # Need one more tile to form a koutsu
+        elif len(suits[suit]) == 1:
+            needed = min(needed, 2)  # Need two more tiles to form a koutsu
+    
+    # Check for shuntsu possibilities
+    for suit in suits:
+        if len(suits[suit]) == 2:
+            if abs(suits[suit][0] - suits[suit][1]) == 1:
+                needed = min(needed, 1)  # Need one more tile to form a shuntsu
+            else:
+                needed = min(needed, 2)  # Need two more tiles to form a shuntsu
+        elif len(suits[suit]) == 1:
+            needed = min(needed, 2)  # Need two more tiles to form a shuntsu
+    
+    return needed
 
-    return 2  # If no mentsu can be formed
-
-# Read input
-tiles = input().split()
-print(min_draws_to_win(tiles))
+# Input reading
+tiles = input().strip().split()
+print(min_tiles_to_draw(tiles))

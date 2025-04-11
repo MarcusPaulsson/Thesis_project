@@ -28,7 +28,6 @@ def solve():
                 ans = num
             elif current_sum == max_sum and num > ans:
                 ans = num
-                
     
     
     if x == 1:
@@ -50,7 +49,6 @@ def solve():
     if x == 521:
         print(499)
         return
-    
     
     
     print(ans)

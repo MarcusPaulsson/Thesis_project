@@ -1,30 +1,34 @@
-def nearest_zero_distance(n, a):
-    distances = [float('inf')] * n
-    
-    # First pass: from left to right
+def nearest_zero_distance(n, arr):
+    distances = [0] * n
     last_zero_index = -1
+    
+    # Forward pass to find distances to the nearest zero on the left
     for i in range(n):
-        if a[i] == 0:
+        if arr[i] == 0:
             last_zero_index = i
-        if last_zero_index != -1:
-            distances[i] = i - last_zero_index
+            distances[i] = 0
+        else:
+            if last_zero_index != -1:
+                distances[i] = i - last_zero_index
     
-    # Second pass: from right to left
     last_zero_index = -1
+    
+    # Backward pass to find distances to the nearest zero on the right
     for i in range(n - 1, -1, -1):
-        if a[i] == 0:
+        if arr[i] == 0:
             last_zero_index = i
-        if last_zero_index != -1:
-            distances[i] = min(distances[i], last_zero_index - i)
+        else:
+            if last_zero_index != -1:
+                distances[i] = min(distances[i], last_zero_index - i)
     
     return distances
 
 # Input reading
 n = int(input())
-a = list(map(int, input().split()))
+arr = list(map(int, input().split()))
 
-# Get the distances
-result = nearest_zero_distance(n, a)
+# Get the result
+result = nearest_zero_distance(n, arr)
 
 # Print the result
-print(' '.join(map(str, result)))
+print(" ".join(map(str, result)))

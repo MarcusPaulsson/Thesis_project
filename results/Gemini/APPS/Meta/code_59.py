@@ -4,7 +4,7 @@ def solve():
     
     count = 0
     for i in range(n - x, n):
-        if i == n - y - 1:
+        if i == n - 1 - y:
             if s[i] == '0':
                 count += 1
         else:

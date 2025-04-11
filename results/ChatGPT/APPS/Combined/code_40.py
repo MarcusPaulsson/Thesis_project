@@ -1,21 +1,19 @@
-def determine_round_status(n, ratings):
-    # Check if any rating has changed
-    rated = any(before != after for before, after in ratings)
+def determine_round_rating(n, ratings):
+    # Check if any participant's rating has changed
+    for before, after in ratings:
+        if before != after:
+            return "rated"
     
-    # Check if standings are in non-increasing order based on the initial ratings
-    unrated = any(ratings[i][0] < ratings[i + 1][0] for i in range(n - 1))
+    # Check if the standings are in non-increasing order of ratings
+    for i in range(1, n):
+        if ratings[i-1][0] < ratings[i][0]:
+            return "unrated"
+    
+    return "maybe"
 
-    if rated:
-        return "rated"
-    elif unrated:
-        return "unrated"
-    else:
-        return "maybe"
-
-# Input reading
-n = int(input().strip())
-ratings = [tuple(map(int, input().strip().split())) for _ in range(n)]
+# Read input
+n = int(input())
+ratings = [tuple(map(int, input().split())) for _ in range(n)]
 
 # Determine and print the result
-result = determine_round_status(n, ratings)
-print(result)
+print(determine_round_rating(n, ratings))

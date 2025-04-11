@@ -13,12 +13,12 @@ def solve():
         return
 
     last_bracket = -1
-    for i in range(n - 1, first_bracket, -1):
+    for i in range(n - 1, -1, -1):
         if s[i] == ']':
             last_bracket = i
             break
 
-    if last_bracket == -1:
+    if last_bracket == -1 or last_bracket <= first_bracket:
         print(-1)
         return
 
@@ -32,18 +32,18 @@ def solve():
         print(-1)
         return
 
-    last_colon = -1
+    second_colon = -1
     for i in range(last_bracket - 1, first_colon, -1):
         if s[i] == ':':
-            last_colon = i
+            second_colon = i
             break
 
-    if last_colon == -1:
+    if second_colon == -1 or second_colon <= first_colon:
         print(-1)
         return
 
     count = 0
-    for i in range(first_colon + 1, last_colon):
+    for i in range(first_colon + 1, second_colon):
         if s[i] == '|':
             count += 1
 

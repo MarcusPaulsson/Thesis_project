@@ -14,7 +14,7 @@ def solve():
         
         if is_good:
             nice_indices.append(j + 1)
-    
+            
     print(len(nice_indices))
     print(*nice_indices)
 

@@ -13,5 +13,5 @@ def lexicographically_minimal_string(s):
 s = input().strip()
 # Get the result
 result = lexicographically_minimal_string(s)
-# Print the output
+# Print the result
 print(result)

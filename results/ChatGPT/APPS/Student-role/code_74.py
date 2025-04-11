@@ -1,28 +1,31 @@
-def min_cost_to_form_set(n, k, s):
+def min_cost_to_obtain_set(n, k, s):
+    from itertools import combinations
+    
     unique_subsequences = set()
-    total_cost = 0
     
     # Generate all possible subsequences
-    for i in range(1 << n):  # There are 2^n possible subsequences
-        subsequence = []
-        for j in range(n):
-            if i & (1 << j):
-                subsequence.append(s[j])
-        subsequence_str = ''.join(subsequence)
-        if subsequence_str not in unique_subsequences:
-            unique_subsequences.add(subsequence_str)
-            total_cost += (n - len(subsequence_str))
-        
-        if len(unique_subsequences) >= k:
-            break
-            
+    for length in range(n + 1):
+        for comb in combinations(range(n), length):
+            subseq = ''.join(s[i] for i in comb)
+            unique_subsequences.add(subseq)
+    
+    # If we can't obtain k unique subsequences
     if len(unique_subsequences) < k:
         return -1
-    return total_cost
+    
+    # Calculate the costs for the unique subsequences
+    costs = []
+    for subseq in unique_subsequences:
+        cost = n - len(subseq)
+        costs.append(cost)
+    
+    # Sort costs and take the minimum k costs
+    costs.sort()
+    return sum(costs[:k])
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 s = input().strip()
 
 # Output the result
-print(min_cost_to_form_set(n, k, s))
+print(min_cost_to_obtain_set(n, k, s))

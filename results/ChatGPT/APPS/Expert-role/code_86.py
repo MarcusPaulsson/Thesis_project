@@ -1,35 +1,40 @@
-def solve_problems(n, k):
-    # Minimum sum of problems solved with constraints
+def solve_polycarp(n, k):
+    # Minimum sum of problems that can be solved in k days
     min_sum = k * (k + 1) // 2
-    if n < min_sum:
+    # Maximum sum of problems that can be solved in k days
+    max_sum = k * (2 * k + 1) // 2
+
+    if n < min_sum or n > max_sum:
         print("NO")
         return
 
-    # Start with the minimum required problems solved each day
+    # Start with the minimum required problems for each day
     a = list(range(1, k + 1))
-    current_sum = min_sum
+    current_sum = sum(a)
 
     # Distribute the remaining problems
     remaining = n - current_sum
+
     for i in range(k - 1, -1, -1):
-        # The maximum number of problems we can add to a[i]
-        # We can add at most (2 * a[i]) - a[i] = a[i] to keep the next day's constraints
-        max_increase = a[i]  # We can increase a[i] by at most a[i]
-        increase = min(remaining, max_increase)
-        a[i] += increase
-        remaining -= increase
-        if remaining == 0:
+        # Maximum we can add to a[i] while respecting the constraints
+        max_add = min(remaining, (2 * a[i]) - a[i])
+        remaining -= max_add
+        a[i] += max_add
+
+        if remaining <= 0:
             break
 
-    if remaining > 0:
-        print("NO")
-    else:
-        print("YES")
-        print(" ".join(map(str, a)))
+    print("YES")
+    print(" ".join(map(str, a)))
 
-# Example usage
-solve_problems(26, 6)
-solve_problems(8, 3)
-solve_problems(1, 1)
-solve_problems(9, 4)
-solve_problems(7, 2)
+# Example inputs
+inputs = [
+    (26, 6),
+    (8, 3),
+    (1, 1),
+    (9, 4),
+    (7, 2)
+]
+
+for n, k in inputs:
+    solve_polycarp(n, k)

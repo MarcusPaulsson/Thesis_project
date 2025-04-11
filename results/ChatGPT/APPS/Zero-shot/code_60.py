@@ -2,15 +2,19 @@ def has_palindrome_subsequence(t, test_cases):
     results = []
     for n, a in test_cases:
         found = False
-        index_map = {}
+        # We will use a dictionary to track the last occurrence of each number
+        last_occurrence = {}
+        
         for i in range(n):
-            if a[i] in index_map:
-                if i - index_map[a[i]] >= 2:
+            if a[i] in last_occurrence:
+                # Check if we have seen this number before
+                if i - last_occurrence[a[i]] >= 2:
                     found = True
                     break
-            index_map[a[i]] = i
-        results.append("YES" if found else "NO")
+            last_occurrence[a[i]] = i
         
+        results.append("YES" if found else "NO")
+    
     return results
 
 # Read input

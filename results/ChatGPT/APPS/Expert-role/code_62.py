@@ -1,31 +1,31 @@
 def min_operations(t, test_cases):
     results = []
+    
     for a, b, c in test_cases:
-        min_ops = float('inf')
-        best_triplet = (0, 0, 0)
+        min_moves = float('inf')
+        best_triple = (a, b, c)
 
         for A in range(1, a + 1):
             for B in range(A, c + 1):
                 if B % A == 0:
-                    for C in range(B, c + 1):
-                        if C % B == 0:
-                            ops = (A - a) + (B - b) + (C - c)
-                            if ops < min_ops:
-                                min_ops = ops
-                                best_triplet = (A, B, C)
+                    C = (B // A) * A
+                    moves = abs(A - a) + abs(B - b) + abs(C - c)
+                    if moves < min_moves:
+                        min_moves = moves
+                        best_triple = (A, B, C)
 
-        results.append((min_ops, best_triplet))
-    
+        results.append((min_moves, best_triple))
+
     return results
 
-# Read input
+# Input reading
 t = int(input())
 test_cases = [tuple(map(int, input().split())) for _ in range(t)]
 
 # Get results
 results = min_operations(t, test_cases)
 
-# Print output
-for ops, (A, B, C) in results:
-    print(ops)
+# Output results
+for moves, (A, B, C) in results:
+    print(moves)
     print(A, B, C)

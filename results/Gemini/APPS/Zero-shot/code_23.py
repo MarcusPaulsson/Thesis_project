@@ -3,42 +3,42 @@ from collections import Counter
 def solve():
     a = input()
     b = input()
-
-    a_digits = sorted(list(a), reverse=True)
     
-    if len(a) < len(b):
+    a_digits = sorted(list(a), reverse=True)
+    a_len = len(a)
+    b_len = len(b)
+
+    if a_len > b_len:
         print("".join(a_digits))
         return
     
     a_counts = Counter(a)
     
-    def find_max(idx, current_num, remaining_counts):
-        if idx == len(a):
+    def find_max(index, current_num, remaining_counts, smaller):
+        if index == a_len:
             return current_num
         
         best_num = ""
         
-        for digit in sorted(remaining_counts.keys(), reverse=True):
-            temp_counts = remaining_counts.copy()
-            
-            if temp_counts[digit] > 0:
-                temp_counts[digit] -= 1
-                if temp_counts[digit] == 0:
-                    del temp_counts[digit]
+        possible_digits = sorted(remaining_counts.keys(), reverse=True)
+        
+        for digit in possible_digits:
+            if smaller or digit <= b[index]:
+                new_remaining_counts = remaining_counts.copy()
+                new_remaining_counts[digit] -= 1
+                if new_remaining_counts[digit] == 0:
+                    del new_remaining_counts[digit]
                     
-                new_num = current_num + digit
+                new_smaller = smaller or digit < b[index]
                 
-                if len(new_num) <= len(b):
-                    if len(new_num) < len(b) or new_num <= b:
-                        result = find_max(idx + 1, new_num, temp_counts)
-                        if len(result) > len(best_num):
-                            best_num = result
-                        elif len(result) == len(best_num) and result > best_num:
-                            best_num = result
+                temp_num = find_max(index + 1, current_num + digit, new_remaining_counts, new_smaller)
+                
+                if len(temp_num) == a_len and (best_num == "" or temp_num > best_num):
+                    best_num = temp_num
         
         return best_num
-
-    result = find_max(0, "", a_counts)
+    
+    result = find_max(0, "", a_counts, False)
     print(result)
 
 solve()

@@ -1,37 +1,39 @@
-def max_removable_substring_length(s: str, t: str) -> int:
+def max_removable_length(s: str, t: str) -> int:
     n, m = len(s), len(t)
-    
-    # Precompute leftmost indices of each character in t from s
-    left_indices = [-1] * m
+
+    # Create arrays to store the positions of t in s
+    left = [0] * m
+    right = [0] * m
+
+    # Fill left array with positions of t in s from the start
     j = 0
     for i in range(n):
         if j < m and s[i] == t[j]:
-            left_indices[j] = i
+            left[j] = i
             j += 1
-    
-    # Precompute rightmost indices of each character in t from s
-    right_indices = [-1] * m
+
+    # Fill right array with positions of t in s from the end
     j = m - 1
     for i in range(n - 1, -1, -1):
         if j >= 0 and s[i] == t[j]:
-            right_indices[j] = i
+            right[j] = i
             j -= 1
 
-    # Calculate maximum removable length
-    max_removable_length = 0
+    # Calculate the maximum removable length
+    max_length = 0
     for i in range(m - 1):
-        max_removable_length = max(max_removable_length, right_indices[i + 1] - left_indices[i] - 1)
+        max_length = max(max_length, right[i + 1] - left[i] - 1)
 
-    # Consider removing from the start or the end of the string
-    max_removable_length = max(max_removable_length, left_indices[0])  # Removing from start
-    max_removable_length = max(max_removable_length, n - 1 - right_indices[m - 1])  # Removing from end
+    # Consider removing from the start to the first character of t
+    max_length = max(max_length, right[0])
+    # Consider removing from the last character of t to the end
+    max_length = max(max_length, n - 1 - left[m - 1])
 
-    return max_removable_length
+    return max_length
 
 # Input reading
-if __name__ == "__main__":
-    s = input().strip()
-    t = input().strip()
-    
-    # Output the result
-    print(max_removable_substring_length(s, t))
+s = input().strip()
+t = input().strip()
+
+# Output the result
+print(max_removable_length(s, t))

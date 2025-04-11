@@ -1,27 +1,50 @@
 def find_sequence(n, k):
-    # Check if it's possible to create a sequence of k numbers that sum to n
-    if n < (k * (k + 1)) // 2:
+    # Minimum sum of the first k positive integers
+    min_sum = k * (k + 1) // 2
+    
+    # If n is less than the minimum sum, it's impossible to form the sequence
+    if n < min_sum:
         return -1
     
-    # Calculate the maximum gcd we can have
+    # The maximum GCD we can use is n // k
     max_gcd = n // k
     
-    # Create the sequence with the calculated gcd
-    sequence = [(i + 1) * max_gcd for i in range(k)]
+    # Start with the first k positive integers
+    sequence = list(range(1, k + 1))
     
-    # Adjust the last element to ensure the sum equals n
-    sequence[-1] += (n - sum(sequence))
+    # Calculate the current sum of the sequence
+    current_sum = sum(sequence)
     
-    # Check if the sequence is strictly increasing and valid
-    if sequence[-1] > sequence[-2]:
-        return sequence
-    else:
-        return -1
+    # Calculate the difference we need to make up
+    diff = n - current_sum
+    
+    # We can increase each element in the sequence by the same amount
+    # to maintain the strictly increasing property
+    # We can add `diff // k` to each element
+    increment = diff // k
+    
+    # Add the increment to each element
+    for i in range(k):
+        sequence[i] += increment
+    
+    # Check if we have any remaining difference to distribute
+    remaining = diff % k
+    
+    # Distribute the remaining difference
+    for i in range(remaining):
+        sequence[i] += 1
+    
+    # The GCD of the sequence will be max_gcd
+    # Scale the sequence by max_gcd
+    sequence = [x * max_gcd for x in sequence]
+    
+    return sequence
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 result = find_sequence(n, k)
 
+# Print output
 if result == -1:
     print(-1)
 else:

@@ -1,32 +1,30 @@
 from collections import Counter
-from math import gcd
+import sys
 
-n = int(input())
-divisors = list(map(int, input().split()))
+def find_x_y(n, divisors):
+    count = Counter(divisors)
+    # The largest number in the list must be either x or y
+    max_divisor = max(count)
+    
+    # Initialize x and y
+    x = max_divisor
+    y = 1
+    
+    # Iterate over the divisors to find y
+    for d in count:
+        if count[d] == 1:  # If d appears only once, it must be a divisor of y
+            y *= d
+        elif count[d] == 2:  # If d appears twice, it is a divisor of both x and y
+            continue
+    
+    return x, y
 
-# Count occurrences of each divisor
-count = Counter(divisors)
+# Read input
+n = int(input().strip())
+divisors = list(map(int, input().strip().split()))
 
-# To find x and y, we need to find the maximum divisor
-max_divisor = max(count.keys())
-# Start with the assumption that x and y are both the maximum divisor
-x = max_divisor
-y = max_divisor
+# Get x and y
+x, y = find_x_y(n, divisors)
 
-# We know that if d is a common divisor, there should be two occurrences of d in the list
-for d in count.keys():
-    if count[d] == 2:
-        continue
-    elif count[d] == 1:
-        # If a divisor occurs once, it must belong to one of the numbers
-        # We can determine the gcd of the two candidates
-        if y == max_divisor:
-            y = d
-        else:
-            x = d
-    else:
-        # If a divisor occurs more than twice (should not happen due to problem constraints)
-        pass
-
-# Ensure we print larger first
-print(max(x, y), min(x, y))
+# Print the result
+print(x, y)

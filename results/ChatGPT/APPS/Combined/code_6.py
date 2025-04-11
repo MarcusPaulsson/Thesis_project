@@ -1,46 +1,51 @@
 def min_blows_to_defeat_zmei(t, queries):
     results = []
-
-    for query in queries:
-        n, x, blows = query
-        min_blows = float('inf')
-        max_effective_damage = 0
+    
+    for n, x, blows in queries:
+        # Initialize the best blow variables
+        best_d = 0
+        best_h = float('inf')
         
+        # Find the best blow
         for d, h in blows:
-            if d >= x:
-                # If the blow can defeat Zmei in one hit
-                min_blows = 1
-                break
-            
-            effective_damage = d - h
-            if effective_damage > 0:
-                max_effective_damage = max(max_effective_damage, effective_damage)
-
-        if min_blows == 1:
+            if d > best_d:
+                best_d = d
+                best_h = h
+            elif d == best_d:
+                best_h = min(best_h, h)
+        
+        # If the best blow can defeat Zmei Gorynich in one hit
+        if best_d >= x:
             results.append(1)
             continue
         
-        if max_effective_damage <= 0:
+        # If the best blow does not reduce heads effectively
+        if best_h >= best_d:
             results.append(-1)
             continue
         
-        blows_needed = (x + max_effective_damage - 1) // max_effective_damage
+        # Calculate the number of blows needed
+        blows_needed = 0
+        while x > 0:
+            blows_needed += 1
+            x -= best_d
+            if x > 0:
+                x += best_h
+        
         results.append(blows_needed)
     
     return results
 
-# Read input
-t = int(input().strip())
+# Input reading
+t = int(input())
 queries = []
 
 for _ in range(t):
-    n, x = map(int, input().strip().split())
-    blows = [tuple(map(int, input().strip().split())) for _ in range(n)]
+    n, x = map(int, input().split())
+    blows = [tuple(map(int, input().split())) for _ in range(n)]
     queries.append((n, x, blows))
 
-# Get results
+# Get results and print
 results = min_blows_to_defeat_zmei(t, queries)
-
-# Print results
 for result in results:
     print(result)

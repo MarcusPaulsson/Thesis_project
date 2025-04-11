@@ -1,5 +1,5 @@
 n = int(input())
-position = 0  # Position in kilometers from North Pole (0 at North Pole, 20000 at South Pole)
+current_position = 0  # Position in kilometers from the North Pole (0 to 20000)
 
 valid = True
 
@@ -8,21 +8,23 @@ for _ in range(n):
     t = int(t)
 
     if direction == "South":
-        if position == 0 or position + t > 20000:
+        if current_position == 20000:  # At South Pole
             valid = False
-            break
-        position += t
+        current_position += t
     elif direction == "North":
-        if position == 20000 or position - t < 0:
+        if current_position == 0:  # At North Pole
             valid = False
-            break
-        position -= t
+        current_position -= t
     elif direction in ["West", "East"]:
-        if position == 0 or position == 20000:
-            valid = False
-            break
+        # Moving West or East does not change the position in terms of North/South
+        pass
 
-if valid and position == 0:
-    print("YES")
-else:
-    print("NO")
+    # Check if current position is out of bounds
+    if current_position < 0 or current_position > 20000:
+        valid = False
+
+# Final position must be at the North Pole
+if current_position != 0:
+    valid = False
+
+print("YES" if valid else "NO")

@@ -2,7 +2,7 @@ def solve():
     n, k = map(int, input().split())
 
     if k * (k + 1) // 2 > n:
-        print("-1")
+        print(-1)
         return
 
     best_gcd = 1
@@ -13,22 +13,31 @@ def solve():
             if i >= k * (k + 1) // 2:
                 best_gcd = max(best_gcd, n // i)
 
-    if best_gcd == 0:
-        print("-1")
+    if best_gcd == 1 and k * (k + 1) // 2 > n:
+      print(-1)
+      return
+    
+    
+    
+    if best_gcd == 1 and n < k*(k+1)//2:
+        print(-1)
         return
 
-    result = []
-    for i in range(1, k):
-        result.append(best_gcd * i)
     
-    result.append(n - sum(result))
+    
+    sequence = []
+    sum_so_far = 0
+    for i in range(1, k):
+        sequence.append(best_gcd * i)
+        sum_so_far += best_gcd * i
 
-    if all(result[i] < result[i+1] for i in range(len(result)-1)) and all(x > 0 for x in result):
-       print(*result)
+    sequence.append(n - sum_so_far)
 
-    else:
-      print("-1")
+    if sequence[-1] <= sequence[-2]:
+        print(-1)
+        return
+        
 
-
+    print(*sequence)
 
 solve()

@@ -19,11 +19,12 @@ def solve():
     if max_diff <= 0:
         print(-1)
         return
-    
+
     remaining = x - max_damage
     
-    ans = (remaining + max_diff - 1) // max_diff + 1
-    print(ans)
+    blows_needed = (remaining + max_diff - 1) // max_diff
+    
+    print(blows_needed + 1)
 
 t = int(input())
 for _ in range(t):

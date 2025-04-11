@@ -12,19 +12,18 @@ def solve():
         print(1)
         return
 
-    max_diff = 0
+    max_diff = -1
     for d, h in blows:
         max_diff = max(max_diff, d - h)
-    
+
     if max_diff <= 0:
         print(-1)
         return
 
     remaining = x - max_d
-    ans = 1
-    ans += (remaining + max_diff - 1) // max_diff
+    
+    ans = (remaining + max_diff - 1) // max_diff + 1
     print(ans)
-
 
 t = int(input())
 for _ in range(t):

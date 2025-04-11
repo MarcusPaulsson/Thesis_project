@@ -17,43 +17,43 @@ def bfs(start, graph):
 
     return farthest_node, visited
 
-def find_farthest_nodes(graph):
-    # Start from an arbitrary node (1)
-    farthest_from_start, _ = bfs(1, graph)
-    # Find the farthest node from that node
-    farthest_node, distances = bfs(farthest_from_start, graph)
-    return farthest_from_start, farthest_node, distances
+def find_max_edges(n, edges):
+    graph = defaultdict(list)
+    for u, v in edges:
+        graph[u].append(v)
+        graph[v].append(u)
 
-def get_paths(a, b, c, distances):
-    # The total number of distinct edges in paths a-b, b-c, and a-c
-    return len(set(distances[a]) | set(distances[b]) | set(distances[c]))
+    # Step 1: Find the farthest node from an arbitrary node (1)
+    farthest_node, _ = bfs(1, graph)
 
-n = int(input().strip())
-graph = defaultdict(list)
+    # Step 2: Find the farthest node from the previously found farthest node
+    other_end, distances = bfs(farthest_node, graph)
 
-for _ in range(n - 1):
-    a, b = map(int, input().strip().split())
-    graph[a].append(b)
-    graph[b].append(a)
+    # Step 3: Find the farthest node from the other end to get the diameter
+    diameter_length = distances[other_end]
+    
+    # Step 4: Find the path from farthest_node to other_end
+    path = []
+    current = other_end
+    while current != farthest_node:
+        path.append(current)
+        for neighbor in graph[current]:
+            if distances[neighbor] == distances[current] - 1:
+                current = neighbor
+                break
+    path.append(farthest_node)
+    path.reverse()
 
-# Find two farthest nodes in the tree
-u, v, distances_u = find_farthest_nodes(graph)
-# Get distances from u
-_, distances_v = bfs(v, graph)
+    # Step 5: Choose three distinct vertices
+    if len(path) >= 3:
+        a, b, c = path[0], path[len(path) // 2], path[-1]
+    else:
+        a, b, c = path[0], path[1], path[2]
 
-# Find the maximum number of distinct edges
-max_edges = 0
-best_triplet = (1, 2, 3)
+    return diameter_length + 1, a, b, c
 
-for a in range(1, n + 1):
-    for b in range(a + 1, n + 1):
-        if a != b:
-            for c in range(b + 1, n + 1):
-                if a != c and b != c:
-                    edges_count = get_paths(a, b, c, distances_u)
-                    if edges_count > max_edges:
-                        max_edges = edges_count
-                        best_triplet = (a, b, c)
-
-print(max_edges)
-print(*best_triplet)
+n = int(input())
+edges = [tuple(map(int, input().split())) for _ in range(n - 1)]
+res, a, b, c = find_max_edges(n, edges)
+print(res)
+print(a, b, c)

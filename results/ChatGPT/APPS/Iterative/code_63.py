@@ -1,13 +1,11 @@
-def min_instability(n, a):
-    if n <= 1:
-        return 0  # Edge case: if there's 1 or fewer elements, instability is 0
-    
-    a.sort()
-    # Calculate the instability after removing the smallest or largest element
-    option1 = a[-1] - a[1]  # Remove the smallest element
-    option2 = a[-2] - a[0]  # Remove the largest element
-    return min(option1, option2)
+n = int(input())
+a = list(map(int, input().split()))
 
-n = int(input().strip())
-a = list(map(int, input().strip().split()))
-print(min_instability(n, a))
+# Sort the array to easily find min and max after removing an element
+a.sort()
+
+# The minimum possible instability after removing one element
+# We can either remove the first element or the last element
+min_instability = min(a[-1] - a[1], a[-2] - a[0])
+
+print(min_instability)

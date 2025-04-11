@@ -32,7 +32,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
         ),
     ]
     generate_content_config = types.GenerateContentConfig(
-        temperature=0.7,
+        temperature=0.2,
         top_p=1,
         top_k=40,
         max_output_tokens=2500,
@@ -108,12 +108,15 @@ def process_tasks_parallel(tasks, start_index, end_index, max_workers=5, iterati
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {}
         for i in range(start_index, min(end_index, len(tasks))):
-            task_prompt = tasks[i]
-            if iterative:
-                future = executor.submit(process_task_with_iterations, task_prompt)
+            if i in skip_test:
+                continue
             else:
-                future = executor.submit(run_task_with_gemini_iter, task_prompt, prompt.SYSTEM_PROMPT[0])
-            futures[future] = i
+                task_prompt = tasks[i]
+                if iterative:
+                    future = executor.submit(process_task_with_iterations, task_prompt)
+                else:
+                    future = executor.submit(run_task_with_gemini_iter, task_prompt, prompt.SYSTEM_PROMPT)
+                futures[future] = i
 
         for future in concurrent.futures.as_completed(futures):
             index = futures[future]
@@ -140,6 +143,9 @@ if __name__ == "__main__":
     start_index = 0
     end_index = 100 # Adjust to the number of tasks you want to run in parallel
     max_workers = 3  # Adjust the number of parallel calls you want to make
+
+    skip_test = [4, 21, 26, 37, 43, 48, 61, 65, 75, 85, 98]
+
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)

@@ -1,34 +1,31 @@
-def check_journey(n, journey):
-    current_position = 0  # Position in kilometers from the North Pole (0 to 20000)
-
+def is_valid_journey(n, journey):
+    position = 0  # Start at the North Pole (0 km)
+    
     for t, direction in journey:
-        if current_position == 0 and direction != "South":
-            return "NO"
-        if current_position == 20000 and direction != "North":
-            return "NO"
-
+        if position == 0 and direction != "South":
+            return "NO"  # At North Pole, can only go South
+        if position == 20000 and direction != "North":
+            return "NO"  # At South Pole, can only go North
+        
         if direction == "South":
-            current_position += t
+            position += t
         elif direction == "North":
-            current_position -= t
-        elif direction == "West" or direction == "East":
-            # West and East don't change the North-South position
+            position -= t
+        elif direction == "East" or direction == "West":
+            # East and West do not change the position in km
             continue
         
-        # Check if current position is going out of bounds
-        if current_position < 0 or current_position > 20000:
+        # Check if position goes out of bounds
+        if position < 0 or position > 20000:
             return "NO"
     
-    # Final position must be at the North Pole
-    if current_position != 0:
-        return "NO"
-
-    return "YES"
+    # Journey must end at the North Pole
+    return "YES" if position == 0 else "NO"
 
 # Input reading
-n = int(input().strip())
-journey = [tuple(input().strip().split()) for _ in range(n)]
-journey = [(int(t), dir) for t, dir in journey]
+n = int(input())
+journey = [tuple(input().split()) for _ in range(n)]
+journey = [(int(t), direction) for t, direction in journey]
 
-# Output the result
-print(check_journey(n, journey))
+# Output result
+print(is_valid_journey(n, journey))

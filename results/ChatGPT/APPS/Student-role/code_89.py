@@ -1,19 +1,19 @@
 def can_complete_projects(n, r, projects):
-    # Sort projects by their required rating
-    projects.sort(key=lambda x: x[0])
+    projects.sort(key=lambda x: (x[0], -x[1]))  # Sort by required rating, then by rating change descending
+    current_rating = r
     
     for a, b in projects:
-        if r < a:
+        if current_rating < a:
             return "NO"
-        r += b
-        if r < 0:
+        current_rating += b
+        if current_rating < 0:
             return "NO"
     
     return "YES"
 
-# Read input
+# Input reading
 n, r = map(int, input().split())
 projects = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Output the result
+# Output result
 print(can_complete_projects(n, r, projects))

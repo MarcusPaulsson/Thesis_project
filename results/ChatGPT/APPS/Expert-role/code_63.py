@@ -1,11 +1,9 @@
 def min_instability(n, a):
     a.sort()
-    
-    # Remove the first element or the last element
-    instability_remove_first = a[-1] - a[1]
-    instability_remove_last = a[-2] - a[0]
-    
-    return min(instability_remove_first, instability_remove_last)
+    # Remove the smallest element or the largest element
+    instability_remove_min = a[-1] - a[1]  # Remove the smallest element
+    instability_remove_max = a[-2] - a[0]  # Remove the largest element
+    return min(instability_remove_min, instability_remove_max)
 
 # Input reading
 n = int(input())

@@ -2,23 +2,21 @@ def solve():
     n = int(input())
     s = input()
     
-    count = 0
-    distinct_strings = set()
+    def contains(t, s):
+        for i in range(len(t)):
+            shifted_t = t[i:] + t[:i]
+            if s in shifted_t:
+                return True
+        return False
     
+    count = 0
+    seen = set()
     for i in range(2**n):
         binary_string = bin(i)[2:].zfill(n)
-        
-        is_substring = False
-        for j in range(n):
-            shifted_string = binary_string[j:] + binary_string[:j]
-            if s in shifted_string:
-                is_substring = True
-                break
-        
-        if is_substring:
-            if binary_string not in distinct_strings:
+        if contains(binary_string, s):
+            if binary_string not in seen:
                 count += 1
-                distinct_strings.add(binary_string)
+                seen.add(binary_string)
     
     print(count)
 

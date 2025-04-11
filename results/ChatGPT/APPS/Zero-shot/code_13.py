@@ -1,53 +1,59 @@
 from collections import deque, defaultdict
-import sys
 
-input = sys.stdin.read
-data = input().splitlines()
-
-n, k = map(int, data[0].split())
-main_courses = list(map(int, data[1].split()))
-main_set = set(main_courses)
-
-# Create the dependency graph and a reverse dependency count
-dependencies = defaultdict(list)
-in_degree = [0] * (n + 1)
-
-# Read the course dependencies
-for i in range(2, 2 + n):
-    course_info = list(map(int, data[i].split()))
-    t_i = course_info[0]
-    for j in range(1, t_i + 1):
-        dep_course = course_info[j]
-        dependencies[dep_course].append(i - 1)  # i - 2 + 2 = i - 1 (0-indexed)
-        in_degree[i - 1] += 1
-
-# Topological sort using Kahn's algorithm
-queue = deque()
-for i in range(n):
-    if in_degree[i] == 0:
-        queue.append(i)
-
-order = []
-while queue:
-    current = queue.popleft()
-    order.append(current + 1)  # Store 1-indexed course number
-    for neighbor in dependencies[current + 1]:
-        in_degree[neighbor] -= 1
-        if in_degree[neighbor] == 0:
-            queue.append(neighbor)
-
-# Set of passed courses
-passed_courses = set(order)
-
-# Check if all main courses can be completed
-if not main_set.issubset(passed_courses):
-    print(-1)
-else:
-    # Collect the minimum courses needed to complete all main courses
+def main():
+    n, k = map(int, input().split())
+    main_courses = list(map(int, input().split()))
+    
+    # Adjust for 0-based indexing
+    main_courses = [x - 1 for x in main_courses]
+    
+    dependencies = defaultdict(list)
+    in_degree = [0] * n
+    
+    for i in range(n):
+        data = list(map(int, input().split()))
+        t_i = data[0]
+        for dep in data[1:t_i + 1]:
+            dependencies[dep - 1].append(i)
+            in_degree[i] += 1
+    
+    # Queue for courses that can be taken (in-degree 0)
+    queue = deque()
+    for i in range(n):
+        if in_degree[i] == 0:
+            queue.append(i)
+    
+    order = []
+    taken_courses = set()
+    
+    while queue:
+        course = queue.popleft()
+        order.append(course)
+        taken_courses.add(course)
+        
+        for dependent in dependencies[course]:
+            in_degree[dependent] -= 1
+            if in_degree[dependent] == 0:
+                queue.append(dependent)
+    
+    # Check if we can take all main courses
+    if not all(course in taken_courses for course in main_courses):
+        print(-1)
+        return
+    
+    # We need to pass all main courses and their dependencies
     result = []
     for course in order:
-        if course in main_set or any(dep in passed_courses for dep in dependencies[course]):
-            result.append(course)
-
+        result.append(course + 1)  # Adjust back to 1-based indexing
+        if course in main_courses:
+            main_courses.remove(course)
+            if not main_courses:
+                break
+    
+    # Add any remaining courses that are not main but are taken
+    result = list(dict.fromkeys(result))  # Remove duplicates while preserving order
     print(len(result))
     print(' '.join(map(str, result)))
+
+if __name__ == "__main__":
+    main()

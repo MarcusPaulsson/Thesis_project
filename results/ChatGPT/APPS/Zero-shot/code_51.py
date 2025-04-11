@@ -7,24 +7,19 @@ divisors = list(map(int, input().split()))
 # Count the occurrences of each divisor
 count = Counter(divisors)
 
-# Get all unique divisors
-unique_divisors = list(count.keys())
+# Find the maximum divisor, which should be either x or y
+max_divisor = max(count.keys())
 
-# The product x * y is the product of all unique divisors raised to their counts
-x = 1
+# Initialize x and y
+x = max_divisor
 y = 1
 
-# For each unique divisor
-for d in unique_divisors:
-    # If the count is 2, it is a common divisor
-    if count[d] == 2:
-        x *= d
-        y *= d
-    # If the count is 1, assign it to x or y
-    elif count[d] == 1:
-        if x < y:
-            x *= d
-        else:
+# For each divisor, check if it can be part of y
+for d in count:
+    if d != max_divisor:
+        # If d is a divisor of x, it can also be a divisor of y
+        if count[d] == 2:
             y *= d
 
+# Output the results
 print(x, y)

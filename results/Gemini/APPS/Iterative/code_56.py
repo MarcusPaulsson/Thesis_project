@@ -6,13 +6,11 @@ def f(x):
 
 def solve():
     n = int(input())
-    reachable = {n}
+    reachable = set()
     curr = n
-    while True:
-        curr = f(curr)
-        if curr in reachable:
-            break
+    while curr not in reachable:
         reachable.add(curr)
+        curr = f(curr)
     print(len(reachable))
 
 solve()

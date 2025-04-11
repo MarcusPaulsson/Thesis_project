@@ -1,29 +1,26 @@
-def can_color_and_sort(n, s):
-    # Count frequencies of each character
+def can_color_string(n, s):
+    # Count occurrences of each character
     from collections import Counter
     count = Counter(s)
     
-    # Check for impossible cases
-    for char, freq in count.items():
-        if freq > 2:
+    # Check if any character appears more than twice
+    for char, cnt in count.items():
+        if cnt > 2:
             return "NO"
     
-    # Prepare coloring
-    color = []
-    for char in s:
-        if color.count('0') < count[char] // 2:
-            color.append('0')
-        else:
-            color.append('1')
-
+    # Initialize coloring
+    color = ['0'] * n
+    
+    # Assign colors
+    for i in range(n):
+        if s[i] in s[:i]:
+            color[i] = '1'
+    
     return "YES\n" + ''.join(color)
 
-# Reading input
+# Input reading
 n = int(input())
-s = input()
+s = input().strip()
 
-# Getting the result
-result = can_color_and_sort(n, s)
-
-# Printing the result
-print(result)
+# Output the result
+print(can_color_string(n, s))

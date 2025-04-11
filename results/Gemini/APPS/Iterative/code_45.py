@@ -1,37 +1,31 @@
 def solve():
-  n, k = map(int, input().split())
+    n, k = map(int, input().split())
 
-  if k * (k + 1) // 2 > n:
-    print("-1")
-    return
+    if k * (k + 1) // 2 > n:
+        print(-1)
+        return
 
-  best_gcd = 1
-  i = 1
-  while i * i <= n:
-    if n % i == 0:
-      if n // i >= k * (k + 1) // 2:
-        best_gcd = max(best_gcd, i)
-      if i >= k * (k + 1) // 2:
-        best_gcd = max(best_gcd, n // i)
-    i += 1
+    best_gcd = 0
+    for i in range(1, int(n**0.5) + 1):
+        if n % i == 0:
+            if n // i >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, i)
+            if i >= k * (k + 1) // 2:
+                best_gcd = max(best_gcd, n // i)
 
-  first = best_gcd
-  remaining_sum = n // best_gcd
+    if best_gcd == 0:
+        print(-1)
+        return
 
-  if remaining_sum < k * (k + 1) // 2:
-    print("-1")
-    return
+    first = best_gcd
+    result = []
+    for i in range(1, k):
+        result.append(first * i)
+    result.append(n - sum(result))
 
-  result = []
-  for i in range(1, k):
-    result.append(i * first)
-    remaining_sum -= i
-  result.append(remaining_sum * first)
-
-  if all(result[i] < result[i + 1] for i in range(len(result) - 1)):
-    print(*result)
-  else:
-    print("-1")
-
+    if result[-1] <= result[-2] or any(x <= 0 for x in result):
+        print(-1)
+    else:
+        print(*result)
 
 solve()

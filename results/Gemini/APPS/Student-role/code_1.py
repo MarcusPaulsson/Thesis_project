@@ -20,7 +20,7 @@ def solve():
                 best_num = num
             elif current_sum == best_sum and num > best_num:
                 best_num = num
-    
+                
     print(best_num)
 
 solve()

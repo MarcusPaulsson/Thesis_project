@@ -1,19 +1,22 @@
 def max_min_pieces(n, a, b):
+    def can_distribute(x):
+        plates_for_a = min(a // x, n)
+        plates_for_b = min(b // x, n)
+        return plates_for_a + plates_for_b >= n
+
     left, right = 1, max(a, b)
-    
-    while left < right:
-        mid = (left + right + 1) // 2
-        plates_for_a = (a + mid - 1) // mid
-        plates_for_b = (b + mid - 1) // mid
-        
-        if plates_for_a + plates_for_b <= n:
-            left = mid
+    answer = 0
+
+    while left <= right:
+        mid = (left + right) // 2
+        if can_distribute(mid):
+            answer = mid
+            left = mid + 1
         else:
             right = mid - 1
-            
-    return left
 
-# Input
+    return answer
+
+# Input reading
 n, a, b = map(int, input().split())
-# Output
 print(max_min_pieces(n, a, b))

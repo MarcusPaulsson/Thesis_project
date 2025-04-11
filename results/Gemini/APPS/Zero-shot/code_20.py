@@ -3,47 +3,22 @@ def solve():
     hh = int(s[:2])
     mm = int(s[3:])
     
-    ans = float('inf')
-    
-    for i in range(24 * 60):
-        curr_hh = hh
-        curr_mm = mm
+    ans = 0
+    while True:
+        h_str = str(hh).zfill(2)
+        m_str = str(mm).zfill(2)
         
-        time_str = "{:02d}:{:02d}".format(curr_hh, curr_mm)
+        if h_str == m_str[::-1]:
+            print(ans)
+            return
         
-        if time_str == time_str[::-1]:
-            ans = 0
-            break
-            
+        mm += 1
+        if mm == 60:
+            mm = 0
+            hh += 1
+            if hh == 24:
+                hh = 0
         
-        new_mm = (mm + 1) % 60
-        new_hh = hh + (mm + 1) // 60
-        
-        hh = new_hh % 24
-        mm = new_mm
-        
-    else:
-        hh = int(s[:2])
-        mm = int(s[3:])
-        
-        for i in range(24 * 60):
-            curr_hh = hh
-            curr_mm = mm
-
-            time_str = "{:02d}:{:02d}".format(curr_hh, curr_mm)
-
-            if time_str == time_str[::-1]:
-                ans = i
-                break
-
-
-            new_mm = (mm + 1) % 60
-            new_hh = hh + (mm + 1) // 60
-
-            hh = new_hh % 24
-            mm = new_mm
-        
-    print(ans)
-    
+        ans += 1
 
 solve()

@@ -1,24 +1,20 @@
-def can_coincide(n, L, kefa_distances, sasha_distances):
-    # Calculate the distances between consecutive barriers for Kefa and Sasha
-    kefa_intervals = [(kefa_distances[i] - kefa_distances[i - 1]) % L for i in range(1, n)]
-    kefa_intervals.append((kefa_distances[0] + L - kefa_distances[-1]) % L)
+def can_be_same_track(n, L, kefa_distances, sasha_distances):
+    # Calculate the distances between consecutive barriers for Kefa
+    kefa_diffs = [(kefa_distances[(i + 1) % n] - kefa_distances[i]) % L for i in range(n)]
+    # Calculate the distances between consecutive barriers for Sasha
+    sasha_diffs = [(sasha_distances[(i + 1) % n] - sasha_distances[i]) % L for i in range(n)]
     
-    sasha_intervals = [(sasha_distances[i] - sasha_distances[i - 1]) % L for i in range(1, n)]
-    sasha_intervals.append((sasha_distances[0] + L - sasha_distances[-1]) % L)
-    
-    # Check if kefa_intervals can be rotated to match sasha_intervals
-    double_kefa_intervals = kefa_intervals * 2
+    # Check if Kefa's differences can be rotated to match Sasha's differences
     for i in range(n):
-        if double_kefa_intervals[i:i+n] == sasha_intervals:
+        if kefa_diffs[i:] + kefa_diffs[:i] == sasha_diffs:
             return "YES"
     
     return "NO"
 
-# Read input
+# Input reading
 n, L = map(int, input().split())
 kefa_distances = list(map(int, input().split()))
 sasha_distances = list(map(int, input().split()))
 
-# Get result and print
-result = can_coincide(n, L, kefa_distances, sasha_distances)
-print(result)
+# Output the result
+print(can_be_same_track(n, L, kefa_distances, sasha_distances))

@@ -1,27 +1,25 @@
 def lexicographically_minimal_string(s):
-    t = []  # Stack to hold characters from s
-    u = []  # Result string
-    index = 0  # Pointer for s
-
-    while index < len(s) or t:
-        # Move characters from s to t
-        while index < len(s):
-            t.append(s[index])
-            index += 1
-            
-            # Check if we can pop from t to u
-            while t and (not u or u[-1] <= t[-1]):
-                u.append(t.pop())
-
-        # If t is not empty, we can still pop from it to u
+    t = []
+    u = []
+    
+    for char in s:
+        # Append the character from s to t
+        t.append(char)
+        
+        # While t is not empty and the last character of t is the smallest possible
         while t:
-            u.append(t.pop())
-
+            # Find the smallest character in t
+            min_char = min(t)
+            # If the last character of t is the smallest, pop it to u
+            if t[-1] == min_char:
+                u.append(t.pop())
+            else:
+                break
+    
+    # Join the list u to form the resulting string
     return ''.join(u)
 
-# Read input
+# Input reading
 s = input().strip()
-# Get the result
-result = lexicographically_minimal_string(s)
-# Print result
-print(result)
+# Output the result
+print(lexicographically_minimal_string(s))

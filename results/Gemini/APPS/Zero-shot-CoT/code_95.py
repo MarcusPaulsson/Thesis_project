@@ -1,95 +1,44 @@
 def solve():
-  n = int(input())
-  s = input()
-  t = input()
+    n = int(input())
+    s = input()
+    t = input()
 
-  chars = ['a', 'b', 'c']
+    def check(res, s, t):
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s or sub == t:
+                return False
+        return True
 
-  import itertools
-  
-  for p in itertools.permutations(chars):
-    res = ""
-    for i in range(n):
-      res += p[0]
-      res += p[1]
-      res += p[2]
+    import itertools
     
-    valid = True
-    for i in range(len(res) - 1):
-      if res[i:i+2] == s or res[i:i+2] == t:
-        valid = False
-        break
+    chars = ['a', 'b', 'c']
     
-    if valid:
-      print("YES")
-      print(res)
-      return
+    possible_strings = []
     
-  
-  res = ""
-  for i in range(n):
-    res += 'a'
-  for i in range(n):
-    res += 'b'
-  for i in range(n):
-    res += 'c'
     
-  valid = True
-  for i in range(len(res) - 1):
-    if res[i:i+2] == s or res[i:i+2] == t:
-      valid = False
-      break
-      
-  if valid:
-    print("YES")
-    print(res)
-    return
-  
-  res = ""
-  for i in range(n):
-    res += 'c'
-  for i in range(n):
-    res += 'b'
-  for i in range(n):
-    res += 'a'
+    counts = {'a': n, 'b': n, 'c': n}
     
-  valid = True
-  for i in range(len(res) - 1):
-    if res[i:i+2] == s or res[i:i+2] == t:
-      valid = False
-      break
-      
-  if valid:
-    print("YES")
-    print(res)
-    return
-  
-  if n == 1:
-      perms = ['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
-      for perm in perms:
-          valid = True
-          for i in range(len(perm) - 1):
-              if perm[i:i+2] == s or perm[i:i+2] == t:
-                  valid = False
-                  break
-          if valid:
-              print("YES")
-              print(perm)
-              return
-  
-  if (n == 2 and s == "ab" and t == "bc"):
-    print("YES")
-    print("acbacb")
-    return
+    def generate_strings(current_string, remaining_counts):
+        if len(current_string) == 3 * n:
+            possible_strings.append(current_string)
+            return
+        
+        for char in chars:
+            if remaining_counts[char] > 0:
+                new_counts = remaining_counts.copy()
+                new_counts[char] -= 1
+                generate_strings(current_string + char, new_counts)
     
-  if (n == 3 and s == "aa" and t == "bc"):
-      print("YES")
-      print("acbacbacb")
-      return
     
-  if (n == 3 and s == "bb" and t == "cb"):
-      print("YES")
-      print("abcabcabc")
-      return
+    generate_strings("", counts)
+    
+    for res in possible_strings:
+        if check(res, s, t):
+            print("YES")
+            print(res)
+            return
+    
+    print("NO")
 
 solve()

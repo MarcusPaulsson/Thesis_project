@@ -1,35 +1,39 @@
 def max_sum_divisible_by_k(n, m, k, matrix):
-    max_elements = m // 2
-    total_sum = 0
-    
-    # Calculate the maximum possible sum for each row with constraints
-    for row in matrix:
-        row.sort(reverse=True)  # Sort row in descending order
-        current_sum = 0
-        current_elements = []
-        
-        for i in range(min(max_elements, len(row))):
-            current_sum += row[i]
-            current_elements.append(row[i])
-        
-        # Try all combinations of taking up to max_elements
-        row_sums = {0}  # Start with taking no elements
-        
-        for value in current_elements:
-            new_sums = set()
-            for s in row_sums:
-                new_sums.add(s + value)
-            row_sums.update(new_sums)
-        
-        # Filter sums to get the maximum sum that is divisible by k
-        max_divisible_sum = max((s for s in row_sums if s % k == 0), default=0)
-        total_sum += max_divisible_sum
-    
-    return total_sum
+    max_elements_per_row = m // 2
+    dp = [[-1] * k for _ in range(n + 1)]
+    dp[0][0] = 0  # Base case: sum of 0 is achievable with 0 elements
 
-# Input
+    for i in range(1, n + 1):
+        row = sorted(matrix[i - 1], reverse=True)[:max_elements_per_row]
+        current_dp = dp[i - 1][:]  # Copy previous row dp
+
+        for j in range(1 << len(row)):
+            current_sum = 0
+            count = 0
+            for bit in range(len(row)):
+                if j & (1 << bit):
+                    current_sum += row[bit]
+                    count += 1
+            if count <= max_elements_per_row:
+                mod = current_sum % k
+                if current_dp[mod] < current_sum:
+                    current_dp[mod] = current_sum
+
+        for mod in range(k):
+            if dp[i - 1][mod] != -1:
+                new_sum = dp[i - 1][mod]
+                new_mod = (new_sum + current_dp[mod]) % k
+                if dp[i][new_mod] < new_sum + current_dp[mod]:
+                    dp[i][new_mod] = new_sum + current_dp[mod]
+
+        dp[i] = current_dp
+
+    return max(dp[n])
+
+# Read input
 n, m, k = map(int, input().split())
 matrix = [list(map(int, input().split())) for _ in range(n)]
 
-# Output
-print(max_sum_divisible_by_k(n, m, k, matrix))
+# Get the result and print it
+result = max_sum_divisible_by_k(n, m, k, matrix)
+print(result)

@@ -74,6 +74,11 @@ folder_paths = {
 
 }
 
+# folder_paths = {
+
+#      "Gemma3 Zero-shot": gemma_zero_shot_apps_folder,
+# }
+
 
 test_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
 

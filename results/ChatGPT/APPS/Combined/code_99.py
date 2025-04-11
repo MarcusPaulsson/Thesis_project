@@ -1,25 +1,26 @@
-def rock_paper_scissors(n, alice_counts, bob_counts):
-    a_rock, a_scissors, a_paper = alice_counts  # Alice's counts of Rock, Scissors, Paper
-    b_rock, b_scissors, b_paper = bob_counts    # Bob's counts of Rock, Scissors, Paper
+def rock_paper_scissors(n, a, b):
+    # Unpack Alice's and Bob's choices
+    a_rock, a_scissors, a_paper = a
+    b_rock, b_scissors, b_paper = b
 
     # Calculate maximum wins for Alice
-    max_wins = min(a_rock, b_paper) + min(a_scissors, b_rock) + min(a_paper, b_scissors)
+    max_wins = min(a_rock, b_scissors) + min(a_scissors, b_paper) + min(a_paper, b_rock)
 
-    # Calculate losses for Alice based on Bob's optimal plays
+    # Calculate losses for Alice
     losses = max(0, b_rock - a_paper) + max(0, b_scissors - a_rock) + max(0, b_paper - a_scissors)
 
-    # Minimum wins for Alice
+    # Minimum wins for Alice is total rounds minus losses
     min_wins = n - losses
 
     return min_wins, max_wins
 
-# Reading inputs
+# Read input
 n = int(input().strip())
-alice_counts = list(map(int, input().strip().split()))
-bob_counts = list(map(int, input().strip().split()))
+a = list(map(int, input().strip().split()))
+b = list(map(int, input().strip().split()))
 
-# Getting the results
-min_wins, max_wins = rock_paper_scissors(n, alice_counts, bob_counts)
+# Get results
+min_wins, max_wins = rock_paper_scissors(n, a, b)
 
-# Printing results
+# Print output
 print(min_wins, max_wins)

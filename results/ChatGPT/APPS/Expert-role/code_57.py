@@ -1,28 +1,32 @@
-def distribute_gifts(n, f):
-    # Prepare a list for the final output
+def fill_gift_values(n, f):
+    # Create a list to store the final gift assignments
     nf = f[:]
     
-    # Identify friends who want to give gifts to someone
-    givers = set(i + 1 for i in range(n) if f[i] != 0)
-    # Identify friends who can receive gifts (those with f[i] == 0)
-    receivers = set(i + 1 for i in range(n) if f[i] == 0)
-
-    # Friends who need to be filled in
-    need_to_fill = list(receivers - givers)
-
-    # Fill the unknown values
-    idx = 0
+    # Find the friends who have not been assigned a gift
+    unassigned = []
     for i in range(n):
         if nf[i] == 0:
-            # Find a suitable recipient that is not the current index + 1
-            while need_to_fill[idx] == i + 1:
-                idx += 1
-            nf[i] = need_to_fill[idx]
-            idx += 1
+            unassigned.append(i + 1)  # Store 1-based index
 
-    print(" ".join(map(str, nf)))
+    # Find the friends who are already assigned gifts
+    assigned = set(f) - {0}
 
-# Input reading
+    # Find the friends who are not assigned any gift
+    not_assigned = [i for i in range(1, n + 1) if i not in assigned]
+
+    # Assign gifts to the unassigned friends
+    for i in range(len(unassigned)):
+        # Assign the next available friend to give a gift to
+        nf[unassigned[i] - 1] = not_assigned[i]
+
+    return nf
+
+# Read input
 n = int(input())
 f = list(map(int, input().split()))
-distribute_gifts(n, f)
+
+# Get the result
+result = fill_gift_values(n, f)
+
+# Print the result
+print(' '.join(map(str, result)))

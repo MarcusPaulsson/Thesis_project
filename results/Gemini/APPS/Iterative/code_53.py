@@ -2,71 +2,65 @@ def solve():
     n = int(input())
     a = list(map(int, input().split()))
 
-    def find_longest_increasing_subsequence(arr):
-        l, r = 0, len(arr) - 1
-        last = 0
-        moves = ""
-        result = []
+    l, r = 0, n - 1
+    last = -1
+    moves = ""
+    count = 0
 
-        while l <= r:
-            if arr[l] > last and arr[r] > last:
-                if arr[l] < arr[r]:
-                    result.append(arr[l])
-                    moves += "L"
-                    last = arr[l]
-                    l += 1
-                elif arr[r] < arr[l]:
-                    result.append(arr[r])
-                    moves += "R"
-                    last = arr[r]
-                    r -= 1
-                else:
-                    temp_l = ""
-                    temp_r = ""
-                    last_l = last
-                    last_r = last
-                    len_l = 0
-                    len_r = 0
-                    l_temp = l
-                    r_temp = r
-
-                    while l_temp <= r and arr[l_temp] > last_l:
-                        temp_l += "L"
-                        last_l = arr[l_temp]
-                        l_temp += 1
-                        len_l +=1
-                    
-                    while l <= r_temp and arr[r_temp] > last_r:
-                        temp_r += "R"
-                        last_r = arr[r_temp]
-                        r_temp -= 1
-                        len_r += 1
-                    
-                    if len_l > len_r:
-                        moves += temp_l
-                        result.extend(arr[l:l+len_l])
-                        return len(result), moves
-                    else:
-                        moves += temp_r
-                        result.extend(arr[r+1-len_r:r+1])
-                        return len(result), moves
-            elif arr[l] > last:
-                result.append(arr[l])
+    while l <= r:
+        if a[l] > last and a[r] > last:
+            if a[l] < a[r]:
+                last = a[l]
                 moves += "L"
-                last = arr[l]
                 l += 1
-            elif arr[r] > last:
-                result.append(arr[r])
+                count += 1
+            elif a[r] < a[l]:
+                last = a[r]
                 moves += "R"
-                last = arr[r]
                 r -= 1
+                count += 1
             else:
+                temp_l, temp_r = l, r
+                count_l, count_r = 0, 0
+                last_l, last_r = last, last
+                moves_l, moves_r = "", ""
+                
+                while temp_l <= r and a[temp_l] > last_l:
+                    last_l = a[temp_l]
+                    count_l += 1
+                    moves_l += "L"
+                    temp_l += 1
+                
+                while temp_r >= l and a[temp_r] > last_r:
+                    last_r = a[temp_r]
+                    count_r += 1
+                    moves_r += "R"
+                    temp_r -= 1
+                
+                if count_l > count_r:
+                    moves += moves_l
+                    count += count_l
+                elif count_r > count_l:
+                    moves += moves_r
+                    count += count_r
+                else:
+                    moves += moves_l
+                    count += count_l
                 break
-
-        return len(result), moves
-
-    length, moves = find_longest_increasing_subsequence(a)
-    print(length)
+        elif a[l] > last:
+            last = a[l]
+            moves += "L"
+            l += 1
+            count += 1
+        elif a[r] > last:
+            last = a[r]
+            moves += "R"
+            r -= 1
+            count += 1
+        else:
+            break
+    
+    print(count)
     print(moves)
 
 solve()

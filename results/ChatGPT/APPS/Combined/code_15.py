@@ -1,14 +1,10 @@
-def will_number_appear(a, b, c):
+def is_favorite_in_sequence(a, b, c):
     if c == 0:
-        return "YES" if a == b else "NO"
-    
-    difference = b - a
-    if difference % c == 0 and difference // c >= 0:
-        return "YES"
-    
-    return "NO"
+        return a == b
+    return (b - a) % c == 0 and (b - a) // c >= 0
 
-# Read input
+# Input reading
 a, b, c = map(int, input().split())
+
 # Output result
-print(will_number_appear(a, b, c))
+print("YES" if is_favorite_in_sequence(a, b, c) else "NO")

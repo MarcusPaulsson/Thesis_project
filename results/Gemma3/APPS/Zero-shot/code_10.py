@@ -12,7 +12,7 @@ def solve():
         elif n % 7 >= 5:
             max_off += 2
         else:
-            max_off += 1
+            pass
     else:
         min_off = 0
         max_off = min(n, 2)
@@ -37,6 +37,7 @@ def solve():
     if n == 4:
         print(0, 2)
         return
+    
     
     print(min_off, max_off)
 

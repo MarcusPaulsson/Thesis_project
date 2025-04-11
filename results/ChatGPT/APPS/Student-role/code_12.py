@@ -3,42 +3,37 @@ def max_beauty_after_swap(n, trophies):
     current_length = 0
     segments = []
 
-    # Count lengths of golden trophy segments
+    # Count segments of golden trophies
     for trophy in trophies:
         if trophy == 'G':
             current_length += 1
         else:
             if current_length > 0:
                 segments.append(current_length)
+                max_length = max(max_length, current_length)
             current_length = 0
-
     if current_length > 0:
         segments.append(current_length)
+        max_length = max(max_length, current_length)
 
     # If there are no golden trophies
-    if not segments:
+    if max_length == 0:
         return 0
 
-    # The maximum length without any swap
-    max_length = max(segments)
-
-    # If there's only one segment of golden trophies, return its length
+    # Calculate the maximum possible length after one swap
     if len(segments) == 1:
-        return max_length
+        return max_length  # Only one segment of golden trophies
 
-    # Try to combine segments by swapping
-    for i in range(len(segments) - 1):
-        combined_length = segments[i] + segments[i + 1]
-        max_length = max(max_length, combined_length)
+    # Check possible merges by swapping a silver trophy
+    max_possible = max_length
+    for i in range(1, len(segments)):
+        # Check if we can merge two segments by swapping a silver trophy
+        max_possible = max(max_possible, segments[i - 1] + segments[i])
 
-    # Also check if we can increase the length by 1 if we have at least one silver trophy to swap
-    if 'S' in trophies:
-        max_length += 1
-
-    return max_length
+    return max_possible
 
 # Input reading
-n = int(input().strip())
+n = int(input())
 trophies = input().strip()
 
 # Output the result

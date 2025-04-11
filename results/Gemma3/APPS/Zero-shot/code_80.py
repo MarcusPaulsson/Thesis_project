@@ -27,4 +27,5 @@ def solve():
                 print(*colors)
                 return
     
+    
 solve()

@@ -1,28 +1,41 @@
 def min_moves_to_divisible_by_25(n):
     s = str(n)
     length = len(s)
-    moves = float('inf')
     
-    # Check for pairs of digits that can form 25, 50, or 00
-    for target in ['00', '25', '50']:
+    # We need to find pairs of digits '00', '25', '50', '75'
+    targets = ['00', '25', '50', '75']
+    min_moves = float('inf')
+    
+    for target in targets:
+        # Find the last digit of the target
         last_digit = target[1]
-        second_last_digit = target[0]
+        first_digit = target[0]
         
-        # Find the last occurrence of the second_last_digit
+        # Find the position of the last digit in the number
+        last_pos = -1
         for i in range(length - 1, -1, -1):
             if s[i] == last_digit:
-                # Now find the second last digit before the last_digit
-                for j in range(i - 1, -1, -1):
-                    if s[j] == second_last_digit:
-                        # Calculate the moves needed to bring these digits together
-                        moves_needed = (i - j)  # Moves to bring second_last_digit to just before last_digit
-                        # We need to check if moving second_last_digit before last_digit won't create leading zeros
-                        if not (target[0] == '0' and j == 0):
-                            moves = min(moves, moves_needed)
-                        break
+                last_pos = i
                 break
-
-    return moves if moves != float('inf') else -1
+        
+        if last_pos == -1:
+            continue
+        
+        # Now find the first digit before the last digit
+        first_pos = -1
+        for i in range(last_pos - 1, -1, -1):
+            if s[i] == first_digit:
+                first_pos = i
+                break
+        
+        if first_pos == -1:
+            continue
+        
+        # Calculate moves to bring first_pos to the left of last_pos
+        moves = (length - 1 - last_pos) + (last_pos - first_pos - 1)
+        min_moves = min(min_moves, moves)
+    
+    return min_moves if min_moves != float('inf') else -1
 
 # Read input
 n = int(input().strip())

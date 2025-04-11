@@ -1,12 +1,16 @@
+def is_favorite_in_sequence(a, b, c):
+    if c == 0:
+        return a == b
+    elif c > 0:
+        return a <= b and (b - a) % c == 0
+    else:  # c < 0
+        return a >= b and (a - b) % abs(c) == 0
+
+# Read input
 a, b, c = map(int, input().split())
 
-if c == 0:
-    if a == b:
-        print("YES")
-    else:
-        print("NO")
+# Check if b appears in the sequence and print result
+if is_favorite_in_sequence(a, b, c):
+    print("YES")
 else:
-    if (b - a) % c == 0 and (b - a) // c >= 0:
-        print("YES")
-    else:
-        print("NO")
+    print("NO")

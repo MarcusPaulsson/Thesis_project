@@ -1,37 +1,32 @@
-def schedule_exams(n, m, exams):
-    days = [0] * n
-    needed_preparation = [0] * m
-    preparation_days = [0] * m
-
-    # Fill the days with exams
-    for i in range(m):
-        s_i, d_i, c_i = exams[i]
-        needed_preparation[i] = c_i
-        for day in range(s_i - 1, d_i - 1):
-            if days[day] == 0:  # If the day is free
-                preparation_days[i] += 1
-                days[day] = i + 1  # Marking preparation for exam i+1
-
-    # Check if preparation is sufficient
-    if any(needed_preparation[i] > preparation_days[i] for i in range(m)):
-        return -1
-
-    # Now, mark the days for the exams
-    for i in range(m):
-        s_i, d_i, _ = exams[i]
-        days[d_i - 1] = m + 1  # Mark the exam day
-
-    return days
-
-# Input reading
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-# Get the schedule
-result = schedule_exams(n, m, exams)
+# Prepare the schedule
+schedule = [0] * n  # Initialize all days to rest (0)
+exam_days = [0] * n  # To track which days are exam days
 
-# Output the result
-if result == -1:
-    print(-1)
+# Mark exam days
+for i in range(m):
+    s, d, c = exams[i]
+    exam_days[d - 1] = i + 1  # Mark the exam day with the exam index (1-based)
+
+# Prepare for exams
+preparation_days = [0] * m  # Track how many days we have prepared for each exam
+for i in range(n):
+    if exam_days[i] != 0:
+        exam_index = exam_days[i] - 1
+        schedule[i] = exam_days[i]  # Mark exam day
+    else:
+        # Try to prepare for exams
+        for j in range(m):
+            s, d, c = exams[j]
+            if s - 1 <= i < d - 1 and preparation_days[j] < c:
+                schedule[i] = j + 1  # Mark preparation for exam j
+                preparation_days[j] += 1
+                break
+
+# Check if all preparations are done
+if all(preparation_days[j] == exams[j][2] for j in range(m)):
+    print(" ".join(map(str, schedule)))
 else:
-    print(' '.join(map(str, result)))
+    print(-1)

@@ -7,13 +7,10 @@ def f(x):
 def reachable_count(n):
     reachable = set()
     current = n
-    
     while current not in reachable:
         reachable.add(current)
         current = f(current)
-        
     return len(reachable)
 
-if __name__ == "__main__":
-    n = int(input().strip())
-    print(reachable_count(n))
+n = int(input().strip())
+print(reachable_count(n))

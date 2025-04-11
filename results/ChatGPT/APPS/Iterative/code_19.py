@@ -1,28 +1,19 @@
-def check_stats(test_cases):
+def check_records(test_cases):
     results = []
     for case in test_cases:
-        n, stats = case
+        n, records = case
         valid = True
+        prev_p, prev_c = 0, 0
         
-        for i in range(n):
-            p_i, c_i = stats[i]
-            if (i > 0):
-                p_prev, c_prev = stats[i - 1]
-                
-                # Check if plays or clears have decreased
-                if p_i < p_prev or c_i < c_prev:
-                    valid = False
-                    break
-                
-                # Check if clears exceed plays
-                if c_i > p_i:
-                    valid = False
-                    break
-                
-                # Check if the increase in clears is valid
-                if p_i - p_prev < c_i - c_prev:
-                    valid = False
-                    break
+        for p, c in records:
+            if p < prev_p or c < prev_c or c > p:
+                valid = False
+                break
+            if (p - prev_p) < (c - prev_c):
+                valid = False
+                break
+            
+            prev_p, prev_c = p, c
         
         results.append("YES" if valid else "NO")
     
@@ -31,14 +22,13 @@ def check_stats(test_cases):
 # Read input
 T = int(input())
 test_cases = []
+
 for _ in range(T):
     n = int(input())
-    stats = [tuple(map(int, input().split())) for _ in range(n)]
-    test_cases.append((n, stats))
+    records = [tuple(map(int, input().split())) for _ in range(n)]
+    test_cases.append((n, records))
 
-# Get results
-results = check_stats(test_cases)
-
-# Print output
+# Get results and print them
+results = check_records(test_cases)
 for result in results:
     print(result)

@@ -28,24 +28,37 @@ def load_ctransformers_model(model_repo, model_file, model_type="llama", gpu_lay
 
 
 def extract_apps_tasks(json_file_path):
+    """
+    Extracts 'question' and 'test' fields from each line in a JSON file.
+    """
     tasks = []
     try:
         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
-            try:
-                # Load the entire JSON array at once
-                data_array = json.load(jsonfile)
-                
-                # Process each item in the array
-                for item in data_array:
-                    if "question" in item:
-                        tasks.append(item["question"])
-                    else:
-                        print(f"Warning: Skipping item with missing 'question' field: {str(item)[:50]}...")
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-                return None
-                
-        print(f"Successfully extracted {len(tasks)} questions from {json_file_path}")
+            for line in jsonfile:
+                line = line.strip()
+                try:
+                    data = json.loads(line)
+                    if "question" in data and "input_output" in data:
+                        current_task = data["question"]
+                        extra_prompt = "\n Here is some of the test cases: " 
+                        test_cases =  data["input_output"]
+                        temp = json.loads(test_cases)
+                        max_numb_test = 5
+                        list_of_input = temp["inputs"][:max_numb_test]
+                        list_of_outputs = temp["outputs"][:max_numb_test]
+                        test_string = "inputs:\n"
+                        test_string = extra_prompt + test_string
+                        for i in range(len(list_of_input)):
+                            test_string += list_of_input[i]
+                        test_string += "  Outputs:\n"
+                        for i in range(len(list_of_input)):
+                            test_string += list_of_outputs[i]
+                        tasks.append(current_task + test_string)
+                  
+                    elif "question" in data:
+                        tasks.append(data["question"])
+                except json.JSONDecodeError:
+                    print(f"Warning: Skipping invalid JSON line: {line[:50]}...")
         return tasks
     except FileNotFoundError:
         print(f"Error: JSON file '{json_file_path}' not found.")
@@ -85,7 +98,7 @@ if __name__ == "__main__":
     if tasks is None:
         sys.exit(1)
 
-    start_index = 17
+    start_index = 0
     end_index = 30
 
     results = {}

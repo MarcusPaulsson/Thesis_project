@@ -1,54 +1,59 @@
 MOD = 10**9 + 7
 
 def count_regular_sequences(n, s):
-    len_s = len(s)
+    m = len(s)
     
-    # Precompute the number of ways to form regular bracket sequences of length 2k
-    dp = [0] * (n + 1)
-    dp[0] = 1
+    # Precompute factorials and inverse factorials
+    fact = [1] * (2 * n + 1)
+    for i in range(2, 2 * n + 1):
+        fact[i] = fact[i - 1] * i % MOD
     
-    for k in range(1, n + 1):
-        for j in range(k):
-            dp[k] = (dp[k] + dp[j] * dp[k - 1 - j]) % MOD
-            
-    total_regular_sequences = dp[n]
+    def mod_inv(x):
+        return pow(x, MOD - 2, MOD)
     
-    # Check how many open and close brackets are in s
-    open_s = s.count('(')
-    close_s = s.count(')')
+    inv_fact = [1] * (2 * n + 1)
+    for i in range(2, 2 * n + 1):
+        inv_fact[i] = mod_inv(fact[i])
     
-    # If s has more close brackets than open brackets, it's impossible
-    if open_s < close_s or open_s > n or close_s > n:
+    # Check if s can be part of a valid sequence
+    balance = 0
+    min_balance = 0
+    for char in s:
+        if char == '(':
+            balance += 1
+        else:
+            balance -= 1
+        min_balance = min(min_balance, balance)
+    
+    if balance < 0 or balance > 2 * n or min_balance < 0:
         return 0
     
-    # We need to find valid placements for s in the regular sequence
-    valid_count = 0
+    # Count the number of valid sequences of length 2n
+    total_valid_sequences = 0
     
-    for start in range(n - (len_s - 1) + 1):
-        open_before = start
-        close_before = (n - 1) - (len_s - 1 - open_s) - start
-        
-        # Check if it is valid to insert s here
-        if open_before < close_before:
+    for prefix_length in range(n + 1):
+        suffix_length = n - prefix_length
+        if suffix_length < 0:
             continue
         
-        # Total remaining open and close brackets
-        remaining_open = n - open_s
-        remaining_close = n - close_s
+        # Valid prefix must have a balance of 0 at the end
+        prefix_balance = prefix_length - (n - prefix_length)
         
-        # Valid placements count
-        if remaining_open >= remaining_close:
-            valid_count += dp[remaining_open]
-            valid_count %= MOD
-            
-    return valid_count
+        if prefix_balance < 0:
+            continue
+        
+        # Valid suffix must also have a balance of 0 at the end
+        suffix_balance = suffix_length - (n - suffix_length)
+        
+        if suffix_balance < 0:
+            continue
+        
+        # Count valid sequences
+        total_valid_sequences += (fact[prefix_length] * inv_fact[prefix_length // 2] % MOD) * (fact[suffix_length] * inv_fact[suffix_length // 2] % MOD) % MOD
+        total_valid_sequences %= MOD
+    
+    return total_valid_sequences
 
-# Input reading
 n = int(input())
 s = input().strip()
-
-# Calculate the result
-result = count_regular_sequences(n, s)
-
-# Output the result
-print(result)
+print(count_regular_sequences(n, s))

@@ -1,15 +1,16 @@
-def has_palindrome_subsequence(t, test_cases):
+def has_palindrome_subsequence(test_cases):
     results = []
-    for case in test_cases:
-        n, a = case
-        seen = {}
+    for n, a in test_cases:
         found = False
+        # Use a dictionary to track the last index of each number
+        last_index = {}
         for i in range(n):
-            if a[i] in seen:
-                if i - seen[a[i]] >= 2:
+            if a[i] in last_index:
+                # If we find the same number again and there's at least one element in between
+                if i - last_index[a[i]] > 1:
                     found = True
                     break
-            seen[a[i]] = i
+            last_index[a[i]] = i
         results.append("YES" if found else "NO")
     return results
 
@@ -21,7 +22,9 @@ for _ in range(t):
     a = list(map(int, input().split()))
     test_cases.append((n, a))
 
-# Get results and print them
-results = has_palindrome_subsequence(t, test_cases)
+# Get results
+results = has_palindrome_subsequence(test_cases)
+
+# Print results
 for result in results:
     print(result)

@@ -3,14 +3,11 @@ def solve():
     s = input()
     
     count = 0
-    seen = set()
+    distinct_strings = set()
     
     for i in range(2**n):
         binary_string = bin(i)[2:].zfill(n)
         
-        if binary_string in seen:
-            continue
-            
         is_substring = False
         for j in range(n):
             shifted_string = binary_string[j:] + binary_string[:j]
@@ -19,11 +16,10 @@ def solve():
                 break
         
         if is_substring:
-            count += 1
-            for j in range(n):
-                shifted_string = binary_string[j:] + binary_string[:j]
-                seen.add(shifted_string)
-    
+            if binary_string not in distinct_strings:
+                count += 1
+                distinct_strings.add(binary_string)
+                
     print(count)
-
+    
 solve()

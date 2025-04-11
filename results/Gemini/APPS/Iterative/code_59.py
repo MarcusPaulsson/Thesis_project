@@ -6,12 +6,12 @@ def solve():
     for i in range(n - x, n):
         if i == n - 1 - y:
             if s[i] == '0':
-                continue
+                pass
             else:
                 count += 1
         else:
             if s[i] == '1':
-                continue
+                pass
             else:
                 count += 1
     print(count)

@@ -1,31 +1,32 @@
 from collections import Counter
+import sys
 import math
 
 n = int(input())
 divisors = list(map(int, input().split()))
 
 # Count the occurrences of each divisor
-counter = Counter(divisors)
+count = Counter(divisors)
 
-# Find the possible candidates for x and y
-candidates = list(counter.keys())
+# Find the maximum divisor
+max_divisor = max(count)
 
 # Initialize x and y
 x = 1
 y = 1
 
-# The highest divisor is the product of the highest factors
-for d in candidates:
-    if counter[d] == 2:
-        # If the divisor appears twice, it must be a common divisor
-        x *= d
-        y *= d
-    else:
-        # Otherwise, assign to one of x or y
-        if x < y:
+# Calculate x and y based on the divisors
+for d in count:
+    if count[d] == 1:
+        # If the divisor appears once, it belongs to either x or y
+        if x * d <= y * d:
             x *= d
         else:
             y *= d
+    else:
+        # If the divisor appears twice, it belongs to both x and y
+        x *= d
+        y *= d
 
-# Print the results
+# Output the results
 print(x, y)

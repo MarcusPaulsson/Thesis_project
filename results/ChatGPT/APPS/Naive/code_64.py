@@ -1,35 +1,29 @@
 def schedule_exams(n, m, exams):
-    # Create a result list initialized with zeros
-    result = [0] * n
-    # To keep track of preparation days needed
-    prepare_needed = [0] * m
-    # To keep track of exam days
-    exam_days = set()
+    # Initialize the schedule with zeros (rest days)
+    schedule = [0] * n
+    # To keep track of preparation days needed for each exam
+    preparation_needed = [0] * m
+    
+    # Fill the exam days in the schedule
+    for i in range(m):
+        s_i, d_i, c_i = exams[i]
+        schedule[d_i - 1] = m + 1  # Exam day (1-indexed)
+        preparation_needed[i] = c_i
 
-    for idx, (s, d, c) in enumerate(exams):
-        prepare_needed[idx] = c
-        exam_days.add(d)
+    # Prepare for exams
+    for i in range(m):
+        s_i, d_i, c_i = exams[i]
+        days_prepared = 0
+        
+        for j in range(s_i - 1, d_i - 1):
+            if schedule[j] == 0 and days_prepared < c_i:
+                schedule[j] = i + 1  # Prepare for exam i (1-indexed)
+                days_prepared += 1
 
-    # Prepare the days for exams
-    for i in range(n):
-        day = i + 1
-        if day in exam_days:
-            exam_index = next(idx for idx, (s, d, c) in enumerate(exams) if d == day)
-            result[i] = exam_index + 1  # Exams are 1-indexed
-            prepare_needed[exam_index] = max(0, prepare_needed[exam_index] - (day - exams[exam_index][0]))
-        else:
-            for exam_index in range(m):
-                s, d, c = exams[exam_index]
-                if s <= day < d and prepare_needed[exam_index] > 0:
-                    result[i] = exam_index + 1  # Preparing for exam (1-indexed)
-                    prepare_needed[exam_index] -= 1
-                    break
+        if days_prepared < c_i:
+            return -1  # Not enough preparation days
 
-    # Check if all preparation days were satisfied
-    if any(c > 0 for c in prepare_needed):
-        return -1
-
-    return result
+    return schedule
 
 # Read input
 n, m = map(int, input().split())

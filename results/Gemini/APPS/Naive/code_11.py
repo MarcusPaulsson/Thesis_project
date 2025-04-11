@@ -16,17 +16,13 @@ def solve():
     red_only = red_count - common_count
     blue_only = blue_count - common_count
     
-    total_chocolates = 0
+    total_chocolates = red_only * p + blue_only * q
     
     if p > q:
-        total_chocolates += red_only * p
         total_chocolates += common_count * p
-        total_chocolates += blue_only * q
     else:
-        total_chocolates += blue_only * q
         total_chocolates += common_count * q
-        total_chocolates += red_only * p
-    
+        
     print(total_chocolates)
 
 solve()

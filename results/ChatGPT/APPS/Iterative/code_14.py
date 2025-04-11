@@ -1,47 +1,45 @@
 def is_stack_sortable(n, k, p):
+    # Create a set of used elements
+    used = set(p)
+    # Create a list for the remaining elements
+    remaining = [i for i in range(1, n + 1) if i not in used]
+    
+    # Initialize the stack and the result array
     stack = []
-    remaining = set(range(1, n + 1)) - set(p)
-    answer = p[:]
-
-    # Check if the first k elements are already in descending order
-    for i in range(1, k):
-        if p[i] > p[i - 1]:
-            return -1
-
-    # Fill the remaining part of the permutation
-    for i in range(k, n):
-        # Take the maximum element that can be added
-        if remaining:
-            max_remain = max(remaining)
-        else:
-            max_remain = 0
-        
-        if not stack or (stack and stack[-1] > max_remain):
-            answer.append(p[i - k])  # Append the last p element if we can
-        else:
-            answer.append(max_remain)
-            remaining.remove(max_remain)
-
-        # Push to stack if possible
-        while remaining and (not stack or stack[-1] < max(remaining)):
-            stack.append(max(remaining))
-            remaining.remove(max(remaining))
-
-    # Finalize the answer
+    result = []
+    
+    # Iterate through the first k elements
+    for i in range(k):
+        # While stack is not empty and the top of the stack is less than the next element in p
+        while stack and stack[-1] < p[i]:
+            result.append(stack.pop())
+        # Push the current element onto the stack
+        stack.append(p[i])
+    
+    # Now we need to add the remaining elements in a way that keeps the result stack-sortable
+    for num in sorted(remaining, reverse=True):
+        while stack and stack[-1] < num:
+            result.append(stack.pop())
+        stack.append(num)
+    
+    # Empty the stack
     while stack:
-        answer.append(stack.pop())
-
-    # Validate the final permutation
-    if sorted(answer) == list(range(1, n + 1)):
-        return answer
-    else:
+        result.append(stack.pop())
+    
+    # Check if the result is a valid permutation
+    if len(result) != n or sorted(result) != list(range(1, n + 1)):
         return -1
+    
+    return result
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 p = list(map(int, input().split()))
 
+# Get the result
 result = is_stack_sortable(n, k, p)
+
+# Print the result
 if result == -1:
     print(-1)
 else:

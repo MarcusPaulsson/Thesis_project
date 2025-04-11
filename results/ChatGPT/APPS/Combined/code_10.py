@@ -1,24 +1,17 @@
 def calculate_days_off(n):
-    # Constants
-    WORK_DAYS = 5
-    OFF_DAYS = 2
-    WEEK_LENGTH = WORK_DAYS + OFF_DAYS
+    complete_weeks = n // 7
+    remaining_days = n % 7
     
-    # Complete weeks and remaining days calculation
-    complete_weeks = n // WEEK_LENGTH
-    remaining_days = n % WEEK_LENGTH
+    # Minimum days off: all complete weeks contribute 2 days off
+    min_days_off = complete_weeks * 2
     
-    # Minimum days off based on complete weeks
-    min_days_off = complete_weeks * OFF_DAYS
-    
-    # Maximum days off includes remaining days if they fall within off days
-    max_days_off = min_days_off + min(remaining_days, OFF_DAYS)
+    # Maximum days off: can take days off from remaining days
+    max_days_off = min_days_off + min(remaining_days, 2)
     
     return min_days_off, max_days_off
 
-# Read input
+# Input
 n = int(input().strip())
-
-# Calculate and print the result
+# Calculate and output the result
 min_off, max_off = calculate_days_off(n)
 print(min_off, max_off)

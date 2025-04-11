@@ -1,17 +1,14 @@
 def has_palindrome_subsequence(t, test_cases):
     results = []
-    for case in test_cases:
-        n, a = case
+    for n, a in test_cases:
         found = False
-        # Check for any element that appears at least twice
-        indices = {}
+        index_map = {}
         for i in range(n):
-            if a[i] in indices:
-                # If we find the same element again and the distance is at least 2
-                if i - indices[a[i]] >= 2:
+            if a[i] in index_map:
+                if i - index_map[a[i]] >= 2:
                     found = True
                     break
-            indices[a[i]] = i
+            index_map[a[i]] = i
         results.append("YES" if found else "NO")
     return results
 
@@ -23,7 +20,9 @@ for _ in range(t):
     a = list(map(int, input().split()))
     test_cases.append((n, a))
 
-# Get results and print them
+# Get results
 results = has_palindrome_subsequence(t, test_cases)
+
+# Print results
 for result in results:
     print(result)

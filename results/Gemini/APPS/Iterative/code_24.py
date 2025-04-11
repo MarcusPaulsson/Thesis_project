@@ -3,50 +3,22 @@ def solve():
     for _ in range(10):
         board.append(list(input()))
 
-    def check_win(board):
+    def check_win(b):
         for i in range(10):
             for j in range(10):
-                if board[i][j] == 'X':
+                if b[i][j] == 'X':
                     # Check horizontal
-                    if j <= 5:
-                        count = 0
-                        for k in range(5):
-                            if i < 10 and j + k < 10 and board[i][j + k] == 'X':
-                                count += 1
-                            else:
-                                break
-                        if count == 5:
-                            return True
+                    if j <= 5 and all(b[i][j+k] == 'X' for k in range(5)):
+                        return True
                     # Check vertical
-                    if i <= 5:
-                        count = 0
-                        for k in range(5):
-                            if i + k < 10 and j < 10 and board[i + k][j] == 'X':
-                                count += 1
-                            else:
-                                break
-                        if count == 5:
-                            return True
+                    if i <= 5 and all(b[i+k][j] == 'X' for k in range(5)):
+                        return True
                     # Check diagonal (top-left to bottom-right)
-                    if i <= 5 and j <= 5:
-                        count = 0
-                        for k in range(5):
-                            if i + k < 10 and j + k < 10 and board[i + k][j + k] == 'X':
-                                count += 1
-                            else:
-                                break
-                        if count == 5:
-                            return True
+                    if i <= 5 and j <= 5 and all(b[i+k][j+k] == 'X' for k in range(5)):
+                        return True
                     # Check diagonal (top-right to bottom-left)
-                    if i <= 5 and j >= 4:
-                        count = 0
-                        for k in range(5):
-                            if i + k < 10 and j - k >= 0 and board[i + k][j - k] == 'X':
-                                count += 1
-                            else:
-                                break
-                        if count == 5:
-                            return True
+                    if i <= 5 and j >= 4 and all(b[i+k][j-k] == 'X' for k in range(5)):
+                        return True
         return False
 
     for i in range(10):
@@ -57,6 +29,7 @@ def solve():
                     print('YES')
                     return
                 board[i][j] = '.'
+
     print('NO')
 
 solve()

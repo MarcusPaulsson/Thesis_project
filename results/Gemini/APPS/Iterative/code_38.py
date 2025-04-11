@@ -3,9 +3,20 @@ def solve():
     kefa = list(map(int, input().split()))
     sasha = list(map(int, input().split()))
 
-    for shift in range(l):
-        shifted_kefa = sorted([(x + shift) % l for x in kefa])
-        if shifted_kefa == sasha:
+    for start_diff in range(l):
+        possible = True
+        kefa_shifted = []
+        for i in range(n):
+            kefa_shifted.append(kefa[i])
+            
+        sasha_shifted = []
+        for i in range(n):
+            sasha_shifted.append((sasha[i] + start_diff) % l)
+            
+        kefa_shifted.sort()
+        sasha_shifted.sort()
+            
+        if kefa_shifted == sasha_shifted:
             print("YES")
             return
 

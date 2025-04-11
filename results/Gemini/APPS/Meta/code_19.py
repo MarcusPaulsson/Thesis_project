@@ -3,9 +3,8 @@ def solve():
     pairs = []
     for _ in range(n):
         pairs.append(list(map(int, input().split())))
-    
+
     possible = True
-    
     for i in range(n):
         if pairs[i][1] > pairs[i][0]:
             possible = False
@@ -17,7 +16,7 @@ def solve():
             if pairs[i][0] - pairs[i-1][0] < pairs[i][1] - pairs[i-1][1]:
                 possible = False
                 break
-    
+
     if possible:
         print("YES")
     else:

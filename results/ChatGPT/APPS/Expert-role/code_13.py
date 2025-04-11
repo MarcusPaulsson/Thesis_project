@@ -1,65 +1,50 @@
 from collections import deque, defaultdict
+import sys
 
-def topological_sort(n, dependencies):
-    indegree = [0] * (n + 1)
-    graph = defaultdict(list)
-    
-    for course, deps in dependencies.items():
-        for dep in deps:
-            graph[dep].append(course)
-            indegree[course] += 1
-    
-    queue = deque()
-    for i in range(1, n + 1):
-        if indegree[i] == 0:
-            queue.append(i)
-    
-    order = []
-    while queue:
-        course = queue.popleft()
-        order.append(course)
-        for neighbor in graph[course]:
-            indegree[neighbor] -= 1
-            if indegree[neighbor] == 0:
-                queue.append(neighbor)
-    
-    return order
+input = sys.stdin.read
+data = input().splitlines()
 
-def find_courses(n, k, main_courses, dependencies):
-    order = topological_sort(n, dependencies)
-    if len(order) < n:
-        return -1  # cycle detected or not all courses can be taken
-    
-    course_set = set(main_courses)
-    to_take = []
-    taken_courses = set()
-    
-    for course in order:
-        if course in course_set or any(dep in taken_courses for dep in dependencies[course]):
-            to_take.append(course)
-            taken_courses.add(course)
-            if course in course_set:
-                course_set.remove(course)
-    
-    if course_set:
-        return -1  # not all main courses can be taken
-    
-    return len(to_take), to_take
+n, k = map(int, data[0].split())
+main_courses = list(map(int, data[1].split()))
+dependencies = defaultdict(list)
+in_degree = [0] * (n + 1)
 
-# Input reading
-n, k = map(int, input().split())
-main_courses = list(map(int, input().split()))
-dependencies = {}
+# Read dependencies
+for i in range(2, n + 2):
+    line = list(map(int, data[i].split()))
+    t_i = line[0]
+    for dep in line[1:t_i + 1]:
+        dependencies[dep].append(i - 1)  # i - 2 + 1 = i - 1 (0-indexed)
+        in_degree[i - 1] += 1
 
+# Topological sort using Kahn's algorithm
+queue = deque()
 for i in range(1, n + 1):
-    data = list(map(int, input().split()))
-    dependencies[i] = data[1:]  # skip the first number which is the count of dependencies
+    if in_degree[i] == 0:
+        queue.append(i)
 
-result = find_courses(n, k, main_courses, dependencies)
+order = []
+passed_courses = set()
 
-if result == -1:
+while queue:
+    course = queue.popleft()
+    order.append(course)
+    passed_courses.add(course)
+    for next_course in dependencies[course]:
+        in_degree[next_course] -= 1
+        if in_degree[next_course] == 0:
+            queue.append(next_course)
+
+# Check if all main courses can be taken
+needed_courses = set(main_courses)
+for course in order:
+    if course in needed_courses:
+        needed_courses.remove(course)
+    if not needed_courses:
+        break
+
+if needed_courses:
     print(-1)
 else:
-    m, courses = result
-    print(m)
-    print(' '.join(map(str, courses)))
+    print(len(order))
+    print(" ".join(map(str, order)))

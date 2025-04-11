@@ -22,5 +22,7 @@ def solve():
             
             if l == m:
                 ans = max(ans, j - i)
+    
     print(ans)
+
 solve()

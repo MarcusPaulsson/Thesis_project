@@ -3,35 +3,29 @@ a = list(map(int, input().split()))
 
 from collections import defaultdict
 
-# Dictionary to store the indices of each number
-num_indices = defaultdict(list)
-for i in range(n):
-    num_indices[a[i]].append(i)
+# Count occurrences of each number
+count = defaultdict(int)
+for num in a:
+    count[num] += 1
 
-# Check if there are more unique numbers than colors
-if len(num_indices) > k:
+# If any number occurs more than k times, it's impossible
+if any(c > k for c in count.values()):
     print("NO")
     exit()
 
-# Prepare the color assignment
+# Prepare to assign colors
 color_assignment = [0] * n
-current_color = 1
+color_used = defaultdict(int)
 
 # Assign colors
-for indices in num_indices.values():
-    for index in indices:
-        color_assignment[index] = current_color
-        current_color += 1
-        if current_color > k:
-            current_color = 1
-
-# If we have filled all colors, we can just distribute the remaining colors
 for i in range(n):
-    if color_assignment[i] == 0:
-        color_assignment[i] = current_color
-        current_color += 1
-        if current_color > k:
-            current_color = 1
+    num = a[i]
+    color_used[num] += 1
+    color_assignment[i] = color_used[num] if color_used[num] <= k else 0
 
-print("YES")
-print(" ".join(map(str, color_assignment)))
+# Check if we have assigned all colors
+if any(c == 0 for c in color_assignment):
+    print("NO")
+else:
+    print("YES")
+    print(" ".join(map(str, color_assignment)))

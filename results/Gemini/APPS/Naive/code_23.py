@@ -4,40 +4,48 @@ def solve():
     a = input()
     b = input()
     
-    a_counts = Counter(a)
+    a_digits = sorted(list(a), reverse=True)
+    b_digits = list(b)
     
-    def find_max_permutation(index, current_num, remaining_counts, b_str):
+    if len(a) < len(b):
+        print("".join(a_digits))
+        return
+    
+    def find_max_permutation(index, remaining_digits, current_number):
         if index == len(a):
-            return current_num
+            return current_number
         
-        max_num = ""
+        best_number = ""
         
-        for digit in sorted(remaining_counts.keys(), reverse=True):
-            if remaining_counts[digit] > 0:
-                temp_counts = remaining_counts.copy()
-                temp_counts[digit] -= 1
-                
-                new_num = current_num + digit
-                
-                if len(new_num) < len(b_str) or new_num <= b_str:
+        for digit in sorted(remaining_digits.keys(), reverse=True):
+            if remaining_digits[digit] > 0:
+                if digit < b_digits[index]:
+                    temp_digits = remaining_digits.copy()
+                    temp_digits[digit] -= 1
                     
-                    valid = True
-                    if len(new_num) == len(b_str):
-                        for i in range(len(new_num)):
-                            if new_num[i] > b_str[i]:
-                                valid = False
-                                break
+                    remaining_str = ""
+                    for d in sorted(temp_digits.keys(), reverse=True):
+                        remaining_str += d * temp_digits[d]
                     
-                    if valid:
-                        
-                        next_max = find_max_permutation(index + 1, new_num, temp_counts, b_str)
-                        
-                        if len(next_max) > len(max_num) or (len(next_max) == len(max_num) and next_max > max_num):
-                            max_num = next_max
+                    new_number = current_number + digit + remaining_str
+                    
+                    if best_number == "" or new_number > best_number:
+                        best_number = new_number
+                elif digit == b_digits[index]:
+                    temp_digits = remaining_digits.copy()
+                    temp_digits[digit] -= 1
+                    
+                    next_remaining_digits = {k: v for k, v in temp_digits.items() if v > 0}
+                    
+                    next_number = find_max_permutation(index + 1, temp_digits, current_number + digit)
+                    
+                    if next_number != "" and (best_number == "" or next_number > best_number):
+                        best_number = next_number
         
-        return max_num
-
-    result = find_max_permutation(0, "", a_counts, b)
+        return best_number
+    
+    a_counts = Counter(a)
+    result = find_max_permutation(0, a_counts, "")
     print(result)
 
 solve()

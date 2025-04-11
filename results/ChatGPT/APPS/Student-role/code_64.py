@@ -1,39 +1,35 @@
 n, m = map(int, input().split())
 exams = [tuple(map(int, input().split())) for _ in range(m)]
 
-schedule = [0] * n  # Initialize schedule with rest days
-exam_days = [0] * n  # Initialize exam days tracker
+# Initialize the schedule with zeros (rest days)
+schedule = [0] * n
 
+# Prepare a list to track the preparation days needed for each exam
+prep_days_needed = [0] * m
+
+# Fill the schedule with exam days
 for i in range(m):
-    s, d, c = exams[i]
-    s -= 1  # Convert to 0-based index
-    d -= 1  # Convert to 0-based index
-    exam_days[d] = i + 1  # Mark exam day
+    s_i, d_i, c_i = exams[i]
+    schedule[d_i - 1] = m + 1  # Mark the exam day (1-indexed to 0-indexed)
 
-# Prepare a list to track preparation days
-prep_days = [0] * n
+    # Count the number of preparation days needed
+    prep_days_needed[i] = c_i
 
+# Try to allocate preparation days
 for i in range(m):
-    s, d, c = exams[i]
-    s -= 1  # Convert to 0-based index
-    d -= 1  # Convert to 0-based index
-    count = 0
-    
-    # Try to assign preparation days
-    for j in range(s, d):
-        if count < c and prep_days[j] == 0:  # If we still need to prepare and the day is free
-            prep_days[j] = i + 1  # Assign preparation for exam i
-            count += 1
+    s_i, d_i, c_i = exams[i]
+    days_allocated = 0
 
-    if count < c:  # If we couldn't prepare enough
+    # Allocate preparation days in the range [s_i, d_i - 1]
+    for j in range(s_i - 1, d_i - 1):
+        if days_allocated < c_i and schedule[j] == 0:
+            schedule[j] = i + 1  # Mark preparation for exam i (1-indexed)
+            days_allocated += 1
+
+    # If we couldn't allocate enough preparation days, it's impossible
+    if days_allocated < c_i:
         print(-1)
         exit()
 
-# Now fill the schedule with preparation and exam days
-for j in range(n):
-    if exam_days[j] != 0:
-        schedule[j] = exam_days[j]  # Assign exam day
-    elif prep_days[j] != 0:
-        schedule[j] = prep_days[j]  # Assign preparation day
-
+# Print the final schedule
 print(' '.join(map(str, schedule)))

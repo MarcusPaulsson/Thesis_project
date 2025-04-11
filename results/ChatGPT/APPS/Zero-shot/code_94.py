@@ -1,28 +1,36 @@
+def construct_binary_string(a, b, x):
+    # Start with an empty string
+    s = []
+    
+    # Determine the starting character based on the number of 0s and 1s
+    if a > b:
+        s.append('0')
+        a -= 1
+    else:
+        s.append('1')
+        b -= 1
+    
+    # We need to create x transitions
+    for i in range(x):
+        if s[-1] == '0':
+            s.append('1')
+            b -= 1
+        else:
+            s.append('0')
+            a -= 1
+    
+    # Now we have used x transitions, we need to fill the rest
+    # Fill with the remaining characters
+    while a > 0:
+        s.append('0')
+        a -= 1
+    while b > 0:
+        s.append('1')
+        b -= 1
+    
+    # Join the list into a string and print it
+    print(''.join(s))
+
+# Read input
 a, b, x = map(int, input().split())
-
-# Generate the base pattern
-if x % 2 == 1:
-    s = '01' * (x // 2) + '0' * (a - (x // 2 + 1)) + '1' * (b - (x // 2)) if a >= b else '10' * (x // 2) + '1' * (b - (x // 2 + 1)) + '0' * (a - (x // 2))
-else:
-    s = '01' * (x // 2) + '0' * (a - (x // 2)) + '1' * (b - (x // 2)) if a >= b else '10' * (x // 2) + '1' * (b - (x // 2)) + '0' * (a - (x // 2))
-
-# Adjust the string to fit the counts of '0's and '1's
-s = list(s)
-zeros_needed = a - s.count('0')
-ones_needed = b - s.count('1')
-
-# Fill with remaining '0's and '1's
-if zeros_needed > 0:
-    for i in range(len(s)):
-        if s[i] == '0' and zeros_needed > 0:
-            continue
-        if s[i] == '1' and ones_needed > 0:
-            continue
-        if zeros_needed > 0:
-            s[i] = '0'
-            zeros_needed -= 1
-        elif ones_needed > 0:
-            s[i] = '1'
-            ones_needed -= 1
-
-print(''.join(s))
+construct_binary_string(a, b, x)

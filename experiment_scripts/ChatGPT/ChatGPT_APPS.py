@@ -63,7 +63,7 @@ def run_task_with_api_iter(task_prompt, system_prompt):
                 {"role": "user", "content": task_prompt + extra_message}
             ],
             response_format={"type": "text"},
-            temperature=0.7,
+            temperature=0.2,
             max_completion_tokens=2500,
             top_p=1,
         )
@@ -92,12 +92,15 @@ def process_tasks_parallel(tasks, start_index, end_index, max_workers=5, iterati
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {}
         for i in range(start_index, min(end_index, len(tasks))):
-            task_prompt = tasks[i]
-            if iterative:
-                future = executor.submit(process_task_with_iterations, task_prompt)
+            if i in skip_test:
+                continue
             else:
-                future = executor.submit(run_task_with_api_iter, task_prompt, prompt.SYSTEM_PROMPT) # Run only first prompt if not iterative
-            futures[future] = i
+                task_prompt = tasks[i]
+                if iterative:
+                    future = executor.submit(process_task_with_iterations, task_prompt)
+                else:
+                    future = executor.submit(run_task_with_api_iter, task_prompt, prompt.SYSTEM_PROMPT) # Run only first prompt if not iterative
+                futures[future] = i
 
         for future in concurrent.futures.as_completed(futures):
             index = futures[future]
@@ -116,7 +119,8 @@ if __name__ == "__main__":
     # Load tasks from the APPS JSON file
     apps_file_path = os.path.join(main_dir, "data", "apps.json")
     tasks = extract_apps_tasks(apps_file_path)
-
+    skip_test = [4, 21, 26, 37, 43, 48, 61, 65, 75, 85, 98]
+    skip_test = []
     if tasks is None:
         sys.exit(1)
     # Define the index interval for tasks

@@ -8,29 +8,29 @@ def solve():
     if d == 1 and n > 2:
         print("NO")
         return
-
-    if k == 1 and d > 1:
+    
+    if k == 1 and n > 2:
         print("NO")
         return
     
-    if k == 1 and d == 1 and n > 2:
+    if d > n - 1:
         print("NO")
         return
 
     edges = []
-    
+    degrees = [0] * (n + 1)
+
     # Create the diameter path
     for i in range(d):
         edges.append((i + 1, i + 2))
+        degrees[i + 1] += 1
+        degrees[i + 2] += 1
 
-    degrees = [0] * (n + 1)
-    for u, v in edges:
-        degrees[u] += 1
-        degrees[v] += 1
+    if any(degree > k for degree in degrees[1:]):
+        print("NO")
+        return
 
     next_node = d + 2
-    
-    # Add nodes to the diameter path
     for i in range(1, d + 2):
         while degrees[i] < k and next_node <= n:
             edges.append((i, next_node))
@@ -38,7 +38,14 @@ def solve():
             degrees[next_node] += 1
             next_node += 1
 
-    if next_node <= n:
+        if next_node > n:
+            break
+
+    if any(degree > k for degree in degrees[1:]):
+        print("NO")
+        return
+
+    if len(edges) != n - 1:
         print("NO")
         return
 

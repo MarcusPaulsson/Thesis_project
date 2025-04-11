@@ -8,41 +8,44 @@ def solve():
     
     matrix = [[0] * n for _ in range(n)]
     
-    def can_place(row, col, val):
-        if matrix[row][col] != 0:
-            return False
+    def check():
+        for i in range(n):
+            for j in range(n):
+                if matrix[i][j] != matrix[n-1-i][j] or matrix[i][j] != matrix[i][n-1-j]:
+                    return False
         return True
-    
-    def fill_matrix():
-        for i in range((n + 1) // 2):
-            for j in range((n + 1) // 2):
-                if matrix[i][j] == 0:
-                    found = False
-                    for val in sorted(counts.keys()):
-                        if counts[val] >= 1 + (i != n - 1 - i) + (j != n - 1 - j) + (i != n - 1 - i and j != n - 1 - j):
-                            matrix[i][j] = val
-                            counts[val] -= 1
-                            
-                            matrix[n - 1 - i][j] = val
-                            counts[val] -= (i != n - 1 - i)
-                            
-                            matrix[i][n - 1 - j] = val
-                            counts[val] -= (j != n - 1 - j)
-                            
-                            matrix[n - 1 - i][n - 1 - j] = val
-                            counts[val] -= (i != n - 1 - i and j != n - 1 - j)
-                            
-                            found = True
-                            break
-                    if not found:
-                        return False
-                        
-        return True
-    
-    if fill_matrix():
-        print("YES")
-        for row in matrix:
-            print(*row)
+
+    def backtrack(row, col):
+        if row == n:
+            if check():
+                print("YES")
+                for r in matrix:
+                    print(*r)
+                return True
+            else:
+                return False
+        
+        next_row = row
+        next_col = col + 1
+        if next_col == n:
+            next_row += 1
+            next_col = 0
+        
+        for num in list(counts.keys()):
+            if counts[num] > 0:
+                counts[num] -= 1
+                matrix[row][col] = num
+                
+                if backtrack(next_row, next_col):
+                    return True
+                
+                matrix[row][col] = 0
+                counts[num] += 1
+        
+        return False
+
+    if backtrack(0, 0):
+        return
     else:
         print("NO")
 

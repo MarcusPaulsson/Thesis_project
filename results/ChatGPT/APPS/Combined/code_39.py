@@ -8,11 +8,13 @@ def longest_non_palindrome_substring(s):
     if not is_palindrome(s):
         return n
     
-    # Check if all characters in the string are the same
+    # Check if all characters are the same
     if s.count(s[0]) == n:
         return 0
     
-    # If the entire string is a palindrome, return n-1
+    # If the string is a palindrome but not all characters are the same,
+    # the longest non-palindrome substring can be obtained by removing
+    # one character from either end.
     return n - 1
 
 # Input

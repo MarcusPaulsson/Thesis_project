@@ -5,8 +5,8 @@ def solve():
   cnt4 = int(input())
 
   if cnt1 == cnt4 and cnt1 >= 0 and cnt4 >= 0:
-      print(1)
+    print(1)
   else:
-      print(0)
+    print(0)
 
 solve()

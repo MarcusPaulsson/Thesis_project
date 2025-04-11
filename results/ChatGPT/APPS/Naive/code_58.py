@@ -1,38 +1,28 @@
 def color_array(n, k, a):
     from collections import defaultdict
+
+    color_assignment = [0] * n
+    color_used = defaultdict(set)
     
-    # Track the frequency of each number
-    freq = defaultdict(int)
-    for num in a:
-        freq[num] += 1
-    
-    # If the maximum frequency of any number exceeds the number of colors, it's impossible
-    max_freq = max(freq.values())
-    if max_freq > k:
-        print("NO")
-        return
-    
-    # Prepare to store the coloring result
-    coloring = [0] * n
-    color_used = defaultdict(int)
-    
-    # Assign colors
     for i in range(n):
         num = a[i]
-        # Use a color not used for this number yet
-        color_used[num] += 1
-        coloring[i] = color_used[num]
-        
-        # If we exceed the number of colors, reset to 1
-        if color_used[num] > k:
-            color_used[num] = 1
-    
-    print("YES")
-    print(" ".join(map(str, coloring)))
+        for color in range(1, k + 1):
+            if num not in color_used[color]:
+                color_assignment[i] = color
+                color_used[color].add(num)
+                break
+        else:
+            print("NO")
+            return
 
-# Read input
+    if len(color_used) < k:
+        print("NO")
+    else:
+        print("YES")
+        print(" ".join(map(str, color_assignment)))
+
+# Input reading
 n, k = map(int, input().split())
 a = list(map(int, input().split()))
 
-# Call the function
 color_array(n, k, a)

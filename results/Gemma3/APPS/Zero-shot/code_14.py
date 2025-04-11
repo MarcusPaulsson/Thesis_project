@@ -7,8 +7,6 @@ def solve():
         if i not in p:
             remaining.append(i)
     
-    remaining.sort(reverse=True)
-    
     def is_stack_sortable(arr):
         stack = []
         result = []
@@ -26,17 +24,22 @@ def solve():
                 return False
             result.append(stack.pop())
         
-        return all(result[i] <= result[i+1] for i in range(len(result)-1))
-    
+        return result == sorted(arr)
     
     import itertools
     
-    for perm in itertools.permutations(remaining):
-        temp_p = p + list(perm)
-        if is_stack_sortable(temp_p):
-            print(*temp_p)
-            return
+    best_permutation = -1
     
-    print(-1)
+    for perm in itertools.permutations(remaining):
+        current_permutation = p + list(perm)
+        
+        if is_stack_sortable(current_permutation):
+            if best_permutation == -1 or current_permutation > best_permutation:
+                best_permutation = current_permutation
+    
+    if best_permutation != -1:
+        print(*best_permutation)
+    else:
+        print(-1)
 
 solve()

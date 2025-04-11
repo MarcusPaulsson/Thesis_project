@@ -5,31 +5,31 @@ def max_subarray_sum(arr):
         max_so_far = max(max_so_far, max_ending_here)
     return max_so_far
 
-def max_beauty_with_operation(n, x, a):
-    # Calculate the beauty of the original array
+def max_beauty_with_multiplier(n, x, a):
+    # Calculate the original beauty
     original_beauty = max_subarray_sum(a)
+    
+    # If x is 0, the best we can do is the original beauty
+    if x == 0:
+        return original_beauty
 
-    # Calculate the beauty after multiplying a subarray by x
-    max_gain = 0
-    current_sum = 0
+    # Calculate the maximum beauty after applying the multiplier
+    max_with_multiplier = original_beauty
     for i in range(n):
-        current_sum += a[i]
-        # Calculate the gain if we multiply the current prefix and the suffix
-        if i > 0:
-            max_gain = max(max_gain, current_sum * x - max_subarray_sum(a[:i]))
-        if i < n - 1:
-            max_gain = max(max_gain, current_sum * x - max_subarray_sum(a[i + 1:]))
-        
-        # Reset current sum if it goes negative
-        if current_sum < 0:
-            current_sum = 0
+        current_sum = 0
+        for j in range(i, n):
+            current_sum += a[j]
+            # Calculate the new beauty if we multiply the subarray a[i:j+1] by x
+            new_sum = current_sum * x
+            # Calculate the beauty of the rest of the array
+            rest_sum = max_subarray_sum(a[:i] + a[j+1:])
+            max_with_multiplier = max(max_with_multiplier, new_sum + rest_sum)
 
-    # Calculate the maximum possible beauty
-    return max(original_beauty, original_beauty + max_gain)
+    return max_with_multiplier
 
-# Read input
+# Input reading
 n, x = map(int, input().split())
 a = list(map(int, input().split()))
 
-# Calculate and print the maximum beauty
-print(max_beauty_with_operation(n, x, a))
+# Output the result
+print(max_beauty_with_multiplier(n, x, a))

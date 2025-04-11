@@ -1,15 +1,8 @@
-def is_s_palindrome(s):
-    """
-    Checks if a string is an "s-palindrome".
+def solve():
+    s = input()
+    n = len(s)
 
-    Args:
-      s: The string to check.
-
-    Returns:
-      "TAK" if the string is an "s-palindrome", "NIE" otherwise.
-    """
-
-    mirrors = {
+    mirror_chars = {
         'b': 'd', 'd': 'b',
         'p': 'q', 'q': 'p',
         'o': 'o', 'x': 'x',
@@ -19,21 +12,20 @@ def is_s_palindrome(s):
         'U': 'U', 'V': 'V',
         'v': 'v', 'W': 'W',
         'w': 'w', 'Y': 'Y',
-        'A': 'A', 'm':'m'
+        'A': 'A', 'm': 'm'
     }
 
-    n = len(s)
     for i in range(n // 2):
-        if s[i] not in mirrors or mirrors[s[i]] != s[n - 1 - i]:
-            return "NIE"
-    
+        if s[i] not in mirror_chars or mirror_chars[s[i]] != s[n - 1 - i]:
+            print("NIE")
+            return
+
     if n % 2 == 1:
-      if s[n//2] not in mirrors or mirrors[s[n//2]] != s[n//2]:
-        return "NIE"
+        if s[n // 2] not in mirror_chars or mirror_chars[s[n // 2]] != s[n // 2]:
+            print("NIE")
+            return
 
-    return "TAK"
+    print("TAK")
 
 
-if __name__ == "__main__":
-    s = input()
-    print(is_s_palindrome(s))
+solve()

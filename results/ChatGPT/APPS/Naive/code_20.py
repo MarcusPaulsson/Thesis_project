@@ -4,8 +4,6 @@ def is_palindrome(time_str):
 def next_palindrome_time(hh, mm):
     minutes_passed = 0
     while True:
-        if is_palindrome(f"{hh:02}:{mm:02}"):
-            return minutes_passed
         mm += 1
         if mm == 60:
             mm = 0
@@ -13,11 +11,15 @@ def next_palindrome_time(hh, mm):
             if hh == 24:
                 hh = 0
         minutes_passed += 1
+        time_str = f"{hh:02}:{mm:02}"
+        if is_palindrome(time_str):
+            return minutes_passed
 
 def main():
     current_time = input().strip()
     hh, mm = map(int, current_time.split(':'))
-    print(next_palindrome_time(hh, mm))
+    result = next_palindrome_time(hh, mm)
+    print(result)
 
 if __name__ == "__main__":
     main()

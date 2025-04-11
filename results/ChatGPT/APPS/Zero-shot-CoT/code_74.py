@@ -1,24 +1,30 @@
 def min_cost_to_obtain_set(n, k, s):
-    unique_subsequences = set()
-    total_cost = 0
+    from collections import defaultdict
     
-    # Generate all unique subsequences and their costs
-    for i in range(1 << n):
-        subsequence = []
-        for j in range(n):
-            if i & (1 << j):
-                subsequence.append(s[j])
-        subsequence_str = ''.join(subsequence)
-        if subsequence_str not in unique_subsequences:
-            unique_subsequences.add(subsequence_str)
-            total_cost += n - len(subsequence_str)
-        
-        if len(unique_subsequences) >= k:
-            break
+    # Count the frequency of each character in the string
+    freq = defaultdict(int)
+    for char in s:
+        freq[char] += 1
     
-    if len(unique_subsequences) < k:
+    # Calculate the number of unique subsequences we can generate
+    unique_subsequences = 0
+    costs = []
+    
+    # Generate subsequences and their costs
+    for char, count in freq.items():
+        for length in range(1, count + 1):
+            unique_subsequences += 1
+            costs.append(n - length)
+    
+    # If we can't generate enough unique subsequences
+    if unique_subsequences < k:
         return -1
-    return total_cost
+    
+    # Sort costs to minimize the total cost
+    costs.sort()
+    
+    # Calculate the minimum cost for the first k unique subsequences
+    return sum(costs[:k])
 
 # Input reading
 n, k = map(int, input().split())

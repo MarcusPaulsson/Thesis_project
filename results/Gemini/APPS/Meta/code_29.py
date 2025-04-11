@@ -6,18 +6,14 @@ def solve():
         for j in range(1000):
             s2 = str(j).zfill(3)
             if sum(int(d) for d in s1) == sum(int(d) for d in s2):
-                cnt = 0
-                temp = list(s)
-                temp[0] = s1[0]
-                temp[1] = s1[1]
-                temp[2] = s1[2]
-                temp[3] = s2[0]
-                temp[4] = s2[1]
-                temp[5] = s2[2]
-                for k in range(6):
-                    if s[k] != temp[k]:
-                        cnt+=1
-                ans = min(ans,cnt)
+                diff = 0
+                for k in range(3):
+                    if s[k] != s1[k]:
+                        diff += 1
+                for k in range(3):
+                    if s[k+3] != s2[k]:
+                        diff += 1
+                ans = min(ans, diff)
     print(ans)
 
 solve()

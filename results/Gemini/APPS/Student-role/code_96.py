@@ -11,18 +11,12 @@ def solve():
 
         seen = set()
         for x in p:
-            if not (1 <= x <= n):
-                valid = False
-                break
-            if x in seen:
+            if x < 1 or x > n or x in seen:
                 valid = False
                 break
             seen.add(x)
 
-        if len(seen) != n:
-            valid = False
-
-        if valid:
+        if valid and len(seen) == n:
             print(*p)
             return
 

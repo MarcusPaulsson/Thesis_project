@@ -1,27 +1,28 @@
-def maxAccordionLength(s: str) -> int:
-    n = len(s)
+def max_acordion_length(s: str) -> int:
+    opening_bracket = '['
+    closing_bracket = ']'
+    colon = ':'
+    vertical_line = '|'
     
-    # Find the last occurrence of the opening bracket '['
-    left_bracket_index = s.rfind('[')
-    # Find the first occurrence of the closing bracket ']'
-    right_bracket_index = s.find(']', left_bracket_index)
+    # Initialize variables to track positions
+    first_colon_index = -1
+    last_colon_index = -1
     
-    # If there's no valid brackets or they are in the wrong order, return -1
-    if left_bracket_index == -1 or right_bracket_index == -1 or left_bracket_index >= right_bracket_index:
-        return -1
+    # Traverse the string to find the accordion structure
+    for i, char in enumerate(s):
+        if char == opening_bracket:
+            first_colon_index = s.find(colon, i)
+            if first_colon_index != -1:
+                last_colon_index = s.rfind(colon, first_colon_index + 1)
+                if last_colon_index != -1:
+                    vertical_lines_count = s.count(vertical_line, first_colon_index + 1, last_colon_index)
+                    # Calculate the length of the accordion
+                    accordion_length = 2 + vertical_lines_count  # 2 for brackets and colons
+                    return accordion_length
+    
+    # If no valid accordion structure is found
+    return -1
 
-    # Count the number of ':' and '|' between the brackets
-    colon_count = s[left_bracket_index + 1:right_bracket_index].count(':')
-    pipe_count = s[left_bracket_index + 1:right_bracket_index].count('|')
-
-    # There must be at least 2 colons and at least 0 pipes
-    if colon_count < 2:
-        return -1
-
-    # The maximum length is the length of the brackets plus the pipes and colons
-    max_length = (right_bracket_index - left_bracket_index + 1)  # Length of '[::]'
-    return max_length
-
-# Read input and output the result
-s = input().strip()
-print(maxAccordionLength(s))
+# Example usage
+print(max_acordion_length("|[a:b:|]"))  # Output: 4
+print(max_acordion_length("|]:[|:]"))   # Output: -1

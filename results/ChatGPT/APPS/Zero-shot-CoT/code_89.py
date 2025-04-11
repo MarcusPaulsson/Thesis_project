@@ -2,10 +2,10 @@ def can_complete_projects(n, r, projects):
     # Sort projects by their required rating
     projects.sort(key=lambda x: x[0])
     
-    for a_i, b_i in projects:
-        if r < a_i:
+    for a, b in projects:
+        if r < a:
             return "NO"
-        r += b_i
+        r += b
         if r < 0:
             return "NO"
     

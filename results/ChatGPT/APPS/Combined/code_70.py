@@ -1,25 +1,29 @@
-def calculate_midpoint(start_time: str, end_time: str) -> str:
-    # Parse the start and end times
-    h1, m1 = map(int, start_time.split(':'))
-    h2, m2 = map(int, end_time.split(':'))
-
-    # Convert times to total minutes
-    start_minutes = h1 * 60 + m1
-    end_minutes = h2 * 60 + m2
-
-    # Calculate midpoint in total minutes
+def calculate_midpoint(start_time, end_time):
+    # Convert start and end times to total minutes
+    start_minutes = start_time[0] * 60 + start_time[1]
+    end_minutes = end_time[0] * 60 + end_time[1]
+    
+    # Calculate the midpoint in total minutes
     midpoint_minutes = (start_minutes + end_minutes) // 2
-
-    # Convert midpoint back to hours and minutes
+    
+    # Convert back to hours and minutes
     h3 = midpoint_minutes // 60
     m3 = midpoint_minutes % 60
+    
+    return h3, m3
 
-    # Format the result as hh:mm
-    return f"{h3:02}:{m3:02}"
+def parse_time(time_str):
+    return tuple(map(int, time_str.strip().split(':')))
+
+def format_time(h, m):
+    return f"{h:02}:{m:02}"
 
 # Read input
-start_time = input().strip()
-end_time = input().strip()
+start_time = parse_time(input())
+end_time = parse_time(input())
 
-# Calculate and print the midpoint
-print(calculate_midpoint(start_time, end_time))
+# Calculate midpoint
+h3, m3 = calculate_midpoint(start_time, end_time)
+
+# Print output in the required format
+print(format_time(h3, m3))

@@ -7,15 +7,15 @@ def solve():
         return
     
     max_overlap = 0
-    for overlap in range(n - 1, 0, -1):
-        if t[:overlap] == t[n - overlap:]:
-            max_overlap = overlap
+    for overlap in range(1, n):
+        if t[:n-overlap] == t[overlap:]:
+            max_overlap = n - overlap
             break
     
-    s = t
+    result = t
     for _ in range(k - 1):
-        s += t[max_overlap:]
+        result += t[max_overlap:]
     
-    print(s)
+    print(result)
 
 solve()

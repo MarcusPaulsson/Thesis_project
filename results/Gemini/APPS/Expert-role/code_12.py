@@ -2,7 +2,7 @@ def solve():
     n = int(input())
     s = input()
     
-    golds = s.count('G')
+    gold_count = s.count('G')
     
     max_len = 0
     for i in range(n):
@@ -11,16 +11,17 @@ def solve():
             temp_s[i], temp_s[j] = temp_s[j], temp_s[i]
             temp_s = "".join(temp_s)
             
-            curr_len = 0
-            max_curr_len = 0
+            current_len = 0
+            max_current_len = 0
             for k in range(n):
                 if temp_s[k] == 'G':
-                    curr_len += 1
-                    max_curr_len = max(max_curr_len, curr_len)
+                    current_len += 1
                 else:
-                    curr_len = 0
+                    max_current_len = max(max_current_len, current_len)
+                    current_len = 0
+            max_current_len = max(max_current_len, current_len)
             
-            max_len = max(max_len, min(max_curr_len, golds))
+            max_len = max(max_len, min(max_current_len, gold_count))
     
     print(max_len)
 

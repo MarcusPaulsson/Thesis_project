@@ -3,37 +3,48 @@ def solve():
     s = input()
     t = input()
 
-    def check(candidate):
-        if s in candidate or t in candidate:
-            return False
-        return True
+    chars = ['a', 'b', 'c']
 
-    base_patterns = ["abc", "acb", "bac", "bca", "cab", "cba"]
-
-    for pattern in base_patterns:
-        candidate = pattern * n
-        if check(candidate):
+    import itertools
+    
+    for perm in itertools.permutations(chars):
+        res = ""
+        for _ in range(n):
+            res += perm[0]
+            res += perm[1]
+            res += perm[2]
+        
+        valid = True
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s or sub == t:
+                valid = False
+                break
+        
+        if valid:
             print("YES")
-            print(candidate)
+            print(res)
             return
-
     
-    alt_patterns = ["acbbac", "bacbac", "cabcab", "abcbca", "bcabac", "cbacba", "acbacb", "bacabc", "cbacab", "abcacb", "bcabca", "cabacb", "acbcba", "bacbca", "cbacab", "abcabc", "bcbcba", "cacbac"]
+    for perm in itertools.permutations(chars):
+        res = ""
+        for _ in range(n):
+            res = perm[0] + res
+            res = perm[1] + res
+            res = perm[2] + res
+        
+        valid = True
+        for i in range(len(res) - 1):
+            sub = res[i:i+2]
+            if sub == s or sub == t:
+                valid = False
+                break
+        
+        if valid:
+            print("YES")
+            print(res)
+            return
     
-    if n == 2:
-        for pattern in alt_patterns:
-            if len(pattern) == 6 and check(pattern):
-                print("YES")
-                print(pattern)
-                return
-    
-    if n == 3:
-      alt_patterns_3 = ["cacbacbab", "abcabcabc", "acbacbacb", "bacbacbac"]
-      for pattern in alt_patterns_3:
-          if check(pattern):
-              print("YES")
-              print(pattern)
-              return
     
     print("NO")
 

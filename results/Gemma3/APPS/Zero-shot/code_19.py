@@ -6,16 +6,10 @@ def solve():
         stats.append((p, c))
     
     for i in range(1, n):
-        if stats[i][0] < stats[i-1][0]:
+        if stats[i][0] < stats[i-1][0] or stats[i][1] < stats[i-1][1]:
             print("NO")
             return
-        if stats[i][1] < stats[i-1][1]:
-            print("NO")
-            return
-        if stats[i][1] > stats[i][0]:
-            print("NO")
-            return
-        if stats[i][0] - stats[i-1][0] < stats[i][1] - stats[i-1][1]:
+        if stats[i][1] - stats[i-1][1] > stats[i][0] - stats[i-1][0]:
             print("NO")
             return
     

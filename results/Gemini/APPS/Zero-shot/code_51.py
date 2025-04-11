@@ -2,32 +2,57 @@ def solve():
     n = int(input())
     divisors = list(map(int, input().split()))
     
+    x = max(divisors)
+    
+    def get_divisors(num):
+        divs = []
+        for i in range(1, int(num**0.5) + 1):
+            if num % i == 0:
+                divs.append(i)
+                if i * i != num:
+                    divs.append(num // i)
+        return sorted(divs)
+
+    divisors_x = get_divisors(x)
+    
+    temp_divisors = divisors[:]
+    
+    for val in divisors_x:
+        if val in temp_divisors:
+            temp_divisors.remove(val)
+        else:
+            break
+    else:
+        if not temp_divisors:
+            print(x, x)
+            return
+            
+        y = max(temp_divisors)
+        
+        divisors_y = get_divisors(y)
+        
+        combined_divisors = sorted(divisors_x + divisors_y)
+        divisors.sort()
+    
+        if combined_divisors == divisors:
+            print(x, y)
+            return
+        
     divisors.sort()
     
-    x = divisors[-1]
+    x = max(divisors)
+    divisors_x = get_divisors(x)
+    temp_divisors = divisors[:]
     
-    divisors_x = []
-    for i in range(1, int(x**0.5) + 1):
-        if x % i == 0:
-            divisors_x.append(i)
-            if i * i != x:
-                divisors_x.append(x // i)
-    
-    divisors_x.sort()
-    
-    remaining_divisors = divisors[:]
-    
-    for dx in divisors_x:
-        if dx in remaining_divisors:
-            remaining_divisors.remove(dx)
+    for val in divisors_x:
+        if val in temp_divisors:
+            temp_divisors.remove(val)
         else:
-            pass
-            
+            break
     
-    y = 1
-    if remaining_divisors:
-        y = remaining_divisors[-1]
-    
-    print(x, y)
+    y = max(temp_divisors)
+    divisors_y = get_divisors(y)
+
+    print(x,y)
 
 solve()

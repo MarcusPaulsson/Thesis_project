@@ -1,29 +1,27 @@
-def sum_of_digits(n):
-    return sum(int(d) for d in str(n))
-
-def max_sum_digits(x):
+def max_digit_sum(x):
     str_x = str(x)
     n = len(str_x)
-
+    
     # Start with the original number
-    max_number = x
-    max_digit_sum = sum_of_digits(x)
-
-    # Generate candidates by reducing digits
+    max_sum = sum(int(d) for d in str_x)
+    best_number = x
+    
+    # Try to create numbers by reducing digits
     for i in range(n):
         if str_x[i] == '0':
             continue
-        # Create a new candidate by reducing the current digit
-        candidate = str_x[:i] + str(int(str_x[i]) - 1) + '9' * (n - i - 1)
-        candidate_number = int(candidate)
-        if candidate_number > 0 and candidate_number <= x:
-            candidate_digit_sum = sum_of_digits(candidate_number)
-            if (candidate_digit_sum > max_digit_sum or 
-               (candidate_digit_sum == max_digit_sum and candidate_number > max_number)):
-                max_number = candidate_number
-                max_digit_sum = candidate_digit_sum
-
-    return max_number
+        
+        # Create a new number by reducing the current digit by 1 and setting all following digits to 9
+        new_number = str_x[:i] + str(int(str_x[i]) - 1) + '9' * (n - i - 1)
+        new_number = int(new_number)
+        
+        if new_number <= x:
+            current_sum = sum(int(d) for d in str(new_number))
+            if current_sum > max_sum or (current_sum == max_sum and new_number > best_number):
+                max_sum = current_sum
+                best_number = new_number
+    
+    return best_number
 
 x = int(input().strip())
-print(max_sum_digits(x))
+print(max_digit_sum(x))

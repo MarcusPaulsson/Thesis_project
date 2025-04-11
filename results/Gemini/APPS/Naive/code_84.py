@@ -2,40 +2,41 @@ def solve():
     n = int(input())
     s = input()
 
-    def check(coloring):
-        zeros = []
-        ones = []
-        for i in range(n):
-            if coloring[i] == '0':
-                zeros.append(s[i])
+    for i in range(1 << n):
+        coloring = ""
+        for j in range(n):
+            if (i >> j) & 1:
+                coloring += '1'
             else:
-                ones.append(s[i])
+                coloring += '0'
+
+        zeros = ""
+        ones = ""
+        for j in range(n):
+            if coloring[j] == '0':
+                zeros += s[j]
+            else:
+                ones += s[j]
+
+        sorted_s = "".join(sorted(s))
         
-        zeros.sort()
-        ones.sort()
-        
-        merged = []
+        merged = ""
         zero_idx = 0
         one_idx = 0
-        for i in range(n):
-            if coloring[i] == '0':
-                merged.append(zeros[zero_idx])
+        
+        possible = True
+        for char in sorted_s:
+            if zero_idx < len(zeros) and zeros[zero_idx] == char:
+                merged += zeros[zero_idx]
                 zero_idx += 1
-            else:
-                merged.append(ones[one_idx])
+            elif one_idx < len(ones) and ones[one_idx] == char:
+                merged += ones[one_idx]
                 one_idx += 1
-                
+            else:
+                possible = False
+                break
         
-        sorted_s = sorted(s)
-        
-        if merged == sorted_s:
-            return True
-        else:
-            return False
-        
-    for i in range(2**n):
-        coloring = bin(i)[2:].zfill(n)
-        if check(coloring):
+        if possible:
             print("YES")
             print(coloring)
             return

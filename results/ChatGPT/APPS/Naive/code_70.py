@@ -10,12 +10,12 @@ def midpoint_of_contest(h1, m1, h2, m2):
     h3 = midpoint_minutes // 60
     m3 = midpoint_minutes % 60
     
-    # Format the output with leading zeros
+    # Format the output to ensure two digits
     print(f"{h3:02}:{m3:02}")
 
 # Read input
-h1, m1 = map(int, input().split(':'))
-h2, m2 = map(int, input().split(':'))
+h1, m1 = map(int, input().strip().split(':'))
+h2, m2 = map(int, input().strip().split(':'))
 
 # Calculate and print the midpoint
 midpoint_of_contest(h1, m1, h2, m2)

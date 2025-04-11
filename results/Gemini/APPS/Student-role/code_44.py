@@ -7,13 +7,17 @@ else:
     print(k * a + (d - k) * b)
   else:
     num_breaks = d // k
-    remainder = d % k
+    remaining = d % k
     
     time = num_breaks * (k * a + t)
     
-    if remainder > 0:
-      time += min(remainder * a, remainder * b + t)
+    if remaining > 0:
+      if remaining * a + t < remaining * b:
+        time += remaining * a
+      else:
+        time -= t
+        time += remaining * b
     else:
       time -= t
-    
+      
     print(time)

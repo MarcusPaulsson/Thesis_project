@@ -1,27 +1,27 @@
-def min_time_to_post_office(d, k, a, b, t):
-    # If d is less than or equal to k, we can drive the entire distance without repairs
-    if d <= k:
-        return d * a
-    
-    # Calculate the time using only the car and the time using both car and walking
-    full_drive_time = (d // k) * (k * a + t) + (d % k) * a
-    walking_time = d * b
-    
-    # Calculate the minimum time by evaluating combinations of driving and walking
-    min_time = min(full_drive_time, walking_time)
-    
-    # Evaluate the cases where we can drive part of the distance and walk the rest
-    for i in range(d // k + 1):
-        distance_driven = i * k
-        remaining_distance = d - distance_driven
-        
-        # Time spent driving i segments of k km and walking the remaining distance
-        if remaining_distance >= 0:
-            current_time = (i * (k * a + t) - t) + remaining_distance * b
-            min_time = min(min_time, current_time)
-    
+def minimal_time_to_post_office(d, k, a, b, t):
+    # Calculate the number of full segments Vasiliy can drive
+    full_segments = d // k
+    remaining_distance = d % k
+
+    # Time if he drives all full segments and walks the remaining distance
+    time_using_car = full_segments * (k * a + t) + remaining_distance * a
+    time_using_car -= t  # Remove the last repair time since he doesn't need to repair after the last segment
+
+    # Time if he walks the entire distance
+    time_walking = d * b
+
+    # Calculate the minimum time considering both strategies
+    min_time = min(time_using_car, time_walking)
+
+    # Check if he can drive some distance, repair, and then walk the rest
+    if full_segments > 0:
+        for i in range(full_segments + 1):
+            time = (i * (k * a + t)) + (d - i * k) * b
+            min_time = min(min_time, time)
+
     return min_time
 
 # Input reading
-d, k, a, b, t = map(int, input().strip().split())
-print(min_time_to_post_office(d, k, a, b, t))
+d, k, a, b, t = map(int, input().split())
+result = minimal_time_to_post_office(d, k, a, b, t)
+print(result)

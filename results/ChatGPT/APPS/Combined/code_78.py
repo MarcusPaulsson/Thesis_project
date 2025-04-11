@@ -1,42 +1,43 @@
 MOD = 10**9 + 7
 
-def count_regular_bracket_sequences(n, s):
+def count_regular_sequences(n, s):
     m = len(s)
     
     # Precompute the number of valid sequences of length 2k
-    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    dp = [[0] * (n + 1) for _ in range(2 * n + 1)]
     dp[0][0] = 1
     
-    for i in range(1, n + 1):
-        for j in range(i + 1):
-            dp[i][j] = (dp[i - 1][j + 1] if j + 1 <= i - 1 else 0) + (dp[i - 1][j - 1] if j > 0 else 0)
-            dp[i][j] %= MOD
+    for i in range(1, 2 * n + 1):
+        for j in range(n + 1):
+            if j > 0:
+                dp[i][j] = (dp[i][j] + dp[i - 1][j - 1]) % MOD
+            if j < n:
+                dp[i][j] = (dp[i][j] + dp[i - 1][j + 1]) % MOD
 
-    # Count the number of left and right brackets in s
-    left_brackets = s.count('(')
-    right_brackets = s.count(')')
+    # Calculate the balance of the string s
+    balance = 0
+    min_balance = 0
+    for char in s:
+        if char == '(':
+            balance += 1
+        else:
+            balance -= 1
+        min_balance = min(min_balance, balance)
 
-    # Validate the brackets count
-    if left_brackets < right_brackets or left_brackets > n or right_brackets > n:
+    # Check if the balance is valid
+    if balance < 0 or balance > n or (n - balance) < -min_balance:
         return 0
-    
-    # Calculate remaining length for valid sequences
-    remaining_length = 2 * (n - (left_brackets + right_brackets))
 
-    if remaining_length < 0 or (remaining_length // 2) < 0:
-        return 0
+    # Count valid sequences with s as a substring
+    total_count = 0
+    for i in range(n - (balance - min_balance) + 1):
+        total_count = (total_count + dp[2 * (n - i)][(n - i) + min_balance]) % MOD
 
-    valid_sequences = dp[n - (left_brackets + right_brackets)][0]
-    
-    # Calculate total sequences by placing `s` in valid sequences
-    total_sequences = valid_sequences * (remaining_length + 1) % MOD
-    
-    return total_sequences
+    return total_count
 
-# Read input values
+# Input reading
 n = int(input().strip())
 s = input().strip()
 
-# Compute the result
-result = count_regular_bracket_sequences(n, s)
-print(result)
+# Output the result
+print(count_regular_sequences(n, s))

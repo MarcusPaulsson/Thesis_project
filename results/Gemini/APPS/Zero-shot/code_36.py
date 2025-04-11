@@ -1,10 +1,10 @@
 def solve():
   n = int(input())
-  
+
   if n == 0:
     print(0, 0)
     return
-  
+
   l, r = 0, 10**9
   k = 0
   while l <= r:
@@ -14,33 +14,25 @@ def solve():
       r = mid - 1
     else:
       l = mid + 1
-  
+
   n -= 3 * k * (k - 1)
-  
-  x, y = 2 * k, 0
-  
+
   if n <= k:
-    x -= 2 * n
-    print(x, y)
+    print(2 * k - n, 2 * n)
   elif n <= 2 * k:
-    x -= 2 * k
-    y += 2 * (n - k)
-    print(x, y)
+    n -= k
+    print(k - 2 * n, 2 * k)
   elif n <= 3 * k:
-    x -= 2 * (2 * k - n)
-    y += 2 * k
-    print(x, y)
+    n -= 2 * k
+    print(-k - n, 2 * k - 2 * n)
   elif n <= 4 * k:
-    x += 2 * (n - 3 * k)
-    y -= 2 * (4 * k - n)
-    print(x, y)
+    n -= 3 * k
+    print(-2 * k + n, -2 * n)
   elif n <= 5 * k:
-    x += 2 * k
-    y -= 2 * k
-    x += 2 * (5 * k - n)
-    print(x, y)
+    n -= 4 * k
+    print(-k + 2 * n, -2 * k)
   else:
-    x += 2 * (6 * k - n)
-    print(x, y)
+    n -= 5 * k
+    print(k + n, -2 * k + 2 * n)
 
 solve()

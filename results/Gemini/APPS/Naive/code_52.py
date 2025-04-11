@@ -5,40 +5,54 @@ def solve():
         a.append(list(map(int, input().split())))
 
     dp = {}
+    def get_dp(row_idx, rem):
+        if (row_idx, rem) in dp:
+            return dp[(row_idx, rem)]
+        return None
 
-    def max_sum_divisible_by_k(row_index, current_sum):
-        if row_index == n:
-            if current_sum % k == 0:
-                return current_sum
+    def set_dp(row_idx, rem, val):
+        dp[(row_idx, rem)] = val
+
+    def calculate_max_sum(row_idx, rem):
+        if row_idx == n:
+            if rem == 0:
+                return 0
             else:
-                return -float('inf')
-        
-        if (row_index, current_sum) in dp:
-            return dp[(row_index, current_sum)]
-        
-        max_val = max_sum_divisible_by_k(row_index + 1, current_sum)
-        
-        row = a[row_index]
+                return float('-inf')
+
+        cached_result = get_dp(row_idx, rem)
+        if cached_result is not None:
+            return cached_result
+
         max_elements = m // 2
+        row = a[row_idx]
+        
+        max_sum = float('-inf')
         
         for i in range(1 << m):
+            chosen_elements = []
             count = 0
-            subset_sum = 0
-            elements = []
+            current_sum = 0
             
             for j in range(m):
                 if (i >> j) & 1:
+                    chosen_elements.append(row[j])
                     count += 1
-                    subset_sum += row[j]
-                    elements.append(row[j])
+                    current_sum += row[j]
             
             if count <= max_elements:
-                max_val = max(max_val, max_sum_divisible_by_k(row_index + 1, current_sum + subset_sum))
+                next_rem = (rem - (current_sum % k)) % k
+                if next_rem < 0:
+                    next_rem += k
+                
+                next_sum = calculate_max_sum(row_idx + 1, next_rem)
+                if next_sum != float('-inf'):
+                    max_sum = max(max_sum, current_sum + next_sum)
+        
+        set_dp(row_idx, rem, max_sum)
+        return max_sum
 
-        dp[(row_index, current_sum)] = max_val
-        return max_val
-
-    result = max_sum_divisible_by_k(0, 0)
+    result = calculate_max_sum(0, 0)
     print(result)
 
 solve()

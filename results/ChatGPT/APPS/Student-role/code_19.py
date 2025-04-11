@@ -5,25 +5,22 @@ def check_records(test_cases):
         records = case[1]
         valid = True
         
-        for i in range(1, n):
-            p_prev, c_prev = records[i - 1]
-            p_curr, c_curr = records[i]
-            
-            # Check for conditions
-            if p_curr < p_prev or c_curr < c_prev or c_curr > p_curr:
-                valid = False
-                break
-            
-            # Check the increase in plays and clears
-            if p_curr - p_prev < c_curr - c_prev:
-                valid = False
-                break
+        for i in range(n):
+            p_i, c_i = records[i]
+            if i > 0:
+                p_prev, c_prev = records[i - 1]
+                if p_i < p_prev or c_i < c_prev or c_i > p_i:
+                    valid = False
+                    break
+                if (p_i - p_prev) < (c_i - c_prev):
+                    valid = False
+                    break
         
         results.append("YES" if valid else "NO")
     
     return results
 
-# Read input
+# Input reading
 T = int(input())
 test_cases = []
 for _ in range(T):
@@ -31,7 +28,7 @@ for _ in range(T):
     records = [tuple(map(int, input().split())) for _ in range(n)]
     test_cases.append((n, records))
 
-# Get results and print them
+# Check records and print results
 results = check_records(test_cases)
 for result in results:
     print(result)

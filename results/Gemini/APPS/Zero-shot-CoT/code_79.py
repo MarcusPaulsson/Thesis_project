@@ -1,146 +1,56 @@
 def solve():
     n = input()
-    s = list(n)
-    l = len(s)
+    n_len = len(n)
     
-    def calculate_moves(arr):
-        moves = 0
-        for i in range(len(arr)):
-            for j in range(i + 1, len(arr)):
-                if arr[i] > arr[j]:
-                    moves += 1
-        return moves
+    ans = float('inf')
     
-    def get_moves(a, b):
-        temp = s[:]
+    for suffix in ["00", "25", "50", "75"]:
+        temp_n = list(n)
         moves = 0
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        idx_a = -1
-        for i in range(l - 1, -1, -1):
-            if temp[i] == a:
-                idx_a = i
-                break
-        if idx_a == -1:
-            return float('inf')
-        
-        moves += l - 1 - idx_a
-        temp.pop(idx_a)
-        
-        idx_b = -1
-        for i in range(len(temp) - 1, -1, -1):
-            if temp[i] == b:
-                idx_b = i
-                break
-        if idx_b == -1:
-            return float('inf')
-        
-        moves += len(temp) - 1 - idx_b
-        temp.pop(idx_b)
-        
-        
-        first_non_zero = -1
-        for i in range(len(temp)):
-            if temp[i] != '0':
-                first_non_zero = i
+        # Find the last digit of the suffix
+        last_digit_index = -1
+        for i in range(n_len - 1, -1, -1):
+            if temp_n[i] == suffix[1]:
+                last_digit_index = i
                 break
         
-        if first_non_zero == -1:
-            return float('inf')
+        if last_digit_index == -1:
+            continue
+            
+        moves += n_len - 1 - last_digit_index
+        temp_n.pop(last_digit_index)
         
-        moves += first_non_zero
+        # Find the first digit of the suffix
+        first_digit_index = -1
+        for i in range(len(temp_n) - 1, -1, -1):
+            if temp_n[i] == suffix[0]:
+                first_digit_index = i
+                break
         
-        return moves
+        if first_digit_index == -1:
+            continue
+
+        moves += len(temp_n) - 1 - first_digit_index
+        temp_n.pop(first_digit_index)
         
-    ans = min(get_moves('0', '0'), get_moves('2', '5'), get_moves('5', '0'), get_moves('7', '5'))
+        # Remove leading zeroes
+        leading_zeroes = 0
+        for i in range(len(temp_n)):
+            if temp_n[i] == '0':
+                leading_zeroes += 1
+            else:
+                break
+        
+        if leading_zeroes == len(temp_n):
+            continue
+            
+        moves += leading_zeroes
+        
+        ans = min(ans, moves)
     
     if ans == float('inf'):
-        print(-1)
+        print("-1")
     else:
         print(ans)
 

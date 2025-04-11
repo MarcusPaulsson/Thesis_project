@@ -5,39 +5,49 @@ def solve():
         a.append(list(map(int, input().split())))
 
     dp = {}
+    def get_dp(row_idx, remaining_rows, current_sum):
+        if (row_idx, remaining_rows, current_sum) in dp:
+            return dp[(row_idx, remaining_rows, current_sum)]
 
-    def get_max_sum(row_index, current_sum):
-        if row_index == n:
+        if row_idx == n:
             if current_sum % k == 0:
-                return current_sum
+                return 0
             else:
-                return -float('inf')
+                return float('-inf')
 
-        if (row_index, current_sum) in dp:
-            return dp[(row_index, current_sum)]
+        max_sum = get_dp(row_idx + 1, remaining_rows - 1, current_sum)
 
-        max_val = -float('inf')
+        row = a[row_idx]
+        max_row_sum = 0
+
         
+        row_dp = {}
+        def get_row_dp(col_idx, remaining_cols, current_row_sum):
+            if (col_idx, remaining_cols, current_row_sum) in row_dp:
+                return row_dp[(col_idx, remaining_cols, current_row_sum)]
+            
+            if col_idx == m:
+                if remaining_cols == 0:
+                    return current_row_sum
+                else:
+                    return float('-inf')
+
+            if remaining_cols == 0:
+                return 0
+            
+            val1 = get_row_dp(col_idx + 1, remaining_cols, current_row_sum)
+            val2 = get_row_dp(col_idx + 1, remaining_cols - 1, current_row_sum + row[col_idx])
+            
+            row_dp[(col_idx, remaining_cols, current_row_sum)] = max(val1, val2)
+            return row_dp[(col_idx, remaining_cols, current_row_sum)]
         
-        num_elements_to_choose = min(m // 2, m) 
+
+        max_row_sum = get_row_dp(0, m // 2, 0)
         
-        for i in range(1 << m):
-            count = 0
-            subset_sum = 0
-            subset_indices = []
-            for j in range(m):
-                if (i >> j) & 1:
-                    count += 1
-                    subset_sum += a[row_index][j]
-                    subset_indices.append(j)
+        max_sum = max(max_sum, get_dp(row_idx + 1, remaining_rows - 1, current_sum + max_row_sum))
+        dp[(row_idx, remaining_rows, current_sum)] = max_sum
+        return max_sum
 
-            if count <= m // 2:
-                max_val = max(max_val, get_max_sum(row_index + 1, current_sum + subset_sum))
-
-        dp[(row_index, current_sum)] = max_val
-        return max_val
-
-    result = get_max_sum(0, 0)
-    print(result)
+    print(get_dp(0, n, 0))
 
 solve()

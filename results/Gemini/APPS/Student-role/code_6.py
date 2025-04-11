@@ -19,7 +19,7 @@ def solve():
     if max_diff <= 0:
         print(-1)
         return
-    
+
     remaining = x - max_damage
     
     ans = 1 + (remaining + max_diff - 1) // max_diff

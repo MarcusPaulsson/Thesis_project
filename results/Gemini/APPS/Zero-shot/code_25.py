@@ -21,12 +21,11 @@ def solve():
                 k -= 2
             else:
                 break
-        
+                
     if k != 0:
-        if k > 0:
-            print("-1")
-            return
-            
+        print("-1")
+        return
+    
     for row in matrix:
         print(*row)
 

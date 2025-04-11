@@ -6,58 +6,105 @@ def solve():
         sofas.append(list(map(int, input().split())))
     cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
 
-    def count_sofas(sofa_index):
-        l, r, t, b = 0, 0, 0, 0
-        x1_a, y1_a, x2_a, y2_a = sofas[sofa_index]
-
-        for i in range(d):
-            if i == sofa_index:
+    def count_left(sofa, sofas_list):
+        count = 0
+        x1, y1, x2, y2 = sofa
+        for other_sofa in sofas_list:
+            if sofa == other_sofa:
                 continue
-            x1_b, y1_b, x2_b, y2_b = sofas[i]
-
-            # Check left
-            if min(y1_a, y2_a) > max(y1_b, y2_b):
-                continue
-            if max(y1_a, y2_a) < min(y1_b, y2_b):
-                continue
-
-            if min(x1_a, x2_a) > max(x1_b, x2_b):
-                l += 1
+            ox1, oy1, ox2, oy2 = other_sofa
             
-            # Check right
-            if min(y1_a, y2_a) > max(y1_b, y2_b):
+            if min(y1, y2) > max(oy1, oy2):
+                count += 1
+            elif max(y1,y2) < min(oy1, oy2):
                 continue
-            if max(y1_a, y2_a) < min(y1_b, y2_b):
+            else:
+                
+                 if min(y1, y2) == min(oy1, oy2) and max(y1, y2) == max(oy1, oy2):
+                   if min(x1,x2) < min(ox1,ox2):
+                       count +=1
+                 else:
+                   if min(x1,x2) < min(ox1,ox2) or min(x1,x2) < max(ox1,ox2) :
+                       count +=1
+
+        return count
+
+    def count_right(sofa, sofas_list):
+        count = 0
+        x1, y1, x2, y2 = sofa
+        for other_sofa in sofas_list:
+            if sofa == other_sofa:
                 continue
-            if max(x1_a, x2_a) < min(x1_b, x2_b):
-                r += 1
+            ox1, oy1, ox2, oy2 = other_sofa
             
-            # Check top
-            if min(x1_a, x2_a) > max(x1_b, x2_b):
+            if min(y1, y2) > max(oy1, oy2):
                 continue
-            if max(x1_a, x2_a) < min(x1_b, x2_b):
-                continue
-                
-            if min(y1_a, y2_a) > max(y1_b, y2_b):
-                t += 1
+            elif max(y1,y2) < min(oy1, oy2):
+                count += 1
+            else:
+                if min(y1, y2) == min(oy1, oy2) and max(y1, y2) == max(oy1, oy2):
+                   if max(x1,x2) > max(ox1,ox2):
+                       count +=1
+                else:
+                   if max(x1,x2) > min(ox1,ox2) or max(x1,x2) > max(ox1,ox2) :
+                       count +=1
 
-            # Check bottom
-            if min(x1_a, x2_a) > max(x1_b, x2_b):
-                continue
-            if max(x1_a, x2_a) < min(x1_b, x2_b):
-                continue
-                
-            if max(y1_a, y2_a) < min(y1_b, y2_b):
-                b += 1
-        return l, r, t, b
+        return count
 
-    result = -1
+    def count_top(sofa, sofas_list):
+        count = 0
+        x1, y1, x2, y2 = sofa
+        for other_sofa in sofas_list:
+            if sofa == other_sofa:
+                continue
+            ox1, oy1, ox2, oy2 = other_sofa
+            
+            if min(x1, x2) > max(ox1, ox2):
+                count += 1
+            elif max(x1,x2) < min(ox1, ox2):
+                continue
+            else:
+                if min(x1, x2) == min(ox1, ox2) and max(x1, x2) == max(ox1, ox2):
+                    if min(y1,y2) < min(oy1,oy2):
+                       count +=1
+                else:
+                    if min(y1,y2) < min(oy1,oy2) or min(y1,y2) < max(oy1,oy2) :
+                       count +=1
+
+        return count
+
+    def count_bottom(sofa, sofas_list):
+        count = 0
+        x1, y1, x2, y2 = sofa
+        for other_sofa in sofas_list:
+            if sofa == other_sofa:
+                continue
+            ox1, oy1, ox2, oy2 = other_sofa
+            
+            if min(x1, x2) > max(ox1, ox2):
+                continue
+            elif max(x1,x2) < min(ox1, ox2):
+                count += 1
+            else:
+                if min(x1, x2) == min(ox1, ox2) and max(x1, x2) == max(ox1, ox2):
+                    if max(y1,y2) > max(oy1,oy2):
+                       count +=1
+                else:
+                    if max(y1,y2) > min(oy1,oy2) or max(y1,y2) > max(oy1,oy2) :
+                       count +=1
+        return count
+
     for i in range(d):
-        l, r, t, b = count_sofas(i)
-        if l == cnt_l and r == cnt_r and t == cnt_t and b == cnt_b:
-            result = i + 1
-            break
+        sofa = sofas[i]
+        l = count_left(sofa, sofas)
+        r = count_right(sofa, sofas)
+        t = count_top(sofa, sofas)
+        b = count_bottom(sofa, sofas)
 
-    print(result)
+        if l == cnt_l and r == cnt_r and t == cnt_t and b == cnt_b:
+            print(i + 1)
+            return
+
+    print(-1)
 
 solve()

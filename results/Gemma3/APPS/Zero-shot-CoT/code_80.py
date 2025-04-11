@@ -7,7 +7,7 @@ def solve():
         for _ in range(n):
             swapped = False
             for i in range(n - 1):
-                if arr[i] > arr[i+1] and colors[i] != colors[i+1]:
+                if colors[i] != colors[i+1] and arr[i] > arr[i+1]:
                     arr[i], arr[i+1] = arr[i+1], arr[i]
                     swapped = True
             if not swapped:
@@ -26,5 +26,6 @@ def solve():
                 print(num_colors)
                 print(*colors)
                 return
+    
     
 solve()

@@ -1,47 +1,44 @@
-def get_coordinates(n):
+def hexagonal_coordinates(n):
     if n == 0:
         return (0, 0)
 
-    # Determine the layer in which the move occurs
     layer = 0
-    moves_in_layer = 1  # Starting with 1 move in layer 0
-    total_moves = 1  # Total moves till current layer
+    moves_in_layer = 0
 
-    while total_moves <= n:
+    # Find the layer where the nth move is located
+    while moves_in_layer <= n:
+        moves_in_layer += 6 * layer
         layer += 1
-        moves_in_layer = 6 * layer  # Each layer has 6 * layer moves
-        total_moves += moves_in_layer
 
-    # Total moves till the previous layer
-    total_moves -= moves_in_layer
-    remaining_moves = n - total_moves
+    layer -= 1
+    moves_in_layer -= 6 * layer
 
-    # Calculate the coordinates based on the layer and remaining moves
-    x, y = layer, 0  # Start at the beginning of the layer
+    # Calculate the position in the layer
+    position_in_layer = n - moves_in_layer
 
-    # Move in the current layer
-    for i in range(remaining_moves):
-        if i < layer:
-            x -= 1  # Move left
-        elif i < 2 * layer:
-            x -= 1  # Move left-down
-            y += 1  # Move up
-        elif i < 3 * layer:
-            y += 1  # Move up
-        elif i < 4 * layer:
-            x += 1  # Move right-up
-            y += 1  # Move up
-        elif i < 5 * layer:
-            x += 1  # Move right
-        else:
-            x += 1  # Move right-down
-            y -= 1  # Move down
+    # Calculate the coordinates based on the layer and position
+    x, y = layer, 0
+
+    if position_in_layer < layer:
+        x -= position_in_layer
+    elif position_in_layer < 2 * layer:
+        x -= layer
+        y += position_in_layer - layer
+    elif position_in_layer < 3 * layer:
+        x += position_in_layer - 2 * layer
+        y += layer
+    elif position_in_layer < 4 * layer:
+        x += layer
+        y -= position_in_layer - 3 * layer
+    elif position_in_layer < 5 * layer:
+        x += 5 * layer - position_in_layer
+        y -= layer
+    else:
+        x -= layer
+        y -= position_in_layer - 5 * layer
 
     return (x, y)
 
-# Read input
 n = int(input())
-# Get coordinates
-x, y = get_coordinates(n)
-# Print result
+x, y = hexagonal_coordinates(n)
 print(x, y)

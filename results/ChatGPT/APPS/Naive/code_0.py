@@ -1,36 +1,33 @@
 def max_acordion_length(s):
-    # Initialize variables to find the first and last brackets and colons
-    left_bracket_index = -1
-    right_bracket_index = -1
-    first_colon_index = -1
-    last_colon_index = -1
+    # Initialize variables to track the positions of the required characters
+    open_bracket = -1
+    first_colon = -1
+    last_colon = -1
+    close_bracket = -1
     
-    # Iterate through the string to find required characters
+    # Iterate through the string to find the necessary characters
     for i, char in enumerate(s):
-        if char == '[' and left_bracket_index == -1:
-            left_bracket_index = i
-        elif char == ']' and left_bracket_index != -1:
-            right_bracket_index = i
-        elif char == ':' and first_colon_index == -1:
-            first_colon_index = i
-        elif char == ':':
-            last_colon_index = i
+        if char == '[' and open_bracket == -1:
+            open_bracket = i
+        elif char == ':' and open_bracket != -1 and first_colon == -1:
+            first_colon = i
+        elif char == ':' and first_colon != -1:
+            last_colon = i
+        elif char == ']' and last_colon != -1 and close_bracket == -1:
+            close_bracket = i
     
-    # Check if we found valid indices for accordion structure
-    if left_bracket_index == -1 or right_bracket_index == -1 or first_colon_index == -1 or last_colon_index == -1:
+    # Check if we found all necessary parts for an accordion
+    if open_bracket == -1 or first_colon == -1 or last_colon == -1 or close_bracket == -1:
         return -1
     
-    # Ensure that the colons are correctly positioned
-    if first_colon_index >= last_colon_index or left_bracket_index >= first_colon_index or right_bracket_index <= last_colon_index:
-        return -1
+    # Calculate the number of vertical lines between the colons
+    vertical_lines = last_colon - first_colon - 1
     
-    # Count the number of '|' characters between the colons
-    vertical_lines_count = s[first_colon_index + 1:last_colon_index].count('|')
-    
-    # Calculate the maximum length of the accordion
-    return 4 + vertical_lines_count  # 4 for the brackets and colons, plus the number of '|'
+    # The total length of the accordion
+    accordion_length = 4 + vertical_lines
+    return accordion_length
 
-# Input reading
+# Read input
 s = input().strip()
 # Output the result
 print(max_acordion_length(s))

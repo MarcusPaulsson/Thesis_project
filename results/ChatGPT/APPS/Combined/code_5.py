@@ -1,24 +1,25 @@
-def min_seconds_to_close_tabs(n, pos, l, r):
+def minimum_seconds_to_close_tabs(n, pos, l, r):
+    # If no tabs need to be closed
     if l == 1 and r == n:
-        return 0  # No tabs to close
+        return 0
 
     seconds = 0
 
     if pos < l:
-        # Move to l and close left tabs, then move to r and close right tabs
-        seconds += (l - pos) + 1 + (r - l) + 1
+        # Move cursor to l and close tabs to the left
+        seconds += (l - pos) + 1
     elif pos > r:
-        # Move to r and close right tabs, then move to l and close left tabs
-        seconds += (pos - r) + 1 + (r - l) + 1
+        # Move cursor to r and close tabs to the right
+        seconds += (pos - r) + 1
     else:
-        # pos is between l and r
-        if l > 1:
-            seconds += (pos - l) + 1  # Move to l and close left tabs
-        if r < n:
-            seconds += (r - pos) + 1  # Move to r and close right tabs
+        # Cursor is between l and r
+        left_moves = (pos - l) + 1  # Move to l and close left
+        right_moves = (r - pos) + 1  # Move to r and close right
+        seconds += min(left_moves, right_moves)
 
     return seconds
 
-# Example usage
+# Read input
 n, pos, l, r = map(int, input().split())
-print(min_seconds_to_close_tabs(n, pos, l, r))
+# Print the result
+print(minimum_seconds_to_close_tabs(n, pos, l, r))

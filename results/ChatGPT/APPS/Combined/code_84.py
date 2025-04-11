@@ -1,35 +1,25 @@
 def can_color_string(n, s):
-    # Initialize a list to hold the color assignment
-    color = ['0'] * n
-    last_positions = {}
+    from collections import Counter
 
-    # Track last positions of each character
-    for i in range(n):
-        char = s[i]
-        if char in last_positions:
-            last_positions[char].append(i)
+    # Step 1: Count occurrences of each character
+    count = Counter(s)
+
+    # Step 2: Check if any character occurs more than twice
+    if any(cnt > 2 for cnt in count.values()):
+        return "NO", ""
+
+    # Step 3: Create a coloring scheme
+    color = []
+    for char in s:
+        # Determine color based on the count of '0's and '1's used
+        if color.count('0') < (count[char] + 1) // 2:
+            color.append('0')
         else:
-            last_positions[char] = [i]
+            color.append('1')
 
-    # Check the possibility to color the string
-    for positions in last_positions.values():
-        for i in range(1, len(positions)):
-            if positions[i] - positions[i - 1] == 1:
-                continue
-            if color[positions[i]] == color[positions[i - 1]]:
-                return "NO", ""
-
-    # Color the string based on sorted order
-    color_map = {}
-    for i in range(n):
-        char = s[i]
-        if char not in color_map:
-            color_map[char] = '0' if len(color_map) % 2 == 0 else '1'
-        color[i] = color_map[char]
-    
     return "YES", ''.join(color)
 
-# Input handling
+# Input reading
 n = int(input())
 s = input().strip()
 

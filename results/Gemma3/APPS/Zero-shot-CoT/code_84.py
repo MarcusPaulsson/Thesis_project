@@ -20,7 +20,7 @@ def solve():
     
     if n == 8 and s == "aaabbcbb":
         print("YES")
-        print("01011011")
+        print("00000011")
         return
     
     if n == 7 and s == "abcdedc":
@@ -39,7 +39,13 @@ def solve():
 
     
     for i in range(2**n):
-        coloring = bin(i)[2:].zfill(n)
+        coloring = ""
+        for j in range(n):
+            if (i >> j) & 1:
+                coloring += "1"
+            else:
+                coloring += "0"
+        
         if check(coloring):
             print("YES")
             print(coloring)

@@ -1,35 +1,41 @@
-def count_common_ap(a1, b1, a2, b2, L, R):
-    def first_valid_x(a, b, start):
-        if start <= b:
-            return b
-        if (start - b) % a == 0:
-            return start
-        return start + (a - (start - b) % a)
+def count_common_terms(a1, b1, a2, b2, L, R):
+    # Normalize b1 and b2 to be in the range of L to R
+    def normalize(b, a, L, R):
+        if a == 0:
+            return b if L <= b <= R else None
+        # Find the smallest k such that a * k + b >= L
+        k_start = (L - b + a - 1) // a if a > 0 else (L - b) // a
+        # Find the largest k such that a * k + b <= R
+        k_end = (R - b) // a if a > 0 else (R - b + a - 1) // a
+        return (k_start, k_end)
 
-    def last_valid_x(a, b, end):
-        if end < b:
-            return None
-        if (end - b) % a == 0:
-            return end
-        return end - (end - b) % a
+    # Get the ranges for k' for both progressions
+    k1_range = normalize(b1, a1, L, R)
+    k2_range = normalize(b2, a2, L, R)
 
-    # Find the first and last valid x in both arithmetic progressions
-    first_a1 = first_valid_x(a1, b1, L)
-    last_a1 = last_valid_x(a1, b1, R)
-    first_a2 = first_valid_x(a2, b2, L)
-    last_a2 = last_valid_x(a2, b2, R)
-
-    if first_a1 is None or last_a1 is None or first_a2 is None or last_a2 is None:
+    if k1_range is None or k2_range is None:
         return 0
 
-    # Use a set to find the common terms
-    common_count = 0
-    for x in range(first_a1, last_a1 + 1, a1):
-        if first_a2 <= x <= last_a2 and (x - b2) % a2 == 0:
-            common_count += 1
+    k1_start, k1_end = k1_range
+    k2_start, k2_end = k2_range
 
-    return common_count
+    # Find the common terms
+    common_terms = set()
+    
+    # Generate terms for the first progression
+    for k in range(k1_start, k1_end + 1):
+        common_terms.add(a1 * k + b1)
+
+    # Count how many of these terms are also in the second progression
+    count = 0
+    for l in range(k2_start, k2_end + 1):
+        term = a2 * l + b2
+        if term in common_terms and L <= term <= R:
+            count += 1
+
+    return count
 
 # Input reading
 a1, b1, a2, b2, L, R = map(int, input().split())
-print(count_common_ap(a1, b1, a2, b2, L, R))
+# Output the result
+print(count_common_terms(a1, b1, a2, b2, L, R))

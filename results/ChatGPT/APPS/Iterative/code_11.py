@@ -1,17 +1,20 @@
-import math
-
 def max_chocolates(n, a, b, p, q):
-    count_red = n // a
-    count_blue = n // b
-    lcm_ab = a * (b // math.gcd(a, b))  # Calculate LCM using GCD
-    count_both = n // lcm_ab
+    count_a = n // a
+    count_b = n // b
+    count_ab = n // (a * b)
     
-    # Calculate chocolates for both painting strategies
-    chocolates_option_1 = (count_red - count_both) * p + count_blue * q
-    chocolates_option_2 = count_red * p + (count_blue - count_both) * q
+    # Calculate the maximum chocolates
+    chocolates_a = count_a * p
+    chocolates_b = count_b * q
     
-    return max(chocolates_option_1, chocolates_option_2)
+    # If p > q, prioritize Red (a), otherwise prioritize Blue (b)
+    if p > q:
+        chocolates = chocolates_a + (count_b - count_ab) * q
+    else:
+        chocolates = chocolates_b + (count_a - count_ab) * p
+    
+    return chocolates
 
+# Input
 n, a, b, p, q = map(int, input().split())
-result = max_chocolates(n, a, b, p, q)
-print(result)
+print(max_chocolates(n, a, b, p, q))

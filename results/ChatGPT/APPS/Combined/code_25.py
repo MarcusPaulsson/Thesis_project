@@ -1,22 +1,22 @@
 def create_symmetric_matrix(n, k):
-    # Check for impossible cases
-    if k > n * n or (k % 2 == 1 and n % 2 == 1 and k > n * (n // 2 + 1)):
+    # Check if it's possible to place k ones in a symmetric matrix
+    if k > n * n or (n % 2 == 0 and k % 2 != 0):
         return -1
-
-    # Initialize an n x n matrix filled with zeros
+    
+    # Initialize the matrix with zeros
     matrix = [[0] * n for _ in range(n)]
-
-    # Fill the matrix to make it symmetric and lexicographically maximal
+    
+    # Fill the matrix to make it lexicographically maximal
     for i in range(n):
         if k <= 0:
             break
         
-        # Fill the diagonal
+        # Fill the diagonal first if there are remaining ones
         if k > 0:
             matrix[i][i] = 1
             k -= 1
         
-        # Fill the symmetric pairs
+        # Fill the symmetric pairs (i, j) and (j, i)
         for j in range(i + 1, n):
             if k >= 2:
                 matrix[i][j] = 1
@@ -25,19 +25,17 @@ def create_symmetric_matrix(n, k):
             
             if k <= 0:
                 break
+    
+    # Return the matrix or -1 if not possible
+    return matrix if k == 0 else -1
 
-    # If there are leftover ones that couldn't be placed, return -1
-    return -1 if k > 0 else matrix
-
-# Read input
+# Input reading
 n, k = map(int, input().split())
-
-# Get the symmetric matrix
 result = create_symmetric_matrix(n, k)
 
 # Output the result
 if result == -1:
-    print(result)
+    print(-1)
 else:
     for row in result:
-        print(' '.join(map(str, row)))
+        print(" ".join(map(str, row)))

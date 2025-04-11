@@ -1,39 +1,40 @@
 def nearest_zero(arr):
-    """
-    Calculates the distance to the nearest zero for each element in the array.
+  """
+  Calculates the distance to the nearest zero for each element in the array.
 
-    Args:
-        arr (list): A list of integers.
+  Args:
+    arr: A list of integers.
 
-    Returns:
-        list: A list of integers representing the distances to the nearest zero.
-    """
-    n = len(arr)
-    distances = [float('inf')] * n
+  Returns:
+    A list of integers representing the distances to the nearest zero for each element.
+  """
 
-    # Forward pass: find distances to the nearest zero from the left
-    last_zero = float('-inf')
-    for i in range(n):
-        if arr[i] == 0:
-            last_zero = i
-            distances[i] = 0
-        elif last_zero != float('-inf'):
-            distances[i] = min(distances[i], i - last_zero)
+  n = len(arr)
+  distances = [float('inf')] * n
 
-    # Backward pass: find distances to the nearest zero from the right
-    last_zero = float('inf')
-    for i in range(n - 1, -1, -1):
-        if arr[i] == 0:
-            last_zero = i
-            distances[i] = 0
-        elif last_zero != float('inf'):
-            distances[i] = min(distances[i], last_zero - i)
+  # Forward pass: find the distance to the nearest zero from the left
+  last_zero = float('-inf')
+  for i in range(n):
+    if arr[i] == 0:
+      last_zero = i
+      distances[i] = 0
+    elif last_zero != float('-inf'):
+      distances[i] = min(distances[i], i - last_zero)
 
-    return distances
+  # Backward pass: find the distance to the nearest zero from the right
+  last_zero = float('inf')
+  for i in range(n - 1, -1, -1):
+    if arr[i] == 0:
+      last_zero = i
+      distances[i] = 0
+    elif last_zero != float('inf'):
+      distances[i] = min(distances[i], last_zero - i)
+
+  return distances
 
 
 if __name__ == "__main__":
-    n = int(input())
-    arr = list(map(int, input().split()))
-    result = nearest_zero(arr)
-    print(*result)
+  n = int(input())
+  arr = list(map(int, input().split()))
+  result = nearest_zero(arr)
+  print(*result)

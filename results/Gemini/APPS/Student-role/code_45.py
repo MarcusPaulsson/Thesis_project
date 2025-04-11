@@ -14,26 +14,32 @@ def solve():
             q = n // gcd
             if q >= k * (k + 1) // 2:
                 
-                seq = [gcd * i for i in range(1, k)]
+                seq = [i * gcd for i in range(1, k)]
                 seq.append(n - sum(seq))
                 
-                if all(seq[i] < seq[i+1] for i in range(len(seq) - 1)):
-                  
-                  print(*seq)
-                  return
-
+                if all(seq[i] < seq[i+1] for i in range(len(seq)-1)) and all(x > 0 for x in seq):
+                    best_gcd = gcd
+                    best_seq = seq
+                    break
             
-            if gcd != q:
-              if gcd >= k * (k + 1) // 2:
+            gcd2 = n // gcd
+            q = n // gcd2
+            if q >= k * (k + 1) // 2:
+                
+                seq = [i * gcd2 for i in range(1, k)]
+                seq.append(n - sum(seq))
+                
+                if all(seq[i] < seq[i+1] for i in range(len(seq)-1)) and all(x > 0 for x in seq):
+                    best_gcd = gcd2
+                    best_seq = seq
+                    break
 
-                  seq = [q * i for i in range(1, k)]
-                  seq.append(n - sum(seq))
-                  
-                  if all(seq[i] < seq[i+1] for i in range(len(seq) - 1)):
-                    
-                    print(*seq)
-                    return
-    
-    print(-1)
+    if best_gcd == 0:
+        if n == 1 and k == 1:
+            print(1)
+        else:
+            print(-1)
+    else:
+        print(*best_seq)
 
 solve()

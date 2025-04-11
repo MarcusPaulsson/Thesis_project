@@ -3,17 +3,22 @@ def max_chocolates(n, a, b, p, q):
     red_tiles = n // a
     # Calculate the number of tiles painted Blue
     blue_tiles = n // b
-    # Calculate the number of tiles painted both Red and Blue
-    both_tiles = n // (a * b)
-
-    # Calculate total chocolates for both scenarios
-    total_chocolates_red = (red_tiles - both_tiles) * p + (blue_tiles * q)
-    total_chocolates_blue = (blue_tiles - both_tiles) * q + (red_tiles * p)
+    # Calculate the number of tiles painted both Red and Blue (overlap)
+    overlap_tiles = n // (a * b)
     
-    # Return the maximum of both scenarios
-    return max(total_chocolates_red, total_chocolates_blue)
+    # Total chocolates from Red tiles
+    total_red_chocolates = red_tiles * p
+    # Total chocolates from Blue tiles
+    total_blue_chocolates = blue_tiles * q
+    # Subtract the overlap since they are counted twice
+    total_chocolates = total_red_chocolates + total_blue_chocolates - (overlap_tiles * min(p, q))
+    
+    return total_chocolates
 
 # Example usage
 if __name__ == "__main__":
-    n, a, b, p, q = map(int, input().split())
-    print(max_chocolates(n, a, b, p, q))
+    print(max_chocolates(5, 2, 3, 12, 15))  # Output: 39
+    print(max_chocolates(20, 2, 3, 3, 5))   # Output: 51
+    print(max_chocolates(1, 1, 1, 1, 1))     # Output: 1
+    print(max_chocolates(1, 2, 2, 2, 2))     # Output: 0
+    print(max_chocolates(2, 1, 3, 3, 3))     # Output: 6

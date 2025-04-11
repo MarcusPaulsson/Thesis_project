@@ -1,27 +1,29 @@
-def max_permutation_not_exceeding(a: int, b: int) -> int:
+def max_permutation_not_exceeding(a, b):
     from itertools import permutations
     
-    # Convert 'a' to a string and generate all unique permutations
+    # Convert a to string to work with its digits
     str_a = str(a)
-    digits = sorted(str_a, reverse=True)  # Sort digits in descending order for maximum number
-    max_length = len(str_a)
+    str_b = str(b)
     
-    # Function to check if a number is valid (not exceeding b and has no leading zero)
-    def is_valid(num_str):
-        return num_str[0] != '0' and int(num_str) <= b
+    # Generate all unique permutations of the digits of a
+    perms = set(permutations(str_a))
     
-    # Generate permutations and filter out invalid ones
-    for perm in permutations(digits):
-        candidate = ''.join(perm)
-        if len(candidate) == max_length and is_valid(candidate):
-            return int(candidate)  # Return the first valid permutation found (which is the largest due to sorting)
+    # Filter out permutations that are valid (not starting with '0' and not exceeding b)
+    valid_perms = []
+    for perm in perms:
+        num = int(''.join(perm))
+        if num <= b and str(num) == str_a:  # Check if it has the same length as a
+            valid_perms.append(num)
     
-    return a  # If no valid permutation found, return 'a' as a fallback (guaranteed to exist)
+    # Return the maximum valid permutation
+    return max(valid_perms)
 
-# Read input values
-a = int(input())
-b = int(input())
+# Input reading
+a = int(input().strip())
+b = int(input().strip())
 
-# Call the function and print the result
+# Get the result
 result = max_permutation_not_exceeding(a, b)
+
+# Print the result
 print(result)

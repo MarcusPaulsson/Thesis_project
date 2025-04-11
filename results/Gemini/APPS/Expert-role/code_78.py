@@ -1,7 +1,7 @@
 def solve():
     n = int(input())
     s = input()
-    m = len(s)
+    len_s = len(s)
     mod = 10**9 + 7
 
     def is_regular(seq):
@@ -24,10 +24,10 @@ def solve():
                     seq += "("
                 else:
                     seq += ")"
-            
+
             if is_regular(seq) and s in seq:
-                count = (count + 1) % mod
-        return count
+                count += 1
+        return count % mod
 
     print(count_regular_sequences(n, s))
 

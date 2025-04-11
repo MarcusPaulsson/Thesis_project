@@ -1,23 +1,22 @@
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
 
+# Calculate the minimum required space to place the platforms
 total_length = sum(c)
+min_required_space = total_length + (m - 1)  # total length + gaps between platforms
 
-# Check if we can fit the platforms in such a way that we can reach n+1
-if total_length + (m - 1) * d < n:
+if min_required_space > n:
     print("NO")
 else:
     print("YES")
     a = [0] * n
-    pos = 0
+    position = 0
 
     for i in range(m):
-        # Place the platform at the current position
         for j in range(c[i]):
-            a[pos] = i + 1
-            pos += 1
-        # Move to the next position considering the jump distance
-        if i < m - 1:
-            pos += d  # leave space for the next platform
+            a[position] = i + 1
+            position += 1
+        if i < m - 1:  # Add a gap of at least 1 cell between platforms
+            position += 1
 
     print(" ".join(map(str, a)))

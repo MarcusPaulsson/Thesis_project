@@ -1,23 +1,22 @@
 def max_projects(n, r, projects):
-    # Sort projects based on their required rating
-    projects.sort(key=lambda x: (x[0], -x[1]))
-
-    count = 0  # To count the maximum number of projects
-    current_rating = r  # Current rating of Polycarp
-
-    for a, b in projects:
-        if current_rating >= a:  # Check if the project can be started
+    # Sort projects based on the required rating a_i
+    projects.sort(key=lambda x: x[0])
+    
+    count = 0
+    current_rating = r
+    
+    for a_i, b_i in projects:
+        if current_rating >= a_i:  # Check if Polycarp can start the project
             count += 1  # Increment the count of projects
-            current_rating += b  # Update the rating after completing the project
-            if current_rating < 0:  # If rating goes below 0, break
+            current_rating += b_i  # Update the current rating after completing the project
+            if current_rating < 0:  # Ensure rating does not fall below zero
                 break
-
+    
     return count
 
 # Input reading
 n, r = map(int, input().split())
 projects = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Get the result and print it
-result = max_projects(n, r, projects)
-print(result)
+# Output the result
+print(max_projects(n, r, projects))

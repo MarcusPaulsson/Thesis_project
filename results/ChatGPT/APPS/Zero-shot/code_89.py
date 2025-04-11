@@ -1,5 +1,5 @@
 def can_complete_projects(n, r, projects):
-    # Sort projects by the required rating a_i
+    # Sort projects by their required rating
     projects.sort(key=lambda x: x[0])
     
     for a, b in projects:
@@ -15,5 +15,5 @@ def can_complete_projects(n, r, projects):
 n, r = map(int, input().split())
 projects = [tuple(map(int, input().split())) for _ in range(n)]
 
-# Output result
+# Output the result
 print(can_complete_projects(n, r, projects))

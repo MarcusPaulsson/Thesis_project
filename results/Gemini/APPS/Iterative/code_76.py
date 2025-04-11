@@ -2,9 +2,9 @@ def solve():
     n, m = map(int, input().split())
     tiles = []
     for _ in range(n):
-        row1 = list(map(int, input().split()))
-        row2 = list(map(int, input().split()))
-        tiles.append([row1, row2])
+        tile1 = list(map(int, input().split()))
+        tile2 = list(map(int, input().split()))
+        tiles.append([tile1, tile2])
 
     if m % 2 != 0:
         print("NO")
@@ -20,6 +20,7 @@ def solve():
         print("YES")
     else:
         print("NO")
+
 
 t = int(input())
 for _ in range(t):

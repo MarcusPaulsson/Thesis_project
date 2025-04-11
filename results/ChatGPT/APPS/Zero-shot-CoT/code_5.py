@@ -1,23 +1,30 @@
 n, pos, l, r = map(int, input().split())
 
-# If all tabs are within the range l to r, no need to do anything
+# If no tabs need to be closed
 if l == 1 and r == n:
     print(0)
+    exit()
+
+# Calculate the number of seconds needed
+seconds = 0
+
+# Move to the leftmost tab that needs to be kept
+if pos < l:
+    seconds += l - pos  # Move to l
+    seconds += 1  # Close to the left
+elif pos > r:
+    seconds += pos - r  # Move to r
+    seconds += 1  # Close to the right
 else:
-    time = 0
+    # If pos is within [l, r]
+    left_close = (pos - l) + 1  # Move to l and close left
+    right_close = (r - pos) + 1  # Move to r and close right
+    seconds += min(left_close, right_close)
 
-    # Move to the leftmost needed tab if needed
-    if pos < l:
-        time += (l - pos)  # move to l
-        time += 1          # close tabs to the left
-    elif pos > r:
-        time += (pos - r)  # move to r
-        time += 1          # close tabs to the right
-    else:
-        # If cursor is within [l, r], close left and right as needed
-        if l > 1:
-            time += (pos - l) + 1  # move to l and close left
-        if r < n:
-            time += (r - pos) + 1  # move to r and close right
+# Close the remaining tabs
+if l > 1:
+    seconds += 1  # Close left side if necessary
+if r < n:
+    seconds += 1  # Close right side if necessary
 
-    print(time)
+print(seconds)

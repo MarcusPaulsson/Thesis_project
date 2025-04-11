@@ -14,20 +14,17 @@ def solve():
 
         if valid:
             seen = set()
-            is_permutation = True
+            all_present = True
             for x in p:
                 if x in seen:
-                    is_permutation = False
+                    all_present = False
                     break
                 seen.add(x)
-                if x < 1 or x > n:
-                    is_permutation = False
-                    break
             
-            if is_permutation:
+            if all_present and len(seen) == n:
                 print(*p)
                 return
-    
-    print("-1")
+
+    print(-1)
 
 solve()

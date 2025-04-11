@@ -3,24 +3,31 @@ def solve():
     t = input()
     n = len(s)
     m = len(t)
+    
     ans = 0
+    
     for i in range(n + 1):
         for j in range(i, n + 1):
-            temp = ""
+            temp_s = ""
             if i > 0:
-                temp += s[:i]
+                temp_s += s[:i]
             if j < n:
-                temp += s[j:]
+                temp_s += s[j:]
             
-            k = 0
-            l = 0
+            
+            ti = 0
+            si = 0
             possible = True
-            while k < len(temp) and l < m:
-                if temp[k] == t[l]:
-                    l += 1
-                k += 1
+            while ti < m and si < len(temp_s):
+                if t[ti] == temp_s[si]:
+                    ti += 1
+                    si += 1
+                else:
+                    si += 1
             
-            if l == m:
+            if ti == m:
                 ans = max(ans, j - i)
+                
     print(ans)
+
 solve()

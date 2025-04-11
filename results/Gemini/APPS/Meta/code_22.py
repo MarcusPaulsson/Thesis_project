@@ -1,7 +1,8 @@
 def solve():
     s = input()
     n = len(s)
-    mirrors = {
+    
+    mirror = {
         'b': 'd',
         'd': 'b',
         'p': 'q',
@@ -20,14 +21,30 @@ def solve():
         'W': 'W',
         'w': 'w',
         'Y': 'Y',
-        'y': 'y',
         'A': 'A',
+        'm':'m',
+        't':'t',
+        'u':'u',
+        'i':'i',
+        'a':'a',
+        'h':'h',
+        'y':'y'
     }
     
-    for i in range((n + 1) // 2):
-        if s[i] not in mirrors or mirrors[s[i]] != s[n - 1 - i]:
+    for i in range(n // 2):
+        if s[i] not in mirror or mirror[s[i]] != s[n - 1 - i]:
             print("NIE")
             return
+    
+    if n % 2 == 1:
+        if s[n // 2] not in mirror or mirror[s[n // 2]] != s[n // 2]:
+            if s[n // 2] not in mirror:
+                print("NIE")
+                return
+            if mirror[s[n // 2]] != s[n // 2]:
+                print("NIE")
+                return
+    
     print("TAK")
 
 solve()

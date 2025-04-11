@@ -1,67 +1,53 @@
-def is_palindromic_possible(n, numbers):
+def create_palindromic_matrix(n, numbers):
     from collections import Counter
     
+    # Count the frequency of each number
     count = Counter(numbers)
     
-    # Check odd frequency count
+    # Check for the possibility of forming a palindromic matrix
     odd_count = sum(1 for freq in count.values() if freq % 2 != 0)
+    if odd_count > 1:
+        return "NO"
     
-    # Validate the possibility of forming a palindromic matrix
-    if (n % 2 == 0 and odd_count > 0) or (n % 2 == 1 and odd_count > 1):
-        return "NO", []
-    
-    # Create the matrix
+    # Prepare the matrix
     matrix = [[0] * n for _ in range(n)]
-    half = n // 2
-    idx = 0
     
-    # Fill the matrix
-    for num, freq in count.items():
-        while freq > 0:
-            if freq >= 4:
-                # Place in corners
-                matrix[idx][idx] = num
-                matrix[idx][n - 1 - idx] = num
-                matrix[n - 1 - idx][idx] = num
-                matrix[n - 1 - idx][n - 1 - idx] = num
-                freq -= 4
-            elif freq == 2:
-                # Place in middle sides if even size
-                if n % 2 == 0:
-                    matrix[idx][half] = num
-                    matrix[half][idx] = num
-                    matrix[n - 1 - idx][half] = num
-                    matrix[half][n - 1 - idx] = num
-                freq -= 2
-            elif freq == 1:
-                # Place in center if odd size
-                if n % 2 == 1 and odd_count == 1:
-                    matrix[half][half] = num
-                freq -= 1
-            
-            if freq == 0:
-                idx += 1
-                if idx >= half:
-                    idx = half if n % 2 == 1 else half - 1
+    # Fill the half list with half of the frequencies
+    half = []
+    center_value = None
+    for value, freq in count.items():
+        half.extend([value] * (freq // 2))
+        if freq % 2 != 0:
+            center_value = value
     
-    # Fill remaining spots
-    last_num = num
+    # Fill the matrix symmetrically
+    index = 0
     for i in range(n):
         for j in range(n):
-            if matrix[i][j] == 0:
-                matrix[i][j] = last_num
+            if i < (n + 1) // 2:  # Fill only the top half and the center row if n is odd
+                if j < (n + 1) // 2:  # Fill only the left half and the center column if n is odd
+                    matrix[i][j] = half[index]
+                    matrix[i][n - j - 1] = half[index]
+                    matrix[n - i - 1][j] = half[index]
+                    matrix[n - i - 1][n - j - 1] = half[index]
+                    index += 1
+                elif n % 2 == 1 and j == n // 2:  # Fill the center cell if n is odd
+                    matrix[i][j] = center_value
+                    matrix[n - i - 1][j] = center_value
     
     return "YES", matrix
 
-# Read input
-n = int(input())
-numbers = list(map(int, input().split()))
+# Input reading
+n = int(input().strip())
+numbers = list(map(int, input().strip().split()))
 
-# Get result
-result, matrix = is_palindromic_possible(n, numbers)
+# Generate the result
+result = create_palindromic_matrix(n, numbers)
 
-# Print output
-print(result)
-if result == "YES":
-    for row in matrix:
+# Output the result
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    for row in result[1]:
         print(" ".join(map(str, row)))

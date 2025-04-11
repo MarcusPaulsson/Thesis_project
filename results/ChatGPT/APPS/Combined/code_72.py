@@ -1,30 +1,33 @@
 def max_intersection_length(n, segments):
-    lefts = [segment[0] for segment in segments]
-    rights = [segment[1] for segment in segments]
+    lefts = [l for l, r in segments]
+    rights = [r for l, r in segments]
 
-    max_left = [0] * n
-    min_right = [0] * n
+    overall_min = max(lefts)
+    overall_max = min(rights)
 
-    max_left[0] = lefts[0]
-    for i in range(1, n):
-        max_left[i] = max(max_left[i - 1], lefts[i])
+    # Sort lefts and rights to find second min and max
+    lefts_sorted = sorted(lefts)
+    rights_sorted = sorted(rights)
 
-    min_right[n - 1] = rights[n - 1]
-    for i in range(n - 2, -1, -1):
-        min_right[i] = min(min_right[i + 1], rights[i])
+    second_overall_min = lefts_sorted[-2] if n > 2 else float('-inf')
+    second_overall_max = rights_sorted[-2] if n > 2 else float('inf')
 
     max_length = 0
 
     for i in range(n):
-        intersection_left = max_left[i - 1] if i > 0 else max_left[1]
-        intersection_right = min_right[i + 1] if i < n - 1 else min_right[n - 2]
+        l, r = segments[i]
 
-        length = max(0, intersection_right - intersection_left)
-        max_length = max(max_length, length)
+        effective_min = second_overall_min if l == overall_min else overall_min
+        effective_max = second_overall_max if r == overall_max else overall_max
+
+        intersection_length = max(0, effective_max - effective_min)
+        max_length = max(max_length, intersection_length)
 
     return max_length
 
+# Input reading
 n = int(input())
 segments = [tuple(map(int, input().split())) for _ in range(n)]
-result = max_intersection_length(n, segments)
-print(result)
+
+# Output the result
+print(max_intersection_length(n, segments))

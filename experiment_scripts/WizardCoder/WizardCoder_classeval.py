@@ -58,7 +58,9 @@ def load_classEval_tasks(json_file_path):
         with open(json_file_path, 'r', encoding='utf-8') as jsonfile:
             data = json.load(jsonfile)
             for item in data:
-                tasks.append(item["skeleton"]) # Assumes each item in the JSON list has a 'skeleton' key
+                text = item["skeleton"]
+                test_cases = " Here is the test cases the code shall pass:\n" + item['test']
+                tasks.append(text + test_cases) 
         return tasks
     except FileNotFoundError:
         print(f"Error: JSON file '{json_file_path}' not found.")
@@ -72,8 +74,8 @@ if __name__ == "__main__":
     if tasks is None:
         sys.exit(1)
 
-    start_index = 17
-    end_index = 30
+    start_index = 0
+    end_index = 1
 
     results = {}
 

@@ -3,19 +3,19 @@ def max_permutation_not_exceeding(a: int, b: int) -> int:
 
     str_a = str(a)
     str_b = str(b)
-
+    
     # Generate all unique permutations of the digits of a
-    unique_permutations = sorted(set(permutations(str_a)), reverse=True)
-
-    for p in unique_permutations:
-        candidate = int(''.join(p))
-        # Check if the candidate is less than or equal to b and has the same length as a
-        if candidate <= b and len(str(candidate)) == len(str_a):
-            return candidate
+    permuted_numbers = set(int(''.join(p)) for p in permutations(str_a))
+    
+    # Filter valid numbers that are less than or equal to b and have the same length as a
+    valid_numbers = [num for num in permuted_numbers if num <= b and len(str(num)) == len(str_a) and str(num)[0] != '0']
+    
+    # Return the maximum valid number
+    return max(valid_numbers)
 
 # Input reading
 a = int(input().strip())
 b = int(input().strip())
 
-# Function call and output
+# Output the result
 print(max_permutation_not_exceeding(a, b))

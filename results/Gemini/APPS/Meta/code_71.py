@@ -5,12 +5,12 @@ def solve():
         print(1)
         return
 
-    ans = 0
-    power_of_2 = 1
-    while power_of_2 < a:
-        power_of_2 *= 2
-        ans += 1
-        
-    print(ans)
+    count = 0
+    i = 2
+    while i <= a:
+        i *= 2
+        count += 1
+    
+    print(count)
 
 solve()

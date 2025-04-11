@@ -19,7 +19,7 @@ def solve():
             if binary_string not in distinct_strings:
                 count += 1
                 distinct_strings.add(binary_string)
-    
+                
     print(count)
 
 solve()

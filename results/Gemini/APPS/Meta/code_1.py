@@ -25,10 +25,10 @@ def solve():
     print(best_num)
 
 def sum_digits(n):
-    s = 0
-    while n:
-        s += n % 10
-        n //= 10
-    return s
+    s = str(n)
+    sum_val = 0
+    for digit in s:
+        sum_val += int(digit)
+    return sum_val
 
 solve()

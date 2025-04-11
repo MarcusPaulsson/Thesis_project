@@ -39,7 +39,7 @@ def run_task_with_api_iter(task_prompt, system_prompt):
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": task_prompt + extra_message}
+                {"role": "user", "content": task_prompt + prompt.TAIL_PROMPT}
             ],
             response_format={"type": "text"},
             temperature=0.2,
@@ -71,13 +71,17 @@ def process_tasks_parallel(tasks, start_index, end_index, max_workers=5, iterati
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {}
         for i in range(start_index, min(end_index, len(tasks))):
-            task_prompt = tasks[i]
-            if iterative:
-                future = executor.submit(process_task_with_iterations, task_prompt)
+            if i in skip_test:
+                continue
             else:
+                task_prompt = tasks[i]
                 
-                future = executor.submit(run_task_with_api_iter, task_prompt, prompt.SYSTEM_PROMPT) # Run only first prompt if not iterative
-            futures[future] = i
+                if iterative:
+                    future = executor.submit(process_task_with_iterations, task_prompt)
+                else:
+                    
+                    future = executor.submit(run_task_with_api_iter, task_prompt, prompt.SYSTEM_PROMPT) # Run only first prompt if not iterative
+                futures[future] = i
 
         for future in concurrent.futures.as_completed(futures):
             index = futures[future]
@@ -99,6 +103,9 @@ if __name__ == "__main__":
 
     if tasks is None:
         sys.exit(1)
+
+
+    skip_test = [6, 7, 10, 13, 20, 24, 29, 47, 60, 64, 76, 79, 80, 84, 98]
 
     # Define the index interval for tasks
     start_index = 0

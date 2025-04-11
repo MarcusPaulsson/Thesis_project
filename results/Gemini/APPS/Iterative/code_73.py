@@ -10,7 +10,7 @@ def solve():
             stack.pop()
         else:
             stack.append(x)
-            
+
     if not stack:
         print("YES")
     else:

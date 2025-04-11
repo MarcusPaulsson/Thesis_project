@@ -1,40 +1,37 @@
-def solve_training(n, k):
-    # Minimum sum required to satisfy the condition: 1 + 2 + 3 + ... + k = k * (k + 1) // 2
-    min_required_sum = k * (k + 1) // 2
-    
-    # If n is less than the minimum required sum, it's impossible
-    if n < min_required_sum:
+def solve_problems(n, k):
+    # Minimum sum of problems that can be solved in k days
+    min_sum = k * (k + 1) // 2
+    if n < min_sum:
         print("NO")
         return
     
-    # Start with the minimum required problems for each day
-    a = list(range(1, k + 1))
-    current_sum = min_required_sum
+    # Maximum sum of problems that can be solved in k days
+    max_sum = 0
+    a = []
+    current = 1
     
-    # We can increase the last element of the array while maintaining the conditions
+    for i in range(k):
+        a.append(current)
+        max_sum += current
+        current = min(2 * current, current + 1 + (k - i - 1))
+    
+    if n > max_sum:
+        print("NO")
+        return
+    
+    # Now we need to adjust the array to sum to n
     for i in range(k - 1, -1, -1):
-        while current_sum < n:
-            # Maximum allowed for a[i] is 2 * a[i] (but also should not exceed the next day)
-            if i < k - 1 and a[i] >= a[i + 1]:
-                break
-            
-            # Increase a[i] while it's valid
+        while sum(a) < n and a[i] < (2 * a[i]):
             a[i] += 1
-            current_sum += 1
-            
-            if a[i] > 2 * (a[i - 1] if i > 0 else 0):
+            if sum(a) == n:
                 break
-            
-    # Check if we reached the required sum
-    if current_sum == n:
+    
+    if sum(a) == n:
         print("YES")
         print(" ".join(map(str, a)))
     else:
         print("NO")
 
-# Example usage:
-solve_training(26, 6)
-solve_training(8, 3)
-solve_training(1, 1)
-solve_training(9, 4)
-solve_training(7, 2)
+# Read input
+n, k = map(int, input().split())
+solve_problems(n, k)

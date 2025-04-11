@@ -2,23 +2,18 @@ def solve():
     k = int(input())
     
     digit_count = 0
-    num_digits = 1
     num = 1
     
-    while digit_count + num_digits * (num + 1) - num_digits < k:
-        digit_count += num_digits * (num + 1) - num_digits
-        num_digits += 1
-        num *= 10
+    while digit_count < k:
+        num_str = str(num)
+        num_len = len(num_str)
+        
+        if digit_count + num_len <= k:
+            digit_count += num_len
+            num += 1
+        else:
+            index_within_num = k - digit_count - 1
+            print(int(num_str[index_within_num]))
+            return
     
-    remaining = k - digit_count
-    
-    index_within_num = (remaining - 1) // num_digits
-    digit_index = (remaining - 1) % num_digits
-    
-    target_num = num + index_within_num
-    
-    target_num_str = str(target_num)
-    
-    print(int(target_num_str[digit_index]))
-
 solve()

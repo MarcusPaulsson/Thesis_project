@@ -1,44 +1,40 @@
 def construct_binary_string(a, b, x):
-    # Start by determining the base pattern of alternating zeros and ones
-    pattern = []
+    # Initialize the string
+    result = []
     
-    # Determine the starting character based on the greater count
+    # Determine the starting character based on the counts of a and b
     if a > b:
-        start_char = '0'
-        switch_char = '1'
+        result.append('0')
+        a -= 1
     else:
-        start_char = '1'
-        switch_char = '0'
+        result.append('1')
+        b -= 1
     
-    # Calculate how many switches we need
-    switches = min(x, a + b - 1)
+    # We need to create x transitions
+    for _ in range(x):
+        # Alternate between 0 and 1
+        if result[-1] == '0':
+            result.append('1')
+            b -= 1
+        else:
+            result.append('0')
+            a -= 1
     
-    # Add the alternating pattern
-    for i in range(switches + 1):
-        pattern.append(start_char if i % 2 == 0 else switch_char)
+    # Fill the remaining characters with the last character used
+    last_char = result[-1]
+    while a > 0 or b > 0:
+        if last_char == '0' and a > 0:
+            result.append('0')
+            a -= 1
+        elif last_char == '1' and b > 0:
+            result.append('1')
+            b -= 1
+        # Switch last_char if we just added one
+        last_char = result[-1]
     
-    # Count the number of zeros and ones used in the alternating pattern
-    used_a = pattern.count('0')
-    used_b = pattern.count('1')
-    
-    # Calculate remaining zeros and ones
-    remaining_a = a - used_a
-    remaining_b = b - used_b
-    
-    # Fill in the remaining zeros or ones as needed
-    if remaining_a > 0:
-        pattern.append('0' * remaining_a)
-    if remaining_b > 0:
-        pattern.append('1' * remaining_b)
-    
-    # Join the pattern to form the final binary string
-    result = ''.join(pattern)
-    
-    # Print the result
-    print(result)
+    return ''.join(result)
 
-# Read input values
+# Read input
 a, b, x = map(int, input().split())
-
-# Construct and print the binary string
-construct_binary_string(a, b, x)
+# Generate and print the binary string
+print(construct_binary_string(a, b, x))

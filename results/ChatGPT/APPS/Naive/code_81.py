@@ -1,26 +1,25 @@
 def can_reorder_strings(strings):
-    # Sort strings by length
+    # Sort strings by their lengths
     strings.sort(key=len)
-
-    for i in range(len(strings)):
-        for j in range(i):
-            if strings[j] not in strings[i]:
-                return "NO"
-
+    
+    # Check if each string is a substring of the next one
+    for i in range(len(strings) - 1):
+        if strings[i] not in strings[i + 1]:
+            return "NO"
+    
     return "YES", strings
 
-def main():
-    n = int(input())
-    strings = [input().strip() for _ in range(n)]
-    
-    result = can_reorder_strings(strings)
+# Read input
+n = int(input().strip())
+strings = [input().strip() for _ in range(n)]
 
-    if result == "NO":
-        print(result)
-    else:
-        print(result[0])
-        for string in result[1]:
-            print(string)
+# Get the result
+result = can_reorder_strings(strings)
 
-if __name__ == "__main__":
-    main()
+# Print the result
+if result == "NO":
+    print(result)
+else:
+    print(result[0])
+    for string in result[1]:
+        print(string)

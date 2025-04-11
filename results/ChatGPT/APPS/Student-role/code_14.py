@@ -1,40 +1,47 @@
 def is_stack_sortable(n, k, p):
+    # Create a set of used elements
     used = set(p)
+    # Create a list for the remaining elements
     remaining = [i for i in range(1, n + 1) if i not in used]
     
-    # Create an empty stack
+    # Initialize the result with the first k elements
+    result = p[:]
+    
+    # Initialize a stack
     stack = []
-    b = []
     
-    # Try to construct the lexicographically maximum permutation
-    idx = 0
+    # Iterate through the first k elements
     for i in range(k):
-        while idx < len(remaining) and (not stack or stack[-1] < p[i]):
-            stack.append(remaining[idx])
-            idx += 1
-        # Now we can pop from the stack to form b
-        if stack and stack[-1] == p[i]:
-            b.append(stack.pop())
-        else:
-            # If we cannot match p[i], it's impossible
-            return -1
+        # While the stack is not empty and the top of the stack is greater than the next element in remaining
+        while stack and (not remaining or stack[-1] > remaining[-1]):
+            result.append(stack.pop())
+        # Push the current element onto the stack
+        stack.append(p[i])
     
-    # Push remaining elements from remaining to stack
-    while idx < len(remaining):
-        stack.append(remaining[idx])
-        idx += 1
+    # Now we need to add the remaining elements in a way that keeps the stack sortable
+    for num in sorted(remaining, reverse=True):
+        while stack and stack[-1] < num:
+            result.append(stack.pop())
+        stack.append(num)
     
-    # Now, pop all elements from the stack to form b
+    # Add any remaining elements in the stack to the result
     while stack:
-        b.append(stack.pop())
+        result.append(stack.pop())
     
-    return p + b
+    # Check if the result is a valid permutation
+    if len(result) != n or sorted(result) != list(range(1, n + 1)):
+        return -1
+    
+    return result
 
-# Input reading
+# Read input
 n, k = map(int, input().split())
 p = list(map(int, input().split()))
 
+# Get the result
 result = is_stack_sortable(n, k, p)
+
+# Print the result
 if result == -1:
     print(-1)
 else:

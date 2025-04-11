@@ -1,45 +1,35 @@
-def find_coordinates(n):
+def hexagonal_coordinates(n):
     if n == 0:
         return (0, 0)
-    
+
     layer = 0
-    moves_in_layer = 1
-    
-    # Find the layer where the n-th move is located
-    while n >= moves_in_layer:
-        n -= moves_in_layer
+    moves_in_layer = 0
+
+    while moves_in_layer <= n:
         layer += 1
-        moves_in_layer = layer * 6
-    
-    # Calculate the coordinates
-    x, y = layer, 0
-    
-    # Determine the direction of the n-th move in the current layer
-    if n == 0:
+        moves_in_layer = 3 * layer * (layer + 1)  # Total moves in the current layer
+
+    layer -= 1
+    moves_in_layer = 3 * layer * (layer + 1)  # Total moves in the previous layer
+    remaining_moves = n - moves_in_layer
+
+    x, y = layer, 0  # Start at the rightmost point of the current layer
+
+    if remaining_moves == 0:
         return (x, y)
-    
-    # Each layer is made of 6 segments
-    # Each segment has layer length, except the last one which has n moves
-    directions = [
-        (1, 0),      # Right
-        (0, 1),      # Top-right
-        (-1, 1),     # Top-left
-        (-1, 0),     # Left
-        (0, -1),     # Bottom-left
-        (1, -1)      # Bottom-right
-    ]
-    
-    # Move through the segments
-    for i in range(6):
-        if n <= layer:
-            dx, dy = directions[i]
-            return (x + dx * n, y + dy * n)
-        n -= layer
-        x += directions[i][0] * layer
-        y += directions[i][1] * layer
-    
+
+    # Move counter-clockwise around the hexagon
+    if remaining_moves <= layer:
+        x -= remaining_moves
+    elif remaining_moves <= 2 * layer:
+        x = -layer
+        y = remaining_moves - layer
+    else:
+        x = remaining_moves - 3 * layer
+        y = layer
+
     return (x, y)
 
-n = int(input())
-x, y = find_coordinates(n)
+n = int(input().strip())
+x, y = hexagonal_coordinates(n)
 print(x, y)

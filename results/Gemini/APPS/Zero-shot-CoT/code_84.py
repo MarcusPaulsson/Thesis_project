@@ -13,26 +13,43 @@ def solve():
       else:
         coloring += "0"
         s1 += s[j]
-    
+
     s1_sorted = "".join(sorted(s1))
     s2_sorted = "".join(sorted(s2))
 
     merged = ""
     i1 = 0
     i2 = 0
-    while i1 < len(s1_sorted) or i2 < len(s2_sorted):
-      if i1 < len(s1_sorted) and (i2 == len(s2_sorted) or s1_sorted[i1] <= s2_sorted[i2]):
-        merged += s1_sorted[i1]
-        i1 += 1
-      else:
-        merged += s2_sorted[i2]
-        i2 += 1
     
-    if merged == "".join(sorted(s)):
+    possible = True
+    
+    for k in range(n):
+      if coloring[k] == '0':
+        if i1 < len(s1_sorted):
+          merged += s1_sorted[i1]
+          i1 += 1
+        else:
+          possible = False
+          break
+          
+      else:
+        if i2 < len(s2_sorted):
+          merged += s2_sorted[i2]
+          i2 += 1
+        else:
+          possible = False
+          break
+    
+    if not possible:
+        continue
+    
+    
+    
+    if "".join(sorted(s)) == merged:
       print("YES")
       print(coloring)
       return
-  
+
   print("NO")
 
 solve()

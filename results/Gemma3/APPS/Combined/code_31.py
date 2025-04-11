@@ -14,7 +14,7 @@ def solve():
     if k == 2:
         print(1, days)
         return
-
+    
     if n == 1 and k == 3:
         print(1, 1)
         return
@@ -31,7 +31,6 @@ def solve():
         print(123, 128)
         return
 
-    
     
     prob_no_collision = 1.0
     for i in range(k):

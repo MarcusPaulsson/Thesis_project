@@ -1,25 +1,27 @@
-def max_digit_sum(x):
+def sum_of_digits(n):
+    return sum(int(digit) for digit in str(n))
+
+def find_max_digit_sum(x):
+    max_sum = sum_of_digits(x)
+    best_number = x
+    
+    # Check numbers by reducing the last digits to 9
     str_x = str(x)
-    n = len(str_x)
-
-    max_sum = sum(int(d) for d in str_x)
-    result = x
-
-    for i in range(n):
+    for i in range(len(str_x)):
         if str_x[i] == '0':
             continue
         
-        # Create a new number by reducing the current digit by 1 and setting all following digits to 9
-        new_number = str_x[:i] + str(int(str_x[i]) - 1) + '9' * (n - i - 1)
+        # Create a new number by reducing the current digit and setting the rest to 9
+        new_number = str_x[:i] + str(int(str_x[i]) - 1) + '9' * (len(str_x) - i - 1)
         new_number = int(new_number)
-
-        if new_number <= x:
-            current_sum = sum(int(d) for d in str(new_number))
-            if current_sum > max_sum or (current_sum == max_sum and new_number > result):
+        
+        if new_number > 0 and new_number <= x:
+            current_sum = sum_of_digits(new_number)
+            if current_sum > max_sum or (current_sum == max_sum and new_number > best_number):
                 max_sum = current_sum
-                result = new_number
+                best_number = new_number
 
-    return result
+    return best_number
 
 x = int(input().strip())
-print(max_digit_sum(x))
+print(find_max_digit_sum(x))

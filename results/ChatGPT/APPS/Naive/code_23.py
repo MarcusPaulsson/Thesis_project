@@ -1,28 +1,23 @@
 def max_permutation_not_exceeding(a, b):
     from itertools import permutations
 
-    # Convert a to string to handle its digits
-    str_a = str(a)
-    str_b = str(b)
+    # Convert a to string and get its digits
+    a_str = str(a)
+    b_str = str(b)
 
-    # Generate all unique permutations of the digits in a
-    perms = set(permutations(str_a))
+    # Generate all unique permutations of the digits of a
+    permuted_numbers = set(int(''.join(p)) for p in permutations(a_str))
 
-    # Filter permutations that do not exceed b and do not start with '0'
-    valid_numbers = [
-        int(''.join(p)) for p in perms
-        if (''.join(p)[0] != '0' and int(''.join(p)) <= b)
-    ]
+    # Filter permutations to find the maximum that does not exceed b
+    valid_numbers = [num for num in permuted_numbers if num <= b and len(str(num)) == len(a_str)]
 
     # Return the maximum valid number
     return max(valid_numbers)
 
-# Read input
+# Input reading
 a = int(input().strip())
 b = int(input().strip())
 
-# Get the result
+# Get the result and print it
 result = max_permutation_not_exceeding(a, b)
-
-# Print the result
 print(result)

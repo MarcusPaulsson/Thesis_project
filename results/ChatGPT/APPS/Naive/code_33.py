@@ -1,39 +1,36 @@
-def count_common_ap(a1, b1, a2, b2, L, R):
-    def first_valid(start, step, lower_bound):
-        if start > lower_bound:
-            return start
-        if (lower_bound - start) % step == 0:
-            return lower_bound
-        return start + ((lower_bound - start) // step + 1) * step
+def count_common_integers(a1, b1, a2, b2, L, R):
+    from math import gcd
 
-    def last_valid(start, step, upper_bound):
-        if start > upper_bound:
-            return -1
-        return start + ((upper_bound - start) // step) * step
-
-    # Calculate the first and last valid x for both sequences
-    x1_start = b1
-    x2_start = b2
+    # Calculate the step size and the initial offsets
+    step = gcd(a1, a2)
     
-    # Find the first valid x in the range [L, R]
-    x1_first = first_valid(x1_start, a1, L)
-    x2_first = first_valid(x2_start, a2, L)
+    # Normalize the offsets
+    b1_mod = (b1 % step + step) % step
+    b2_mod = (b2 % step + step) % step
 
-    # Find the last valid x in the range [L, R]
-    x1_last = last_valid(x1_start, a1, R)
-    x2_last = last_valid(x2_start, a2, R)
+    # Check if the offsets are compatible
+    if b1_mod != b2_mod:
+        return 0
 
-    # Initialize the count of common integers
-    count = 0
+    # Find the first valid x >= L
+    first_x = max(L, (b1 + (L - b1) // a1 * a1))
+    if (first_x - b1) % a1 != 0:
+        first_x += a1
 
-    # Iterate through the arithmetic sequence of one of the progressions
-    for x in range(x1_first, x1_last + 1, a1):
-        if (x - b2) % a2 == 0 and L <= x <= R:
-            count += 1
+    # Find the last valid x <= R
+    last_x = min(R, (b1 + (R - b1) // a1 * a1))
+    if (last_x - b1) % a1 != 0:
+        last_x -= a1
 
-    return count
+    # Count the number of valid integers
+    if first_x > last_x:
+        return 0
 
-# Input reading
-a1, b1, a2, b2, L, R = map(int, input().strip().split())
-result = count_common_ap(a1, b1, a2, b2, L, R)
+    return (last_x - first_x) // step + 1
+
+# Read input
+a1, b1, a2, b2, L, R = map(int, input().split())
+
+# Get the result and print it
+result = count_common_integers(a1, b1, a2, b2, L, R)
 print(result)

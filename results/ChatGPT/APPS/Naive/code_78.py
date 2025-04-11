@@ -1,44 +1,39 @@
-MOD = 10**9 + 7
-
 def count_regular_sequences(n, s):
+    MOD = 10**9 + 7
     m = len(s)
-    min_balance = 0
-    current_balance = 0
 
+    # Precompute Catalan numbers
+    catalan = [0] * (n + 1)
+    catalan[0] = 1
+    for i in range(1, n + 1):
+        catalan[i] = (catalan[i - 1] * (2 * (2 * i - 1)) % MOD * pow(i + 1, MOD - 2, MOD)) % MOD
+
+    # Check if s can be part of a valid sequence
+    balance = 0
+    min_balance = 0
     for char in s:
         if char == '(':
-            current_balance += 1
+            balance += 1
         else:
-            current_balance -= 1
-        min_balance = min(min_balance, current_balance)
+            balance -= 1
+        min_balance = min(min_balance, balance)
 
-    if current_balance + n < 0 or current_balance > n:
+    if balance < 0 or balance > n or min_balance < 0:
         return 0
 
-    total_open_needed = (n - current_balance) // 2
-    total_close_needed = n - total_open_needed
+    # Count valid sequences with s as a substring
+    total_count = 0
+    for prefix_length in range(max(0, n - (m - 1) - balance), n - balance + 1):
+        suffix_length = n - prefix_length - (m - 1)
+        if suffix_length < 0:
+            continue
+        total_count = (total_count + catalan[prefix_length] * catalan[suffix_length]) % MOD
 
-    if total_open_needed < 0 or total_close_needed < 0:
-        return 0
+    return total_count
 
-    if min_balance < 0:
-        return 0
+# Input reading
+n = int(input().strip())
+s = input().strip()
 
-    dp = [[0] * (n + 1) for _ in range(n + 1)]
-    dp[0][0] = 1
-
-    for i in range(n):
-        for j in range(i + 1):
-            dp[i + 1][j + 1] = (dp[i + 1][j + 1] + dp[i][j]) % MOD
-            dp[i + 1][j] = (dp[i + 1][j] + dp[i][j] * (j + 1)) % MOD
-
-    return dp[n][0]
-
-def main():
-    n = int(input().strip())
-    s = input().strip()
-    result = count_regular_sequences(n, s)
-    print(result)
-
-if __name__ == "__main__":
-    main()
+# Output the result
+print(count_regular_sequences(n, s))

@@ -1,8 +1,6 @@
 def solve():
     n = int(input())
-    strings = []
-    for _ in range(n):
-        strings.append(input())
+    strings = [input() for _ in range(n)]
 
     def is_substring(a, b):
         return a in b
