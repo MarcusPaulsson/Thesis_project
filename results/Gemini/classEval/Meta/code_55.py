@@ -26,7 +26,7 @@ class Manacher:
             return 0
 
         if string[center - diff] == string[center + diff]:
-            return self.palindromic_length(center, diff + 2, string) + 1
+            return 1 + self.palindromic_length(center, diff + 1, string)
         else:
             return 0
 
@@ -39,7 +39,8 @@ class Manacher:
         'ababa'
 
         """
-        s = '#'.join('^{}$'.format(self.input_string))
+        s = '#'.join(list(self.input_string))
+        s = '#' + s + '#'
         n = len(s)
         p = [0] * n
         center = 0
@@ -47,13 +48,18 @@ class Manacher:
         max_len = 0
         max_center = 0
 
-        for i in range(1, n - 1):
+        for i in range(1, n):
             if i < right:
                 mirror = 2 * center - i
                 p[i] = min(right - i, p[mirror])
 
-            while s[i + (1 + p[i])] == s[i - (1 + p[i])]:
+            l = i - (1 + p[i])
+            r = i + (1 + p[i])
+
+            while l >= 0 and r < n and s[l] == s[r]:
                 p[i] += 1
+                l -= 1
+                r += 1
 
             if i + p[i] > right:
                 center = i

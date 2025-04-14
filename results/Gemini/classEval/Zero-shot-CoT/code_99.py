@@ -26,6 +26,10 @@ class ZipFileProcessor:
             return zip_file
         except FileNotFoundError:
             return None
+        except zipfile.BadZipFile:
+            return None
+        except Exception as e:
+            return None
 
     def extract_all(self, output_path):
         """
@@ -40,6 +44,10 @@ class ZipFileProcessor:
                 zip_file.extractall(output_path)
             return True
         except FileNotFoundError:
+            return False
+        except zipfile.BadZipFile:
+            return False
+        except Exception as e:
             return False
 
     def extract_file(self, file_name, output_path):
@@ -59,6 +67,10 @@ class ZipFileProcessor:
             return False
         except KeyError:
             return False
+        except zipfile.BadZipFile:
+            return False
+        except Exception as e:
+            return False
 
     def create_zip_file(self, files, output_file_name):
         """
@@ -77,5 +89,5 @@ class ZipFileProcessor:
             return True
         except FileNotFoundError:
             return False
-        except TypeError:
+        except Exception as e:
             return False

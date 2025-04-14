@@ -29,16 +29,17 @@ class DataStatistics:
         """
         if not data:
             return 0.00
-        data = sorted(data)
-        n = len(data)
+
+        sorted_data = sorted(data)
+        n = len(sorted_data)
         if n % 2 == 0:
-            median = (data[n // 2 - 1] + data[n // 2]) / 2
+            median = (sorted_data[n // 2 - 1] + sorted_data[n // 2]) / 2
             if isinstance(median, float):
                 return round(median, 2)
             else:
                 return median
         else:
-            return data[n // 2]
+            return sorted_data[n // 2]
 
     def mode(self, data):
         """
@@ -54,6 +55,6 @@ class DataStatistics:
 
         count = Counter(data)
         max_count = max(count.values())
-        modes = [k for k, v in count.items() if v == max_count]
+        modes = [key for key, value in count.items() if value == max_count]
         modes.sort()
         return modes

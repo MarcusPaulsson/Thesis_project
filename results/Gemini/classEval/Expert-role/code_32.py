@@ -21,7 +21,7 @@ class DecryptionUtils:
         'hello'
 
         """
-        result = ''
+        plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
                 start = ord('a')
@@ -31,8 +31,8 @@ class DecryptionUtils:
                 shifted_char = chr((ord(char) - start - shift) % 26 + start)
             else:
                 shifted_char = char
-            result += shifted_char
-        return result
+            plaintext += shifted_char
+        return plaintext
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -44,24 +44,24 @@ class DecryptionUtils:
         'ybocl'
 
         """
+        plaintext = ''
         key = self.key
-        result = ''
         key_length = len(key)
         for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
                 key_char = key[i % key_length]
-                shift = ord(key_char) - ord('a')
+                key_shift = ord(key_char) - ord('a')
                 start = ord('a')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                shifted_char = chr((ord(char) - start - key_shift) % 26 + start)
             elif 'A' <= char <= 'Z':
                 key_char = key[i % key_length]
-                shift = ord(key_char.lower()) - ord('a')
+                key_shift = ord(key_char.lower()) - ord('a')
                 start = ord('A')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                shifted_char = chr((ord(char) - start - key_shift) % 26 + start)
             else:
                 shifted_char = char
-            result += shifted_char
-        return result
+            plaintext += shifted_char
+        return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):
         """
@@ -74,39 +74,44 @@ class DecryptionUtils:
         'Hello, World!'
 
         """
-        length = len(encrypted_text)
-        rail = [['\n' for i in range(length)] for j in range(rails)]
-        dir_down = None
+        text_length = len(encrypted_text)
+        rail_matrix = [['' for _ in range(text_length)] for _ in range(rails)]
+        direction_down = False
         row, col = 0, 0
-        for i in range(length):
-            if row == 0:
-                dir_down = True
-            if row == rails - 1:
-                dir_down = False
-            rail[row][col] = '*'
+
+        for i in range(text_length):
+            if row == 0 or row == rails - 1:
+                direction_down = not direction_down
+
+            rail_matrix[row][col] = '*'
             col += 1
-            if dir_down:
+
+            if direction_down:
                 row += 1
             else:
                 row -= 1
+
         index = 0
         for i in range(rails):
-            for j in range(length):
-                if rail[i][j] == '*' and index < length:
-                    rail[i][j] = encrypted_text[index]
+            for j in range(text_length):
+                if rail_matrix[i][j] == '*':
+                    rail_matrix[i][j] = encrypted_text[index]
                     index += 1
+
         result = ''
         row, col = 0, 0
-        dir_down = None
-        for i in range(length):
-            if row == 0:
-                dir_down = True
-            if row == rails - 1:
-                dir_down = False
-            result += rail[row][col]
+        direction_down = False
+
+        for i in range(text_length):
+            if row == 0 or row == rails - 1:
+                direction_down = not direction_down
+
+            result += rail_matrix[row][col]
             col += 1
-            if dir_down:
+
+            if direction_down:
                 row += 1
             else:
                 row -= 1
+
         return result

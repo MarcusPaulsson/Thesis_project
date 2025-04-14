@@ -85,7 +85,8 @@ class NumberConverter:
         hex_num = ''
         hex_digits = "0123456789abcdef"
         while decimal_num > 0:
-            hex_num = hex_digits[decimal_num % 16] + hex_num
+            remainder = decimal_num % 16
+            hex_num = hex_digits[remainder] + hex_num
             decimal_num //= 16
         return hex_num
 

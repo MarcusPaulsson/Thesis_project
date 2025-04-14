@@ -1,15 +1,13 @@
 class PageUtil:
     """
-    Utility class for handling pagination and search functionalities.
+    PageUtil class is a versatile utility for handling pagination and search functionalities in an efficient and convenient manner.
     """
 
     def __init__(self, data, page_size):
         """
-        Initializes the PageUtil object.
-
-        Args:
-            data (list): The data to be paginated.
-            page_size (int): The number of items per page.
+        Initialize the PageUtil object with the given data and page size.
+        :param data: list, the data to be paginated
+        :param page_size: int, the number of items per page
         """
         if not isinstance(data, list):
             raise TypeError("Data must be a list.")
@@ -23,13 +21,9 @@ class PageUtil:
 
     def get_page(self, page_number):
         """
-        Retrieves a specific page of data.
-
-        Args:
-            page_number (int): The page number to fetch (1-indexed).
-
-        Returns:
-            list: The data on the specified page, or an empty list if the page number is invalid.
+        Retrieve a specific page of data.
+        :param page_number: int, the page number to fetch
+        :return: list, the data on the specified page
         """
         if not isinstance(page_number, int):
             raise TypeError("Page number must be an integer.")
@@ -38,18 +32,14 @@ class PageUtil:
             return []
 
         start_index = (page_number - 1) * self.page_size
-        end_index = min(start_index + self.page_size, self.total_items)
+        end_index = start_index + self.page_size
         return self.data[start_index:end_index]
 
     def get_page_info(self, page_number):
         """
-        Retrieves information about a specific page.
-
-        Args:
-            page_number (int): The page number to fetch information about (1-indexed).
-
-        Returns:
-            dict: A dictionary containing page information, or an empty dictionary if the page number is invalid.
+        Retrieve information about a specific page.
+        :param page_number: int, the page number to fetch information about
+        :return: dict, containing page information such as current page number, total pages, etc.
         """
         if not isinstance(page_number, int):
             raise TypeError("Page number must be an integer.")
@@ -68,25 +58,21 @@ class PageUtil:
             "total_items": self.total_items,
             "has_previous": has_previous,
             "has_next": has_next,
-            "data": page_data,
+            "data": page_data
         }
         return page_info
 
     def search(self, keyword):
         """
-        Searches for items in the data that contain the given keyword (case-insensitive).
-
-        Args:
-            keyword (str): The keyword to search for.
-
-        Returns:
-            dict: A dictionary containing search information.
+        Search for items in the data that contain the given keyword.
+        :param keyword: str, the keyword to search for
+        :return: dict, containing search information such as total results and matching items
         """
-        if not isinstance(keyword, str):
-            raise TypeError("Keyword must be a string.")
+        if not isinstance(keyword, str) and not isinstance(keyword, int):
+            raise TypeError("Keyword must be a string or integer.")
 
-        keyword = str(keyword).lower()  # Convert keyword to string and lowercase
-        results = [item for item in self.data if keyword in str(item).lower()]  # Case-insensitive search
+        keyword = str(keyword)
+        results = [item for item in self.data if keyword in str(item)]
         total_results = len(results)
         total_pages = (total_results + self.page_size - 1) // self.page_size if total_results > 0 else 0
 
@@ -94,6 +80,6 @@ class PageUtil:
             "keyword": keyword,
             "total_results": total_results,
             "total_pages": total_pages,
-            "results": results,
+            "results": results
         }
         return search_info

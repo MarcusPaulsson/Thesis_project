@@ -25,13 +25,18 @@ class WeatherSystem:
 
         """
         if self.city in weather_list:
-            city_data = weather_list[self.city]
-            temperature = city_data['temperature']
-            weather = city_data['weather']
-            if city_data['temperature units'] == 'celsius' and tmp_units == 'fahrenheit':
-                temperature = self.celsius_to_fahrenheit_static(temperature)
-            elif city_data['temperature units'] == 'fahrenheit' and tmp_units == 'celsius':
-                temperature = self.fahrenheit_to_celsius_static(temperature)
+            weather_data = weather_list[self.city]
+            temperature = weather_data['temperature']
+            weather = weather_data['weather']
+            temperature_units = weather_data['temperature units']
+
+            if temperature_units != tmp_units:
+                if tmp_units == 'celsius':
+                    if temperature_units == 'fahrenheit':
+                        temperature = self.fahrenheit_to_celsius_static(temperature)
+                elif tmp_units == 'fahrenheit':
+                    if temperature_units == 'celsius':
+                        temperature = self.celsius_to_fahrenheit_static(temperature)
             return (temperature, weather)
         else:
             return False
@@ -72,11 +77,17 @@ class WeatherSystem:
 
         """
         return self.fahrenheit_to_celsius_static(self.temperature)
-    
+
     @staticmethod
     def celsius_to_fahrenheit_static(celsius):
-        return celsius * 9 / 5 + 32
+        """
+        Convert Celsius to Fahrenheit.
+        """
+        return (celsius * 9/5) + 32
 
     @staticmethod
     def fahrenheit_to_celsius_static(fahrenheit):
-        return (fahrenheit - 32) * 5 / 9
+        """
+        Convert Fahrenheit to Celsius.
+        """
+        return (fahrenheit - 32) * 5/9

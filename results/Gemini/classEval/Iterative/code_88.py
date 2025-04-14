@@ -15,10 +15,7 @@ class TriCalculator:
         :param x:float
         :return:float
         """
-        x = x % 360
-        radians = x * pi / 180
-        result = self.taylor(x, 50)
-        return result
+        return self.taylor(x, 50)
 
     def factorial(self, a):
         """
@@ -26,13 +23,17 @@ class TriCalculator:
         :param a: int
         :return: int
         """
+        if not isinstance(a, int):
+            raise TypeError("Factorial input must be an integer.")
+        if a < 0:
+            raise ValueError("Factorial is not defined for negative numbers.")
         if a == 0:
             return 1
         else:
-            fact = 1
+            result = 1
             for i in range(1, a + 1):
-                fact = fact * i
-            return fact
+                result *= i
+            return result
 
     def taylor(self, x, n):
         """
@@ -41,8 +42,7 @@ class TriCalculator:
         :param n: int
         :return: float
         """
-        x = x % 360
-        x = x * pi / 180
+        x = x / 180 * pi
         cos_approx = 0
         for i in range(n):
             numerator = (-1)**i * x**(2*i)
@@ -56,12 +56,10 @@ class TriCalculator:
         :param x: float
         :return: float
         """
-        x = x % 360
-        radians = x * pi / 180
+        x = x / 180 * pi
         sin_approx = 0
-        n = 50
-        for i in range(n):
-            numerator = (-1)**i * (radians)**(2*i + 1)
+        for i in range(50):
+            numerator = (-1)**i * x**(2*i + 1)
             denominator = self.factorial(2*i + 1)
             sin_approx += numerator / denominator
         return sin_approx
@@ -76,7 +74,7 @@ class TriCalculator:
         if x % 180 == 90:
             return False
         else:
-          cos_val = self.cos(x)
-          if cos_val == 0:
-            return False
-          return self.sin(x) / cos_val
+            cos_x = self.cos(x)
+            if cos_x == 0:
+                return False
+            return self.sin(x) / cos_x

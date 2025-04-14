@@ -62,7 +62,7 @@ class DocFileHandler:
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path)
+            document = Document(self.file_path) if os.path.exists(self.file_path) else Document()
             document.add_heading(heading, level=level)
             document.save(self.file_path)
             return True
@@ -77,13 +77,13 @@ class DocFileHandler:
         :return: bool, True if the table is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path)
+            document = Document(self.file_path) if os.path.exists(self.file_path) else Document()
             table = document.add_table(rows=0, cols=len(data[0]) if data else 0)
 
             for row_data in data:
                 row_cells = table.add_row().cells
                 for i, item in enumerate(row_data):
-                    row_cells[i].text = str(item)  # Convert to string to handle various data types
+                    row_cells[i].text = str(item)
 
             document.save(self.file_path)
             return True
@@ -106,3 +106,4 @@ class DocFileHandler:
             return WD_PARAGRAPH_ALIGNMENT.RIGHT
         else:
             return WD_PARAGRAPH_ALIGNMENT.LEFT  # Default to left alignment
+import os

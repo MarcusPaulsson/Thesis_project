@@ -33,7 +33,7 @@ class ArgumentParser:
         {'arg1': 'value1', 'arg2': 'value2', 'option1': True, 'option2': True}
         """
         args = command_string.split()
-        i = 1
+        i = 1  # Skip the script name
         while i < len(args):
             arg = args[i]
             if arg.startswith("--"):
@@ -115,9 +115,9 @@ class ArgumentParser:
                 elif arg_type == float:
                     return float(value)
                 elif arg_type == bool:
-                    return True
+                    return value.lower() == 'true' or value == ''
                 else:
-                    return value
+                    return str(value)
             except ValueError:
                 return value
         else:

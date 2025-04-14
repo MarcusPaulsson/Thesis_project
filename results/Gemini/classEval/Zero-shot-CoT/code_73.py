@@ -29,8 +29,9 @@ class RPGCharacter:
         >>> player_2.hp
         92
         """
-        damage = max(0, self.attack_power - other_character.defense)
-        other_character.hp -= damage
+        damage = self.attack_power - other_character.defense
+        if damage > 0:
+            other_character.hp -= damage
 
     def heal(self):
         """
@@ -40,7 +41,9 @@ class RPGCharacter:
         >>> player_1.heal()
         100
         """
-        self.hp = min(100, self.hp + 10)
+        self.hp += 10
+        if self.hp > 100:
+            self.hp = 100
         return self.hp
 
     def gain_exp(self, amount):

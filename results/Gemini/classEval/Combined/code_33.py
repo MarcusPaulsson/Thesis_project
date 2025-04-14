@@ -1,15 +1,14 @@
 class DiscountStrategy:
     """
-    This class implements different discount strategies for a shopping cart.
+    This is a class that allows to use different discount strategy based on shopping credit or shopping cart in supermarket.
     """
 
     def __init__(self, customer, cart, promotion=None):
         """
-        Initializes the DiscountStrategy.
-
-        :param customer: dict, customer information (e.g., {'fidelity': 1200})
-        :param cart: list of dicts, items in the cart (e.g., [{'product': 'A', 'quantity': 2, 'price': 10}])
-        :param promotion: function, optional promotion to apply
+        Initialize the DiscountStrategy with customer information, a cart of items, and an optional promotion.
+        :param customer: dict, customer information
+        :param cart: list of dicts, a cart of items with details
+        :param promotion: function, optional promotion applied to the order
         """
         self.customer = customer
         self.cart = cart
@@ -18,38 +17,36 @@ class DiscountStrategy:
 
     def _calculate_total(self):
         """
-        Calculates the total cost of the items in the cart.
-
-        :return: float, the total cost
+        Calculate the total cost of items in the cart.
         """
-        return sum(item['quantity'] * item['price'] for item in self.cart)
+        total = 0.0
+        for item in self.cart:
+            total += item['quantity'] * item['price']
+        return total
 
     def total(self):
         """
-        Returns the total cost of items in the cart.
-
-        :return: float, the total cost
+        Calculate the total cost of items in the cart.
+        :return: float, total cost of items
         """
         return self._total
 
     def due(self):
         """
-        Calculates the final amount due after applying any discounts.
-
-        :return: float, the final amount due
+        Calculate the final amount to be paid after applying the discount.
+        :return: float, final amount to be paid
         """
-        discount = 0
+        discount = 0.0
         if self.promotion:
             discount = self.promotion(self)
-        return self.total() - discount
+        return self._total - discount
 
     @staticmethod
     def FidelityPromo(order):
         """
-        Applies a 5% discount if the customer has 1000 or more fidelity points.
-
-        :param order: DiscountStrategy, the order object
-        :return: float, the discount amount
+        Calculate the discount based on the fidelity points of the customer.Customers with over 1000 points can enjoy a 5% discount on the entire order.
+        :param order: object, the order to apply the discount to
+        :return: float, discount amount
         """
         if order.customer.get('fidelity', 0) >= 1000:
             return order.total() * 0.05
@@ -58,12 +55,11 @@ class DiscountStrategy:
     @staticmethod
     def BulkItemPromo(order):
         """
-        Applies a 10% discount on items where the quantity is 20 or more.
-
-        :param order: DiscountStrategy, the order object
-        :return: float, the discount amount
+        Calculate the discount based on bulk item quantity in the order.In the same order, if the quantity of a single item reaches 20 or more, each item will enjoy a 10% discount.
+        :param order: object, the order to apply the discount to
+        :return: float, discount amount
         """
-        discount = 0
+        discount = 0.0
         for item in order.cart:
             if item['quantity'] >= 20:
                 discount += item['quantity'] * item['price'] * 0.1
@@ -72,10 +68,9 @@ class DiscountStrategy:
     @staticmethod
     def LargeOrderPromo(order):
         """
-        Applies a 7% discount if there are 10 or more different products in the cart.
-
-        :param order: DiscountStrategy, the order object
-        :return: float, the discount amount
+        Calculate the discount based on the number of different products in the order.If the quantity of different products in the order reaches 10 or more, the entire order will enjoy a 7% discount.
+        :param order: object, the order to apply the discount to
+        :return: float, discount amount
         """
         if len(order.cart) >= 10:
             return order.total() * 0.07

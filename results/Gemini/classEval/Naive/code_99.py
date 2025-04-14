@@ -22,8 +22,7 @@ class ZipFileProcessor:
         >>> file = zfp.read_zip_file()
         """
         try:
-            zip_file = zipfile.ZipFile(self.file_name, 'r')
-            return zip_file
+            return zipfile.ZipFile(self.file_name, 'r')
         except FileNotFoundError:
             return None
         except zipfile.BadZipFile:
@@ -86,16 +85,8 @@ class ZipFileProcessor:
                 for file in files:
                     if os.path.exists(file):
                         zip_file.write(file, os.path.basename(file))
-                    else:
-                        return False
             return True
         except FileNotFoundError:
             return False
         except Exception:
             return False
-
-
-if __name__ == '__main__':
-    import doctest
-
-    doctest.testmod()

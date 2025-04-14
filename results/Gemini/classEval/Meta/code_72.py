@@ -16,11 +16,7 @@ class RegexUtils:
         >>> ru.match(r'\b\d{3}-\d{3}-\d{4}\b', "123-456-7890")
         True
         """
-        match = re.search(pattern, text)
-        if match and match.group() == text:
-            return True
-        else:
-            return False
+        return bool(re.match(pattern, text))
 
     def findall(self, pattern, text):
         """
@@ -98,14 +94,9 @@ class RegexUtils:
         >>> ru.split_sentences("Aaa. Bbbb? Ccc!")
         ['Aaa', 'Bbbb', 'Ccc!']
         """
-        pattern = r'[.!?](?=\s[A-Z])'
+        pattern = self.generate_split_sentences_pattern()
         sentences = re.split(pattern, text)
-        result = []
-        for i in range(len(sentences) - 1):
-            result.append(sentences[i])
-        if sentences:
-            result.append(sentences[-1])
-        return result
+        return sentences
 
     def validate_phone_number(self, phone_number):
         """
@@ -116,12 +107,8 @@ class RegexUtils:
         >>> ru.validate_phone_number("123-456-7890")
         True
         """
-        pattern = r'\b\d{3}-\d{3}-\d{4}\b'
-        match = re.search(pattern, phone_number)
-        if match and match.group() == phone_number:
-            return True
-        else:
-            return False
+        pattern = self.generate_phone_number_pattern()
+        return bool(re.match(pattern, phone_number))
 
     def extract_email(self, text):
         """
@@ -132,5 +119,5 @@ class RegexUtils:
         >>> ru.extract_email("abcdefg@163.com ygusyfysy@126.com wljduyuv@qq.com")
         ['abcdefg@163.com', 'ygusyfysy@126.com', 'wljduyuv@qq.com']
         """
-        pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        pattern = self.generate_email_pattern()
         return re.findall(pattern, text)

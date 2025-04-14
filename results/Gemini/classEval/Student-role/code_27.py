@@ -31,9 +31,14 @@ class CurrencyConverter:
         if from_currency not in self.rates or to_currency not in self.rates:
             return False
 
-        usd_amount = amount / self.rates[from_currency]
-        converted_amount = usd_amount * self.rates[to_currency]
+        from_rate = self.rates[from_currency]
+        to_rate = self.rates[to_currency]
+
+        usd_amount = amount / from_rate * self.rates['USD']
+        converted_amount = usd_amount * to_rate / self.rates['USD']
+
         return converted_amount
+
 
     def get_supported_currencies(self):
         """
@@ -44,6 +49,7 @@ class CurrencyConverter:
         ['USD','EUR','GBP','JPY','CAD','AUD','CNY']
         """
         return list(self.rates.keys())
+
 
     def add_currency_rate(self, currency, rate):
         """
@@ -57,8 +63,10 @@ class CurrencyConverter:
         """
         if currency in self.rates:
             return False
-        self.rates[currency] = rate
-        return None
+        else:
+            self.rates[currency] = rate
+            return None
+
 
     def update_currency_rate(self, currency, new_rate):
         """
@@ -72,5 +80,6 @@ class CurrencyConverter:
         """
         if currency not in self.rates:
             return False
-        self.rates[currency] = new_rate
-        return None
+        else:
+            self.rates[currency] = new_rate
+            return None

@@ -59,12 +59,12 @@ class Order:
         >>> order.calculate_total()
         32.0
         """
-        total = 0
+        total = 0.0
         for selected_dish in self.selected_dishes:
             dish_name = selected_dish["dish"]
             dish_count = selected_dish["count"]
             dish_price = selected_dish["price"]
-            sale = self.sales.get(dish_name, 1)
+            sale = self.sales.get(dish_name, 1.0)  # Default to 1.0 if no sale is found
             total += dish_count * dish_price * sale
         return total
 

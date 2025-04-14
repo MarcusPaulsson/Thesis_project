@@ -19,16 +19,15 @@ class ExcelProcessor:
             workbook = openpyxl.load_workbook(file_name)
             sheet = workbook.active
             data = []
-            for row in sheet.iter_rows():
+            for row in sheet.rows:
                 row_data = tuple(cell.value for cell in row)
                 data.append(row_data)
             return data
         except FileNotFoundError:
-            return None
-        except openpyxl.utils.exceptions.InvalidFileException:
+            print(f"Error: File '{file_name}' not found.")
             return None
         except Exception as e:
-            print(f"Error reading excel file: {e}")
+            print(f"An error occurred: {e}")
             return None
 
     def write_excel(self, data, file_name):
@@ -47,9 +46,9 @@ class ExcelProcessor:
         >>> ]
         >>> data = processor.write_excel(new_data, 'test_data.xlsx')
         """
-        if not file_name:
-            return 0
         try:
+            if not file_name:
+                return 0
             workbook = openpyxl.Workbook()
             sheet = workbook.active
             for row_data in data:
@@ -57,7 +56,7 @@ class ExcelProcessor:
             workbook.save(file_name)
             return 1
         except Exception as e:
-            print(f"Error writing to excel file: {e}")
+            print(f"An error occurred: {e}")
             return 0
 
     def process_excel_data(self, N, save_file_name):
@@ -69,26 +68,25 @@ class ExcelProcessor:
         >>> processor = ExcelProcessor()
         >>> success, output_file = processor.process_excel_data(1, 'test_data.xlsx')
         """
-        if N < 0:
-            return 0
         try:
             data = self.read_excel(save_file_name)
             if data is None:
-                return 0
+                return 0, None
+
             new_data = []
+            output_file_name = 'processed_' + save_file_name
+
             for row in data:
                 new_row = list(row)
-                if N < len(new_row):
-                    new_row.append(str(new_row[N]).upper())
+                if 0 <= N < len(row):
+                    new_row.append(str(row[N]).upper())
                 else:
-                    return 0
+                    return 0, None
                 new_data.append(tuple(new_row))
 
-            output_file_name = "processed_" + save_file_name
             success = self.write_excel(new_data, output_file_name)
             return success, output_file_name
-        except FileNotFoundError:
-            return 0
+
         except Exception as e:
-            print(f"Error processing excel data: {e}")
-            return 0
+            print(f"An error occurred: {e}")
+            return 0, None

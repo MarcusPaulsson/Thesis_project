@@ -43,10 +43,12 @@ class BookManagement:
 
         if title not in self.inventory:
             raise Exception("Book not found in inventory")
+
         if self.inventory[title] < quantity:
             raise Exception("Not enough books to remove")
 
         self.inventory[title] -= quantity
+
         if self.inventory[title] == 0:
             del self.inventory[title]
 

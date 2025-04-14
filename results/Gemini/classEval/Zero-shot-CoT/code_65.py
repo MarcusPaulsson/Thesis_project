@@ -31,34 +31,37 @@ class NumberWordFormatter:
             integer_part = int(x)
             decimal_part = int(round((x - integer_part) * 100))
             integer_words = self.format(integer_part)
-            decimal_words = self.format(decimal_part)
+            decimal_words = self.trans_two(str(decimal_part).zfill(2))
             if integer_words == "ZERO ONLY":
-                integer_words = ""
-            if decimal_words == "ZERO ONLY":
-                decimal_words = ""
-                return f"{integer_words} ONLY".strip()
-
-            return f"{integer_words} AND CENTS {decimal_words} ONLY".strip()
-
+                return "ZERO ONLY"
+            return f"{integer_words.replace(' ONLY', '')} AND CENTS {decimal_words} ONLY"
 
         if x == 0:
             return "ZERO ONLY"
 
         num_str = str(int(x))
-        result = []
-        num_groups = []
-        for i in range(len(num_str) - 1, -1, -3):
-            start = max(0, i - 2)
-            num_groups.append(num_str[start:i + 1])
+        num_len = len(num_str)
+        words = []
+        i = num_len - 1
+        group_index = 0
 
-        for i, group in enumerate(reversed(num_groups)):
-            words = self.trans_three(group)
-            if words:
-                more = self.parse_more(len(num_groups) - 1 - i)
-                result.append(words + " " + more)
+        while i >= 0:
+            group = ""
+            if i >= 2:
+                group = num_str[i - 2:i + 1]
+                i -= 3
+            else:
+                group = num_str[0:i + 1]
+                i = -1
 
-        return " ".join(result).strip() + " ONLY"
+            if int(group) != 0:
+                group_words = self.trans_three(group)
+                more_words = self.parse_more(group_index)
+                words.insert(0, f"{group_words} {more_words}".strip())
 
+            group_index += 1
+
+        return " ".join(words).strip() + " ONLY"
 
     def format_string(self, x):
         """
@@ -70,11 +73,10 @@ class NumberWordFormatter:
         "ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY"
         """
         try:
-            number = float(x)
-            return self.format(number)
+            num = float(x)
+            return self.format(num)
         except ValueError:
             return ""
-
 
     def trans_two(self, s):
         """
@@ -86,23 +88,20 @@ class NumberWordFormatter:
         "TWENTY THREE"
         """
         if len(s) != 2:
-            if len(s) == 1:
-                return self.NUMBER[int(s)]
             return ""
 
-        if s[0] == '1':
-            return self.NUMBER_TEEN[int(s[1])]
-        elif s[0] == '0':
+        if s[0] == '0':
             if s[1] == '0':
                 return ""
-            return self.NUMBER[int(s[1])]
-        else:
-            ten = self.NUMBER_TEN[int(s[0]) - 1]
-            one = self.NUMBER[int(s[1])]
-            if one:
-                return ten + " " + one
             else:
-                return ten
+                return self.NUMBER[int(s[1])]
+        elif s[0] == '1':
+            return self.NUMBER_TEEN[int(s[1])]
+        else:
+            if s[1] == '0':
+                return self.NUMBER_TEN[int(s[0]) - 1]
+            else:
+                return f"{self.NUMBER_TEN[int(s[0]) - 1]} {self.NUMBER[int(s[1])]}"
 
     def trans_three(self, s):
         """
@@ -116,15 +115,17 @@ class NumberWordFormatter:
         if len(s) != 3:
             return ""
 
-        hundred = self.NUMBER[int(s[0])]
-        two = self.trans_two(s[1:])
-        if hundred:
-            if two:
-                return hundred + " HUNDRED AND " + two
-            else:
-                return hundred + " HUNDRED"
-        else:
-            return self.trans_two(s[1:])
+        words = []
+        if s[0] != '0':
+            words.append(f"{self.NUMBER[int(s[0])]} HUNDRED")
+
+        two_digits = self.trans_two(s[1:])
+        if two_digits:
+            if words:
+                words.append("AND")
+            words.append(two_digits)
+
+        return " ".join(words).strip()
 
     def parse_more(self, i):
         """
@@ -135,7 +136,4 @@ class NumberWordFormatter:
         >>> formatter.parse_more(1)
         "THOUSAND"
         """
-        if 0 <= i < len(self.NUMBER_MORE):
-            return self.NUMBER_MORE[i]
-        else:
-            return ""
+        return self.NUMBER_MORE[i]

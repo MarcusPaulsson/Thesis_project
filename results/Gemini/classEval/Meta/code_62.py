@@ -25,8 +25,8 @@ class NLPDataProcessor:
         words_list = []
         for string in string_list:
             words = string.split()
-            words_without_stop_words = [word for word in words if word not in stop_word_list]
-            words_list.append(words_without_stop_words)
+            filtered_words = [word for word in words if word not in stop_word_list]
+            words_list.append(filtered_words)
         return words_list
 
     def process(self, string_list):
@@ -41,6 +41,6 @@ class NLPDataProcessor:
         words_list = []
         for string in string_list:
             words = string.split()
-            words_without_stop_words = [word for word in words if word not in stop_word_list]
-            words_list.append(words_without_stop_words)
+            filtered_words = [word for word in words if word not in stop_word_list]
+            words_list.append(filtered_words)
         return words_list

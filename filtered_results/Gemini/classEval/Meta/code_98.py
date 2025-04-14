@@ -30,6 +30,7 @@ class XMLProcessor:
         except:
             return None
 
+
     def write_xml(self, file_name):
         """
         Writes the XML data to the specified file.
@@ -49,6 +50,7 @@ class XMLProcessor:
             return True
         except:
             return False
+
 
     def process_xml_data(self, file_name):
         """
@@ -71,6 +73,7 @@ class XMLProcessor:
             return True
         except:
             return False
+
 
     def find_element(self, element_name):
         """

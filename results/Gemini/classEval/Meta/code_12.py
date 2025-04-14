@@ -1,5 +1,4 @@
 import random
-
 class BlackjackGame:
     """
     This is a class representing a game of blackjack, which includes creating a deck, calculating the value of a hand, and determine the winner based on the hand values of the player and dealer.
@@ -89,7 +88,7 @@ class BlackjackGame:
             else:
                 return 'Dealer wins'
         else:
-            if abs(21 - player_value) < abs(21 - dealer_value):
+            if player_value > dealer_value:
                 return 'Player wins'
             else:
                 return 'Dealer wins'

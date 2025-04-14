@@ -25,8 +25,23 @@ class TextFileProcessor:
         <class 'dict'>
         """
         with open(self.file_path, 'r') as f:
-            content = f.read()
-            return json.loads(content)
+            try:
+                data = json.load(f)
+            except json.JSONDecodeError:
+                f.seek(0)
+                content = f.read()
+                try:
+                    data = json.loads(f'[{content}]')[0]
+                except json.JSONDecodeError:
+                    f.seek(0)
+                    content = f.read()
+                    if content.isdigit():
+                        data = int(content)
+                    elif content.startswith('"') and content.endswith('"'):
+                        data = content[1:-1]
+                    else:
+                        data = content
+            return data
 
     def read_file(self):
         """
@@ -49,7 +64,7 @@ class TextFileProcessor:
         'Hello world!'
         """
         with open(self.file_path, 'w') as f:
-            f.write(str(content))
+            f.write(content)
 
     def process_file(self):
         """
@@ -62,6 +77,6 @@ class TextFileProcessor:
         'nametestage'
         """
         content = self.read_file()
-        processed_content = re.sub(r'[^a-zA-Z]', '', content)
+        processed_content = ''.join(re.findall(r'[a-zA-Z]', content))
         self.write_file(processed_content)
         return processed_content

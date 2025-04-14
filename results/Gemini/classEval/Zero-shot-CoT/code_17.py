@@ -86,19 +86,24 @@ class CalendarUtil:
         end_of_day = datetime(date.year, date.month, date.day, 23, 59, 59)
         current_time = start_of_day
 
-        events_on_date = sorted([event for event in self.events if event['date'].date() == date.date()], key=lambda x: x['start_time'])
+        sorted_events = sorted([event for event in self.events if event['date'].date() == date.date()], key=lambda x: x['start_time'])
 
-        if not events_on_date:
+        if not sorted_events:
             available_slots.append((start_of_day, datetime(date.year, date.month, date.day) + timedelta(days=1)))
             return available_slots
+        
+        if current_time < sorted_events[0]['start_time']:
+            available_slots.append((current_time, sorted_events[0]['start_time']))
+            current_time = sorted_events[0]['end_time']
 
-        for event in events_on_date:
-            if current_time < event['start_time']:
-                available_slots.append((current_time, event['start_time']))
-            current_time = event['end_time']
-
+        for event in sorted_events:
+            if event != sorted_events[0]:
+                if current_time < event['start_time']:
+                    available_slots.append((current_time, event['start_time']))
+                current_time = event['end_time']
+        
         if current_time < datetime(date.year, date.month, date.day) + timedelta(days=1):
-             available_slots.append((current_time, datetime(date.year, date.month, date.day) + timedelta(days=1)))
+            available_slots.append((current_time, datetime(date.year, date.month, date.day) + timedelta(days=1)))
 
         return available_slots
 
@@ -114,4 +119,6 @@ class CalendarUtil:
         [{'date': datetime.datetime(2023, 1, 1, 0, 0), 'start_time': datetime.datetime(2023, 1, 1, 0, 0), 'end_time': datetime.datetime(2023, 1, 1, 23, 0), 'description': 'New Year'}, {'date': datetime.datetime(2023, 1, 2, 0, 0), 'end_time': datetime.datetime(2023, 1, 2, 1, 0), 'description': 'New Year 2'}]
 
         """
-        return sorted(self.events, key=lambda x: x['date'])[:num_events]
+        now = datetime.now()
+        upcoming_events = sorted([event for event in self.events if event['date'] >= now], key=lambda x: x['date'])
+        return upcoming_events[:num_events]

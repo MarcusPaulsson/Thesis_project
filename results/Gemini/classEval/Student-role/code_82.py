@@ -20,13 +20,13 @@ class StockPortfolioTracker:
         [{'name': 'AAPL', 'price': 150.0, 'quantity': 10}]
 
         """
-        found = False
+        stock_exists = False
         for s in self.portfolio:
             if s["name"] == stock["name"] and s["price"] == stock["price"]:
                 s["quantity"] += stock["quantity"]
-                found = True
+                stock_exists = True
                 break
-        if not found:
+        if not stock_exists:
             self.portfolio.append(stock)
 
     def remove_stock(self, stock):

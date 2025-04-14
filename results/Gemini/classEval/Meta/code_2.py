@@ -33,38 +33,33 @@ class ArgumentParser:
         {'arg1': 'value1', 'arg2': 'value2', 'option1': True, 'option2': True}
         """
         args = command_string.split()
-        i = 0
+        i = 1
         while i < len(args):
             arg = args[i]
             if arg.startswith("--"):
-                arg_name = arg[2:]
-                if "=" in arg_name:
-                    arg_name, arg_value = arg_name.split("=")
+                arg_name = arg[2:].split("=")[0]
+                if "=" in arg:
+                    arg_value = arg[2:].split("=")[1]
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
+                    i += 1
                 else:
-                    if i + 1 < len(args) and not args[i+1].startswith("-"):
-                        i += 1
-                        arg_value = args[i]
-                        self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
-                    else:
-                        self.arguments[arg_name] = True
+                    self.arguments[arg_name] = True
+                    i += 1
             elif arg.startswith("-"):
                 arg_name = arg[1:]
                 if i + 1 < len(args) and not args[i+1].startswith("-"):
-                    i += 1
-                    arg_value = args[i]
+                    arg_value = args[i+1]
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
+                    i += 2
                 else:
                     self.arguments[arg_name] = True
-            i += 1
+                    i += 1
+            else:
+                i += 1
 
-        missing_args = set()
-        for required_arg in self.required:
-            if required_arg not in self.arguments:
-                missing_args.add(required_arg)
-
-        if missing_args:
-            return False, missing_args
+        missing = self.required - set(self.arguments.keys())
+        if missing:
+            return False, missing
         else:
             return True, None
 
@@ -115,12 +110,12 @@ class ArgumentParser:
         if arg in self.types:
             arg_type = self.types[arg]
             try:
-                if arg_type == int:
+                if arg_type is int:
                     return int(value)
-                elif arg_type == float:
+                elif arg_type is float:
                     return float(value)
-                elif arg_type == bool:
-                    return True
+                elif arg_type is bool:
+                    return value.lower() == 'true' or value == ""
                 else:
                     return value
             except ValueError:

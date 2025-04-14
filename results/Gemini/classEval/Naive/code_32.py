@@ -26,13 +26,12 @@ class DecryptionUtils:
             if 'a' <= char <= 'z':
                 start = ord('a')
                 shifted_char = chr((ord(char) - start - shift) % 26 + start)
-                plaintext += shifted_char
             elif 'A' <= char <= 'Z':
                 start = ord('A')
                 shifted_char = chr((ord(char) - start - shift) % 26 + start)
-                plaintext += shifted_char
             else:
-                plaintext += char
+                shifted_char = char
+            plaintext += shifted_char
         return plaintext
 
     def vigenere_decipher(self, ciphertext):
@@ -48,26 +47,20 @@ class DecryptionUtils:
         plaintext = ''
         key = self.key
         key_length = len(key)
-        key_index = 0
-
-        for i in range(len(ciphertext)):
-            char = ciphertext[i]
+        for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
-                key_char = key[key_index % key_length]
+                key_char = key[i % key_length]
                 shift = ord(key_char) - ord('a')
                 start = ord('a')
                 shifted_char = chr((ord(char) - start - shift) % 26 + start)
-                plaintext += shifted_char
-                key_index += 1
             elif 'A' <= char <= 'Z':
-                key_char = key[key_index % key_length]
+                key_char = key[i % key_length]
                 shift = ord(key_char.lower()) - ord('a')
                 start = ord('A')
                 shifted_char = chr((ord(char) - start - shift) % 26 + start)
-                plaintext += shifted_char
-                key_index += 1
             else:
-                plaintext += char
+                shifted_char = char
+            plaintext += shifted_char
         return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):
@@ -81,50 +74,34 @@ class DecryptionUtils:
         'Hello, World!'
 
         """
-        length = len(encrypted_text)
-        rail = [['\n' for i in range(length)]
-                for j in range(rails)]
+        text_length = len(encrypted_text)
+        rail_matrix = [['' for _ in range(text_length)] for _ in range(rails)]
+        rail = 0
+        direction = 1  # 1 for down, -1 for up
 
-        dir_down = None
-        row, col = 0, 0
+        # Mark the positions in the rail matrix
+        for col in range(text_length):
+            rail_matrix[rail][col] = '*'
+            rail += direction
+            if rail == rails - 1 or rail == 0:
+                direction *= -1
 
-        for i in range(length):
-            if row == 0:
-                dir_down = True
-            if row == rails - 1:
-                dir_down = False
-
-            rail[row][col] = '*'
-            col += 1
-
-            if dir_down:
-                row += 1
-            else:
-                row -= 1
-
+        # Fill the rail matrix with the encrypted text
         index = 0
         for i in range(rails):
-            for j in range(length):
-                if rail[i][j] == '*' and index < length:
-                    rail[i][j] = encrypted_text[index]
+            for j in range(text_length):
+                if rail_matrix[i][j] == '*':
+                    rail_matrix[i][j] = encrypted_text[index]
                     index += 1
 
-        result = ""
-        row, col = 0, 0
-        dir_down = None
+        # Read the rail matrix in a zig-zag manner to get the plaintext
+        plaintext = ''
+        rail = 0
+        direction = 1
+        for col in range(text_length):
+            plaintext += rail_matrix[rail][col]
+            rail += direction
+            if rail == rails - 1 or rail == 0:
+                direction *= -1
 
-        for i in range(length):
-            if row == 0:
-                dir_down = True
-            if row == rails - 1:
-                dir_down = False
-
-            if rail[row][col] != '\n':
-                result += rail[row][col]
-                col += 1
-
-            if dir_down:
-                row += 1
-            else:
-                row -= 1
-        return result
+        return plaintext

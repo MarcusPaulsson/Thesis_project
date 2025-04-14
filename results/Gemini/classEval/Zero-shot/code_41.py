@@ -30,6 +30,7 @@ class GomokuGame:
             return False
         if self.board[row][col] != ' ':
             return False
+
         self.board[row][col] = self.current_player
         self.current_player = 'O' if self.current_player == 'X' else 'X'
         return True
@@ -48,12 +49,18 @@ class GomokuGame:
         for row in range(self.board_size):
             for col in range(self.board_size):
                 if self.board[row][col] != ' ':
-                    player = self.board[row][col]
-                    if (self._check_five_in_a_row(row, col, (0, 1)) or  # Horizontal
-                            self._check_five_in_a_row(row, col, (1, 0)) or  # Vertical
-                            self._check_five_in_a_row(row, col, (1, 1)) or  # Diagonal
-                            self._check_five_in_a_row(row, col, (1, -1))):  # Anti-Diagonal
-                        return player
+                    # Check horizontal
+                    if self._check_five_in_a_row(row, col, (0, 1)):
+                        return self.board[row][col]
+                    # Check vertical
+                    if self._check_five_in_a_row(row, col, (1, 0)):
+                        return self.board[row][col]
+                    # Check diagonal (top-left to bottom-right)
+                    if self._check_five_in_a_row(row, col, (1, 1)):
+                        return self.board[row][col]
+                    # Check diagonal (top-right to bottom-left)
+                    if self._check_five_in_a_row(row, col, (1, -1)):
+                        return self.board[row][col]
         return None
 
     def _check_five_in_a_row(self, row, col, direction):
@@ -73,8 +80,8 @@ class GomokuGame:
         >>> gomokuGame._check_five_in_a_row(5, 1, (1, 1))
         False
         """
-        player = self.board[row][col]
         count = 0
+        player = self.board[row][col]
         for i in range(5):
             new_row = row + i * direction[0]
             new_col = col + i * direction[1]

@@ -1,5 +1,4 @@
-from urllib.parse import urlparse, parse_qs
-
+import urllib.parse
 
 class URLHandler:
     """
@@ -21,10 +20,11 @@ class URLHandler:
         "https"
         """
         try:
-            parsed_url = urlparse(self.url)
-            return parsed_url.scheme
+            parsed_url = urllib.parse.urlparse(self.url)
+            return parsed_url.scheme if parsed_url.scheme else None
         except:
             return None
+
 
     def get_host(self):
         """
@@ -35,10 +35,11 @@ class URLHandler:
         "www.baidu.com"
         """
         try:
-            parsed_url = urlparse(self.url)
-            return parsed_url.netloc
+            parsed_url = urllib.parse.urlparse(self.url)
+            return parsed_url.netloc if parsed_url.netloc else None
         except:
             return None
+
 
     def get_path(self):
         """
@@ -49,10 +50,11 @@ class URLHandler:
         "/s?wd=aaa&rsv_spt=1#page"
         """
         try:
-            parsed_url = urlparse(self.url)
-            return parsed_url.path + '?' + parsed_url.query + '#' + parsed_url.fragment if parsed_url.query or parsed_url.fragment else parsed_url.path
+            parsed_url = urllib.parse.urlparse(self.url)
+            return parsed_url.path + ("?" + parsed_url.query + ("#" + parsed_url.fragment if parsed_url.fragment else "") if parsed_url.query else ("#" + parsed_url.fragment if parsed_url.fragment else "")) if parsed_url.path else None
         except:
             return None
+
 
     def get_query_params(self):
         """
@@ -63,14 +65,15 @@ class URLHandler:
         {"wd": "aaa", "rsv_spt": "1"}
         """
         try:
-            parsed_url = urlparse(self.url)
-            query_params = parse_qs(parsed_url.query)
+            parsed_url = urllib.parse.urlparse(self.url)
+            query_params = urllib.parse.parse_qs(parsed_url.query)
             result = {}
             for key, value in query_params.items():
                 result[key] = value[0]
             return result if result else {}
         except:
             return None
+
 
     def get_fragment(self):
         """
@@ -81,7 +84,7 @@ class URLHandler:
         "page"
         """
         try:
-            parsed_url = urlparse(self.url)
+            parsed_url = urllib.parse.urlparse(self.url)
             return parsed_url.fragment if parsed_url.fragment else None
         except:
             return None

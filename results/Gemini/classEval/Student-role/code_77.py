@@ -36,9 +36,11 @@ class Snake:
         new_head = (x + direction[0], y + direction[1])
 
         if new_head == self.food_position:
-            self.eat_food()
+            self.length += 1
+            self.score += 100
             self.positions.insert(0, new_head)
-        elif new_head in self.positions:
+            self.eat_food()
+        elif new_head in self.positions[1:]:
             self.reset()
         else:
             self.positions.insert(0, new_head)
@@ -53,9 +55,8 @@ class Snake:
         while True:
             x = random.randint(0, self.SCREEN_WIDTH - 1)
             y = random.randint(0, self.SCREEN_HEIGHT - 1)
-            food = (x, y)
-            if food not in self.positions:
-                self.food_position = food
+            if (x, y) not in self.positions:
+                self.food_position = (x, y)
                 break
 
 
@@ -71,7 +72,7 @@ class Snake:
         self.random_food_position()
         """
         self.length = 1
-        self.positions = [(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2)]
+        self.positions = [((self.SCREEN_WIDTH / 2), (self.SCREEN_HEIGHT / 2))]
         self.score = 0
         self.random_food_position()
 

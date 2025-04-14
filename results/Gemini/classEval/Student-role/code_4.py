@@ -49,8 +49,8 @@ class AssessmentSystem:
 
         """
         if name in self.students and self.students[name]['courses']:
-            scores = list(self.students[name]['courses'].values())
-            return sum(scores) / len(scores)
+            total_score = sum(self.students[name]['courses'].values())
+            return float(total_score / len(self.students[name]['courses']))
         else:
             return None
 
@@ -67,7 +67,7 @@ class AssessmentSystem:
             for course, score in student_data['courses'].items():
                 if score < 60:
                     failed_students.append(name)
-                    break  # Only add the student once if they have multiple failing scores
+                    break  # Only add the student once if they have multiple failing grades
         return failed_students
 
     def get_course_average(self, course):
@@ -86,7 +86,7 @@ class AssessmentSystem:
                     student_count += 1
 
         if student_count > 0:
-            return total_score / student_count
+            return float(total_score / student_count)
         else:
             return None
 

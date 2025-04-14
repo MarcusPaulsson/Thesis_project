@@ -41,26 +41,22 @@ class ArgumentParser:
                 if "=" in arg:
                     arg_value = arg[2:].split("=")[1]
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
-                    i += 1
                 else:
                     self.arguments[arg_name] = True
-                    i += 1
             elif arg.startswith("-"):
                 arg_name = arg[1:]
                 if i + 1 < len(args) and not args[i + 1].startswith("-"):
                     arg_value = args[i + 1]
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
-                    i += 2
+                    i += 1
                 else:
                     self.arguments[arg_name] = True
-                    i += 1
-            else:
-                i += 1
+            i += 1
 
         missing_args = set()
-        for req_arg in self.required:
-            if req_arg not in self.arguments:
-                missing_args.add(req_arg)
+        for required_arg in self.required:
+            if required_arg not in self.arguments:
+                missing_args.add(required_arg)
 
         if missing_args:
             return False, missing_args
@@ -119,7 +115,7 @@ class ArgumentParser:
                 elif arg_type is float:
                     return float(value)
                 elif arg_type is bool:
-                    return True
+                    return value.lower() == 'true' or value == "1"
                 else:
                     return value
             except ValueError:

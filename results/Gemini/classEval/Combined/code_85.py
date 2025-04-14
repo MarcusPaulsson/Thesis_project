@@ -1,34 +1,33 @@
+import time
+
 class Thermostat:
     """
-    Manages temperature control, including setting and retrieving the target temperature,
-    adjusting the mode, and simulating temperature operation.
+    The class manages temperature control, including setting and retrieving the target temperature, adjusting the mode, and simulating temperature operation.
     """
 
     VALID_MODES = ['heat', 'cool']
 
     def __init__(self, current_temperature, target_temperature, mode):
         """
-        Initializes a Thermostat instance.
+        Initializes instances of the Thermostat class.
 
-        Args:
-            current_temperature (float): The current temperature.
-            target_temperature (float): The desired target temperature.
-            mode (str): The operating mode ('heat' or 'cool').
-        Raises:
-            ValueError: If the mode is invalid.
+        :param current_temperature: float, the current temperature.
+        :param target_temperature: float, the target temperature.
+        :param mode: str, the operating mode ('heat' or 'cool').
+        :raises ValueError: if mode is not valid.
         """
         self.current_temperature = current_temperature
         self.target_temperature = target_temperature
         if mode not in self.VALID_MODES:
-            raise ValueError(f"Invalid mode: {mode}.  Must be one of {self.VALID_MODES}")
-        self.mode = mode
+            self.mode = 'cool'
+        else:
+            self.mode = mode
 
     def get_target_temperature(self):
         """
-        Returns the target temperature.
+        Gets the target temperature.
 
-        Returns:
-            float: The target temperature.
+        :return: float, the target temperature.
         """
         return self.target_temperature
 
@@ -36,17 +35,15 @@ class Thermostat:
         """
         Sets the target temperature.
 
-        Args:
-            temperature (float): The new target temperature.
+        :param temperature: float, the target temperature.
         """
         self.target_temperature = temperature
 
     def get_mode(self):
         """
-        Returns the current operating mode.
+        Gets the current operating mode.
 
-        Returns:
-            str: The current operating mode ('heat' or 'cool').
+        :return: str, the operating mode ('heat' or 'cool').
         """
         return self.mode
 
@@ -54,11 +51,8 @@ class Thermostat:
         """
         Sets the operating mode.
 
-        Args:
-            mode (str): The new operating mode ('heat' or 'cool').
-
-        Returns:
-            bool: True if the mode was successfully set, False otherwise.
+        :param mode: str, the operating mode ('heat' or 'cool').
+        :return: bool, True if the mode was set successfully, False otherwise.
         """
         if mode in self.VALID_MODES:
             self.mode = mode
@@ -68,7 +62,8 @@ class Thermostat:
     def auto_set_mode(self):
         """
         Automatically sets the operating mode based on the current and target temperatures.
-        If the current temperature is lower than the target, the mode is set to 'heat', otherwise 'cool'.
+        If the current temperature is lower than the target temperature, the mode is set to 'heat',
+        otherwise it is set to 'cool'.
         """
         if self.current_temperature < self.target_temperature:
             self.mode = 'heat'
@@ -77,16 +72,15 @@ class Thermostat:
 
     def auto_check_conflict(self):
         """
-        Checks for and resolves conflicts between the operating mode and the temperature difference.
-        If a conflict exists, the mode is adjusted.
+        Checks for conflicts between the operating mode and the temperature difference.
+        If a conflict exists, the operating mode is adjusted automatically.
 
-        Returns:
-            bool: True if no conflict exists after the check, False otherwise (and the mode was adjusted).
+        :return: bool, True if no conflict exists, False otherwise.
         """
-        if self.mode == 'heat' and self.current_temperature > self.target_temperature:
+        if self.mode == 'heat' and self.current_temperature >= self.target_temperature:
             self.mode = 'cool'
             return False
-        elif self.mode == 'cool' and self.current_temperature < self.target_temperature:
+        elif self.mode == 'cool' and self.current_temperature <= self.target_temperature:
             self.mode = 'heat'
             return False
         else:
@@ -94,22 +88,21 @@ class Thermostat:
 
     def simulate_operation(self):
         """
-        Simulates the thermostat operation, adjusting the current temperature until it reaches the target.
+        Simulates the operation of the thermostat, adjusting the current temperature
+        until it reaches the target temperature.
 
-        Returns:
-            int: The number of iterations it took to reach the target temperature.
+        :return: int, the number of iterations it took to reach the target temperature.
         """
-        iterations = 0
+        start_time = 0
         self.auto_set_mode()
-
-        while abs(self.current_temperature - self.target_temperature) > 0.5:
+        tolerance = 0.5
+        while abs(self.current_temperature - self.target_temperature) > tolerance:
             if self.mode == 'heat':
                 self.current_temperature += 1
             else:
                 self.current_temperature -= 1
-            iterations += 1
-
-        # Ensure current_temperature is exactly target_temperature after simulation
+            start_time += 1
+            if start_time > 100:
+                break
         self.current_temperature = self.target_temperature
-
-        return iterations
+        return start_time

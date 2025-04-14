@@ -12,16 +12,17 @@ class JSONProcessor:
         :param file_path: str, the path of the JSON file.
         :return: dict, the data from the JSON file if read successfully, or return -1 if an error occurs during the reading process.
                     return 0 if the file does not exist.
-        >>> json.read_json('test.json')
-        {'name': 'test', 'age': 14}
         """
         if not os.path.exists(file_path):
             return 0
+
         try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-                return data
-        except Exception as e:
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+            return data
+        except json.JSONDecodeError:
+            return -1
+        except Exception:
             return -1
 
     def write_json(self, data, file_path):
@@ -31,16 +32,12 @@ class JSONProcessor:
         :param data: dict, the data to be written to the JSON file.
         :param file_path: str, the path of the JSON file.
         :return: 1 if the writing process is successful, or -1, if an error occurs during the writing process.
-        >>> json.write_json({'key1': 'value1', 'key2': 'value2'}, 'test.json')
-        1
-        >>> json.read_json('test.json')
-        {'key1': 'value1', 'key2': 'value2'}
         """
         try:
-            with open(file_path, 'w') as f:
-                json.dump(data, f)
+            with open(file_path, 'w') as file:
+                json.dump(data, file)
             return 1
-        except Exception as e:
+        except Exception:
             return -1
 
     def process_json(self, file_path, remove_key):
@@ -51,24 +48,25 @@ class JSONProcessor:
         :param remove_key: str, the key to be removed.
         :return: 1, if the specified key is successfully removed and the data is written back.
                     0, if the file does not exist or the specified key does not exist in the data.
-        >>> json.read_json('test.json')
-        {'key1': 'value1', 'key2': 'value2'}
-        >>> json.process_json('test.json', 'key1')
-        1
-        >>> json.read_json('test.json')
-        {'key2': 'value2'}
         """
+        if not os.path.exists(file_path):
+            return 0
+
         try:
-            data = self.read_json(file_path)
-            if data == 0:
-                return 0
-            if data == -1:
-                return 0
-            if remove_key in data:
-                del data[remove_key]
-                self.write_json(data, file_path)
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+        except json.JSONDecodeError:
+            return 0
+        except Exception:
+            return 0
+
+        if remove_key in data:
+            del data[remove_key]
+            try:
+                with open(file_path, 'w') as file:
+                    json.dump(data, file)
                 return 1
-            else:
+            except Exception:
                 return 0
-        except Exception as e:
+        else:
             return 0

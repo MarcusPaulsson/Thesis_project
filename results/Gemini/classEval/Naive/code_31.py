@@ -13,13 +13,10 @@ class DataStatistics4:
         :param data1: The first set of data,list.
         :param data2: The second set of data,list.
         :return: The correlation coefficient, float.
-        >>> DataStatistics4.correlation_coefficient([1, 2, 3], [4, 5, 6])
-        0.9999999999999998
-
         """
         n = len(data1)
-        if n != len(data2):
-            raise ValueError("Data sets must have the same length")
+        if n != len(data2) or n == 0:
+            return 0.0  # Or raise an exception
 
         sum_x = sum(data1)
         sum_y = sum(data2)
@@ -28,12 +25,18 @@ class DataStatistics4:
         sum_xy = sum(data1[i] * data2[i] for i in range(n))
 
         numerator = n * sum_xy - sum_x * sum_y
-        denominator = math.sqrt((n * sum_x_squared - sum_x**2) * (n * sum_y_squared - sum_y**2))
+        denominator_x = n * sum_x_squared - sum_x**2
+        denominator_y = n * sum_y_squared - sum_y**2
+
+        if denominator_x <= 0 or denominator_y <= 0:
+            return 0.0
+
+        denominator = math.sqrt(denominator_x * denominator_y)
 
         if denominator == 0:
-            return 0.0  # Handle the case where the denominator is zero to avoid division by zero
-        else:
-            return numerator / denominator
+            return 0.0
+
+        return numerator / denominator
 
     @staticmethod
     def skewness(data):
@@ -41,9 +44,6 @@ class DataStatistics4:
         Calculate the skewness of a set of data.
         :param data: The input data list, list.
         :return: The skewness, float.
-        >>> DataStatistics4.skewness([1, 2, 5])
-        2.3760224064818463
-
         """
         n = len(data)
         if n < 3:
@@ -51,12 +51,13 @@ class DataStatistics4:
 
         mean = sum(data) / n
         variance = sum((x - mean)**2 for x in data) / (n - 1)
+        if variance <= 0:
+            return 0.0
         std_dev = math.sqrt(variance)
 
-        if std_dev == 0:
-            return 0.0
+        sum_cubed_deviations = sum((x - mean)**3 for x in data)
+        skewness = sum_cubed_deviations / ((n - 1) * std_dev**3)
 
-        skewness = sum((x - mean)**3 for x in data) / ((n - 1) * std_dev**3)
         return skewness
 
     @staticmethod
@@ -65,9 +66,6 @@ class DataStatistics4:
         Calculate the kurtosis of a set of data.
         :param data: The input data list, list.
         :return: The kurtosis, float.
-        >>> DataStatistics4.kurtosis([1, 20,100])
-        -1.5000000000000007
-
         """
         n = len(data)
         if n < 4:
@@ -75,12 +73,13 @@ class DataStatistics4:
 
         mean = sum(data) / n
         variance = sum((x - mean)**2 for x in data) / (n - 1)
-        std_dev = math.sqrt(variance)
-        
-        if std_dev == 0:
+        if variance <= 0:
             return float('NaN')
+        std_dev = math.sqrt(variance)
 
-        kurtosis = sum((x - mean)**4 for x in data) / ((n - 1) * std_dev**4) - 3
+        sum_fourth_deviations = sum((x - mean)**4 for x in data)
+        kurtosis = sum_fourth_deviations / ((n - 1) * std_dev**4) - 3
+
         return kurtosis
 
     @staticmethod
@@ -91,9 +90,6 @@ class DataStatistics4:
         :param mu: The mean of the normal distribution, float.
         :param sigma: The standard deviation of the normal distribution, float.
         :return: The probability density function (PDF), list.
-        >>> DataStatistics4.pdf([1, 2, 3], 1, 1)
-        [0.3989422804014327, 0.24197072451914337, 0.05399096651318806]
-
         """
         pdf_values = []
         for x in data:

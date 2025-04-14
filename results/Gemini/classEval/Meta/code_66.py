@@ -19,29 +19,25 @@ class NumericEntityUnescaper:
         result = ""
         i = 0
         while i < len(string):
-            if string[i:i+2] == "&#":
+            if string[i:i + 2] == "&#":
                 j = i + 2
-                is_hex = False
-                if j < len(string) and string[j:j+1].lower() == "x":
-                    is_hex = True
+                while j < len(string) and string[j] != ';':
                     j += 1
 
-                num_str = ""
-                while j < len(string) and string[j] != ";":
-                    num_str += string[j]
-                    j += 1
-
-                if j < len(string) and string[j] == ";":
+                if j < len(string) and string[j] == ';':
+                    entity = string[i + 2:j]
                     try:
-                        if is_hex:
-                            num = int(num_str, 16)
+                        if entity.startswith('X') or entity.startswith('x'):
+                            char_code = int(entity[1:], 16)
                         else:
-                            num = int(num_str)
-                        result += chr(num)
+                            char_code = int(entity)
+                        result += chr(char_code)
                         i = j + 1
                     except ValueError:
                         result += string[i:j+1]
                         i = j + 1
+                    except OverflowError:
+                        i += 1
                 else:
                     result += string[i]
                     i += 1
@@ -60,6 +56,4 @@ class NumericEntityUnescaper:
         True
 
         """
-        if '0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F':
-            return True
-        return False
+        return '0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F'

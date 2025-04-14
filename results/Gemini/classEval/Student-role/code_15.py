@@ -37,6 +37,9 @@ class BoyerMooreSearch:
         2
 
         """
+        if not self.pattern:
+            return -1
+
         for i in range(self.patLen):
             if currentPos + i >= self.textLen:
                 return currentPos + i
@@ -54,9 +57,10 @@ class BoyerMooreSearch:
 
         """
         occurrences = []
+        if not self.pattern:
+            return list(range(self.textLen + 1))
+
         i = 0
-        if self.patLen == 0:
-            return [i for i in range(len(self.text) + 1)]
         while i <= self.textLen - self.patLen:
             mismatch_pos = self.mismatch_in_text(i)
             if mismatch_pos == -1:
@@ -65,15 +69,14 @@ class BoyerMooreSearch:
             else:
                 if mismatch_pos >= self.textLen:
                     break
-                mismatch_char = self.text[mismatch_pos]
-                char_pos_in_pattern = self.match_in_pattern(mismatch_char)
-                if char_pos_in_pattern == -1:
+                char = self.text[mismatch_pos]
+                rightmost_occurrence = self.match_in_pattern(char)
+                if rightmost_occurrence == -1:
                     i = mismatch_pos + 1
-
                 else:
-                    i = mismatch_pos - char_pos_in_pattern
-                    if i < 0:
-                        i = mismatch_pos + 1 - char_pos_in_pattern
-                        if i < 0:
-                            i = 1
+                    shift = mismatch_pos - i - rightmost_occurrence
+                    if shift <= 0:
+                        i += 1
+                    else:
+                        i += shift
         return occurrences

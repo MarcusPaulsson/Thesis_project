@@ -35,25 +35,24 @@ class AssessmentSystem:
         :return: if name is in students and this students have courses grade, return average grade(float)
                     or None otherwise
         """
-        student = self.students.get(name)
-        if not student or not student['courses']:
-            return None
-
-        scores = list(student['courses'].values())
-        return sum(scores) / len(scores)
+        student_data = self.students.get(name)
+        if student_data and student_data['courses']:
+            total_score = sum(student_data['courses'].values())
+            return float(total_score) / len(student_data['courses'])
+        return None
 
     def get_all_students_with_fail_course(self):
         """
-        Get all students who have any score below 60
-        :return: list of str, student name
+        Get all students who have any score blow 60
+        :return: list of str ,student name
         """
-        failing_students = []
+        failed_students = []
         for name, student_data in self.students.items():
             for score in student_data['courses'].values():
                 if score < 60:
-                    failing_students.append(name)
-                    break  # Only add a student once, even if they fail multiple courses
-        return failing_students
+                    failed_students.append(name)
+                    break  # Only add the student once if they have multiple failing grades
+        return failed_students
 
     def get_course_average(self, course):
         """
@@ -61,16 +60,17 @@ class AssessmentSystem:
         :param course: str, course name
         :return: float, average scores of this course if anyone have score of this course, or None if nobody have records.
         """
-        scores = []
+        total_score = 0
+        student_count = 0
         for student_data in self.students.values():
             score = student_data['courses'].get(course)
             if score is not None:
-                scores.append(score)
+                total_score += score
+                student_count += 1
 
-        if not scores:
-            return None
-
-        return sum(scores) / len(scores)
+        if student_count > 0:
+            return float(total_score) / student_count
+        return None
 
     def get_top_student(self):
         """
@@ -78,12 +78,13 @@ class AssessmentSystem:
         :return: str, name of student whose gpa is highest
         """
         top_student = None
-        highest_gpa = float('-inf')  # Initialize with negative infinity
+        highest_gpa = None
 
         for name in self.students:
             gpa = self.get_gpa(name)
-            if gpa is not None and gpa > highest_gpa:
-                top_student = name
-                highest_gpa = gpa
+            if gpa is not None:
+                if highest_gpa is None or gpa > highest_gpa:
+                    highest_gpa = gpa
+                    top_student = name
 
         return top_student

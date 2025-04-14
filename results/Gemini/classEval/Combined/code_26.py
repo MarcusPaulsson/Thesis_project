@@ -2,26 +2,24 @@ import csv
 
 class CSVProcessor:
     """
-    A class for processing CSV files, including reading, writing, and specific data transformations.
+    This is a class for processing CSV files, including reading and writing CSV data, as well as processing specific operations and saving as a new CSV file.
     """
+
+    def __init__(self):
+        pass
 
     def read_csv(self, file_name):
         """
-        Reads a CSV file and returns the header and data rows.
-
-        Args:
-            file_name (str): The name of the CSV file to read.
-
-        Returns:
-            tuple: A tuple containing the header (list of strings) and data (list of lists).
-                   Returns empty lists if the file is not found or an error occurs.
+        Read the csv file by file_name, get the title and data from it
+        :param file_name: str, name of the csv file
+        :return title, data: (list, list), first row is title, the rest is data
         """
         try:
-            with open(file_name, 'r', newline='') as csvfile:
-                reader = csv.reader(csvfile)
-                header = next(reader)
-                data = list(reader)  # Read all rows into a list
-                return header, data
+            with open(file_name, 'r', newline='') as file:
+                reader = csv.reader(file)
+                title = next(reader)
+                data = list(reader)
+                return title, data
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
             return [], []
@@ -31,63 +29,53 @@ class CSVProcessor:
 
     def write_csv(self, data, file_name):
         """
-        Writes data to a CSV file.
-
-        Args:
-            data (list of lists): The data to write, where the first sublist is the header.
-            file_name (str): The name of the CSV file to write to.
-
-        Returns:
-            int: 1 if the write was successful, 0 otherwise.
+        Write data into a csv file.
+        :param data: list of lists, the data to write. The first sublist is the header.
+        :param file_name: str, name of the csv file
+        :return: int, if success return 1, or 0 otherwise
         """
         if not data:
-            print("Warning: No data to write.")
             return 0
 
         try:
-            with open(file_name, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow(data[0])  # Write the header
-                writer.writerows(data[1:]) # Write the data rows
+            with open(file_name, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(data[0])  # Write the header row
+                for row in data[1:]:
+                    writer.writerow(row)
             return 1
         except Exception as e:
             print(f"An error occurred: {e}")
             return 0
 
-    def process_csv_data(self, column_index, input_file_name):
+    def process_csv_data(self, N, save_file_name):
         """
-        Reads a CSV file, extracts a specific column, converts it to uppercase,
-        and writes the processed data to a new CSV file.
-
-        Args:
-            column_index (int): The index of the column to extract and process (0-based).
-            input_file_name (str): The name of the input CSV file.
-
-        Returns:
-            int: 1 if the processing and writing were successful, 0 otherwise.
+        Read a csv file into variable title and data.
+        Only remain the N th (from 0) column data and Capitalize them, store the title and new data into a new csv file.
+        Add '_process' suffix after old file name, as a new file name.
+        :param N: int, the N th column(from 0)
+        :param save_file_name: str, the name of file that needs to be processed.
+        :return: int, if success return 1, or 0 otherwise
         """
         try:
-            header, data = self.read_csv(input_file_name)
-            if not header or not data:
-                print("Error: Could not read data from the input file.")
+            title, data = self.read_csv(save_file_name)
+            if not title or not data:
                 return 0
 
             processed_data = []
             for row in data:
-                if len(row) > column_index:
-                    processed_data.append([row[column_index].upper()])
+                if 0 <= N < len(row):
+                    processed_data.append([row[N].upper()])
                 else:
-                    print(f"Warning: Row {row} does not have enough columns. Skipping row.")
-                    return 0 #Return 0 if any row does not have enough columns
+                    print(f"Error: Column index {N} out of range for row: {row}")
+                    return 0
 
-            output_file_name = input_file_name.replace(".csv", "_process.csv")
+            new_file_name = save_file_name.replace(".csv", "_process.csv")
             
-            # Write the processed data to the new CSV file
-            data_to_write = [header]  # Use original header
-            data_to_write.extend(processed_data)
-
-            return self.write_csv(data_to_write, output_file_name)
+            # Prepare data for writing: header + processed data
+            data_to_write = [title] + processed_data
+            return self.write_csv(data_to_write, new_file_name)
 
         except Exception as e:
-            print(f"An error occurred during processing: {e}")
+            print(f"An error occurred: {e}")
             return 0

@@ -49,10 +49,9 @@ class AssessmentSystem:
 
         """
         if name in self.students and self.students[name]['courses']:
-            scores = list(self.students[name]['courses'].values())
-            return sum(scores) / len(scores)
-        else:
-            return None
+            total_score = sum(self.students[name]['courses'].values())
+            return float(total_score) / len(self.students[name]['courses'])
+        return None
 
     def get_all_students_with_fail_course(self):
         """
@@ -76,17 +75,18 @@ class AssessmentSystem:
         :param course: str, course name
         :return: float, average scores of this course if anyone have score of this course, or None if nobody have records.
         """
-        scores = []
+        total_score = 0
+        student_count = 0
         for name, student_data in self.students.items():
             if course in student_data['courses']:
                 score = student_data['courses'][course]
                 if score is not None:
-                  scores.append(score)
+                    total_score += score
+                    student_count += 1
 
-        if scores:
-            return sum(scores) / len(scores)
-        else:
-            return None
+        if student_count > 0:
+            return float(total_score) / student_count
+        return None
 
     def get_top_student(self):
         """

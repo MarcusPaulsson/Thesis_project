@@ -39,8 +39,6 @@ class Words2Numbers:
         "32"
         """
         textnum = textnum.replace('-', ' ')
-        textnum = textnum.replace('  ', ' ')
-
         current = result = 0
         tokens = textnum.split()
         for word in tokens:
@@ -51,23 +49,18 @@ class Words2Numbers:
                     result += current
                     current = 0
             elif word in self.ordinal_words:
-                current = self.ordinal_words[word]
-                result += current
-                current = 0
+                result = self.ordinal_words[word]
             else:
                 for ending, replacement in self.ordinal_endings:
                     if word.endswith(ending):
                         word = word[:-len(ending)] + replacement
                         if word in self.numwords:
                             scale, increment = self.numwords[word]
-                            current = increment
-                            result += current
+                            current = current * scale + increment
+                            result = current
                             current = 0
-                            break
-                else:
-                    return ""
-        if current:
-            result += current
+                        break
+        result += current
         return str(result)
 
     def is_valid_input(self, textnum):
@@ -80,19 +73,18 @@ class Words2Numbers:
         False
         """
         textnum = textnum.replace('-', ' ')
-        textnum = textnum.replace('  ', ' ')
         tokens = textnum.split()
         for word in tokens:
+            valid = False
             if word in self.numwords or word in self.ordinal_words:
-                continue
+                valid = True
             else:
-                valid_ordinal = False
                 for ending, replacement in self.ordinal_endings:
                     if word.endswith(ending):
                         word = word[:-len(ending)] + replacement
                         if word in self.numwords:
-                            valid_ordinal = True
+                            valid = True
                             break
-                if not valid_ordinal:
-                    return False
+            if not valid:
+                return False
         return True

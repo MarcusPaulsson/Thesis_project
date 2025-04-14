@@ -25,9 +25,9 @@ class StudentDatabaseProcessor:
             CREATE TABLE IF NOT EXISTS students (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                age INTEGER,
-                gender TEXT,
-                grade INTEGER
+                age INTEGER NOT NULL,
+                gender TEXT NOT NULL,
+                grade INTEGER NOT NULL
             )
         """)
         conn.commit()

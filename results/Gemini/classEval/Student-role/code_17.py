@@ -34,10 +34,8 @@ class CalendarUtil:
         []
 
         """
-        try:
+        if event in self.events:
             self.events.remove(event)
-        except ValueError:
-            pass
 
     def get_events(self, date):
         """
@@ -66,9 +64,7 @@ class CalendarUtil:
         """
         for event in self.events:
             if event['date'].date() == start_time.date():
-                if (start_time >= event['start_time'] and start_time < event['end_time']) or \
-                   (end_time > event['start_time'] and end_time <= event['end_time']) or \
-                   (start_time <= event['start_time'] and end_time >= event['end_time']):
+                if (start_time < event['end_time'] and end_time > event['start_time']):
                     return False
         return True
 
@@ -84,25 +80,29 @@ class CalendarUtil:
 
         """
         available_slots = []
-        current_time = datetime(date.year, date.month, date.day, 0, 0, 0)
+        start_of_day = datetime(date.year, date.month, date.day, 0, 0, 0)
         end_of_day = datetime(date.year, date.month, date.day, 23, 59, 59)
+        current_time = start_of_day
 
-        events_on_date = self.get_events(date)
-        events_on_date.sort(key=lambda x: x['start_time'])
+        events_on_date = sorted([event for event in self.events if event['date'].date() == date.date()], key=lambda x: x['start_time'])
 
         if not events_on_date:
-            available_slots.append((current_time, datetime(date.year, date.month, date.day+1, 0, 0, 0)))
+            available_slots.append((start_of_day, datetime(date.year, date.month, date.day) + timedelta(days=1)))
             return available_slots
         
         if current_time < events_on_date[0]['start_time']:
             available_slots.append((current_time, events_on_date[0]['start_time']))
         
         for i in range(len(events_on_date) - 1):
-            available_slots.append((events_on_date[i]['end_time'], events_on_date[i+1]['start_time']))
-            
-        if events_on_date[-1]['end_time'] < datetime(date.year, date.month, date.day+1, 0, 0, 0):
-            available_slots.append((events_on_date[-1]['end_time'], datetime(date.year, date.month, date.day+1, 0, 0, 0)))
-            
+            current_event_end = events_on_date[i]['end_time']
+            next_event_start = events_on_date[i+1]['start_time']
+            if current_event_end < next_event_start:
+                available_slots.append((current_event_end, next_event_start))
+
+        last_event_end = events_on_date[-1]['end_time']
+        if last_event_end < datetime(date.year, date.month, date.day) + timedelta(days=1):
+            available_slots.append((last_event_end, datetime(date.year, date.month, date.day) + timedelta(days=1)))
+        
         return available_slots
 
     def get_upcoming_events(self, num_events):
@@ -117,4 +117,6 @@ class CalendarUtil:
         [{'date': datetime.datetime(2023, 1, 1, 0, 0), 'start_time': datetime.datetime(2023, 1, 1, 0, 0), 'end_time': datetime.datetime(2023, 1, 1, 23, 0), 'description': 'New Year'}, {'date': datetime.datetime(2023, 1, 2, 0, 0), 'end_time': datetime.datetime(2023, 1, 2, 1, 0), 'description': 'New Year 2'}]
 
         """
-        return self.events[:num_events]
+        now = datetime.now()
+        upcoming_events = sorted([event for event in self.events if event['date'] >= now], key=lambda x: x['date'])
+        return upcoming_events[:num_events]

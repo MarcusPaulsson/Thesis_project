@@ -22,8 +22,8 @@ class StockPortfolioTracker:
         """
         stock_exists = False
         for s in self.portfolio:
-            if s['name'] == stock['name']:
-                s['quantity'] += stock['quantity']
+            if s["name"] == stock["name"] and s["price"] == stock["price"]:
+                s["quantity"] += stock["quantity"]
                 stock_exists = True
                 break
         if not stock_exists:
@@ -42,10 +42,10 @@ class StockPortfolioTracker:
 
         """
         for s in self.portfolio:
-            if s['name'] == stock['name']:
-                if s['quantity'] >= stock['quantity']:
-                    s['quantity'] -= stock['quantity']
-                    if s['quantity'] == 0:
+            if s["name"] == stock["name"] and s["price"] == stock["price"]:
+                if s["quantity"] >= stock["quantity"]:
+                    s["quantity"] -= stock["quantity"]
+                    if s["quantity"] == 0:
                         self.portfolio.remove(s)
                     return True
                 else:
@@ -65,7 +65,7 @@ class StockPortfolioTracker:
         [{'name': 'AAPL', 'price': 150.0, 'quantity': 10}]
 
         """
-        cost = stock['price'] * stock['quantity']
+        cost = stock["price"] * stock["quantity"]
         if self.cash_balance >= cost:
             self.cash_balance -= cost
             self.add_stock(stock)
@@ -88,11 +88,11 @@ class StockPortfolioTracker:
 
         """
         for s in self.portfolio:
-            if s['name'] == stock['name']:
-                if s['quantity'] >= stock['quantity']:
-                    self.cash_balance += stock['price'] * stock['quantity']
-                    s['quantity'] -= stock['quantity']
-                    if s['quantity'] == 0:
+            if s["name"] == stock["name"] and s["price"] == stock["price"]:
+                if s["quantity"] >= stock["quantity"]:
+                    self.cash_balance += stock["price"] * stock["quantity"]
+                    s["quantity"] -= stock["quantity"]
+                    if s["quantity"] == 0:
                         self.portfolio.remove(s)
                     return True
                 else:
@@ -111,7 +111,7 @@ class StockPortfolioTracker:
         """
         total_value = self.cash_balance
         for stock in self.portfolio:
-            total_value += stock['price'] * stock['quantity']
+            total_value += stock["price"] * stock["quantity"]
         return total_value
 
     def get_portfolio_summary(self):
@@ -127,7 +127,7 @@ class StockPortfolioTracker:
         total_value = self.calculate_portfolio_value()
         stock_values = []
         for stock in self.portfolio:
-            stock_values.append({'name': stock['name'], 'value': stock['price'] * stock['quantity']})
+            stock_values.append({"name": stock["name"], "value": stock["price"] * stock["quantity"]})
         return total_value, stock_values
 
     def get_stock_value(self, stock):
@@ -140,4 +140,4 @@ class StockPortfolioTracker:
         1500.0
 
         """
-        return stock['price'] * stock['quantity']
+        return stock["price"] * stock["quantity"]

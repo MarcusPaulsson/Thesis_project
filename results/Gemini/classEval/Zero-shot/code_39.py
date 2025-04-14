@@ -1,7 +1,6 @@
 from collections import deque
 import decimal
 
-
 class ExpressionCalculator:
     """
     This is a class in Python that can perform calculations with basic arithmetic operations, including addition, subtraction, multiplication, division, and modulo.
@@ -28,7 +27,6 @@ class ExpressionCalculator:
         expression = self.transform(expression)
         self.prepare(expression)
         postfix_list = list(self.postfix_stack)
-        self.postfix_stack = deque()
         stack = deque()
         for item in postfix_list:
             if item.isdigit() or (item.startswith('~') and item[1:].isdigit()):
@@ -38,8 +36,8 @@ class ExpressionCalculator:
                 first_value = stack.pop()
                 result = self._calculate(first_value, second_value, item)
                 stack.append(str(result))
-
         return float(stack[0])
+
 
     def prepare(self, expression):
         """
@@ -50,34 +48,34 @@ class ExpressionCalculator:
 
         expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
-        expression = self.transform(expression)
+        self.postfix_stack = deque()
         self.operator_stack = deque()
+        expression = expression.replace(" ", "")
         i = 0
         while i < len(expression):
-            c = expression[i]
-            if c.isdigit() or c == '~':
-                num = c
+            char = expression[i]
+            if char.isdigit() or (char == '~'):
+                num = char
                 i += 1
-                while i < len(expression) and expression[i].isdigit():
+                while i < len(expression) and (expression[i].isdigit()):
                     num += expression[i]
                     i += 1
                 self.postfix_stack.append(num)
                 i -= 1
-            elif self.is_operator(c):
-                while self.operator_stack and self.compare(c, self.operator_stack[-1]) and self.operator_stack[-1] != '(':
+            elif self.is_operator(char):
+                while self.operator_stack and self.compare(char, self.operator_stack[-1]):
                     self.postfix_stack.append(self.operator_stack.pop())
-                self.operator_stack.append(c)
-            elif c == '(':
-                self.operator_stack.append(c)
-            elif c == ')':
+                self.operator_stack.append(char)
+            elif char == '(':
+                self.operator_stack.append(char)
+            elif char == ')':
                 while self.operator_stack and self.operator_stack[-1] != '(':
                     self.postfix_stack.append(self.operator_stack.pop())
                 self.operator_stack.pop()
-
             i += 1
-
         while self.operator_stack:
             self.postfix_stack.append(self.operator_stack.pop())
+
 
     @staticmethod
     def is_operator(c):
@@ -92,6 +90,7 @@ class ExpressionCalculator:
         """
         return c in {'+', '-', '*', '/', '%'}
 
+
     def compare(self, cur, peek):
         """
         Compare the precedence of two operators
@@ -103,8 +102,9 @@ class ExpressionCalculator:
         True
 
         """
-        op_map = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2, '(': 0, ')': 0}
-        return op_map.get(cur, 0) <= op_map.get(peek, 0)
+        op_priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2, '(': 0, ')': 0}
+        return op_priority[peek] >= op_priority[cur]
+
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -134,6 +134,7 @@ class ExpressionCalculator:
         else:
             raise ValueError("Invalid operator")
 
+
     @staticmethod
     def transform(expression):
         """
@@ -146,12 +147,12 @@ class ExpressionCalculator:
 
         """
         expression = expression.replace(" ", "")
-        transformed_expression = ""
+        new_expression = ""
         i = 0
         while i < len(expression):
-            if expression[i] == '-' and (i == 0 or expression[i - 1] in {'(', '+', '-', '*', '/','%'}):
-                transformed_expression += '~'
+            if expression[i] == '-' and (i == 0 or expression[i - 1] in {'(', '+', '-', '*', '/'}):
+                new_expression += '~'
             else:
-                transformed_expression += expression[i]
+                new_expression += expression[i]
             i += 1
-        return transformed_expression
+        return new_expression

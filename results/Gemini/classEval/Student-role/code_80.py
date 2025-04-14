@@ -3,7 +3,6 @@ class SQLQueryBuilder:
     This class provides to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements. 
     """
 
-
     @staticmethod
     def select(table, columns='*', where=None):
         """
@@ -17,7 +16,8 @@ class SQLQueryBuilder:
         """
         query = f"SELECT {', '.join(columns) if isinstance(columns, list) else columns} FROM {table}"
         if where:
-            query += " WHERE " + " AND ".join([f"{k}='{v}'" for k, v in where.items()])
+            conditions = [f"{key}='{value}'" for key, value in where.items()]
+            query += f" WHERE {' AND '.join(conditions)}"
         return query
 
     @staticmethod
@@ -31,9 +31,8 @@ class SQLQueryBuilder:
         "INSERT INTO table1 (name, age) VALUES ('Test', '14')"
         """
         columns = ', '.join(data.keys())
-        values = ', '.join([f"'{v}'" for v in data.values()])
-        query = f"INSERT INTO {table} ({columns}) VALUES ({values})"
-        return query
+        values = ', '.join([f"'{value}'" for value in data.values()])
+        return f"INSERT INTO {table} ({columns}) VALUES ({values})"
 
     @staticmethod
     def delete(table, where=None):
@@ -47,7 +46,8 @@ class SQLQueryBuilder:
         """
         query = f"DELETE FROM {table}"
         if where:
-            query += " WHERE " + " AND ".join([f"{k}='{v}'" for k, v in where.items()])
+            conditions = [f"{key}='{value}'" for key, value in where.items()]
+            query += f" WHERE {' AND '.join(conditions)}"
         return query
 
     @staticmethod
@@ -60,7 +60,10 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.update('table1', {'name': 'Test2', 'age': 15}, where = {'name':'Test'})
         "UPDATE table1 SET name='Test2', age='15' WHERE name='Test'"
         """
-        query = f"UPDATE {table} SET " + ", ".join([f"{k}='{v}'" for k, v in data.items()])
+        query = f"UPDATE {table} SET "
+        updates = [f"{key}='{value}'" for key, value in data.items()]
+        query += ', '.join(updates)
         if where:
-            query += " WHERE " + " AND ".join([f"{k}='{v}'" for k, v in where.items()])
+            conditions = [f"{key}='{value}'" for key, value in where.items()]
+            query += f" WHERE {' AND '.join(conditions)}"
         return query

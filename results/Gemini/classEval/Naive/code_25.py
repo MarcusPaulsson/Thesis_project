@@ -17,11 +17,6 @@ class CookiesUtil:
         """
         Gets the cookies from the specified response,and save it to cookies_file.
         :param reponse: The response to get cookies from, dict.
-        >>> cookies_util = CookiesUtil('cookies.json')
-        >>> cookies_util.get_cookies({'cookies': {'key1': 'value1', 'key2': 'value2'}})
-        >>> cookies_util.cookies
-        {'key1': 'value1', 'key2': 'value2'}
-
         """
         if 'cookies' in reponse:
             self.cookies = reponse['cookies']
@@ -32,10 +27,6 @@ class CookiesUtil:
         """
         Loads the cookies from the cookies_file to the cookies data.
         :return: The cookies data, dict.
-        >>> cookies_util = CookiesUtil('cookies.json')
-        >>> cookies_util.load_cookies()
-        {'key1': 'value1', 'key2': 'value2'}
-
         """
         try:
             with open(self.cookies_file, 'r') as f:
@@ -44,6 +35,7 @@ class CookiesUtil:
             self.cookies = {}
         except json.JSONDecodeError:
             self.cookies = {}
+
         if self.cookies and 'cookies' in self.cookies:
             return self.cookies['cookies']
         elif self.cookies:
@@ -55,20 +47,15 @@ class CookiesUtil:
         """
         Saves the cookies to the cookies_file, and returns True if successful, False otherwise.
         :return: True if successful, False otherwise.
-        >>> cookies_util = CookiesUtil('cookies.json')
-        >>> cookies_util.cookies = {'key1': 'value1', 'key2': 'value2'}
-        >>> cookies_util._save_cookies()
-        True
-
         """
-        if self.cookies_file:
-            try:
-                with open(self.cookies_file, 'w') as f:
-                    json.dump(self.cookies, f)
-                return True
-            except Exception:
-                return False
-        else:
+        if not self.cookies_file:
+            return False
+
+        try:
+            with open(self.cookies_file, 'w') as f:
+                json.dump(self.cookies, f)
+            return True
+        except Exception:
             return False
 
     def set_cookies(self, request):

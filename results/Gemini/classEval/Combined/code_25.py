@@ -2,43 +2,30 @@ import json
 
 class CookiesUtil:
     """
-    Utility class for managing and manipulating cookies.
-
-    Handles loading, saving, retrieving, and setting cookies.
+    This is a class as utility for managing and manipulating Cookies, including methods for retrieving, saving, and setting Cookies data.
     """
 
     def __init__(self, cookies_file):
         """
         Initializes the CookiesUtil with the specified cookies file.
-
-        :param cookies_file: The path to the cookies file (JSON format).
+        :param cookies_file: The cookies file to use, str.
         """
         self.cookies_file = cookies_file
-        self.cookies = {}  # Initialize cookies as an empty dictionary
+        self.cookies = {}
 
-    def get_cookies(self, response):
+    def get_cookies(self, reponse):
         """
-        Extracts cookies from a response dictionary.
-
-        If the 'cookies' key exists in the response, its value is assigned to self.cookies.
-
-        :param response: A dictionary representing the response, potentially containing a 'cookies' key.
+        Gets the cookies from the specified response.
+        :param reponse: The response to get cookies from, dict.
         """
-        if isinstance(response, dict) and 'cookies' in response:
-            self.cookies = response['cookies']
+        if 'cookies' in reponse:
+            self.cookies = reponse['cookies']
 
     def load_cookies(self):
         """
-        Loads cookies from the specified cookies file.
-
-        If the file exists and contains valid JSON, the cookies are loaded into self.cookies.
-        If the file does not exist or contains invalid JSON, self.cookies remains an empty dictionary.
-
-        :return: A dictionary containing the loaded cookies. Returns an empty dictionary if loading fails.
+        Loads the cookies from the cookies_file.
+        :return: The cookies data, dict.
         """
-        if not self.cookies_file:
-            return {}
-
         try:
             with open(self.cookies_file, 'r') as f:
                 self.cookies = json.load(f)
@@ -46,13 +33,16 @@ class CookiesUtil:
             self.cookies = {}
         except json.JSONDecodeError:
             self.cookies = {}
-        return self.cookies
+
+        if isinstance(self.cookies, dict):
+            return self.cookies
+        else:
+            return {}
 
     def _save_cookies(self):
         """
-        Saves the current cookies to the specified cookies file.
-
-        :return: True if the cookies were successfully saved, False otherwise.
+        Saves the cookies to the cookies_file.
+        :return: True if successful, False otherwise.
         """
         if not self.cookies_file:
             return False
@@ -66,13 +56,7 @@ class CookiesUtil:
 
     def set_cookies(self, request):
         """
-        Sets the cookies in the specified request dictionary.
-
-        The cookies are added to the request dictionary under the 'cookies' key as a string representation
-        of the cookie dictionary.
-
-        :param request: The request dictionary to which cookies will be added.
+        Sets the cookies to the specified request.
+        :param request: The request to set cookies to, dict.
         """
-        if not isinstance(request, dict):
-            return
-        request['cookies'] = f"cookies={str(self.cookies)}"
+        request['cookies'] = "cookies=" + str(self.cookies)

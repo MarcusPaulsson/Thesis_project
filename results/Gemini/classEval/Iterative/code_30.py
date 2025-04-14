@@ -50,7 +50,8 @@ class DataStatistics2:
         >>> ds2.get_variance()
         1.25
         """
-        return float(round(np.var(self.data), 2))
+        variance = np.var(self.data)
+        return round(float(variance), 2)
 
     def get_std_deviation(self):
         """
@@ -60,7 +61,8 @@ class DataStatistics2:
         >>> ds2.get_std_deviation()
         1.12
         """
-        return float(round(np.std(self.data), 2))
+        std_deviation = np.std(self.data)
+        return round(float(std_deviation), 2)
 
     def get_correlation(self):
         """
@@ -72,4 +74,5 @@ class DataStatistics2:
         """
         if len(self.data) <= 1:
             return 1.0
-        return float(round(np.corrcoef(self.data)[0, 0], 2))
+        correlation = np.corrcoef(self.data)
+        return float(correlation[0, 1]) if correlation.shape == (2, 2) else 1.0

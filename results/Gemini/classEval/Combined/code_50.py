@@ -3,20 +3,15 @@ import os
 
 class JSONProcessor:
     """
-    A class to process JSON files, including reading, writing, and removing keys.
+    This is a class to process JSON file, including reading and writing JSON files, as well as processing JSON data by removing a specified key from the JSON object.
     """
 
     def read_json(self, file_path):
         """
-        Reads a JSON file and returns the data.
-
-        Args:
-            file_path (str): The path to the JSON file.
-
-        Returns:
-            dict: The data from the JSON file if read successfully.
-            int: 0 if the file does not exist.
-            int: -1 if an error occurs during the reading process (e.g., invalid JSON).
+        Read a JSON file and return the data.
+        :param file_path: str, the path of the JSON file.
+        :return: dict, the data from the JSON file if read successfully, or None if an error occurs during the reading process,
+                 or None if the file does not exist.
         """
         if not os.path.exists(file_path):
             return 0
@@ -24,7 +19,7 @@ class JSONProcessor:
         try:
             with open(file_path, 'r') as file:
                 data = json.load(file)
-            return data
+                return data
         except json.JSONDecodeError:
             return -1
         except Exception:
@@ -32,44 +27,37 @@ class JSONProcessor:
 
     def write_json(self, data, file_path):
         """
-        Writes data to a JSON file.
+        Write data to a JSON file and save it to the given path.
 
-        Args:
-            data (dict): The data to be written to the JSON file.
-            file_path (str): The path to the JSON file.
-
-        Returns:
-            int: 1 if the writing process is successful.
-            int: -1 if an error occurs during the writing process.
+        :param data: dict, the data to be written to the JSON file.
+        :param file_path: str, the path of the JSON file.
+        :return: True if the writing process is successful, False if an error occurs during the writing process.
         """
         try:
             with open(file_path, 'w') as file:
-                json.dump(data, file, indent=4)  # Add indent for readability
+                json.dump(data, file)
             return 1
         except Exception:
             return -1
 
     def process_json(self, file_path, remove_key):
         """
-        Reads a JSON file, removes a specified key, and rewrites the modified data back to the file.
+        Read a JSON file and process the data by removing a specified key and rewrite the modified data back to the file.
 
-        Args:
-            file_path (str): The path to the JSON file.
-            remove_key (str): The key to be removed.
-
-        Returns:
-            int: 1 if the specified key is successfully removed and the data is written back.
-            int: 0 if the file does not exist or the specified key does not exist in the data.
+        :param file_path: str, the path of the JSON file.
+        :param remove_key: str, the key to be removed.
+        :return: True if the specified key is successfully removed and the data is written back,
+                 False if the file does not exist or the specified key does not exist in the data.
         """
         data = self.read_json(file_path)
 
         if data == 0:
             return 0
 
-        if data == -1:  # Handle JSONDecodeError or other read errors
+        if data == -1:
             return 0
 
-        if isinstance(data, dict) and remove_key in data:
+        if remove_key in data:
             del data[remove_key]
             if self.write_json(data, file_path) == 1:
                 return 1

@@ -19,8 +19,11 @@ class ExcelProcessor:
             workbook = openpyxl.load_workbook(file_name)
             sheet = workbook.active
             data = []
-            for row in sheet.iter_rows(values_only=True):
-                data.append(tuple(row))
+            for row in sheet.iter_rows():
+                row_data = []
+                for cell in row:
+                    row_data.append(cell.value)
+                data.append(tuple(row_data))
             return data
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
@@ -50,12 +53,12 @@ class ExcelProcessor:
                 return 0
             workbook = openpyxl.Workbook()
             sheet = workbook.active
-            for row in data:
-                sheet.append(row)
+            for row_data in data:
+                sheet.append(row_data)
             workbook.save(file_name)
             return 1
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred during writing: {e}")
             return 0
 
     def process_excel_data(self, N, save_file_name):
@@ -70,20 +73,20 @@ class ExcelProcessor:
         try:
             data = self.read_excel(save_file_name)
             if data is None:
-                return 0
+                return 0, None
 
             new_data = []
             for row in data:
-                row_list = list(row)
-                if 0 <= N < len(row_list):
-                    row_list.append(str(row_list[N]).upper())
+                row = list(row)
+                if 0 <= N < len(row):
+                    new_row = row + [str(row[N]).upper()]
+                    new_data.append(tuple(new_row))
                 else:
-                    return 0
-                new_data.append(tuple(row_list))
+                    return 0, None
 
             output_file_name = "processed_" + save_file_name
             write_result = self.write_excel(new_data, output_file_name)
             return write_result, output_file_name
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred during processing: {e}")
             return 0, None

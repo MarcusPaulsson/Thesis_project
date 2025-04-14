@@ -46,7 +46,8 @@ class EncryptionUtils:
         key_len = len(self.key)
         for i, char in enumerate(plaintext):
             key_char = self.key[i % key_len]
-            shift = ord(key_char) - ord('a')
+            shift = ord(key_char.lower()) - ord('a')
+
             if 'a' <= char <= 'z':
                 shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
@@ -68,20 +69,20 @@ class EncryptionUtils:
         """
         if rails <= 1:
             return plain_text
-        fence = [[] for _ in range(rails)]
-        rail = 0
-        direction = 1  # 1 for down, -1 for up
 
-        for char in plain_text:
-            fence[rail].append(char)
-            rail += direction
+        rail_matrix = [['' for _ in range(len(plain_text))] for _ in range(rails)]
+        row, direction = 0, 1
 
-            if rail == rails:
-                rail = rails - 2
+        for col in range(len(plain_text)):
+            rail_matrix[row][col] = plain_text[col]
+
+            row += direction
+
+            if row == rails - 1:
                 direction = -1
-            elif rail == -1:
-                rail = 1
+            elif row == 0:
                 direction = 1
 
-        ciphertext = "".join("".join(rail) for rail in fence)
+        ciphertext = ''.join(''.join(row) for row in rail_matrix)
+        ciphertext = ciphertext.replace("","")
         return ciphertext

@@ -34,26 +34,7 @@ class NLPDataProcessor2:
         word_counts = Counter()
         for words in words_list:
             word_counts.update(words)
-
-        # Sort the word frequency dictionary by value in descending order
-        sorted_word_counts = dict(sorted(word_counts.items(), key=lambda item: item[1], reverse=True))
-        top_5_word_counts = {}
-        count = 0
-        # for word, frequency in sorted_word_counts.items():
-        #   if count < 5:
-        #     top_5_word_counts[word] = frequency
-        #     count += 1
-        # return top_5_word_counts
-        if not words_list:
-            return {}
-        
-        all_words = []
-        for sublist in words_list:
-            all_words.extend(sublist)
-        
-        word_counts = Counter(all_words)
-        
-        return dict(word_counts.most_common(5))
+        return dict(word_counts)
 
     def process(self, string_list):
         """
@@ -64,5 +45,7 @@ class NLPDataProcessor2:
         {'this': 2, 'is': 2, 'test': 2, 'a': 1, 'another': 1}
         """
         words_list = self.process_data(string_list)
-        word_frequency = self.calculate_word_frequency(words_list)
-        return word_frequency
+        all_words = []
+        for sublist in words_list:
+            all_words.extend(sublist)
+        return self.calculate_word_frequency([all_words])

@@ -6,11 +6,13 @@ class DatabaseProcessor:
     This is a class for processing a database, supporting to create tables, insert data into the database, search for data based on name, and delete data from the database.
     """
 
+
     def __init__(self, database_name):
         """
         Initialize database name of database processor
         """
         self.database_name = database_name
+
 
     def create_table(self, table_name, key1, key2):
         """
@@ -24,19 +26,20 @@ class DatabaseProcessor:
         try:
             conn = sqlite3.connect(self.database_name)
             cursor = conn.cursor()
-            cursor.execute(f'''
+            cursor.execute(f"""
                 CREATE TABLE IF NOT EXISTS {table_name} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     {key1} TEXT,
                     {key2} INTEGER
                 )
-            ''')
+            """)
             conn.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
         finally:
             if conn:
                 conn.close()
+
 
     def insert_into_database(self, table_name, data):
         """
@@ -48,7 +51,6 @@ class DatabaseProcessor:
                 {'name': 'Alice', 'age': 30}
             ])
         """
-        conn = None
         try:
             conn = sqlite3.connect(self.database_name)
             cursor = conn.cursor()
@@ -56,16 +58,15 @@ class DatabaseProcessor:
                 columns = ', '.join(row.keys())
                 placeholders = ', '.join(['?'] * len(row))
                 values = tuple(row.values())
-                cursor.execute(f'''
-                    INSERT INTO {table_name} ({columns})
-                    VALUES ({placeholders})
-                ''', values)
+                sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+                cursor.execute(sql, values)
             conn.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
         finally:
             if conn:
                 conn.close()
+
 
     def search_database(self, table_name, name):
         """
@@ -77,14 +78,10 @@ class DatabaseProcessor:
         >>> db.search_database('user', 'John')
         [(1, 'John', 25)]
         """
-        conn = None
         try:
             conn = sqlite3.connect(self.database_name)
             cursor = conn.cursor()
-            cursor.execute(f'''
-                SELECT * FROM {table_name}
-                WHERE name = ?
-            ''', (name,))
+            cursor.execute(f"SELECT * FROM {table_name} WHERE name=?", (name,))
             result = cursor.fetchall()
             if result:
                 return result
@@ -97,6 +94,7 @@ class DatabaseProcessor:
             if conn:
                 conn.close()
 
+
     def delete_from_database(self, table_name, name):
         """
         Delete rows from the specified table in the database with a matching name.
@@ -104,14 +102,10 @@ class DatabaseProcessor:
         :param name: str, the name to match for deletion.
         >>> db.delete_from_database('user', 'John')
         """
-        conn = None
         try:
             conn = sqlite3.connect(self.database_name)
             cursor = conn.cursor()
-            cursor.execute(f'''
-                DELETE FROM {table_name}
-                WHERE name = ?
-            ''', (name,))
+            cursor.execute(f"DELETE FROM {table_name} WHERE name=?", (name,))
             conn.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")

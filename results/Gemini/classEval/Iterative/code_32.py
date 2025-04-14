@@ -16,45 +16,55 @@ class DecryptionUtils:
         :param ciphertext: The ciphertext to decipher,str.
         :param shift: The shift to use for decryption,int.
         :return: The deciphered plaintext,str.
+        >>> d = DecryptionUtils('key')
+        >>> d.caesar_decipher('ifmmp', 1)
+        'hello'
+
         """
-        result = ''
+        plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
                 start = ord('a')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                shifted_char = chr((ord(char) - start - (shift % 26)) % 26 + start)
             elif 'A' <= char <= 'Z':
                 start = ord('A')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                shifted_char = chr((ord(char) - start - (shift % 26)) % 26 + start)
             else:
                 shifted_char = char
-            result += shifted_char
-        return result
+            plaintext += shifted_char
+        return plaintext
 
     def vigenere_decipher(self, ciphertext):
         """
         Deciphers the given ciphertext using the Vigenere cipher
         :param ciphertext: The ciphertext to decipher,str.
         :return: The deciphered plaintext,str.
-        """
-        key = self.key
-        plaintext = ''
-        key_len = len(key)
-        key = key.lower()  # Ensure key is lowercase for consistent shifting
-        for i, char in enumerate(ciphertext):
-            if 'a' <= char <= 'z':
-                key_char = key[i % key_len]
-                key_shift = ord(key_char) - ord('a')
-                start = ord('a')
-                decrypted_char = chr((ord(char) - start - key_shift) % 26 + start)
-            elif 'A' <= char <= 'Z':
-                key_char = key[i % key_len]
-                key_shift = ord(key_char) - ord('a')
-                start = ord('A')
-                decrypted_char = chr((ord(char) - start - key_shift) % 26 + start)
+        >>> d = DecryptionUtils('key')
+        >>> d.vigenere_decipher('ifmmp')
+        'ybocl'
 
+        """
+        plaintext = ''
+        key = self.key
+        key_length = len(key)
+        key_index = 0
+
+        for char in ciphertext:
+            if 'a' <= char <= 'z':
+                key_char = key[key_index % key_length]
+                shift = ord(key_char) - ord('a')
+                start = ord('a')
+                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                key_index += 1
+            elif 'A' <= char <= 'Z':
+                key_char = key[key_index % key_length]
+                shift = ord(key_char.lower()) - ord('a')
+                start = ord('A')
+                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                key_index += 1
             else:
-                decrypted_char = char
-            plaintext += decrypted_char
+                shifted_char = char
+            plaintext += shifted_char
         return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):
@@ -63,19 +73,24 @@ class DecryptionUtils:
         :param encrypted_text: The ciphertext to decipher,str.
         :param rails: The number of rails to use for decryption,int.
         :return: The deciphered plaintext,str.
-        """
-        n = len(encrypted_text)
-        rail = [['' for _ in range(n)] for _ in range(rails)]
+        >>> d = DecryptionUtils('key')
+        >>> d.rail_fence_decipher('Hoo!el,Wrdl l', 3)
+        'Hello, World!'
 
-        # Mark the positions of the rail fence
+        """
+        length = len(encrypted_text)
+        rail = [['' for _ in range(length)] for _ in range(rails)]
+
+        # Fill the rail matrix to mark the places with '*'
         row, col = 0, 0
         direction = 1  # 1 for down, -1 for up
 
-        for i in range(n):
+        for i in range(length):
             rail[row][col] = '*'
             col += 1
 
             row += direction
+
             if row == rails:
                 row = rails - 2
                 direction = -1
@@ -83,24 +98,25 @@ class DecryptionUtils:
                 row = 1
                 direction = 1
 
-        # Fill the rail fence with the encrypted text
+        # Fill the rail matrix with the encrypted text
         index = 0
         for i in range(rails):
-            for j in range(n):
-                if rail[i][j] == '*' and index < n:
+            for j in range(length):
+                if rail[i][j] == '*' and index < length:
                     rail[i][j] = encrypted_text[index]
                     index += 1
 
-        # Read the rail fence in the same pattern to get the plaintext
+        # Read the rail matrix in zigzag manner to get the original text
         result = ""
         row, col = 0, 0
         direction = 1
 
-        for i in range(n):
+        for i in range(length):
             result += rail[row][col]
             col += 1
 
             row += direction
+
             if row == rails:
                 row = rails - 2
                 direction = -1

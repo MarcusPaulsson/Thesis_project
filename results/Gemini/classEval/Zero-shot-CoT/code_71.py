@@ -37,15 +37,15 @@ class PushBoxGame:
         >>> game.player_col
         1
         """
-        for row_index, row in enumerate(self.map):
-            for col_index, cell in enumerate(row):
-                if cell == 'O':
-                    self.player_row = row_index
-                    self.player_col = col_index
-                elif cell == 'G':
-                    self.targets.append((row_index, col_index))
-                elif cell == 'X':
-                    self.boxes.append((row_index, col_index))
+        for row in range(len(self.map)):
+            for col in range(len(self.map[row])):
+                if self.map[row][col] == 'O':
+                    self.player_row = row
+                    self.player_col = col
+                elif self.map[row][col] == 'G':
+                    self.targets.append((row, col))
+                elif self.map[row][col] == 'X':
+                    self.boxes.append((row, col))
         self.target_count = len(self.targets)
 
     def check_win(self):
@@ -56,12 +56,13 @@ class PushBoxGame:
         >>> game = PushBoxGame(["#####", "#O  #", "# X #", "#  G#", "#####"]) 
         >>> game.check_win()
         """
+        boxes_on_targets = 0
         for box in self.boxes:
-            if box not in self.targets:
-                self.is_game_over = False
-                return self.is_game_over
-        self.is_game_over = True
+            if box in self.targets:
+                boxes_on_targets += 1
+        self.is_game_over = boxes_on_targets == self.target_count
         return self.is_game_over
+
 
     def move(self, direction):
         """
@@ -107,25 +108,26 @@ class PushBoxGame:
 
         box_index = -1
         for i, box in enumerate(self.boxes):
-            if box == (new_row, new_col):
+            if box[0] == new_row and box[1] == new_col:
                 box_index = i
                 break
 
         if box_index != -1:
-            box_row, box_col = self.boxes[box_index]
+            box_row = new_row
+            box_col = new_col
             new_box_row = box_row + (new_row - self.player_row)
             new_box_col = box_col + (new_col - self.player_col)
 
             if self.map[new_box_row][new_box_col] == '#':
                 return self.check_win()
 
-            occupied = False
-            for box in self.boxes:
-                if box == (new_box_row, new_box_col):
-                    occupied = True
+            box_blocked = False
+            for other_box in self.boxes:
+                if other_box[0] == new_box_row and other_box[1] == new_box_col:
+                    box_blocked = True
                     break
-
-            if occupied:
+            
+            if box_blocked:
                 return self.check_win()
 
             self.boxes[box_index] = (new_box_row, new_box_col)
@@ -134,12 +136,9 @@ class PushBoxGame:
         else:
             self.player_row = new_row
             self.player_col = new_col
-
+        
         return self.check_win()
 
     def print_map(self):
-        """
-        Print the current map of the game.
-        """
         for row in self.map:
             print(' '.join(row))

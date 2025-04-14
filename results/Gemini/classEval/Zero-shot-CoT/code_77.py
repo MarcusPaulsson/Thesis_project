@@ -36,13 +36,16 @@ class Snake:
         new_head = (x + direction[0], y + direction[1])
 
         if new_head == self.food_position:
-            self.eat_food()
+            self.length += 1
+            self.score += 100
             self.positions.insert(0, new_head)
+            self.eat_food()
         elif new_head in self.positions[1:]:
             self.reset()
         else:
             self.positions.insert(0, new_head)
-            self.positions.pop()
+            self.positions = self.positions[:self.length]
+
 
     def random_food_position(self):
         """

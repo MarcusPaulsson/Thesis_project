@@ -1,11 +1,11 @@
 class Server:
     """
-    A server class that manages a whitelist, sends and receives messages, and displays information.
+    This is a class as a server, which handles a white list, message sending and receiving, and information display.
     """
 
     def __init__(self):
         """
-        Initializes the server with an empty whitelist and empty dictionaries for sent and received information.
+        Initialize the whitelist as an empty list, and initialize the sending and receiving information as an empty dictionary
         """
         self.white_list = []
         self.send_struct = {}
@@ -13,48 +13,36 @@ class Server:
 
     def add_white_list(self, addr):
         """
-        Adds an address to the whitelist if it's not already present.
-
-        Args:
-            addr: The address to add (must be hashable).
-
-        Returns:
-            True if the address was added, False otherwise.
+        Add an address to the whitelist and do nothing if it already exists
+        :param addr: int, address to be added
+        :return: True if the address was added, False otherwise.
         """
-        if addr not in self.white_list:
+        if addr in self.white_list:
+            return False
+        else:
             self.white_list.append(addr)
             return True
-        return False
 
     def del_white_list(self, addr):
         """
-        Removes an address from the whitelist if it exists.
-
-        Args:
-            addr: The address to remove (must be hashable).
-
-        Returns:
-            True if the address was removed, False otherwise.
+        Remove an address from the whitelist and do nothing if it does not exist
+        :param addr: int, address to be deleted
+        :return: True if the address was deleted, False otherwise.
         """
         if addr in self.white_list:
             self.white_list.remove(addr)
             return True
-        return False
+        else:
+            return False
 
     def recv(self, info):
         """
-        Receives information if the sender's address is on the whitelist.
-
-        Args:
-            info: A dictionary containing 'addr' (the sender's address) and 'content' (the message).
-
-        Returns:
-            The message content if the sender is on the whitelist and the info is valid.
-            False if the sender is not on the whitelist.
-            None if the info is invalid.
+        Receive information containing address and content. If the address is on the whitelist, receive the content; otherwise, do not receive it
+        :param info: dict, information dictionary containing address and content
+        :return: The content of the information if successfully received, False if the address is not on the whitelist, -1 if the info is invalid.
         """
         if not isinstance(info, dict) or "addr" not in info or "content" not in info:
-            return None
+            return -1
 
         addr = info["addr"]
         content = info["content"]
@@ -62,36 +50,30 @@ class Server:
         if addr in self.white_list:
             self.receive_struct = info
             return content
-        return False
+        else:
+            return False
 
     def send(self, info):
         """
-        Sends information.  Stores the information in the `send_struct`.
-
-        Args:
-            info: A dictionary containing 'addr' (the recipient's address) and 'content' (the message).
-
-        Returns:
-            True if the information was successfully stored, False if the info is invalid.
+        Send information containing address and content
+        :param info: dict, information dictionary containing address and content
+        :return: None if successfully sent, an error message string otherwise.
         """
         if not isinstance(info, dict) or "addr" not in info or "content" not in info:
-            return False
+            return "info structure is not correct"
 
         self.send_struct = info
-        return True
+        return
 
-    def show(self, data_type):
+    def show(self, type):
         """
-        Returns the stored send or receive data.
-
-        Args:
-            data_type:  A string, either "send" or "receive", indicating which data to return.
-
-        Returns:
-            The send_struct or receive_struct dictionary, or None if the data_type is invalid.
+        Returns struct of the specified type
+        :param type: string, the type of struct to be returned, which can be 'send' or 'receive'
+        :return: The corresponding struct if type is 'send' or 'receive', False otherwise.
         """
-        if data_type == "send":
+        if type == "send":
             return self.send_struct
-        if data_type == "receive":
+        elif type == "receive":
             return self.receive_struct
-        return None
+        else:
+            return False

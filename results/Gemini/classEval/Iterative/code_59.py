@@ -21,19 +21,13 @@ class MovieBookingSystem:
         :param end_time: str
         :param n: int, the size of seats(n*n)
         """
-        try:
-            start_time_dt = datetime.strptime(start_time, '%H:%M')
-            end_time_dt = datetime.strptime(end_time, '%H:%M')
-            seats = np.zeros((n, n))
-            self.movies.append({
-                'name': name,
-                'price': price,
-                'start_time': start_time_dt,
-                'end_time': end_time_dt,
-                'seats': seats
-            })
-        except ValueError:
-            print("Invalid time format. Please use HH:MM format.")
+        self.movies.append({
+            'name': name,
+            'price': price,
+            'start_time': datetime.strptime(start_time, '%H:%M'),
+            'end_time': datetime.strptime(end_time, '%H:%M'),
+            'seats': np.zeros((n, n))
+        })
 
     def book_ticket(self, name, seats_to_book):
         """
@@ -47,21 +41,19 @@ class MovieBookingSystem:
             if movie['name'] == name:
                 seats = movie['seats']
                 rows, cols = seats.shape
-                
-                # Check for invalid seat numbers
                 for row, col in seats_to_book:
                     if not (0 <= row < rows and 0 <= col < cols):
-                        return "Invalid seat number."
+                        return 'Booking failed.'
 
-                booking_success = True
+                booking_possible = True
                 for row, col in seats_to_book:
-                    if seats[row, col] == 1:
-                        booking_success = False
+                    if seats[row][col] == 1:
+                        booking_possible = False
                         break
                 
-                if booking_success:
+                if booking_possible:
                     for row, col in seats_to_book:
-                        seats[row, col] = 1
+                        seats[row][col] = 1
                     return 'Booking success.'
                 else:
                     return 'Booking failed.'
@@ -74,17 +66,10 @@ class MovieBookingSystem:
         :param end_time: str, end time in HH:MM format
         :return: list of str, names of available movies
         """
-        available_movies_list = []
-        try:
-            start_time_dt = datetime.strptime(start_time, '%H:%M').time()
-            end_time_dt = datetime.strptime(end_time, '%H:%M').time()
-
-            for movie in self.movies:
-                movie_start_time = movie['start_time'].time()
-                movie_end_time = movie['end_time'].time()
-
-                if movie_start_time <= end_time_dt and movie_end_time >= start_time_dt:
-                    available_movies_list.append(movie['name'])
-        except ValueError:
-            print("Invalid time format. Please use HH:MM format.")
-        return available_movies_list
+        available = []
+        start = datetime.strptime(start_time, '%H:%M')
+        end = datetime.strptime(end_time, '%H:%M')
+        for movie in self.movies:
+            if movie['start_time'] <= end and movie['end_time'] >= start:
+                available.append(movie['name'])
+        return available

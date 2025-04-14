@@ -19,13 +19,19 @@ class AutomaticGuitarSimulator:
         if not self.play_text or self.play_text.isspace():
             return []
 
-        parts = self.play_text.split()
-        play_list = []
-        for part in parts:
-            chord = ''.join([c for c in part if c.isalpha()])
-            tune = ''.join([c for c in part if c.isdigit()])
-            play_list.append({'Chord': chord, 'Tune': tune})
-        return play_list
+        score_list = self.play_text.split()
+        result = []
+
+        for score in score_list:
+            chord = ''.join(filter(str.isalpha, score))
+            tune = ''.join(filter(str.isdigit, score))
+            result.append({'Chord': chord, 'Tune': tune})
+
+        if display:
+            for item in result:
+                self.display(item['Chord'], item['Tune'])
+
+        return result
 
     def display(self, key, value):
         """

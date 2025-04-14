@@ -11,33 +11,30 @@ class KappaCalculator:
         Calculate Cohen's kappa coefficient.
 
         Args:
-            testData: A square matrix representing the ratings.
+            testData: A square matrix representing the confusion matrix.  Rows and columns
+                      represent the categories being rated.
 
         Returns:
-            The Cohen's kappa coefficient.
+            float: Cohen's kappa value.
 
         Raises:
-            ValueError: If the input data is not a square matrix.
-            ZeroDivisionError: If there is division by zero.
+            ValueError: if the input matrix is not square.
         """
-        matrix = np.asarray(testData, dtype=float)
-        if len(matrix.shape) != 2 or matrix.shape[0] != matrix.shape[1]:
-            raise ValueError("Input must be a square matrix.")
+        matrix = np.array(testData)
+        if matrix.shape[0] != matrix.shape[1]:
+            raise ValueError("Input matrix must be square.")
 
-        n = matrix.shape[0]  # Dimension of the matrix
-
-        observed_agreement = np.trace(matrix) / np.sum(matrix)
+        n = len(matrix)
+        total_sum = np.sum(matrix)
+        observed_agreement = np.trace(matrix) / total_sum
 
         row_sums = np.sum(matrix, axis=1)
         col_sums = np.sum(matrix, axis=0)
-        total_sum = np.sum(matrix)
 
         expected_agreement = np.sum(row_sums * col_sums) / (total_sum ** 2)
 
         kappa = (observed_agreement - expected_agreement) / (1 - expected_agreement)
-
         return kappa
-
 
     @staticmethod
     def fleiss_kappa(testData):
@@ -45,29 +42,31 @@ class KappaCalculator:
         Calculate Fleiss' kappa coefficient for inter-rater reliability.
 
         Args:
-            testData: A matrix of shape (N, k) where N is the number of subjects and k is the number of categories.  Each cell contains the number of raters who assigned that category to that subject.
+            testData: A matrix where rows represent subjects and columns represent categories.
+                      Each cell contains the number of raters who assigned that category to that subject.
 
         Returns:
-            The Fleiss' kappa coefficient.
-
-        Raises:
-            ValueError: If the input data is not a matrix.
-            ZeroDivisionError: If there is division by zero.
+            float: Fleiss' kappa value.
         """
+        data = np.array(testData)
+        N, k = data.shape
+        n = np.sum(data[0, :])  # Assuming all subjects have the same number of ratings
 
-        matrix = np.asarray(testData, dtype=float)
-        if len(matrix.shape) != 2:
-            raise ValueError("Input must be a matrix.")
+        total_ratings = N * n
 
-        N = matrix.shape[0]  # Number of subjects
-        k = matrix.shape[1]  # Number of categories
-        n = np.sum(matrix[0, :]) # Number of raters.  Assume constant number of raters
+        # Calculate the proportion of all assignments which were to the ith category
+        p_i = np.sum(data, axis=0) / total_ratings
 
-        p_j = np.sum(matrix, axis=0) / (N * n)
-        P_i = (np.sum(matrix ** 2, axis=1) - n) / (n * (n - 1))
-        P_bar = np.mean(P_i)
-        P_e = np.sum(p_j ** 2)
+        # Calculate the extent to which raters agree for the jth subject
+        P_j = (np.sum(data**2, axis=1) - n) / (n * (n - 1))
 
-        kappa = (P_bar - P_e) / (1 - P_e)
+        # Calculate the mean extent to which raters agree
+        P_mean = np.mean(P_j)
+
+        # Calculate the extent to which agreement is expected by chance
+        P_e = np.sum(p_i**2)
+
+        # Calculate Fleiss' Kappa
+        kappa = (P_mean - P_e) / (1 - P_e)
 
         return kappa

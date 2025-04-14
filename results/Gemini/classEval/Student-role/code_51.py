@@ -17,11 +17,13 @@ class KappaCalculator:
         0.25
         """
         matrix = np.array(testData)
-        po = np.trace(matrix) / np.sum(matrix)
-        row_sums = np.sum(matrix, axis=1)
-        col_sums = np.sum(matrix, axis=0)
-        pe = np.sum(row_sums * col_sums) / (np.sum(matrix) ** 2)
-        kappa = (po - pe) / (1 - pe)
+        n = matrix.shape[0]
+        observed_agreement = np.trace(matrix) / np.sum(matrix)
+        expected_agreement = 0
+        for i in range(k):
+            expected_agreement += np.sum(matrix[i, :]) * np.sum(matrix[:, i])
+        expected_agreement /= (np.sum(matrix) ** 2)
+        kappa = (observed_agreement - expected_agreement) / (1 - expected_agreement)
         return kappa
 
     @staticmethod
@@ -45,22 +47,10 @@ class KappaCalculator:
         >>>                              [0, 2, 2, 3, 7]], 10, 5, 14)
         0.20993070442195522
         """
-        matrix = np.array(testData)
-        total_ratings = N * n
-        
-        # Calculate p_j
-        p_j = np.sum(matrix, axis=0) / total_ratings
-        
-        # Calculate P_i
-        P_i = (np.sum(matrix**2, axis=1) - n) / (n * (n - 1))
-        
-        # Calculate P_bar
-        P_bar = np.sum(P_i) / N
-        
-        # Calculate P_e_bar
-        P_e_bar = np.sum(p_j**2)
-        
-        # Calculate Kappa
-        kappa = (P_bar - P_e_bar) / (1 - P_e_bar)
-        
+        data = np.array(testData)
+        p_j = np.sum(data, axis=0) / (N * n)
+        P_i = (np.sum(data**2, axis=1) - n) / (n * (n - 1))
+        P_mean = np.mean(P_i)
+        P_e = np.sum(p_j**2)
+        kappa = (P_mean - P_e) / (1 - P_e)
         return kappa

@@ -23,11 +23,14 @@ class TicTacToe:
         >>> ttt.current_player
         'O'
         """
-        if 0 <= row < self.N and 0 <= col < self.N and self.board[row][col] == ' ':
-            self.board[row][col] = self.current_player
-            self.current_player = 'O' if self.current_player == 'X' else 'X'
-            return True
-        return False
+        if not (0 <= row < self.N and 0 <= col < self.N):
+            return False
+        if self.board[row][col] != ' ':
+            return False
+
+        self.board[row][col] = self.current_player
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
+        return True
 
     def check_winner(self):
         """
@@ -66,4 +69,8 @@ class TicTacToe:
         >>> ttt.is_board_full()
         False
         """
-        return all(self.board[row][col] != ' ' for row in range(self.N) for col in range(self.N))
+        for row in range(self.N):
+            for col in range(self.N):
+                if self.board[row][col] == ' ':
+                    return False
+        return True

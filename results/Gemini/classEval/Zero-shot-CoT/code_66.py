@@ -16,34 +16,30 @@ class NumericEntityUnescaper:
         'ABC'
 
         """
-        result = ''
+        result = ""
         i = 0
         while i < len(string):
-            if string[i:i + 2] == '&#':
+            if string[i:i + 2] == "&#":
                 j = i + 2
-                end = string.find(';', j)
-                if end != -1:
-                    entity = string[i + 2:end]
-                    if entity.startswith('X') or entity.startswith('x'):
-                        try:
+                while j < len(string) and string[j] != ';':
+                    j += 1
+                if j < len(string) and string[j] == ';':
+                    entity = string[i + 2:j]
+                    try:
+                        if entity.startswith('X') or entity.startswith('x'):
                             char_code = int(entity[1:], 16)
-                            result += chr(char_code)
-                            i = end + 1
-                        except ValueError:
-                            result += string[i:end + 1]
-                            i = end + 1
-                            
-                    else:
-                        try:
+                        else:
                             char_code = int(entity)
-                            result += chr(char_code)
-                            i = end + 1
-                        except ValueError:
-                            result += string[i:end + 1]
-                            i = end + 1
+                        result += chr(char_code)
+                        i = j + 1
+                    except ValueError:
+                        result += string[i:j+1]
+                        i = j + 1
+                    except OverflowError:
+                        i = j + 1
                 else:
-                    result += string[i:]
-                    i = len(string)
+                    result += string[i:i+2]
+                    i += 2
             else:
                 result += string[i]
                 i += 1
@@ -59,7 +55,4 @@ class NumericEntityUnescaper:
         True
 
         """
-        if '0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F':
-            return True
-        else:
-            return False
+        return '0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F'

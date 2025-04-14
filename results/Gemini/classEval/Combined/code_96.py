@@ -1,29 +1,23 @@
 class WeatherSystem:
     """
-    Represents a weather system providing weather information and temperature conversions.
+    This is a class representing a weather system that provides functionality to query weather information for a specific city and convert temperature units between Celsius and Fahrenheit.
     """
 
-    def __init__(self, city: str) -> None:
+    def __init__(self, city):
         """
-        Initializes the WeatherSystem with a city.
-
-        Args:
-            city: The name of the city.
+        Initialize the weather system with a city name.
         """
         self.city = city
+        self.temperature = None
+        self.weather = None
 
-    def query(self, weather_data: dict, temp_unit: str = 'celsius') -> tuple[float, str] | bool:
+    def query(self, weather_data, tmp_units='celsius'):
         """
-        Queries weather information for the city and converts temperature units if needed.
+        Query the weather system for the weather and temperature of the city, and convert the temperature units based on the input parameter.
 
-        Args:
-            weather_data: A dictionary containing weather information for different cities.
-                Example: {'New York': {'weather': 'sunny', 'temperature': 27, 'temperature units': 'celsius'}}
-            temp_unit: The desired temperature unit ('celsius' or 'fahrenheit'). Defaults to 'celsius'.
-
-        Returns:
-            A tuple containing the temperature and weather description, or False if the city is not found.
-            Example: (27, 'sunny') or False
+        :param weather_data: A dictionary of weather information for different cities.
+        :param tmp_units: The temperature units to convert to ('celsius' or 'fahrenheit').
+        :return: A tuple containing the temperature and weather of the city, or False if the city is not found.
         """
         if self.city not in weather_data:
             return False
@@ -31,44 +25,60 @@ class WeatherSystem:
         city_data = weather_data[self.city]
         temperature = city_data['temperature']
         weather = city_data['weather']
-        current_unit = city_data['temperature units']
+        temperature_units = city_data['temperature units']
 
-        if temp_unit.lower() == 'fahrenheit' and current_unit.lower() == 'celsius':
-            temperature = self.celsius_to_fahrenheit(temperature)
-        elif temp_unit.lower() == 'celsius' and current_unit.lower() == 'fahrenheit':
-            temperature = self.fahrenheit_to_celsius(temperature)
+        if temperature_units.lower() not in ('celsius', 'fahrenheit'):
+            raise ValueError("Invalid temperature units in weather data. Must be 'celsius' or 'fahrenheit'.")
+
+        if tmp_units.lower() not in ('celsius', 'fahrenheit'):
+            raise ValueError("Invalid tmp_units. Must be 'celsius' or 'fahrenheit'.")
+
+        if temperature_units.lower() != tmp_units.lower():
+            if tmp_units.lower() == 'celsius':
+                temperature = self.fahrenheit_to_celsius_static(temperature)
+            else:  # tmp_units == 'fahrenheit'
+                temperature = self.celsius_to_fahrenheit_static(temperature)
 
         return temperature, weather
 
-    def set_city(self, city: str) -> None:
+    def set_city(self, city):
         """
-        Sets the city for the weather system.
+        Set the city of the weather system.
 
-        Args:
-            city: The name of the city.
+        :param city: The city to set.
         """
         self.city = city
 
-    def celsius_to_fahrenheit(self, celsius: float) -> float:
+    def celsius_to_fahrenheit(self):
         """
-        Converts Celsius to Fahrenheit.
+        Convert the temperature from Celsius to Fahrenheit.
 
-        Args:
-            celsius: The temperature in Celsius.
-
-        Returns:
-            The temperature in Fahrenheit.
+        :return: The temperature in Fahrenheit.
         """
-        return celsius * 9 / 5 + 32
+        if self.temperature is None:
+            raise ValueError("Temperature must be set before conversion.")
+        return self.celsius_to_fahrenheit_static(self.temperature)
 
-    def fahrenheit_to_celsius(self, fahrenheit: float) -> float:
+    def fahrenheit_to_celsius(self):
         """
-        Converts Fahrenheit to Celsius.
+        Convert the temperature from Fahrenheit to Celsius.
 
-        Args:
-            fahrenheit: The temperature in Fahrenheit.
+        :return: The temperature in Celsius.
+        """
+        if self.temperature is None:
+            raise ValueError("Temperature must be set before conversion.")
+        return self.fahrenheit_to_celsius_static(self.temperature)
 
-        Returns:
-            The temperature in Celsius.
+    @staticmethod
+    def celsius_to_fahrenheit_static(celsius):
+        """
+        Convert Celsius to Fahrenheit.
+        """
+        return (celsius * 9 / 5) + 32
+
+    @staticmethod
+    def fahrenheit_to_celsius_static(fahrenheit):
+        """
+        Convert Fahrenheit to Celsius.
         """
         return (fahrenheit - 32) * 5 / 9

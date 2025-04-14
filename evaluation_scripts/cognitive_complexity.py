@@ -18,7 +18,7 @@ sys.path.append(upper_dir)
 # EVALUATING ALL RESULTS
 
 result_setting = "filtered_results" # "results"
-result_setting = "results" # "filtered_results"
+#result_setting = "results" # "filtered_results"
 
 
 # ClassEval

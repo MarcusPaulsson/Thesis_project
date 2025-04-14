@@ -9,7 +9,7 @@ class ChandrasekharSieve:
         :param n: int, the upper limit for generating prime numbers
         """
         self.n = n
-        self.primes = self.generate_primes()
+        self.primes = []
 
     def generate_primes(self):
         """
@@ -21,7 +21,8 @@ class ChandrasekharSieve:
 
         """
         if self.n <= 1:
-            return []
+            self.primes = []
+            return self.primes
 
         sieve = [True] * (self.n + 1)
         sieve[0] = sieve[1] = False
@@ -31,8 +32,8 @@ class ChandrasekharSieve:
                 for j in range(i*i, self.n + 1, i):
                     sieve[j] = False
 
-        primes = [i for i in range(2, self.n + 1) if sieve[i]]
-        return primes
+        self.primes = [i for i in range(2, self.n + 1) if sieve[i]]
+        return self.primes
 
     def get_primes(self):
         """

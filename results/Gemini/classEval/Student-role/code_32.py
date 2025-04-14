@@ -21,7 +21,7 @@ class DecryptionUtils:
         'hello'
 
         """
-        result = ''
+        plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
                 start = ord('a')
@@ -31,8 +31,8 @@ class DecryptionUtils:
                 shifted_char = chr((ord(char) - start - shift) % 26 + start)
             else:
                 shifted_char = char
-            result += shifted_char
-        return result
+            plaintext += shifted_char
+        return plaintext
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -44,8 +44,8 @@ class DecryptionUtils:
         'ybocl'
 
         """
+        plaintext = ''
         key = self.key
-        result = ''
         key_length = len(key)
         for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
@@ -60,8 +60,8 @@ class DecryptionUtils:
                 shifted_char = chr((ord(char) - start - key_shift) % 26 + start)
             else:
                 shifted_char = char
-            result += shifted_char
-        return result
+            plaintext += shifted_char
+        return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):
         """
@@ -74,14 +74,13 @@ class DecryptionUtils:
         'Hello, World!'
 
         """
-        text_length = len(encrypted_text)
-        rail = [['\n' for _ in range(text_length)]
-                for _ in range(rails)]
+        length = len(encrypted_text)
+        rail = [['\n' for i in range(length)] for j in range(rails)]
 
         dir_down = None
         row, col = 0, 0
 
-        for i in range(text_length):
+        for i in range(length):
             if row == 0:
                 dir_down = True
             if row == rails - 1:
@@ -97,8 +96,8 @@ class DecryptionUtils:
 
         index = 0
         for i in range(rails):
-            for j in range(text_length):
-                if rail[i][j] == '*' and index < text_length:
+            for j in range(length):
+                if rail[i][j] == '*' and index < length:
                     rail[i][j] = encrypted_text[index]
                     index += 1
 
@@ -106,7 +105,7 @@ class DecryptionUtils:
         row, col = 0, 0
         dir_down = None
 
-        for i in range(text_length):
+        for i in range(length):
             if row == 0:
                 dir_down = True
             if row == rails - 1:
@@ -120,6 +119,3 @@ class DecryptionUtils:
             else:
                 row -= 1
         return result
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()

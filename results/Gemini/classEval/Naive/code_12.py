@@ -47,19 +47,21 @@ class BlackjackGame:
         40
         """
         value = 0
-        aces = 0
+        ace_count = 0
         for card in hand:
-            rank = card[:-1]
+            rank = card[:-1]  # Extract the rank from the card string
             if rank.isdigit():
                 value += int(rank)
             elif rank in ['J', 'Q', 'K']:
                 value += 10
             elif rank == 'A':
                 value += 11
-                aces += 1
-        while value > 21 and aces > 0:
+                ace_count += 1
+
+        while value > 21 and ace_count > 0:
             value -= 10
-            aces -= 1
+            ace_count -= 1
+
         return value
 
     def check_winner(self, player_hand, dealer_hand):

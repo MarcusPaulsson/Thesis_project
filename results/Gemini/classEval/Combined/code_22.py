@@ -5,9 +5,9 @@ class ClassRegistrationSystem:
 
     def __init__(self):
         """
-        Initialize the registration system.
-        students: A list of student dictionaries, each with 'name' and 'major'.
-        students_registration_classes: A dictionary where keys are student names and values are lists of class names.
+        Initialize the registration system with the attribute students and students_registration_class.
+        students is a list of student dictionaries, each student dictionary has the key of name and major.
+        students_registration_class is a dictionaries, key is the student name, value is a list of class names
         """
         self.students = []
         self.students_registration_classes = {}
@@ -17,17 +17,13 @@ class ClassRegistrationSystem:
         Registers a student to the system.
 
         Args:
-            student (dict): A dictionary containing student information with 'name' and 'major'.
+            student (dict): A dictionary containing student information, with keys "name" and "major".
 
         Returns:
             int: 1 if the student was successfully registered, 0 if the student is already registered.
         """
-        if not isinstance(student, dict) or 'name' not in student or 'major' not in student:
-            raise ValueError("Invalid student data.  Must be a dict with 'name' and 'major'.")
-
-        if any(s['name'] == student['name'] and s['major'] == student['major'] for s in self.students):
-            return 0  # Student already registered
-
+        if any(s["name"] == student["name"] and s["major"] == student["major"] for s in self.students):
+            return 0
         self.students.append(student)
         return 1
 
@@ -40,18 +36,12 @@ class ClassRegistrationSystem:
             class_name (str): The name of the class.
 
         Returns:
-            list: A list of class names that the student is registered for.
+            list: A list of class names that the student has registered for.
         """
-        if not isinstance(student_name, str):
-            raise TypeError("student_name must be a string.")
-        if not isinstance(class_name, str):
-            raise TypeError("class_name must be a string.")
-
         if student_name not in self.students_registration_classes:
-            self.students_registration_classes[student_name] = [class_name]
-        else:
-            if class_name not in self.students_registration_classes[student_name]:
-                self.students_registration_classes[student_name].append(class_name)
+            self.students_registration_classes[student_name] = []
+        if class_name not in self.students_registration_classes[student_name]:
+            self.students_registration_classes[student_name].append(class_name)
         return self.students_registration_classes[student_name]
 
     def get_students_by_major(self, major):
@@ -59,15 +49,12 @@ class ClassRegistrationSystem:
         Retrieves a list of student names for a given major.
 
         Args:
-            major (str): The major to filter by.
+            major (str): The major to search for.
 
         Returns:
-            list: A list of student names belonging to the specified major.
+            list: A list of student names in the specified major.
         """
-        if not isinstance(major, str):
-            raise TypeError("major must be a string.")
-
-        return [student['name'] for student in self.students if student['major'] == major]
+        return [student["name"] for student in self.students if student["major"] == major]
 
     def get_all_major(self):
         """
@@ -78,8 +65,8 @@ class ClassRegistrationSystem:
         """
         majors = []
         for student in self.students:
-            if student['major'] not in majors:
-                majors.append(student['major'])
+            if student["major"] not in majors:
+                majors.append(student["major"])
         return majors
 
     def get_most_popular_class_in_major(self, major):
@@ -87,25 +74,24 @@ class ClassRegistrationSystem:
         Retrieves the most popular class within a specific major.
 
         Args:
-            major (str): The major to consider.
+            major (str): The major to search for.
 
         Returns:
-            str: The name of the most popular class in the major, or None if no classes are registered for students in that major.
+            str: The name of the most popular class in the major, or None if no classes are found.
         """
-
-        if not isinstance(major, str):
-            raise TypeError("major must be a string.")
-
         class_counts = {}
         for student in self.students:
-            if student['major'] == major:
-                student_name = student['name']
+            if student["major"] == major:
+                student_name = student["name"]
                 if student_name in self.students_registration_classes:
                     for class_name in self.students_registration_classes[student_name]:
                         class_counts[class_name] = class_counts.get(class_name, 0) + 1
 
-        if not class_counts:
-            return None
+        most_popular_class = None
+        max_count = 0
+        for class_name, count in class_counts.items():
+            if count > max_count:
+                most_popular_class = class_name
+                max_count = count
 
-        most_popular_class = max(class_counts, key=class_counts.get)
         return most_popular_class

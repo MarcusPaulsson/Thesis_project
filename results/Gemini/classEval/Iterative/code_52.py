@@ -35,16 +35,16 @@ class Lemmatization:
         pos_tags = self.get_pos_tag(sentence)
         lemmatized_words = []
         for word, pos_tag in zip(words, pos_tags):
-            if pos_tag.startswith('N'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='n'))
+            if pos_tag.startswith('J'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'a'))
             elif pos_tag.startswith('V'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='v'))
-            elif pos_tag.startswith('J'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='a'))
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'v'))
+            elif pos_tag.startswith('N'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'n'))
             elif pos_tag.startswith('R'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='r'))
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'r'))
             else:
-                lemmatized_words.append(word)
+                lemmatized_words.append(self.lemmatizer.lemmatize(word))
         return lemmatized_words
 
     def get_pos_tag(self, sentence):

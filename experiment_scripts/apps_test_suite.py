@@ -76,7 +76,7 @@ folder_paths = {
 
 # folder_paths = {
 
-#      "Gemma3 Zero-shot": gemma_zero_shot_apps_folder,
+#       "Gemma3 Zero-shot": gemma_zero_shot_apps_folder,
 # }
 
 
@@ -113,7 +113,7 @@ def run_single_test(task_data, folder_path, temp_dir, task_index):
     stdout_output = ""
     passed = False
     runtime_error = False
-
+    
     try:
         with open(file_path, 'r') as f:
             generated_code = f.read()
@@ -164,6 +164,8 @@ def run_single_test(task_data, folder_path, temp_dir, task_index):
 
     except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
         print(f"Error during test {task_index + 1}: {e}")
+        non_exiting +=1
+        return "non_existing"
     finally:
         if process and process.poll() is None:
             process.terminate()
@@ -179,28 +181,46 @@ def run_tests_on_code_snippets_parallel(tasks, folder_path, temp_dir, max_worker
     total_tests = len(tasks)
     passed_ids = []
     failed_count = 0
-
+    non_existing = 0
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(run_single_test, task, folder_path, temp_dir, i) for i, task in enumerate(tasks)]
         for future in as_completed(futures):
             result = future.result()
+            
             if result is not None:
+            
                 if result["passed"]:
                     passed_tests += 1
                     passed_ids.append(result["code_id"])
                 elif result["runtime_error"]:
                     failed_count += 1
+                    
                 elif result is None:
                     failed_count += 1 # Timeout or other critical error
+                    non_existing += 1 # File does not exist
 
     print(f"\n--- Test Summary for {os.path.basename(folder_path)} ---")
     print(f"Total tests: {total_tests}")
     print(f"Passed tests: {passed_tests}")
     print(f"Failed tests: {failed_count}")
+    print(f"Where {non_existing} files did not exist (did not pass filter test or generation)")
     return {"passed": passed_tests, "total": total_tests, "passed_ids": passed_ids}
 
 
 tasks = load_apps_tests(test_data_path)
+
+
+def count_non_existing_files(verbose_non_existing, folder_paths_list):
+    
+    for i, item in enumerate(folder_paths_list):
+        counter = 0
+        for j in range(100):
+            filename_to_check = f"code_{j}.py"
+            source_file_path = os.path.join(folder_paths_list[item], filename_to_check)
+            if not os.path.exists(source_file_path):
+                counter+=1
+        if verbose_non_existing:
+            print(f"Files not exist:{item}  Total: {counter}")
 
 
 def extract_and_save_passed_code(passed_code_ids):
@@ -229,7 +249,7 @@ def extract_and_save_passed_code(passed_code_ids):
                     print(f"Warning: Source file not found: {source_file_path}")
 
 
-save_passed = True
+save_passed = False
 curr_time = time.time()
 if tasks:
     results = {}
@@ -258,6 +278,12 @@ if tasks:
                 all_passed_ids[id] += 1
             else:
                 all_passed_ids[id] = 1
+
+    print("Did not exist:\n")
+    print_did_not_exit = True
+    count_non_existing_files(print_did_not_exit, folder_paths)
+
+
     print(f"\nTotal Passed: {total_passed} of {total_all}")
     time.sleep(5)
     print(f"\n time {time.time()-curr_time-5}")
@@ -331,7 +357,7 @@ if tasks:
             print(f"{key}: {value}")
     else:
         print("\n--- Not enough models to generate Venn diagram data ---")
-
+    
     shutil.rmtree(temp_dir)
     
         # Determine codes passed by all techniques of each model

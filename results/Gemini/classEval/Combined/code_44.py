@@ -36,21 +36,27 @@ class HtmlUtil:
         :return:string
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        text_parts = []
-
-        for element in soup.find_all(recursive=True):
-            if element.name == 'pre':
-                text_parts.append(self.CODE_MARK)
+        text = ''
+        for element in soup.recursiveChildGenerator():
+            if isinstance(element, str):
+                stripped_text = element.strip()
+                if stripped_text:  # Avoid adding empty lines
+                    text += stripped_text + '\n'
+            elif element.name == 'pre':
+                text += self.CODE_MARK + '\n'
+            elif element.name == 'ul':
+                for item in element.find_all('li'):
+                    text += '[-]'+ item.text + '.' + '\n'
+            elif element.name == 'div':
+                stripped_text = element.text.strip()
+                if stripped_text:
+                    text += stripped_text + '\n'
             elif element.name == 'code':
-                continue
-            elif element.name == 'li':
-                text_parts.append('[-]'+element.text+".")
-            else:
-                text_parts.append(element.text)
+                stripped_text = element.text.strip()
+                if stripped_text:
+                    text += stripped_text + '\n'
 
-        cleaned_parts = [part.strip() for part in text_parts if part and part.strip()]
-        return '\n'.join(cleaned_parts)
-
+        return HtmlUtil.__format_line_feed(text).strip()
 
     def extract_code_from_html_text(self, html_text):
         """
@@ -59,11 +65,11 @@ class HtmlUtil:
         :return: the list of code
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        code_blocks = []
+        code_list = []
         for pre in soup.find_all('pre'):
             code = pre.find('code')
             if code:
-                code_blocks.append(code.text)
+                code_list.append(code.text)
             else:
-                code_blocks.append(pre.text)
-        return code_blocks
+                code_list.append(pre.text)
+        return code_list

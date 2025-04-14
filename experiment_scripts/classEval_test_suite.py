@@ -62,6 +62,19 @@ def load_classEval_tests(test_data_path):
         print(f"Error: JSON file '{test_data_path}' not found.")
         return None
 
+def count_non_existing_files(verbose_non_existing, folder_paths_list):
+    
+    for i, item in enumerate(folder_paths_list):
+        counter = 0
+        for j in range(100):
+            filename_to_check = f"code_{j}.py"
+            source_file_path = os.path.join(folder_paths_list[item], filename_to_check)
+            if not os.path.exists(source_file_path):
+                counter+=1
+        if verbose_non_existing:
+            print(f"Files not exist:{item}  Total: {counter}")
+
+
 def extract_and_save_passed_code(passed_code_ids):
     """Extracts and saves passed code snippets to a 'filtered_results' subdirectory."""
     dir = os.path.abspath(os.path.join(upper_dir,'filtered_results')) # Flush previous folder for storing and make a new fresh.
@@ -205,6 +218,10 @@ if tasks:
                 'passed_ids': set(result['passed_ids']),
                 'failed_ids': set(range(len(tasks))) - set(result['passed_ids'])
             }
+
+        print("Did not exist:\n")
+        print_did_not_exit = True
+        count_non_existing_files(print_did_not_exit, folder_paths)
 
         
         print(f"\nTotal Passed: {total_passed} of {total_all}")

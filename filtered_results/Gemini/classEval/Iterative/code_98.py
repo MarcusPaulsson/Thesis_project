@@ -24,11 +24,15 @@ class XMLProcessor:
             self.root = tree.getroot()
             return self.root
         except FileNotFoundError:
+            print(f"Error: File not found: {self.file_name}")
             return None
-        except ET.ParseError:
+        except ET.ParseError as e:
+            print(f"Error: XML Parse Error: {e}")
             return None
-        except Exception:
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
             return None
+
 
     def write_xml(self, file_name):
         """
@@ -37,15 +41,16 @@ class XMLProcessor:
         :return: bool, True if the write operation is successful, False otherwise.
         """
         if self.root is None:
+            print("Error: No XML root element to write.")
             return False
         try:
             tree = ET.ElementTree(self.root)
             tree.write(file_name)
             return True
-        except FileNotFoundError:
+        except Exception as e:
+            print(f"Error writing XML to file: {e}")
             return False
-        except Exception:
-            return False
+
 
     def process_xml_data(self, file_name):
         """
@@ -54,18 +59,19 @@ class XMLProcessor:
         :return: bool, True if the write operation is successful, False otherwise.
         """
         if self.root is None:
+            print("Error: No XML root element to process.")
             return False
         try:
-            for item in self.root.findall('item'):
-                if item.text:
-                    item.text = item.text.upper()
+            for element in self.root.findall('item'):
+                if element.text:
+                    element.text = element.text.upper()
             tree = ET.ElementTree(self.root)
             tree.write(file_name)
             return True
-        except FileNotFoundError:
+        except Exception as e:
+            print(f"Error processing and writing XML data: {e}")
             return False
-        except Exception:
-            return False
+
 
     def find_element(self, element_name):
         """
@@ -74,5 +80,6 @@ class XMLProcessor:
         :return: list, a list of found elements with the specified name.
         """
         if self.root is None:
+            print("Error: No XML root element to search.")
             return []
         return self.root.findall(element_name)

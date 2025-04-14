@@ -3,7 +3,6 @@ class NLPDataProcessor:
     The class processes NLP data by removing stop words from a list of strings using a pre-defined stop word list.
     """
 
-
     def construct_stop_word_list(self):
         """
         Construct a stop word list including 'a', 'an', 'the'.

@@ -53,18 +53,23 @@ class MovieBookingSystem:
         >>> system.book_ticket('batman', [(0, 0)])
         'Movie not found.'
         """
+        movie_found = False
         for movie in self.movies:
             if movie['name'] == name:
-                seats = movie['seats']
-                for seat in seats_to_book:
-                    row, col = seat
-                    if seats[row][col] == 1:
-                        return 'Booking failed.'
-                for seat in seats_to_book:
-                    row, col = seat
-                    seats[row][col] = 1
-                return 'Booking success.'
-        return 'Movie not found.'
+                movie_found = True
+                booking_success = True
+                for row, col in seats_to_book:
+                    if movie['seats'][row][col] == 1:
+                        booking_success = False
+                        break
+                if booking_success:
+                    for row, col in seats_to_book:
+                        movie['seats'][row][col] = 1
+                    return 'Booking success.'
+                else:
+                    return 'Booking failed.'
+        if not movie_found:
+            return 'Movie not found.'
 
     def available_movies(self, start_time, end_time):
         """
@@ -76,10 +81,10 @@ class MovieBookingSystem:
         >>> system.available_movies('12:00', '22:00')
         ['Batman']
         """
-        available_movies = []
+        available_movies_list = []
         start_time_dt = datetime.strptime(start_time, '%H:%M')
         end_time_dt = datetime.strptime(end_time, '%H:%M')
         for movie in self.movies:
-            if movie['start_time'].time() <= end_time_dt.time() and movie['end_time'].time() >= start_time_dt.time():
-                available_movies.append(movie['name'])
-        return available_movies
+            if movie['start_time'] <= end_time_dt and movie['end_time'] >= start_time_dt:
+                available_movies_list.append(movie['name'])
+        return available_movies_list

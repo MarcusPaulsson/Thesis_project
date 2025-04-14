@@ -2,24 +2,23 @@ import sqlite3
 
 class BookManagementDB:
     """
-    Manages book operations in a SQLite database.
+    This is a database class as a book management system, used to handle the operations of adding, removing, updating, and searching books.
     """
 
     def __init__(self, db_name):
         """
-        Initializes the database connection and creates the books table if it doesn't exist.
-
-        Args:
-            db_name (str): The name of the SQLite database file.
+        Initializes the class by creating a database connection and cursor,
+        and creates the book table if it does not already exist.
+        :param db_name: str, the name of db file
         """
         self.db_name = db_name
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
-        self._create_table()  # Use underscore to indicate it's a 'private' method
+        self.create_table()
 
-    def _create_table(self):
+    def create_table(self):
         """
-        Creates the 'books' table if it doesn't already exist.
+        Creates the book table in the database if it does not already exist.
         """
         try:
             self.cursor.execute("""
@@ -33,95 +32,69 @@ class BookManagementDB:
             self.connection.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
 
     def add_book(self, title, author):
         """
-        Adds a new book to the database.
-
-        Args:
-            title (str): The title of the book.
-            author (str): The author of the book.
+        Adds a book to the database with the specified title and author,
+        setting its availability to 1 as free to borrow.
+        :param title: str, book title
+        :param author: str, author name
         """
         try:
-            self.cursor.execute("""
-                INSERT INTO books (title, author, available) VALUES (?, ?, ?)
-            """, (title, author, 1))
+            self.cursor.execute("INSERT INTO books (title, author, available) VALUES (?, ?, 1)", (title, author))
             self.connection.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
 
     def remove_book(self, book_id):
         """
-        Removes a book from the database based on its ID.
-
-        Args:
-            book_id (int): The ID of the book to remove.
+        Removes a book from the database based on the given book ID.
+        :param book_id: int
         """
         try:
-            self.cursor.execute("""
-                DELETE FROM books WHERE id = ?
-            """, (book_id,))
+            self.cursor.execute("DELETE FROM books WHERE id = ?", (book_id,))
             self.connection.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
 
     def borrow_book(self, book_id):
         """
-        Marks a book as borrowed (unavailable).
-
-        Args:
-            book_id (int): The ID of the book to borrow.
+        Marks a book as borrowed in the database based on the given book ID.
+        :param book_id: int
         """
         try:
-            self.cursor.execute("""
-                UPDATE books SET available = 0 WHERE id = ?
-            """, (book_id,))
+            self.cursor.execute("UPDATE books SET available = 0 WHERE id = ?", (book_id,))
             self.connection.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
 
     def return_book(self, book_id):
         """
-        Marks a book as returned (available).
-
-        Args:
-            book_id (int): The ID of the book to return.
+        Marks a book as returned in the database based on the given book ID.
+        :param book_id: int
         """
         try:
-            self.cursor.execute("""
-                UPDATE books SET available = 1 WHERE id = ?
-            """, (book_id,))
+            self.cursor.execute("UPDATE books SET available = 1 WHERE id = ?", (book_id,))
             self.connection.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
 
     def search_books(self):
         """
-        Retrieves all books from the database.
-
-        Returns:
-            list: A list of tuples, where each tuple represents a book
-                  (id, title, author, available).
+        Retrieves all books from the database and returns their information.
+        :return books: list[tuple], the information of all books in database
         """
         try:
-            self.cursor.execute("""
-                SELECT * FROM books
-            """)
+            self.cursor.execute("SELECT * FROM books")
             books = self.cursor.fetchall()
             return books
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
+            return []
 
-    def close_connection(self):
+    def __del__(self):
         """
-        Closes the database connection.  It's good practice to close the connection
-        when you're done with the database.
+        Closes the database connection when the object is deleted.
         """
-        if self.connection:
+        if hasattr(self, 'connection') and self.connection:
             self.connection.close()

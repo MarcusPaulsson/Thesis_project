@@ -24,13 +24,22 @@ class TextFileProcessor:
         >>> type(textFileProcessor.read_file_as_json())
         <class 'dict'>
         """
-        with open(self.file_path, 'r') as f:
-            content = f.read()
-            try:
+        try:
+            with open(self.file_path, 'r') as f:
+                content = f.read()
                 data = json.loads(content)
                 return data
-            except json.JSONDecodeError:
-                return eval(content)
+        except json.JSONDecodeError:
+            with open(self.file_path, 'r') as f:
+                content = f.read()
+                try:
+                    return int(content)
+                except ValueError:
+                    try:
+                        return float(content)
+                    except ValueError:
+                        content = content.strip('"')
+                        return content
 
     def read_file(self):
         """

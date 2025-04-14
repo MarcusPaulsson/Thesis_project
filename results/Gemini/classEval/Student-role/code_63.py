@@ -35,7 +35,8 @@ class NLPDataProcessor2:
         for words in words_list:
             word_counts.update(words)
         
-        return dict(Counter(word_counts).most_common(5))
+        top_5_words = dict(word_counts.most_common(5))
+        return top_5_words
 
     def process(self, string_list):
         """
@@ -46,4 +47,5 @@ class NLPDataProcessor2:
         {'this': 2, 'is': 2, 'test': 2, 'a': 1, 'another': 1}
         """
         words_list = self.process_data(string_list)
-        return self.calculate_word_frequency(words_list)
+        word_frequency = self.calculate_word_frequency(words_list)
+        return word_frequency

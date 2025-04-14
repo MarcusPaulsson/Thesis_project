@@ -43,7 +43,7 @@ class DocFileHandler:
             # Set font size
             for run in paragraph.runs:
                 run.font.size = Pt(font_size)
-
+            
             # Set alignment
             alignment_value = self._get_alignment_value(alignment)
             paragraph.alignment = alignment_value

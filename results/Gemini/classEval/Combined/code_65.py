@@ -1,106 +1,186 @@
 class NumberWordFormatter:
     """
-    This class converts numbers to their English word representation.
-    It handles integer and decimal parts, and incorporates units.
+    Converts numbers into their corresponding English word representation.
+    Handles integer and decimal parts.
     """
 
     def __init__(self):
-        """Initialize the NumberWordFormatter with word lists."""
+        """Initialize the formatter with word lists."""
         self.ONES = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"]
         self.TEENS = ["TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN",
                       "EIGHTEEN", "NINETEEN"]
-        self.TENS = ["", "", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"]
-        self.THOUSANDS = ["", "THOUSAND", "MILLION", "BILLION"]
+        self.TENS = ["TEN", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"]
+        self.MAGNITUDES = ["", "THOUSAND", "MILLION", "BILLION"]
 
     def format(self, number):
         """
-        Convert a number (int or float) to its word representation.
+        Converts a number (int or float) to its English word representation.
 
         Args:
             number (int or float): The number to convert.
 
         Returns:
-            str: The word representation of the number, or an empty string if None is passed.
+            str: The number in words, or an empty string if input is None.
         """
         if number is None:
             return ""
 
-        number = str(number)
-        if "." in number:
-            integer_part, decimal_part = number.split(".")
-            integer_word = self._format_integer(integer_part)
-            decimal_word = self._format_integer(decimal_part)
+        if isinstance(number, float):
+            integer_part = int(number)
+            decimal_part = round((number - integer_part) * 100)
+            integer_words = self.format(integer_part)
+            decimal_words = self.format(decimal_part)
 
-            if integer_word == "ZERO":
-                return "CENTS " + decimal_word + " ONLY"
-            else:
-                return integer_word + " AND CENTS " + decimal_word + " ONLY"
-        else:
-            return self._format_integer(number)
+            if integer_part == 0:
+                return "CENTS " + decimal_words + " ONLY"
+            return integer_words + " AND CENTS " + decimal_words + " ONLY"
 
-    def _format_integer(self, number_str):
-        """
-        Convert an integer string to its word representation.
-
-        Args:
-            number_str (str): The integer as a string.
-
-        Returns:
-            str: The word representation of the integer.
-        """
-        if not number_str:
-            return ""
-
-        num = int(number_str)
-        if num == 0:
+        if number == 0:
             return "ZERO ONLY"
 
-        result = []
-        group_index = 0
-        while num > 0:
-            group = num % 1000
-            if group != 0:
-                words = self._convert_group(group)
-                if group_index > 0:
-                    words += " " + self.THOUSANDS[group_index]
-                result.append(words)
-            num //= 1000
-            group_index += 1
+        return self._format_integer(int(number))
 
-        result.reverse()
-        return " ".join(result) + " ONLY"
-
-    def _convert_group(self, number):
+    def format_string(self, number_string):
         """
-        Convert a number (0-999) to its word representation.
+        Converts a string representation of a number to words.
 
         Args:
-            number (int): The number to convert (0-999).
+            number_string (str): The string to convert.
 
         Returns:
-            str: The word representation of the number.
+            str: The number in words, or an empty string on error.
+        """
+        try:
+            number = float(number_string)
+            return self.format(number)
+        except ValueError:
+            return ""
+
+    def _format_integer(self, number):
+        """
+        Helper function to format an integer into words.
+
+        Args:
+            number (int): The integer to format.
+
+        Returns:
+            str: The integer in words.
+        """
+        if number == 0:
+            return "ZERO ONLY"
+
+        parts = []
+        magnitude_index = 0
+        while number > 0:
+            # Process the last three digits
+            three_digits = number % 1000
+            if three_digits != 0:
+                parts.insert(0, self._format_less_than_1000(three_digits) + " " + self.MAGNITUDES[magnitude_index])
+
+            number //= 1000
+            magnitude_index += 1
+
+        return " ".join(part for part in parts if part).strip() + " ONLY"
+
+    def _format_less_than_1000(self, number):
+        """
+        Formats a number less than 1000 into words.
+
+        Args:
+            number (int): The number to format (0-999).
+
+        Returns:
+            str: The number in words.
         """
         hundreds = number // 100
-        tens_and_ones = number % 100
+        remainder = number % 100
 
         words = []
         if hundreds > 0:
             words.append(self.ONES[hundreds])
             words.append("HUNDRED")
 
-        if tens_and_ones > 0:
-            if hundreds > 0:
+            if remainder > 0:
                 words.append("AND")
 
-            if tens_and_ones < 10:
-                words.append(self.ONES[tens_and_ones])
-            elif 10 <= tens_and_ones < 20:
-                words.append(self.TEENS[tens_and_ones - 10])
-            else:
-                tens = tens_and_ones // 10
-                ones = tens_and_ones % 10
-                words.append(self.TENS[tens])
-                if ones > 0:
-                    words.append(self.ONES[ones])
+        if remainder > 0:
+            words.append(self._format_less_than_100(remainder))
 
-        return " ".join(words)
+        return " ".join(words).strip()
+
+    def _format_less_than_100(self, number):
+        """
+        Formats a number less than 100 into words.
+
+        Args:
+            number (int): The number to format (0-99).
+
+        Returns:
+            str: The number in words.
+        """
+        if number < 10:
+            return self.ONES[number]
+        elif 10 <= number < 20:
+            return self.TEENS[number - 10]
+        else:
+            tens = number // 10
+            ones = number % 10
+            if ones == 0:
+                return self.TENS[tens - 1]
+            else:
+                return self.TENS[tens - 1] + " " + self.ONES[ones]
+
+    def trans_two(self, s):
+        """
+        Converts a two-digit number into words format
+        :param s: str, the two-digit number
+        :return: str, the number in words format
+        """
+        if len(s) != 2:
+            return ""
+
+        if s[0] == '0':
+            if s[1] == '0':
+                return ""
+            else:
+                return self.ONES[int(s[1])]
+        elif s[0] == '1':
+            return self.TEENS[int(s[1])]
+        else:
+            if s[1] == '0':
+                return self.TENS[int(s[0]) - 1]
+            else:
+                return self.TENS[int(s[0]) - 1] + " " + self.ONES[int(s[1])]
+
+    def trans_three(self, s):
+        """
+        Converts a three-digit number into words format
+        :param s: str, the three-digit number
+        :return: str, the number in words format
+        """
+        if len(s) != 3:
+            return ""
+
+        result = []
+        if s[0] != '0':
+            result.append(self.ONES[int(s[0])])
+            result.append("HUNDRED")
+
+        two_digit = s[1:]
+        two_digit_words = self.trans_two(two_digit)
+
+        if result and two_digit_words:
+            result.append("AND")
+
+        if two_digit_words:
+            result.append(two_digit_words)
+
+        return " ".join(result).strip()
+
+    def parse_more(self, i):
+        """
+        Parses the thousand/million/billion suffix based on the index
+        :param i: int, the index representing the magnitude (thousand, million, billion)
+        :return: str, the corresponding suffix for the magnitude
+        """
+        return self.MAGNITUDES[i]

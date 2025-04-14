@@ -39,31 +39,36 @@ class Words2Numbers:
         "32"
         """
         textnum = textnum.replace('-', ' ')
-        current = result = 0
-        for word in textnum.split():
-            word = word.lower()
+        current_number = 0
+        final_number = 0
+        parts = textnum.split()
+
+        for word in parts:
             if word in self.numwords:
                 scale, increment = self.numwords[word]
-                current = current * scale + increment
+                current_number = current_number * scale + increment
                 if scale > 100:
-                    result += current
-                    current = 0
+                    final_number += current_number
+                    current_number = 0
             elif word in self.ordinal_words:
-                result = self.ordinal_words[word]
-                current = 0 # Reset current after ordinal
+                final_number += self.ordinal_words[word]
+                current_number = 0
             else:
                 for ending, replacement in self.ordinal_endings:
                     if word.endswith(ending):
                         base_word = word[:-len(ending)] + replacement
                         if base_word in self.numwords:
                             scale, increment = self.numwords[base_word]
-                            result += increment
-                            current = 0 # Reset current after ordinal
+                            current_number = current_number * scale + increment
+                            final_number += current_number
+                            current_number = 0
                             break
                 else:
-                    raise ValueError("Illegal word: " + word)
+                    continue
+                break
 
-        return str(result + current)
+        final_number += current_number
+        return str(final_number)
 
     def is_valid_input(self, textnum):
         """
@@ -75,18 +80,17 @@ class Words2Numbers:
         False
         """
         textnum = textnum.replace('-', ' ')
-        for word in textnum.split():
-            word = word.lower()
-            found = False
-            if word in self.numwords or word in self.ordinal_words:
-                found = True
-            else:
+        parts = textnum.split()
+        valid_words = list(self.numwords.keys()) + list(self.ordinal_words.keys())
+        for word in parts:
+            if word not in self.numwords and word not in self.ordinal_words:
+                valid = False
                 for ending, replacement in self.ordinal_endings:
                     if word.endswith(ending):
                         base_word = word[:-len(ending)] + replacement
                         if base_word in self.numwords:
-                            found = True
+                            valid = True
                             break
-            if not found:
-                return False
+                if not valid:
+                    return False
         return True

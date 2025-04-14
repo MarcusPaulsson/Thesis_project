@@ -9,75 +9,77 @@ class Hotel:
 
         Args:
             name (str): The name of the hotel.
-            rooms (dict): A dictionary representing the available rooms, where keys are room types (e.g., 'single', 'double')
-                         and values are the number of available rooms of that type.
+            rooms (dict): A dictionary representing the available rooms,
+                          where keys are room types (str) and values are
+                          the number of available rooms of that type (int).
         """
         self.name = name
-        self.available_rooms = rooms
+        self.available_rooms = rooms.copy()  # Create a copy to avoid modifying the original
         self.booked_rooms = {}
 
-    def book_room(self, room_type, room_number, guest_name):
+    def book_room(self, room_type, room_number, name):
         """
-        Books a room of the specified type for the given guest.
+        Books rooms of a specified type for a guest.
 
         Args:
-            room_type (str): The type of room to book (e.g., 'single', 'double').
+            room_type (str): The type of room to book.
             room_number (int): The number of rooms to book.
-            guest_name (str): The name of the guest making the booking.
+            name (str): The name of the guest making the booking.
 
         Returns:
             str: 'Success!' if the booking was successful.
-            int: The number of available rooms of the requested type if the requested number exceeds availability, but some rooms are available.
-            bool: False if the room type doesn't exist or if there are no rooms of that type available.
+            int: The number of available rooms of the specified type if the
+                 requested number exceeds availability but some rooms are still available.
+            bool: False if the room type is not available or if there are no
+                  rooms of the specified type available.
         """
         if room_type not in self.available_rooms:
             return False
 
-        available_rooms = self.available_rooms[room_type]
+        available = self.available_rooms[room_type]
 
-        if room_number <= available_rooms:
+        if room_number <= available:
+            self.available_rooms[room_type] -= room_number
+
             if room_type not in self.booked_rooms:
                 self.booked_rooms[room_type] = {}
 
-            if guest_name not in self.booked_rooms[room_type]:
-                self.booked_rooms[room_type][guest_name] = 0
+            if name not in self.booked_rooms[room_type]:
+                self.booked_rooms[room_type][name] = 0
 
-            self.booked_rooms[room_type][guest_name] += room_number
-            self.available_rooms[room_type] -= room_number
+            self.booked_rooms[room_type][name] += room_number
             return 'Success!'
-        elif available_rooms > 0:
-            return available_rooms
+        elif available > 0:
+            return available
         else:
             return False
 
-    def check_in(self, room_type, room_number, guest_name):
+    def check_in(self, room_type, room_number, name):
         """
-        Checks in a guest to a booked room.
+        Checks a guest into a booked room.
 
         Args:
             room_type (str): The type of room being checked into.
             room_number (int): The number of rooms being checked into.
-            guest_name (str): The name of the guest checking in.
+            name (str): The name of the guest checking in.
 
         Returns:
-            bool: False if the room_type is not in the booked_rooms, guest name is not in the booked rooms for that type or room_number exceeds the booked quantity. None otherwise.
+            bool: True if check-in was successful, False otherwise.
         """
-        if room_type not in self.booked_rooms or guest_name not in self.booked_rooms[room_type] or room_number > self.booked_rooms[room_type][
-            guest_name]:
+        if room_type not in self.booked_rooms or name not in self.booked_rooms[room_type] or self.booked_rooms[room_type].get(name, 0) < room_number:
             return False
 
-        self.booked_rooms[room_type][guest_name] -= room_number
-
-        if self.booked_rooms[room_type][guest_name] == 0:
-            del self.booked_rooms[room_type][guest_name]
+        if room_number == self.booked_rooms[room_type][name]:
+            del self.booked_rooms[room_type][name]
             if not self.booked_rooms[room_type]:
                 del self.booked_rooms[room_type]
-
-        return
+        else:
+            self.booked_rooms[room_type][name] -= room_number
+        return True
 
     def check_out(self, room_type, room_number):
         """
-        Checks out a guest from a room, making it available again.
+        Checks a guest out of a room, making it available again.
 
         Args:
             room_type (str): The type of room being checked out.
@@ -87,7 +89,7 @@ class Hotel:
 
     def get_available_rooms(self, room_type):
         """
-        Gets the number of available rooms of a specific type.
+        Gets the number of available rooms of a specified type.
 
         Args:
             room_type (str): The type of room to check availability for.

@@ -22,15 +22,17 @@ class IPAddress:
         octets = self.ip_address.split('.')
         if len(octets) != 4:
             return False
+
         for octet in octets:
             if not octet.isdigit():
                 return False
             try:
-                value = int(octet)
-                if value < 0 or value > 255:
+                octet_int = int(octet)
+                if octet_int < 0 or octet_int > 255:
                     return False
             except ValueError:
                 return False
+
         return True
 
 
@@ -44,6 +46,7 @@ class IPAddress:
         """
         if not self.is_valid():
             return []
+
         return self.ip_address.split('.')
 
 
@@ -57,9 +60,11 @@ class IPAddress:
         """
         if not self.is_valid():
             return ''
+
         octets = self.get_octets()
         binary_octets = []
         for octet in octets:
-            binary = bin(int(octet))[2:].zfill(8)
-            binary_octets.append(binary)
+            binary_octet = bin(int(octet))[2:].zfill(8)
+            binary_octets.append(binary_octet)
+
         return '.'.join(binary_octets)

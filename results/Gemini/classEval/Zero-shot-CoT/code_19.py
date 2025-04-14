@@ -32,7 +32,6 @@ class ChandrasekharSieve:
                     sieve[j] = False
 
         primes = [i for i in range(2, self.n + 1) if sieve[i]]
-        self.primes = primes
         return primes
 
     def get_primes(self):

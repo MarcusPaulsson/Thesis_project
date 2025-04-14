@@ -41,7 +41,9 @@ class RPGCharacter:
         >>> player_1.heal()
         100
         """
-        self.hp = min(self.hp + 10, 100)
+        self.hp += 10
+        if self.hp > 100:
+            self.hp = 100
         return self.hp
 
     def gain_exp(self, amount):
@@ -70,15 +72,12 @@ class RPGCharacter:
         >>> player_1.level_up()
         (2, 120, 15, 8)
         """
-         if self.level < 100:
+        if self.level < 100:
             self.level += 1
             self.hp += 20
             self.attack_power += 5
             self.defense += 5
-            self.exp = 0
-            return self.level, self.hp, self.attack_power, self.defense
-         else:
-            return self.level, self.hp, self.attack_power, self.defense
+        return self.level, self.hp, self.attack_power, self.defense
 
     def is_alive(self):
         """

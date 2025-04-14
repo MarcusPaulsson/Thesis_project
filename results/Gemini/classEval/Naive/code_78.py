@@ -15,11 +15,8 @@ class SplitSentence:
         >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
         ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        sentences = re.split(r'(?<!Mr)(?<!A\.B\.C)(?<!Mrs)(?<!Dr)[\.\?]\s', sentences_string)
-        sentences = [s + m for s, m in zip(sentences[:-1], re.findall(r'(?<!Mr)(?<!A\.B\.C)(?<!Mrs)(?<!Dr)[\.\?]\s', sentences_string))]
-        sentences.append(sentences_string.split('.')[-1].split('?')[-1] if len(sentences)==0 else sentences[-1])
-        return sentences[:-1] if sentences[-1] == '' else sentences
-
+        sentences = re.split(r'(?<!Mr)(?<!Mrs)(?<!Ms)(?<!Dr)(?<![A-Z][a-z])(?<=[.?])\s', sentences_string)
+        return [s for s in sentences if s]
 
     def count_words(self, sentence):
         """

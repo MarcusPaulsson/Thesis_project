@@ -19,19 +19,24 @@ class UrlPath:
         """
         self.segments.append(segment)
 
+
     def parse(self, path, charset):
         """
         Parses a given path string and populates the list of segments in the UrlPath.
         :param path: str, the path string to parse.
         :param charset: str, the character encoding of the path string.
         """
-        fixed_path = self.fix_path(path)
-        if fixed_path:
-            self.segments = fixed_path.split('/')
+        path = self.fix_path(path)
+        if path.endswith('/'):
+            self.with_end_tag = True
+            path = path[:-1]
+        else:
+            self.with_end_tag = False
+
+        if path:
+            self.segments = path.split('/')
         else:
             self.segments = []
-
-        self.with_end_tag = path.endswith('/') if path else False
 
 
     @staticmethod
@@ -42,14 +47,10 @@ class UrlPath:
         :return: str, the fixed path string.
         """
         if not path:
-            return ""
+            return ''
 
-        start = 0
-        end = len(path)
-
-        while start < end and path[start] == '/':
-            start += 1
-        while end > start and path[end-1] == '/':
-            end -= 1
-
-        return path[start:end]
+        while path.startswith('/'):
+            path = path[1:]
+        while path.endswith('/') and len(path) > 0:
+            path = path[:-1]
+        return path

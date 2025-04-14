@@ -74,7 +74,6 @@ class MetricsCalculator:
                 tp += 1
             elif predicted == 0 and true == 1:
                 fn += 1
-
         if tp + fn == 0:
             return 0.0
         return tp / (tp + fn)
@@ -95,6 +94,7 @@ class MetricsCalculator:
 
         if precision + recall == 0:
             return 0.0
+
         return 2 * (precision * recall) / (precision + recall)
 
 

@@ -21,7 +21,7 @@ class MovieTicketDB:
         Creates a "tickets" table in the database if it does not exist already.Fields include ID of type int, movie name of type str, theater name of type str, seat number of type str, and customer name of type str
         :return: None
         """
-        self.cursor.execute('''
+        self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS tickets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 movie_name TEXT,
@@ -29,7 +29,7 @@ class MovieTicketDB:
                 seat_number TEXT,
                 customer_name TEXT
             )
-        ''')
+        """)
         self.connection.commit()
 
     def insert_ticket(self, movie_name, theater_name, seat_number, customer_name):
@@ -41,10 +41,10 @@ class MovieTicketDB:
         :param customer_name: str, the name of the customer.
         :return: None
         """
-        self.cursor.execute('''
+        self.cursor.execute("""
             INSERT INTO tickets (movie_name, theater_name, seat_number, customer_name)
             VALUES (?, ?, ?, ?)
-        ''', (movie_name, theater_name, seat_number, customer_name))
+        """, (movie_name, theater_name, seat_number, customer_name))
         self.connection.commit()
 
     def search_tickets_by_customer(self, customer_name):
@@ -58,9 +58,10 @@ class MovieTicketDB:
         >>> result = ticket_db.search_tickets_by_customer("John Doe")
         len(result) = 1
         """
-        self.cursor.execute('''
-            SELECT * FROM tickets WHERE customer_name = ?
-        ''', (customer_name,))
+        self.cursor.execute("""
+            SELECT * FROM tickets
+            WHERE customer_name = ?
+        """, (customer_name,))
         return self.cursor.fetchall()
 
     def delete_ticket(self, ticket_id):
@@ -69,7 +70,8 @@ class MovieTicketDB:
         :param ticket_id: int, the ID of the ticket to delete.
         :return: None
         """
-        self.cursor.execute('''
-            DELETE FROM tickets WHERE id = ?
-        ''', (ticket_id,))
+        self.cursor.execute("""
+            DELETE FROM tickets
+            WHERE id = ?
+        """, (ticket_id,))
         self.connection.commit()

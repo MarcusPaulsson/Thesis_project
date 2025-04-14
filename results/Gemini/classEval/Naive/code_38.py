@@ -24,13 +24,10 @@ class ExcelProcessor:
                 data.append(row_data)
             return data
         except FileNotFoundError:
-            print(f"File not found: {file_name}")
-            return None
-        except openpyxl.utils.exceptions.InvalidFileException:
-            print(f"Invalid Excel file: {file_name}")
+            print(f"Error: File '{file_name}' not found.")
             return None
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error reading Excel file: {e}")
             return None
 
     def write_excel(self, data, file_name):
@@ -49,6 +46,8 @@ class ExcelProcessor:
         >>> ]
         >>> data = processor.write_excel(new_data, 'test_data.xlsx')
         """
+        if not file_name:
+            return 0
         try:
             workbook = openpyxl.Workbook()
             sheet = workbook.active
@@ -57,7 +56,7 @@ class ExcelProcessor:
             workbook.save(file_name)
             return 1
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error writing to Excel file: {e}")
             return 0
 
     def process_excel_data(self, N, save_file_name):
@@ -72,15 +71,15 @@ class ExcelProcessor:
         try:
             data = self.read_excel(save_file_name)
             if data is None:
-                return 0, None
+                return 0
 
             new_data = []
             for row in data:
                 new_row = list(row)
-                if 0 <= N < len(new_row):
-                    new_row.append(str(new_row[N]).upper())
+                if 0 <= N < len(row):
+                    new_row.append(str(row[N]).upper())
                 else:
-                    return 0, None
+                    return 0
                 new_data.append(tuple(new_row))
 
             output_file_name = "processed_" + save_file_name
@@ -88,5 +87,5 @@ class ExcelProcessor:
             return write_result, output_file_name
 
         except Exception as e:
-            print(f"An error occurred: {e}")
-            return 0, None
+            print(f"Error processing Excel data: {e}")
+            return 0

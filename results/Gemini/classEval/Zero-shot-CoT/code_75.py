@@ -22,7 +22,7 @@ class ShoppingCart:
         self.items = {"apple":{"price":1, "quantity":5}}
         """
         if item in self.items:
-            self.items[item]["quantity"] = quantity
+            pass
         else:
             self.items[item] = {"price": price, "quantity": quantity}
 
@@ -39,7 +39,7 @@ class ShoppingCart:
         """
         if item in self.items:
             self.items[item]["quantity"] -= quantity
-            if self.items[item]["quantity"] <= 0:
+            if self.items[item]["quantity"] < 0:
                 self.items[item]["quantity"] = 0
 
 

@@ -9,28 +9,6 @@ class IPAddress:
         :param ip_address:string
         """
         self.ip_address = ip_address
-        self._octets = self._parse_ip()
-
-    def _parse_ip(self):
-        """
-        Parses the IP address string into a list of integers, validating each octet.
-        Returns a list of integers if the IP is valid, otherwise returns None.
-        """
-        try:
-            octets = self.ip_address.split('.')
-            if len(octets) != 4:
-                return None
-
-            int_octets = []
-            for octet in octets:
-                num = int(octet)
-                if 0 <= num <= 255:
-                    int_octets.append(num)
-                else:
-                    return None
-            return int_octets
-        except ValueError:
-            return None
 
 
     def is_valid(self):
@@ -41,7 +19,18 @@ class IPAddress:
         >>> ipaddress.is_valid()
         True
         """
-        return self._octets is not None
+        octets = self.ip_address.split('.')
+        if len(octets) != 4:
+            return False
+
+        for octet in octets:
+            if not octet.isdigit():
+                return False
+            octet_int = int(octet)
+            if octet_int < 0 or octet_int > 255:
+                return False
+
+        return True
 
 
     def get_octets(self):
@@ -52,9 +41,9 @@ class IPAddress:
         >>> ipaddress.get_octets()
         ["10", "10", "10", "10"]
         """
-        if self._octets:
-            return [str(octet) for octet in self._octets]
-        return []
+        if not self.is_valid():
+            return []
+        return self.ip_address.split('.')
 
 
     def get_binary(self):
@@ -68,5 +57,7 @@ class IPAddress:
         if not self.is_valid():
             return ''
 
-        binary_octets = [bin(octet)[2:].zfill(8) for octet in self._octets]
+        octets = self.get_octets()
+        binary_octets = [bin(int(octet))[2:].zfill(8) for octet in octets]
+
         return '.'.join(binary_octets)

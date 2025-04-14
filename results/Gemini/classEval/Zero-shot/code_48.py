@@ -1,6 +1,5 @@
 import socket
 import ipaddress
-import netifaces
 
 
 class IpUtil:
@@ -23,7 +22,7 @@ class IpUtil:
         try:
             ipaddress.IPv4Address(ip_address)
             return True
-        except ipaddress.AddressValueError:
+        except ValueError:
             return False
 
     @staticmethod
@@ -41,7 +40,7 @@ class IpUtil:
         try:
             ipaddress.IPv6Address(ip_address)
             return True
-        except ipaddress.AddressValueError:
+        except ValueError:
             return False
 
     @staticmethod
@@ -56,8 +55,7 @@ class IpUtil:
 
         """
         try:
-            hostname, _, _ = socket.gethostbyaddr(ip_address)
-            return hostname
+            return socket.gethostbyaddr(ip_address)[0]
         except socket.herror:
             return None
         except socket.gaierror:

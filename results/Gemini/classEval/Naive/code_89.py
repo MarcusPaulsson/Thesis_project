@@ -40,10 +40,11 @@ class TwentyFourPointGame:
         True
         """
         if not self.nums:
-            return [0,0,0,0]
+            return False
 
         try:
-            return self.evaluate_expression(expression)
+            result = eval(expression)
+            return abs(result - 24) < 1e-6  # Use a small tolerance for floating-point comparisons
         except (SyntaxError, NameError, TypeError, ZeroDivisionError):
             return False
 
@@ -61,6 +62,6 @@ class TwentyFourPointGame:
         """
         try:
             result = eval(expression)
-            return abs(result - 24) < 1e-6
+            return abs(result - 24) < 1e-6  # Use a small tolerance for floating-point comparisons
         except (SyntaxError, NameError, TypeError, ZeroDivisionError):
             return False

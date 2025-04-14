@@ -21,18 +21,16 @@ class DecryptionUtils:
         'hello'
 
         """
-        result = ''
+        plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
-                start = ord('a')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                decrypted_char = chr(((ord(char) - ord('a') - shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
-                start = ord('A')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                decrypted_char = chr(((ord(char) - ord('A') - shift) % 26) + ord('A'))
             else:
-                shifted_char = char
-            result += shifted_char
-        return result
+                decrypted_char = char
+            plaintext += decrypted_char
+        return plaintext
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -44,20 +42,18 @@ class DecryptionUtils:
         'ybocl'
 
         """
-        key = self.key
         plaintext = ''
-        key_len = len(key)
+        key = self.key
+        key_length = len(key)
         for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
-                key_char = key[i % key_len]
-                key_shift = ord(key_char) - ord('a')
-                start = ord('a')
-                decrypted_char = chr((ord(char) - start - key_shift) % 26 + start)
+                key_char = key[i % key_length]
+                shift = ord(key_char) - ord('a')
+                decrypted_char = chr(((ord(char) - ord('a') - shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
-                key_char = key[i % key_len]
-                key_shift = ord(key_char.lower()) - ord('a')
-                start = ord('A')
-                decrypted_char = chr((ord(char) - start - key_shift) % 26 + start)
+                key_char = key[i % key_length]
+                shift = ord(key_char.lower()) - ord('a')
+                decrypted_char = chr(((ord(char) - ord('A') - shift) % 26) + ord('A'))
             else:
                 decrypted_char = char
             plaintext += decrypted_char
@@ -76,6 +72,7 @@ class DecryptionUtils:
         """
         length = len(encrypted_text)
         rail = [['\n' for i in range(length)] for j in range(rails)]
+
         dir_down = None
         row, col = 0, 0
 

@@ -19,14 +19,19 @@ class ExcelProcessor:
             workbook = openpyxl.load_workbook(file_name)
             sheet = workbook.active
             data = []
-            for row in sheet.iter_rows(values_only=True):
-                data.append(tuple(row))
+            for row in sheet.iter_rows():
+                row_data = []
+                for cell in row:
+                    row_data.append(cell.value)
+                data.append(tuple(row_data))
             return data
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
             return None
-        except Exception as e:
-            print(f"Error reading Excel file: {e}")
+        except openpyxl.utils.exceptions.InvalidFileException:
+            print(f"Error: File '{file_name}' is not a valid Excel file.")
+            return None
+        except:
             return None
 
     def write_excel(self, data, file_name):
@@ -45,9 +50,9 @@ class ExcelProcessor:
         >>> ]
         >>> data = processor.write_excel(new_data, 'test_data.xlsx')
         """
+        if not file_name:
+            return 0
         try:
-            if not file_name:
-                return 0
             workbook = openpyxl.Workbook()
             sheet = workbook.active
             for row_data in data:
@@ -73,18 +78,19 @@ class ExcelProcessor:
                 return 0, None
 
             new_data = []
-            output_file_name = "processed_" + save_file_name
-
             for row in data:
-                row_list = list(row)
-                if 0 <= N < len(row_list):
-                    row_list.append(str(row_list[N]).upper())
+                row = list(row)
+                if len(row) > N:
+                    row.append(row[N])
+                    row[N] = str(row[N]).upper()
                 else:
-                    return 0, 0
-                new_data.append(tuple(row_list))
+                    return 0, None
+                new_data.append(tuple(row))
 
+            output_file_name = "processed_" + save_file_name
             success = self.write_excel(new_data, output_file_name)
             return success, output_file_name
+
         except Exception as e:
             print(f"Error processing Excel data: {e}")
             return 0, None

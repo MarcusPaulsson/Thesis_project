@@ -17,12 +17,9 @@ class NLPDataProcessor2:
         """
         words_list = []
         for string in string_list:
-            # Keep only English letters and spaces
-            string = re.sub(r'[^a-zA-Z\s]', '', string)
-            # Convert to lower case
-            string = string.lower()
-            # Split into words
-            words = string.split()
+            cleaned_string = re.sub(r'[^a-zA-Z\s]', '', string)
+            cleaned_string = cleaned_string.lower()
+            words = cleaned_string.split()
             words_list.append(words)
         return words_list
 
@@ -35,8 +32,9 @@ class NLPDataProcessor2:
         {'this': 2, 'is': 2, 'test': 2, 'a': 1, 'another': 1}
         """
         word_counts = Counter()
-        for word_list in words_list:
-            word_counts.update(word_list)
+        for words in words_list:
+            word_counts.update(words)
+
         return dict(word_counts)
 
     def process(self, string_list):

@@ -31,7 +31,6 @@ class BookManagementDB:
             )
         """)
         self.connection.commit()
-    
 
     def add_book(self, title, author):
         """

@@ -21,19 +21,17 @@ class DataStatistics4:
         if n != len(data2):
             raise ValueError("Data sets must have the same length")
 
-        sum_x = sum(data1)
-        sum_y = sum(data2)
-        sum_x_squared = sum(x**2 for x in data1)
-        sum_y_squared = sum(y**2 for y in data2)
-        sum_xy = sum(data1[i] * data2[i] for i in range(n))
+        mean1 = sum(data1) / n
+        mean2 = sum(data2) / n
 
-        numerator = n * sum_xy - sum_x * sum_y
-        denominator = math.sqrt((n * sum_x_squared - sum_x**2) * (n * sum_y_squared - sum_y**2))
+        numerator = sum([(data1[i] - mean1) * (data2[i] - mean2) for i in range(n)])
+        denominator1 = sum([(data1[i] - mean1) ** 2 for i in range(n)])
+        denominator2 = sum([(data2[i] - mean2) ** 2 for i in range(n)])
 
-        if denominator == 0:
-            return 0  # Handle the case where the denominator is zero to avoid division by zero
+        if denominator1 == 0 or denominator2 == 0:
+            return 0.0
 
-        return numerator / denominator
+        return numerator / (math.sqrt(denominator1) * math.sqrt(denominator2))
 
     @staticmethod
     def skewness(data):
@@ -48,13 +46,14 @@ class DataStatistics4:
         n = len(data)
         if n < 3:
             return 0.0
+
         mean = sum(data) / n
-        variance = sum([(x - mean) ** 2 for x in data]) / (n - 1)
-        std_dev = math.sqrt(variance)
-        if std_dev == 0:
+        std = math.sqrt(sum([(x - mean) ** 2 for x in data]) / (n - 1))
+
+        if std == 0:
             return 0.0
 
-        skewness = sum([(x - mean) ** 3 for x in data]) / ((n - 1) * std_dev ** 3)
+        skewness = sum([(x - mean) ** 3 for x in data]) / ((n - 1) * std ** 3)
         return skewness
 
     @staticmethod
@@ -70,14 +69,14 @@ class DataStatistics4:
         n = len(data)
         if n < 4:
             return float('NaN')
-        mean = sum(data) / n
-        variance = sum([(x - mean) ** 2 for x in data]) / (n - 1)
-        std_dev = math.sqrt(variance)
 
-        if std_dev == 0:
+        mean = sum(data) / n
+        std = math.sqrt(sum([(x - mean) ** 2 for x in data]) / (n - 1))
+
+        if std == 0:
             return float('NaN')
 
-        kurtosis = sum([(x - mean) ** 4 for x in data]) / ((n - 1) * std_dev ** 4) - 3
+        kurtosis = sum([(x - mean) ** 4 for x in data]) / ((n - 1) * std ** 4) - 3
         return kurtosis
 
     @staticmethod

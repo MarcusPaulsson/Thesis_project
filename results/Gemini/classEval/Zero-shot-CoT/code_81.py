@@ -16,7 +16,7 @@ class Statistics3:
         2.5
 
         """
-        data = sorted(data)
+        data.sort()
         n = len(data)
         if n % 2 == 0:
             mid1 = data[n // 2 - 1]
@@ -84,8 +84,9 @@ class Statistics3:
         if denominator_x == 0 or denominator_y == 0:
             return None
 
-        correlation = numerator / (math.sqrt(denominator_x) * math.sqrt(denominator_y))
-        return correlation
+        denominator = math.sqrt(denominator_x) * math.sqrt(denominator_y)
+
+        return numerator / denominator
 
     @staticmethod
     def mean(data):
@@ -113,25 +114,16 @@ class Statistics3:
         [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
 
         """
-        num_variables = len(data)
+        num_lists = len(data)
         matrix = []
-        for i in range(num_variables):
+        for i in range(num_lists):
             row = []
-            for j in range(num_variables):
-                if num_variables <= 1:
+            for j in range(num_lists):
+                if num_lists <= 1:
                     row.append(None)
                 else:
                     row.append(Statistics3.correlation(data[i], data[j]))
             matrix.append(row)
-        
-        if num_variables <= 1:
-            new_matrix = []
-            for i in range(len(data[0])):
-                row = []
-                for j in range(len(data[0])):
-                    row.append(None)
-                new_matrix.append(row)
-            return new_matrix
 
         return matrix
 
@@ -147,11 +139,11 @@ class Statistics3:
 
         """
         n = len(data)
-        if n == 0:
+        if n <= 1:
             return 0.0
 
         mean = sum(data) / n
-        variance = sum([(x - mean) ** 2 for x in data]) / n
+        variance = sum([(x - mean) ** 2 for x in data]) / (n - 1)
         return math.sqrt(variance)
 
     @staticmethod
@@ -169,11 +161,10 @@ class Statistics3:
         if n <= 1:
             return None
 
-        mean = sum(data) / n
         std_dev = Statistics3.standard_deviation(data)
-
         if std_dev == 0:
             return None
 
+        mean = sum(data) / n
         z_scores = [(x - mean) / std_dev for x in data]
         return z_scores

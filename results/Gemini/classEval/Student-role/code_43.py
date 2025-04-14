@@ -70,7 +70,8 @@ class HRManagementSystem:
                     self.employees[employee_id][key] = value
                 else:
                     return False
-            self.employees[employee_id].update(employee_info)
+            for key, value in employee_info.items():
+                self.employees[employee_id][key] = value
             return True
         else:
             return False
@@ -103,7 +104,7 @@ class HRManagementSystem:
         {1: {'employee_ID': 1, 'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 100000}}
 
         """
-        result = {}
+        employee_list = {}
         for employee_id, employee_info in self.employees.items():
-            result[employee_id] = {'employee_ID': employee_id, **employee_info}
-        return result
+            employee_list[employee_id] = {'employee_ID': employee_id, **employee_info}
+        return employee_list

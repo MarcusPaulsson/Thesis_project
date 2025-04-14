@@ -41,7 +41,7 @@ class ArrangementCalculator:
         """
         total_arrangements = 0
         for i in range(1, n + 1):
-            total_arrangements += ArrangementCalculator.factorial(n) // ArrangementCalculator.factorial(n - i)
+            total_arrangements += ArrangementCalculator.count(n, i)
         return total_arrangements
 
 
@@ -74,11 +74,11 @@ class ArrangementCalculator:
         [[1], [2], [3], [1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2], [1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
 
         """
-        arrangements = []
+        all_arrangements = []
         for i in range(1, len(self.datas) + 1):
             for permutation in itertools.permutations(self.datas, i):
-                arrangements.append(list(permutation))
-        return arrangements
+                all_arrangements.append(list(permutation))
+        return all_arrangements
 
 
     @staticmethod

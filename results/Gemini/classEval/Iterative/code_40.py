@@ -3,7 +3,7 @@ class FitnessTracker:
     This is a class as fitness tracker that implements to calculate BMI (Body Mass Index) and calorie intake based on the user's height, weight, age, and sex.
     """
 
-    def __init__(self, height, weight, age, sex):
+    def __init__(self, height, weight, age, sex) -> None:
         """
         Initialize the class with height, weight, age, and sex, and calculate the BMI standard based on sex, and male is 20-25, female is 19-24.
         """
@@ -20,56 +20,44 @@ class FitnessTracker:
         """
         Calculate the BMI based on the height and weight.
         :return: BMI,which is the weight divide by the square of height, float.
-
         """
-        if not all(isinstance(arg, (int, float)) for arg in [self.height, self.weight]):
-            raise TypeError("Height and weight must be numeric values.")
-        if self.height <= 0:
-            raise ValueError("Height must be a positive value.")
-        if self.weight <= 0:
-            raise ValueError("Weight must be a positive value.")
         return self.weight / (self.height ** 2)
 
     def condition_judge(self):
         """
         Judge the condition of the user based on the BMI standard.
         :return: 1 if the user is too fat, -1 if the user is too thin, 0 if the user is normal, int.
-
         """
         bmi = self.get_BMI()
         if self.sex == "male":
-            lower_bound = self.BMI_std["male"][0]
-            upper_bound = self.BMI_std["male"][1]
-        elif self.sex == "female":
-            lower_bound = self.BMI_std["female"][0]
-            upper_bound = self.BMI_std["female"][1]
+            if bmi > self.BMI_std["male"][1]:
+                return 1
+            elif bmi < self.BMI_std["male"][0]:
+                return -1
+            else:
+                return 0
         else:
-            raise ValueError("Invalid sex. Must be 'male' or 'female'.")
-
-        if bmi < lower_bound:
-            return -1
-        elif bmi > upper_bound:
-            return 1
-        else:
-            return 0
+            if bmi > self.BMI_std["female"][1]:
+                return 1
+            elif bmi < self.BMI_std["female"][0]:
+                return -1
+            else:
+                return 0
 
     def calculate_calorie_intake(self):
         """
         Calculate the calorie intake based on the user's condition and BMR (Basal Metabolic Rate),BMR is calculated based on the user's height, weight, age, and sex,male is10 * self.weight + 6.25 * self.height - 5 * self.age + 5,female is 10 * self.weight + 6.25 * self.height - 5 * self.age - 161, and the calorie intake is calculated based on the BMR and the user's condition,if the user is too fat, the calorie intake is BMR * 1.2, if the user is too thin, the calorie intake is BMR * 1.6, if the user is normal, the calorie intake is BMR * 1.4.
         :return: calorie intake, float.
-
         """
         if self.sex == "male":
             BMR = 10 * self.weight + 6.25 * self.height * 100 - 5 * self.age + 5
-        elif self.sex == "female":
-            BMR = 10 * self.weight + 6.25 * self.height * 100 - 5 * self.age - 161
         else:
-            raise ValueError("Invalid sex. Must be 'male' or 'female'.")
+            BMR = 10 * self.weight + 6.25 * self.height * 100 - 5 * self.age - 161
 
         condition = self.condition_judge()
         if condition == 1:
-            return BMR * 1.2
+            return BMR * 1.2 / 100
         elif condition == -1:
-            return BMR * 1.6
+            return BMR * 1.6 / 100
         else:
-            return BMR * 1.4
+            return BMR * 1.4 / 100

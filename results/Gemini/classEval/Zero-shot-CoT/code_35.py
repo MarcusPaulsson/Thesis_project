@@ -41,20 +41,17 @@ class EightPuzzle:
 
         if direction == 'up':
             if blank_i > 0:
-                new_state[blank_i][blank_j], new_state[blank_i - 1][blank_j] = new_state[blank_i - 1][blank_j], \
-                                                                               new_state[blank_i][blank_j]
+                new_state[blank_i][blank_j], new_state[blank_i - 1][blank_j] = new_state[blank_i - 1][blank_j], new_state[blank_i][blank_j]
         elif direction == 'down':
             if blank_i < 2:
-                new_state[blank_i][blank_j], new_state[blank_i + 1][blank_j] = new_state[blank_i + 1][blank_j], \
-                                                                               new_state[blank_i][blank_j]
+                new_state[blank_i][blank_j], new_state[blank_i + 1][blank_j] = new_state[blank_i + 1][blank_j], new_state[blank_i][blank_j]
         elif direction == 'left':
             if blank_j > 0:
-                new_state[blank_i][blank_j], new_state[blank_i][blank_j - 1] = new_state[blank_i][blank_j - 1], \
-                                                                               new_state[blank_i][blank_j]
+                new_state[blank_i][blank_j], new_state[blank_i][blank_j - 1] = new_state[blank_i][blank_j - 1], new_state[blank_i][blank_j]
         elif direction == 'right':
             if blank_j < 2:
-                new_state[blank_i][blank_j], new_state[blank_i][blank_j + 1] = new_state[blank_i][blank_j + 1], \
-                                                                               new_state[blank_i][blank_j]
+                new_state[blank_i][blank_j], new_state[blank_i][blank_j + 1] = new_state[blank_i][blank_j + 1], new_state[blank_i][blank_j]
+
         return new_state
 
     def get_possible_moves(self, state):
@@ -67,6 +64,7 @@ class EightPuzzle:
         """
         blank_i, blank_j = self.find_blank(state)
         moves = []
+
         if blank_i > 0:
             moves.append('up')
         if blank_i < 2:
@@ -75,6 +73,7 @@ class EightPuzzle:
             moves.append('left')
         if blank_j < 2:
             moves.append('right')
+
         return moves
 
     def solve(self):
@@ -108,8 +107,7 @@ class EightPuzzle:
                 state_tuple = tuple(tuple(row) for row in new_state)
 
                 if state_tuple not in visited:
+                    open_list.append((new_state, path + [move]))
                     visited.add(state_tuple)
-                    new_path = path + [move]
-                    open_list.append((new_state, new_path))
 
         return None

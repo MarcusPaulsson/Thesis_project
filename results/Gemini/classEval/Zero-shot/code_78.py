@@ -15,8 +15,9 @@ class SplitSentence:
         >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
         ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        sentences = re.split(r'(?<!Mr)(?<!A)(?<!B)(?<!C)(?<!Mrs)(?<!Dr)(?<!Ms)(?<!Jr)(?<!Sr)(?<![A-Z][a-z])(?<![A-Z])(?<=[.?])\s', sentences_string)
-        return [s for s in sentences if s]
+        sentences = re.split(r'(?<!Mr)(?<!A)(?<!B)(?<!C)\.(?=\s)|(?<!Mr)(?<!A)(?<!B)(?<!C)\?(?=\s)', sentences_string)
+        sentences = [s.strip() + ('.' if sentences_string[sum(map(len, sentences[:i])):sum(map(len, sentences[:i])) + len(s)] in ['.'] else ('?' if sentences_string[sum(map(len, sentences[:i])):sum(map(len, sentences[:i])) + len(s)] in ['?'] else '')) for i, s in enumerate(sentences) if s.strip()]
+        return sentences
 
     def count_words(self, sentence):
         """
@@ -26,8 +27,12 @@ class SplitSentence:
         >>> ss.count_words("abc def")
         2
         """
-        words = re.findall(r'\b[a-zA-Z]+\b', sentence)
-        return len(words)
+        words = sentence.split()
+        count = 0
+        for word in words:
+            if not word.isdigit() and not re.match(r'[^\w\s]', word):
+                count += 1
+        return count
 
     def process_text_file(self, sentences_string):
         """

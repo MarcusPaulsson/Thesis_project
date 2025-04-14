@@ -43,12 +43,11 @@ class Server:
         """
         if not isinstance(info, dict) or "addr" not in info or "content" not in info:
             return -1
-
         addr = info["addr"]
-
+        content = info["content"]
         if addr in self.white_list:
             self.receive_struct = info
-            return info["content"]
+            return content
         else:
             return False
 
@@ -61,7 +60,6 @@ class Server:
         if not isinstance(info, dict) or "addr" not in info or "content" not in info:
             return "info structure is not correct"
         self.send_struct = info
-        return None
 
     def show(self, type):
         """

@@ -76,10 +76,8 @@ class Warehouse:
         """
         if product_id not in self.inventory:
             return False
-
         if self.inventory[product_id]['quantity'] < quantity:
             return False
-
         self.orders[order_id] = {'product_id': product_id, 'quantity': quantity, 'status': 'Shipped'}
         return True
 
@@ -97,7 +95,6 @@ class Warehouse:
         """
         if order_id not in self.orders:
             return False
-
         self.orders[order_id]['status'] = status
         return True
 
@@ -113,5 +110,4 @@ class Warehouse:
         """
         if order_id not in self.orders:
             return False
-
         return self.orders[order_id]['status']

@@ -22,7 +22,7 @@ class URLHandler:
         """
         try:
             parsed_url = urlparse(self.url)
-            return parsed_url.scheme or None
+            return parsed_url.scheme if parsed_url.scheme else None
         except:
             return None
 
@@ -36,7 +36,7 @@ class URLHandler:
         """
         try:
             parsed_url = urlparse(self.url)
-            return parsed_url.netloc or None
+            return parsed_url.netloc if parsed_url.netloc else None
         except:
             return None
 
@@ -50,7 +50,7 @@ class URLHandler:
         """
         try:
             parsed_url = urlparse(self.url)
-            return parsed_url.path + ("?" + parsed_url.query if parsed_url.query else "") + ("#" + parsed_url.fragment if parsed_url.fragment else "") or None
+            return parsed_url.path + '?' + parsed_url.query + '#' + parsed_url.fragment if parsed_url.path else None
         except:
             return None
 
@@ -65,7 +65,10 @@ class URLHandler:
         try:
             parsed_url = urlparse(self.url)
             query_params = parse_qs(parsed_url.query)
-            return {k: v[0] for k, v in query_params.items()} if query_params else None
+            if query_params:
+                return {k: v[0] for k, v in query_params.items()}
+            else:
+                return {} if parsed_url.query else None
         except:
             return None
 
@@ -79,6 +82,6 @@ class URLHandler:
         """
         try:
             parsed_url = urlparse(self.url)
-            return parsed_url.fragment or None
+            return parsed_url.fragment if parsed_url.fragment else None
         except:
             return None

@@ -26,7 +26,7 @@ class Manacher:
             return 0
 
         if string[center - diff] == string[center + diff]:
-            return 1 + self.palindromic_length(center, diff + 1, string)
+            return diff
         else:
             return 0
 
@@ -40,7 +40,7 @@ class Manacher:
 
         """
         s = '#'.join(self.input_string)
-        s = '|' + s + '|'
+        s = '#' + s + '#'
         n = len(s)
         p = [0] * n
         center = 0
@@ -48,21 +48,29 @@ class Manacher:
         max_len = 0
         max_center = 0
 
-        for i in range(1, n - 1):
+        for i in range(1, n):
             if i < right:
                 mirror = 2 * center - i
                 p[i] = min(right - i, p[mirror])
 
-            while i - (1 + p[i]) >= 0 and i + (1 + p[i]) < n and s[i - (1 + p[i])] == s[i + (1 + p[i])]:
+            # Attempt to expand palindrome centered at i
+            left = i - (1 + p[i])
+            right_side = i + (1 + p[i])
+            while left >= 0 and right_side < n and s[left] == s[right_side]:
                 p[i] += 1
+                left -= 1
+                right_side += 1
 
+            # If palindrome centered at i expands past right,
+            # adjust center based on expanded palindrome.
             if i + p[i] > right:
                 center = i
                 right = i + p[i]
 
+            # Update max_len and max_center if needed
             if p[i] > max_len:
                 max_len = p[i]
                 max_center = i
 
         start = (max_center - max_len) // 2
-        return self.input_string[start: start + max_len]
+        return self.input_string[start:start + max_len]

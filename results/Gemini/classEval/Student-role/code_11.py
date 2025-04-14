@@ -59,6 +59,6 @@ class BitStatusUtil:
         """
         for arg in args:
             if arg < 0:
-                raise ValueError(f"{arg} not greater than or equal to 0")
+                raise ValueError(f"{arg} less than 0")
             if arg % 2 != 0:
                 raise ValueError(f"{arg} not even")

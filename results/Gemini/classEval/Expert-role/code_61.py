@@ -135,7 +135,6 @@ class MusicPlayer:
         """
         if 0 <= volume <= 100:
             self.volume = volume
-            return None
         else:
             return False
 

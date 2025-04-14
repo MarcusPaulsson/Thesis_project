@@ -10,8 +10,23 @@ class UserLoginDB:
         Initializes the UserLoginDB object with the specified database name.
         :param db_name: str, the name of the SQLite database.
         """
+        self.db_name = db_name
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
+        self.create_table()
+
+    def create_table(self):
+        """
+        Creates the 'users' table if it doesn't exist.
+        """
+        query = """
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            password TEXT
+        )
+        """
+        self.cursor.execute(query)
+        self.connection.commit()
 
     def insert_user(self, username, password):
         """
@@ -75,4 +90,5 @@ class UserLoginDB:
         user = self.search_user_by_username(username)
         if user:
             return user[1] == password
-        return False
+        else:
+            return False

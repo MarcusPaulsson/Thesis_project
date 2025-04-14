@@ -46,12 +46,12 @@ class TriCalculator:
         0.5000000000000001
         """
         x = x / 180 * pi
-        cos_value = 0
+        result = 0
         for i in range(n):
-            numerator = (-1) ** i * x ** (2 * i)
-            denominator = self.factorial(2 * i)
-            cos_value += numerator / denominator
-        return cos_value
+            numerator = (-1)**i * x**(2*i)
+            denominator = self.factorial(2*i)
+            result += numerator / denominator
+        return result
 
     def sin(self, x):
         """
@@ -62,12 +62,13 @@ class TriCalculator:
         0.5
         """
         x = x / 180 * pi
-        sin_value = 0
-        for i in range(50):
-            numerator = (-1) ** i * x ** (2 * i + 1)
-            denominator = self.factorial(2 * i + 1)
-            sin_value += numerator / denominator
-        return sin_value
+        result = 0
+        n = 50
+        for i in range(n):
+            numerator = (-1)**i * x**(2*i + 1)
+            denominator = self.factorial(2*i + 1)
+            result += numerator / denominator
+        return result
 
 
     def tan(self, x):

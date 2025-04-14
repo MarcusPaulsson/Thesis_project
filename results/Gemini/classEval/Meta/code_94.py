@@ -56,10 +56,13 @@ class VendingMachine:
 
         """
         if item_name in self.inventory:
-            if self.inventory[item_name]['quantity'] > 0 and self.balance >= self.inventory[item_name]['price']:
-                self.inventory[item_name]['quantity'] -= 1
-                self.balance -= self.inventory[item_name]['price']
-                return round(self.balance,2)
+            if self.inventory[item_name]['quantity'] > 0:
+                if self.balance >= self.inventory[item_name]['price']:
+                    self.balance -= self.inventory[item_name]['price']
+                    self.inventory[item_name]['quantity'] -= 1
+                    return round(self.balance, 2)
+                else:
+                    return False
             else:
                 return False
         else:
@@ -100,7 +103,9 @@ class VendingMachine:
         if not self.inventory:
             return False
         else:
-            display_string = ""
+            result = ""
             for item_name, item_data in self.inventory.items():
-                display_string += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]\n"
-            return display_string.strip()
+                result += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]"
+                if item_name != list(self.inventory.keys())[-1]:
+                    result += "\n"
+            return result

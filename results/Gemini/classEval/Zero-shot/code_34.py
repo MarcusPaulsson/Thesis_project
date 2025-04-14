@@ -22,13 +22,11 @@ class DocFileHandler:
         """
         try:
             document = Document(self.file_path)
-            full_text = []
-            for paragraph in document.paragraphs:
-                full_text.append(paragraph.text)
-            return '\n'.join(full_text)
+            text = '\n'.join([paragraph.text for paragraph in document.paragraphs])
+            return text
         except Exception as e:
             print(f"Error reading document: {e}")
-            return None
+            return ""
 
     def write_text(self, content, font_size=12, alignment='left'):
         """
@@ -41,10 +39,15 @@ class DocFileHandler:
         try:
             document = Document()
             paragraph = document.add_paragraph(content)
-            paragraph_format = paragraph.paragraph_format
-            paragraph_format.alignment = self._get_alignment_value(alignment)
+            
+            # Set font size
             for run in paragraph.runs:
                 run.font.size = Pt(font_size)
+
+            # Set alignment
+            alignment_value = self._get_alignment_value(alignment)
+            paragraph.alignment = alignment_value
+
             document.save(self.file_path)
             return True
         except Exception as e:
@@ -59,7 +62,7 @@ class DocFileHandler:
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path)
+            document = Document(self.file_path) if os.path.exists(self.file_path) else Document()
             document.add_heading(heading, level=level)
             document.save(self.file_path)
             return True
@@ -74,12 +77,14 @@ class DocFileHandler:
         :return: bool, True if the table is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path)
-            table = document.add_table(rows=0, cols=len(data[0]))
+            document = Document(self.file_path) if os.path.exists(self.file_path) else Document()
+            table = document.add_table(rows=0, cols=len(data[0]) if data else 0)
+
             for row_data in data:
                 row_cells = table.add_row().cells
                 for i, item in enumerate(row_data):
                     row_cells[i].text = str(item)
+
             document.save(self.file_path)
             return True
         except Exception as e:
@@ -92,6 +97,7 @@ class DocFileHandler:
         :param alignment: str, the alignment string ('left', 'center', or 'right').
         :return: int, the alignment value.
         """
+        alignment = alignment.lower()
         if alignment == 'left':
             return WD_PARAGRAPH_ALIGNMENT.LEFT
         elif alignment == 'center':
@@ -99,4 +105,5 @@ class DocFileHandler:
         elif alignment == 'right':
             return WD_PARAGRAPH_ALIGNMENT.RIGHT
         else:
-            return WD_PARAGRAPH_ALIGNMENT.LEFT
+            return WD_PARAGRAPH_ALIGNMENT.LEFT  # Default to left alignment
+import os

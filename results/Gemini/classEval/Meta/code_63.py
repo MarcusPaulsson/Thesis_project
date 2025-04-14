@@ -34,7 +34,9 @@ class NLPDataProcessor2:
         word_counts = Counter()
         for words in words_list:
             word_counts.update(words)
-        return dict(word_counts.most_common(5))
+
+        top_5_words = dict(word_counts.most_common(5))
+        return top_5_words
 
     def process(self, string_list):
         """

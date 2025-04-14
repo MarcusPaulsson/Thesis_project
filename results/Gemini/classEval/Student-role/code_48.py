@@ -7,6 +7,7 @@ class IpUtil:
     This is a class as tool for ip that can be used to obtain the local IP address, validate its validity, and also provides the functionality to retrieve the corresponding hostname.
     """
 
+
     @staticmethod
     def is_valid_ipv4(ip_address):
         """
@@ -20,9 +21,17 @@ class IpUtil:
 
         """
         try:
-            socket.inet_pton(socket.AF_INET, ip_address)
+            parts = ip_address.split('.')
+            if len(parts) != 4:
+                return False
+            for part in parts:
+                if not part.isdigit():
+                    return False
+                num = int(part)
+                if num < 0 or num > 255:
+                    return False
             return True
-        except socket.error:
+        except:
             return False
 
     @staticmethod
@@ -43,6 +52,7 @@ class IpUtil:
         except socket.error:
             return False
 
+
     @staticmethod
     def get_hostname(ip_address):
         """
@@ -55,10 +65,11 @@ class IpUtil:
 
         """
         try:
-            return socket.gethostbyaddr(ip_address)[0]
+            hostname = socket.gethostbyaddr(ip_address)[0]
+            return hostname
         except socket.herror:
             if ip_address == '0.0.0.0':
                 return socket.gethostname()
             return None
-        except Exception as e:
+        except OSError:
             return None

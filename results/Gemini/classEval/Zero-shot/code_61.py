@@ -12,7 +12,7 @@ class MusicPlayer:
         self.playlist = []
         self.current_song = None
         self.volume = 50
-        self.current_song_index = -1
+        self.current_song_index = None
 
     def add_song(self, song):
         """
@@ -41,9 +41,13 @@ class MusicPlayer:
             self.playlist.remove(song)
             if self.current_song == song:
                 self.current_song = None
-                self.current_song_index = -1
-            elif self.current_song_index > self.playlist.index(song):
-                self.current_song_index -= 1
+                self.current_song_index = None
+            elif self.current_song_index is not None:
+                if song in self.playlist:
+                    index = self.playlist.index(song)
+                    if index < self.current_song_index:
+                        self.current_song_index -= 1
+
 
     def play(self):
         """
@@ -76,7 +80,7 @@ class MusicPlayer:
         """
         if self.current_song:
             self.current_song = None
-            self.current_song_index = -1
+            self.current_song_index = None
             return True
         else:
             return False
@@ -92,16 +96,22 @@ class MusicPlayer:
         True
 
         """
-        if self.playlist:
-            if self.current_song is None:
+        if not self.playlist:
+            return False
+
+        if self.current_song is None and self.playlist:
+            return False
+
+        if self.current_song_index is None:
+            try:
+                self.current_song_index = self.playlist.index(self.current_song)
+            except ValueError:
                 return False
-            current_index = self.playlist.index(self.current_song)
-            if current_index < len(self.playlist) - 1:
-                self.current_song = self.playlist[current_index + 1]
-                self.current_song_index = current_index+1
-                return True
-            else:
-                return False
+
+        if self.current_song_index < len(self.playlist) - 1:
+            self.current_song_index += 1
+            self.current_song = self.playlist[self.current_song_index]
+            return True
         else:
             return False
 
@@ -116,16 +126,22 @@ class MusicPlayer:
         True
 
         """
-        if self.playlist:
-            if self.current_song is None:
+        if not self.playlist:
+            return False
+
+        if self.current_song is None and self.playlist:
+            return False
+
+        if self.current_song_index is None:
+            try:
+                self.current_song_index = self.playlist.index(self.current_song)
+            except ValueError:
                 return False
-            current_index = self.playlist.index(self.current_song)
-            if current_index > 0:
-                self.current_song = self.playlist[current_index - 1]
-                self.current_song_index = current_index-1
-                return True
-            else:
-                return False
+
+        if self.current_song_index > 0:
+            self.current_song_index -= 1
+            self.current_song = self.playlist[self.current_song_index]
+            return True
         else:
             return False
 

@@ -15,11 +15,6 @@ class CalendarUtil:
         """
         Add an event to the calendar.
         :param event: The event to be added to the calendar,dict.
-        >>> calendar = CalendarUtil()
-        >>> calendar.add_event({'date': datetime(2023, 1, 1, 0, 0), 'start_time': datetime(2023, 1, 1, 0, 0), 'end_time': datetime(2023, 1, 1, 1, 0), 'description': 'New Year'})
-        >>> calendar.events
-        [{'date': datetime.datetime(2023, 1, 1, 0, 0), 'start_time': datetime.datetime(2023, 1, 1, 0, 0), 'end_time': datetime.datetime(2023, 1, 1, 1, 0), 'description': 'New Year'}]
-
         """
         self.events.append(event)
 
@@ -27,26 +22,17 @@ class CalendarUtil:
         """
         Remove an event from the calendar.
         :param event: The event to be removed from the calendar,dict.
-        >>> calendar = CalendarUtil()
-        >>> calendar.events = [{'date': datetime(2023, 1, 1, 0, 0), 'start_time': datetime(2023, 1, 1, 0, 0), 'end_time': datetime(2023, 1, 1, 1, 0), 'description': 'New Year'}]
-        >>> calendar.remove_event({'date': datetime(2023, 1, 1, 0, 0), 'start_time': datetime(2023, 1, 1, 0, 0), 'end_time': datetime(2023, 1, 1, 1, 0), 'description': 'New Year'})
-        >>> calendar.events
-        []
-
         """
-        if event in self.events:
+        try:
             self.events.remove(event)
+        except ValueError:
+            pass
 
     def get_events(self, date):
         """
         Get all events on a given date.
         :param date: The date to get events for,datetime.
         :return: A list of events on the given date,list.
-        >>> calendar = CalendarUtil()
-        >>> calendar.events = [{'date': datetime(2023, 1, 1, 0, 0), 'start_time': datetime(2023, 1, 1, 0, 0), 'end_time': datetime(2023, 1, 1, 1, 0), 'description': 'New Year'}]
-        >>> calendar.get_events(datetime(2023, 1, 1, 0, 0))
-        [{'date': datetime.datetime(2023, 1, 1, 0, 0), 'start_time': datetime.datetime(2023, 1, 1, 0, 0), 'end_time': datetime.datetime(2023, 1, 1, 1, 0), 'description': 'New Year'}]
-
         """
         return [event for event in self.events if event['date'].date() == date.date()]
 
@@ -56,17 +42,10 @@ class CalendarUtil:
         :param start_time: The start time of the time slot,datetime.
         :param end_time: The end time of the time slot,datetime.
         :return: True if the calendar is available for the given time slot, False otherwise,bool.
-        >>> calendar = CalendarUtil()
-        >>> calendar.events = [{'date': datetime(2023, 1, 1, 0, 0), 'start_time': datetime(2023, 1, 1, 0, 0), 'end_time': datetime(2023, 1, 1, 1, 0), 'description': 'New Year'}]
-        >>> calendar.is_available(datetime(2023, 1, 1, 0, 0), datetime(2023, 1, 1, 1, 0))
-        False
-
         """
         for event in self.events:
             if event['date'].date() == start_time.date():
-                if (start_time >= event['start_time'] and start_time < event['end_time']) or \
-                   (end_time > event['start_time'] and end_time <= event['end_time']) or \
-                   (start_time <= event['start_time'] and end_time >= event['end_time']):
+                if (start_time < event['end_time'] and end_time > event['start_time']):
                     return False
         return True
 
@@ -75,31 +54,42 @@ class CalendarUtil:
         Get all available time slots on a given date.
         :param date: The date to get available time slots for,datetime.
         :return: A list of available time slots on the given date,list.
-        >>> calendar = CalendarUtil()
-        >>> calendar.events = [{'date': datetime(2023, 1, 1, 0, 0), 'start_time': datetime(2023, 1, 1, 0, 0), 'end_time': datetime(2023, 1, 1, 23, 0), 'description': 'New Year'}]
-        >>> calendar.get_available_slots(datetime(2023, 1, 1))
-        [(datetime.datetime(2023, 1, 1, 23, 0), datetime.datetime(2023, 1, 2, 0, 0))]
-
         """
         available_slots = []
-        start_of_day = datetime(date.year, date.month, date.day, 0, 0, 0)
-        end_of_day = datetime(date.year, date.month, date.day, 23, 59, 59)
-        current_time = start_of_day
+        current_time = datetime.combine(date.date(), datetime.min.time())
+        end_of_day = datetime.combine(date.date(), datetime.max.time())
 
-        sorted_events = sorted([event for event in self.events if event['date'].date() == date.date()], key=lambda x: x['start_time'])
+        self.events.sort(key=lambda x: x['start_time'])
 
-        if not sorted_events:
-            available_slots.append((start_of_day, datetime(date.year, date.month, date.day) + timedelta(days=1)))
+        if not self.events:
+            available_slots.append((current_time, end_of_day + timedelta(seconds=1)))
+            return available_slots
+        
+        if self.events[0]['date'].date() != date.date():
+            available_slots.append((current_time, end_of_day + timedelta(seconds=1)))
             return available_slots
 
-        for event in sorted_events:
-            if current_time < event['start_time']:
-                available_slots.append((current_time, event['start_time']))
-            current_time = event['end_time']
+        
+        occupied_slots = []
+        for event in self.events:
+            if event['date'].date() == date.date():
+                occupied_slots.append((event['start_time'], event['end_time']))
 
-        if current_time < datetime(date.year, date.month, date.day) + timedelta(days=1):
-            available_slots.append((current_time, datetime(date.year, date.month, date.day) + timedelta(days=1)))
+        if not occupied_slots:
+            available_slots.append((current_time, end_of_day + timedelta(seconds=1)))
+            return available_slots
 
+        occupied_slots.sort()
+        
+        if current_time < occupied_slots[0][0]:
+            available_slots.append((current_time, occupied_slots[0][0]))
+        
+        for i in range(len(occupied_slots) - 1):
+            available_slots.append((occupied_slots[i][1], occupied_slots[i+1][0]))
+        
+        if occupied_slots[-1][1] < end_of_day + timedelta(seconds=1):
+            available_slots.append((occupied_slots[-1][1], end_of_day + timedelta(seconds=1)))
+        
         return available_slots
 
     def get_upcoming_events(self, num_events):
@@ -108,12 +98,14 @@ class CalendarUtil:
         :param date: The date to get upcoming events from,datetime.
         :param n: The number of upcoming events to get,int.
         :return: A list of the next n upcoming events from the given date,list.
-        >>> calendar = CalendarUtil()
-        >>> calendar.events = [{'date': datetime(2023, 1, 1, 0, 0), 'start_time': datetime(2023, 1, 1, 0, 0), 'end_time': datetime(2023, 1, 1, 23, 0), 'description': 'New Year'},{'date': datetime(2023, 1, 2, 0, 0),'end_time': datetime(2023, 1, 2, 1, 0), 'description': 'New Year 2'}]
-        >>> calendar.get_upcoming_events(1)
-        [{'date': datetime.datetime(2023, 1, 1, 0, 0), 'start_time': datetime.datetime(2023, 1, 1, 0, 0), 'end_time': datetime.datetime(2023, 1, 1, 23, 0), 'description': 'New Year'}, {'date': datetime.datetime(2023, 1, 2, 0, 0), 'end_time': datetime.datetime(2023, 1, 2, 1, 0), 'description': 'New Year 2'}]
-
         """
+        upcoming_events = []
         now = datetime.now()
-        upcoming_events = sorted([event for event in self.events if event['date'] >= now], key=lambda x: x['date'])
+        
+        sorted_events = sorted(self.events, key=lambda x: x['date'])
+        
+        for event in sorted_events:
+            if event['date'] > now:
+                upcoming_events.append(event)
+        
         return upcoming_events[:num_events]

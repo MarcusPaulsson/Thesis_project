@@ -27,7 +27,8 @@ class EmailClient:
             return False
         else:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            recv.inbox.append({'sender': self.addr, 'receiver': recv.addr, 'content': content, 'size': size, 'time': timestamp, 'state': 'unread'})
+            email = {'sender': self.addr, 'receiver': recv.addr, 'content': content, 'size': size, 'time': timestamp, 'state': 'unread'}
+            recv.inbox.append(email)
             return True
 
     def fetch(self):
@@ -56,7 +57,7 @@ class EmailClient:
         """
         total_size = 0
         for email in self.inbox:
-            total_size += email.get('size', 0)
+            total_size += email['size'] if 'size' in email else 0
         return total_size
 
     def clear_inbox(self, size):
@@ -64,22 +65,11 @@ class EmailClient:
         Clears the email box by deleting the oldest emails until the email box has enough space to accommodate the given size.
         :param size: The size of the email, float.
         """
-        if not self.inbox:
-            return None
+        occupied_size = self.get_occupied_size()
 
-        total_size = self.get_occupied_size()
+        if occupied_size + size <= self.capacity:
+            return
 
-        if total_size + size <= self.capacity:
-            return None
-        
-        emails_to_remove = []
-        current_size = total_size
-        
-        for email in self.inbox:
-            emails_to_remove.append(email)
-            current_size -= email.get('size', 0)
-            if current_size + size <= self.capacity:
-                break
-
-        for email in emails_to_remove:
-            self.inbox.remove(email)
+        while occupied_size + size > self.capacity and self.inbox:
+            oldest_email = self.inbox.pop(0)
+            occupied_size -= oldest_email['size'] if 'size' in oldest_email else 0

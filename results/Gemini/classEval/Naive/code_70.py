@@ -7,6 +7,7 @@ class PersonRequest:
         """
         Initialize PersonRequest object with the provided information.
         :param name: str, the name of the person
+        :param name: str, the name of the person
         :param sex: str, the sex of the person
         :param phoneNumber: str, the phone number of the person
         """
@@ -31,7 +32,8 @@ class PersonRequest:
         :param sex: str, the sex to validate
         :return: str, the validated sex or None if invalid
         """
-        if sex not in ("Man", "Woman", "UGM"):
+        valid_sexes = ["Man", "Woman", "UGM"]
+        if sex not in valid_sexes:
             return None
         return sex
 

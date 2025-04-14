@@ -69,12 +69,9 @@ class XMLProcessor:
         """
         if self.root is None:
             return False
-
-        for item in self.root.findall('item'):
-            if item.text:
-                item.text = item.text.upper()
-
         try:
+            for item in self.root.findall('item'):
+                item.text = item.text.upper()
             tree = ET.ElementTree(self.root)
             tree.write(file_name)
             return True
@@ -98,5 +95,4 @@ class XMLProcessor:
         """
         if self.root is None:
             return []
-
         return self.root.findall(element_name)

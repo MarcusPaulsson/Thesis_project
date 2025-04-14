@@ -27,17 +27,17 @@ class NumericEntityUnescaper:
                 if j < len(string) and string[j] == ';':
                     entity = string[i + 2:j]
                     try:
-                        if entity.lower().startswith('x'):
+                        if entity.lower().startswith("x"):
                             char_code = int(entity[1:], 16)
                         else:
                             char_code = int(entity)
                         result += chr(char_code)
                         i = j + 1
                     except ValueError:
-                        result += string[i:j + 1]
+                        result += string[i:j+1]
                         i = j + 1
                 else:
-                    result += string[i:i + 2]
+                    result += string[i:i+2]
                     i += 2
             else:
                 result += string[i]
@@ -54,4 +54,4 @@ class NumericEntityUnescaper:
         True
 
         """
-        return '0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F'
+        return '0' <= char <= '9' or 'a' <= char.lower() <= 'f'

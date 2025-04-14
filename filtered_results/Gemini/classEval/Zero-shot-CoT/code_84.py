@@ -31,17 +31,13 @@ class TextFileProcessor:
                 f.seek(0)
                 content = f.read()
                 try:
-                    data = json.loads(f'[{content}]')[0]
-                except json.JSONDecodeError:
-                    f.seek(0)
-                    content = f.read()
-                    if content.isdigit():
-                        data = int(content)
-                    elif content.startswith('"') and content.endswith('"'):
-                        data = content[1:-1]
-                    else:
-                        raise
-            return data
+                    data = int(content)
+                except ValueError:
+                    try:
+                        data = float(content)
+                    except ValueError:
+                        data = content.strip('"')
+        return data
 
     def read_file(self):
         """

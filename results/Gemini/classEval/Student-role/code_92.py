@@ -12,6 +12,20 @@ class UserLoginDB:
         """
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
+        self.create_table()
+
+    def create_table(self):
+        """
+        Creates the 'users' table if it doesn't exist.
+        """
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT,
+            password TEXT
+        )
+        """
+        self.cursor.execute(create_table_query)
+        self.connection.commit()
 
     def insert_user(self, username, password):
         """
@@ -23,9 +37,10 @@ class UserLoginDB:
         >>> user_db.create_table()
         >>> user_db.insert_user('user1', 'pass1')
         """
-        sql = "INSERT INTO users (username, password) VALUES (?, ?)"
-        self.cursor.execute(sql, (username, password))
+        insert_query = "INSERT INTO users (username, password) VALUES (?, ?)"
+        self.cursor.execute(insert_query, (username, password))
         self.connection.commit()
+
 
     def search_user_by_username(self, username):
         """
@@ -38,10 +53,11 @@ class UserLoginDB:
         >>> result = user_db.search_user_by_username('user1')
         len(result) = 1
         """
-        sql = "SELECT username, password FROM users WHERE username = ?"
-        self.cursor.execute(sql, (username,))
+        search_query = "SELECT username, password FROM users WHERE username = ?"
+        self.cursor.execute(search_query, (username,))
         result = self.cursor.fetchone()
         return result
+
 
     def delete_user_by_username(self, username):
         """
@@ -53,9 +69,10 @@ class UserLoginDB:
         >>> user_db.insert_user('user1', 'pass1')
         >>> user_db.delete_user_by_username('user1')
         """
-        sql = "DELETE FROM users WHERE username = ?"
-        self.cursor.execute(sql, (username,))
+        delete_query = "DELETE FROM users WHERE username = ?"
+        self.cursor.execute(delete_query, (username,))
         self.connection.commit()
+
 
     def validate_user_login(self, username, password):
         """
@@ -69,8 +86,8 @@ class UserLoginDB:
         >>> user_db.validate_user_login('user1', 'pass1')
         True
         """
-        sql = "SELECT password FROM users WHERE username = ?"
-        self.cursor.execute(sql, (username,))
+        search_query = "SELECT password FROM users WHERE username = ?"
+        self.cursor.execute(search_query, (username,))
         result = self.cursor.fetchone()
         if result:
             return result[0] == password

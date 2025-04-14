@@ -15,7 +15,7 @@ class Chat:
         """
         Add a new user to the Chat.
         :param username: The user's name, str.
-        :return: True if the user was added, False otherwise.
+        :return: If the user is already in the Chat, returns False, otherwise, returns True.
         """
         if username in self.users:
             return False
@@ -26,7 +26,7 @@ class Chat:
         """
         Remove a user from the Chat.
         :param username: The user's name, str.
-        :return: True if the user was removed, False otherwise.
+        :return: If the user is already in the Chat, returns True, otherwise, returns False.
         """
         if username in self.users:
             del self.users[username]
@@ -39,7 +39,7 @@ class Chat:
         :param sender: The sender's name, str.
         :param receiver: The receiver's name, str.
         :param message: The message, str.
-        :return: True if the message was sent, False otherwise.
+        :return: If the sender or the receiver is not in the Chat, returns False, otherwise, returns True.
         """
         if sender not in self.users or receiver not in self.users:
             return False

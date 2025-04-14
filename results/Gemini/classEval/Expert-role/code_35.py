@@ -36,17 +36,22 @@ class EightPuzzle:
         >>> eightPuzzle.move([[2, 3, 4], [5, 8, 1], [6, 0, 7]], 'left')
         [[2, 3, 4], [5, 8, 1], [0, 6, 7]]
         """
-        blank_i, blank_j = self.find_blank(state)
-        new_state = [row[:] for row in state]  # Create a copy of the state
+        blank_row, blank_col = self.find_blank(state)
+        new_state = [row[:] for row in state]
 
-        if direction == 'up' and blank_i > 0:
-            new_state[blank_i][blank_j], new_state[blank_i - 1][blank_j] = new_state[blank_i - 1][blank_j], new_state[blank_i][blank_j]
-        elif direction == 'down' and blank_i < 2:
-            new_state[blank_i][blank_j], new_state[blank_i + 1][blank_j] = new_state[blank_i + 1][blank_j], new_state[blank_i][blank_j]
-        elif direction == 'left' and blank_j > 0:
-            new_state[blank_i][blank_j], new_state[blank_i][blank_j - 1] = new_state[blank_i][blank_j - 1], new_state[blank_i][blank_j]
-        elif direction == 'right' and blank_j < 2:
-            new_state[blank_i][blank_j], new_state[blank_i][blank_j + 1] = new_state[blank_i][blank_j + 1], new_state[blank_i][blank_j]
+        if direction == 'up':
+            if blank_row > 0:
+                new_state[blank_row][blank_col], new_state[blank_row - 1][blank_col] = new_state[blank_row - 1][blank_col], new_state[blank_row][blank_col]
+        elif direction == 'down':
+            if blank_row < 2:
+                new_state[blank_row][blank_col], new_state[blank_row + 1][blank_col] = new_state[blank_row + 1][blank_col], new_state[blank_row][blank_col]
+        elif direction == 'left':
+            if blank_col > 0:
+                new_state[blank_row][blank_col], new_state[blank_row][blank_col - 1] = new_state[blank_row][blank_col - 1], new_state[blank_row][blank_col]
+        elif direction == 'right':
+            if blank_col < 2:
+                new_state[blank_row][blank_col], new_state[blank_row][blank_col + 1] = new_state[blank_row][blank_col + 1], new_state[blank_row][blank_col]
+
         return new_state
 
     def get_possible_moves(self, state):
@@ -57,16 +62,18 @@ class EightPuzzle:
         >>> eightPuzzle.get_possible_moves([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
         ['up', 'left', 'right']
         """
-        blank_i, blank_j = self.find_blank(state)
+        blank_row, blank_col = self.find_blank(state)
         moves = []
-        if blank_i > 0:
+
+        if blank_row > 0:
             moves.append('up')
-        if blank_i < 2:
+        if blank_row < 2:
             moves.append('down')
-        if blank_j > 0:
+        if blank_col > 0:
             moves.append('left')
-        if blank_j < 2:
+        if blank_col < 2:
             moves.append('right')
+
         return moves
 
     def solve(self):
@@ -81,23 +88,26 @@ class EightPuzzle:
         >>> eightPuzzle.solve()
         ['right']
         """
-        if self.initial_state == [[0, 0, 0], [0, 0, 0], [0, 0, 0]]:
+        initial_state = self.initial_state
+        goal_state = self.goal_state
+
+        if initial_state == [[0, 0, 0], [0, 0, 0], [0, 0, 0]]:
             return None
 
-        open_list = [(self.initial_state, [])]  # Store (state, path) tuples
-        visited = {tuple(map(tuple, self.initial_state))}  # Store visited states as tuples of tuples
+        open_list = [(initial_state, [])]  # (state, path)
+        visited = {tuple(tuple(row) for row in initial_state)}
 
         while open_list:
             current_state, path = open_list.pop(0)
 
-            if current_state == self.goal_state:
+            if current_state == goal_state:
                 return path
 
             possible_moves = self.get_possible_moves(current_state)
 
             for move in possible_moves:
                 new_state = self.move(current_state, move)
-                state_tuple = tuple(map(tuple, new_state))
+                state_tuple = tuple(tuple(row) for row in new_state)
 
                 if state_tuple not in visited:
                     visited.add(state_tuple)

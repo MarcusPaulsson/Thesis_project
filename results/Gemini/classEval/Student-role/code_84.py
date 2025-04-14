@@ -25,12 +25,19 @@ class TextFileProcessor:
         <class 'dict'>
         """
         with open(self.file_path, 'r') as f:
-            content = f.read()
             try:
-                data = json.loads(content)
+                data = json.load(f)
             except json.JSONDecodeError:
-                data = json.loads(content)
-            return data
+                f.seek(0)
+                content = f.read()
+                try:
+                    data = int(content)
+                except ValueError:
+                    try:
+                        data = float(content)
+                    except ValueError:
+                        data = content.strip('"')
+        return data
 
     def read_file(self):
         """

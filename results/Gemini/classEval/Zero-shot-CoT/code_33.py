@@ -20,7 +20,6 @@ class DiscountStrategy:
         self._total = self._calculate_total()
 
     def _calculate_total(self):
-        """Calculate the total cost of items in the cart."""
         total = 0
         for item in self.cart:
             total += item['quantity'] * item['price']
@@ -51,10 +50,11 @@ class DiscountStrategy:
         312.55
 
         """
-        discount = 0
         if self.promotion:
             discount = self.promotion(self)
-        return self._total - discount
+        else:
+            discount = 0
+        return self.total() - discount
 
 
     @staticmethod
@@ -71,7 +71,7 @@ class DiscountStrategy:
 
         """
         if order.customer['fidelity'] >= 1000:
-            return order._total * 0.05
+            return order.total() * 0.05
         return 0
 
 
@@ -109,5 +109,5 @@ class DiscountStrategy:
 
         """
         if len(order.cart) >= 10:
-            return order._total * 0.07
+            return order.total() * 0.07
         return 0

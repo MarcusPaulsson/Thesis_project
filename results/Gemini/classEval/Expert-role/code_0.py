@@ -9,9 +9,17 @@ class AccessGatewayFilter:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
+        # create console handler and set level to info
         ch = logging.StreamHandler()
+        ch.setLevel(logging.INFO)
+
+        # create formatter
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+        # add formatter to ch
         ch.setFormatter(formatter)
+
+        # add ch to logger
         self.logger.addHandler(ch)
 
     def filter(self, request):
@@ -32,23 +40,20 @@ class AccessGatewayFilter:
             user = auth_header.get('user')
             jwt_token = auth_header.get('jwt')
             if user and jwt_token:
-                jwt_user = self.get_jwt_user(request)
-                if jwt_user:
-                    level = user.get('level')
-                    if level is not None:
-                        if level > 3:
-                            return True
-                        elif level < 2:
-                            return None
-                        else:
-                            return False
-                    else:
-                        return True
+                expected_jwt = user['name'] + str(datetime.date.today())
+                if jwt_token == expected_jwt:
+                    self.set_current_user_info_and_log(user)
+                    return True
                 else:
-                    return True  # Allow if JWT is invalid but present
-
-
-        return True
+                    try:
+                        jwt_date = datetime.datetime.strptime(jwt_token.replace(user['name'], ''), '%Y-%m-%d').date()
+                        if (datetime.date.today() - jwt_date).days > 30:
+                            return False
+                        else:
+                            return True
+                    except ValueError:
+                        return True
+        return None
 
 
     def is_start_with(self, request_uri):
@@ -62,7 +67,9 @@ class AccessGatewayFilter:
         True
 
         """
-        return request_uri.startswith('/api') or request_uri.startswith('/login')
+        if request_uri.startswith('/api') or request_uri.startswith('/login'):
+            return True
+        return False
 
 
     def get_jwt_user(self, request):
@@ -82,7 +89,7 @@ class AccessGatewayFilter:
             if user and jwt_token:
                 expected_jwt = user['name'] + str(datetime.date.today())
                 if jwt_token == expected_jwt:
-                    return {'user': user}
+                    return user
                 else:
                     return None
         return None
@@ -97,4 +104,4 @@ class AccessGatewayFilter:
         >>> filter.set_current_user_info_and_log(user)
 
         """
-        self.logger.info(f"Access granted to user: {user}")
+        self.logger.info(f"User {user.get('name')} from {user.get('address', 'Unknown Address')} accessed the gateway.")

@@ -26,24 +26,24 @@ class MinesweeperGame:
         [['X', 1, 0], [1, 1, 0], [0, 0, 0]]
 
         """
-        mine_sweeper_map = [[0 for _ in range(self.n)] for _ in range(self.n)]
+        minesweeper_map = [[0 for _ in range(self.n)] for _ in range(self.n)]
         mines_positions = random.sample(range(self.n * self.n), self.k)
         for mine_position in mines_positions:
             row = mine_position // self.n
             col = mine_position % self.n
-            mine_sweeper_map[row][col] = 'X'
+            minesweeper_map[row][col] = 'X'
 
         for row in range(self.n):
             for col in range(self.n):
-                if mine_sweeper_map[row][col] == 'X':
+                if minesweeper_map[row][col] == 'X':
                     continue
                 count = 0
                 for i in range(max(0, row - 1), min(self.n, row + 2)):
                     for j in range(max(0, col - 1), min(self.n, col + 2)):
-                        if mine_sweeper_map[i][j] == 'X':
+                        if minesweeper_map[i][j] == 'X':
                             count += 1
-                mine_sweeper_map[row][col] = count
-        return mine_sweeper_map
+                minesweeper_map[row][col] = count
+        return minesweeper_map
 
     def generate_playerMap(self):
         """
@@ -73,6 +73,7 @@ class MinesweeperGame:
             for j in range(self.n):
                 if self.player_map[i][j] != '-':
                     revealed_count += 1
+
         if revealed_count == self.n * self.n - self.k:
             return True
         else:

@@ -22,8 +22,8 @@ class AutomaticGuitarSimulator:
         play_list = []
         parts = self.play_text.split()
         for part in parts:
-            chord = ''.join([c for c in part if c.isalpha()])
-            tune = ''.join([c for c in part if c.isdigit()])
+            chord = ''.join(filter(str.isalpha, part))
+            tune = ''.join(filter(str.isdigit, part))
             play_list.append({'Chord': chord, 'Tune': tune})
 
         return play_list

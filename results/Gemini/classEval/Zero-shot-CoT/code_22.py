@@ -35,8 +35,8 @@ class ClassRegistrationSystem:
         ["CS101", "CS102"]
         """
         if student_name not in self.students_registration_classes:
-            self.students_registration_classes[student_name] = [class_name]
-        else:
+            self.students_registration_classes[student_name] = []
+        if class_name not in self.students_registration_classes[student_name]:
             self.students_registration_classes[student_name].append(class_name)
         return self.students_registration_classes[student_name]
 
@@ -51,11 +51,11 @@ class ClassRegistrationSystem:
         >>> registration_system.get_students_by_major("Computer Science")
         ["John"]
         """
-        student_list = []
+        student_names = []
         for student in self.students:
             if student["major"] == major:
-                student_list.append(student["name"])
-        return student_list
+                student_names.append(student["name"])
+        return student_names
 
     def get_all_major(self):
         """
@@ -66,11 +66,11 @@ class ClassRegistrationSystem:
         >>> registration_system.get_all_major(student1)
         ["Computer Science"]
         """
-        major_list = []
+        majors = []
         for student in self.students:
-            if student["major"] not in major_list:
-                major_list.append(student["major"])
-        return major_list
+            if student["major"] not in majors:
+                majors.append(student["major"])
+        return majors
 
     def get_most_popular_class_in_major(self, major):
         """
@@ -85,19 +85,21 @@ class ClassRegistrationSystem:
         >>> registration_system.get_most_popular_class_in_major("Computer Science")
         "Data Structures"
         """
-        class_count = {}
+        class_counts = {}
         for student in self.students:
             if student["major"] == major:
-                if student["name"] in self.students_registration_classes:
-                    for class_name in self.students_registration_classes[student["name"]]:
-                        if class_name not in class_count:
-                            class_count[class_name] = 1
-                        else:
-                            class_count[class_name] += 1
+                student_name = student["name"]
+                if student_name in self.students_registration_classes:
+                    for class_name in self.students_registration_classes[student_name]:
+                        if class_name not in class_counts:
+                            class_counts[class_name] = 0
+                        class_counts[class_name] += 1
+        
         most_popular_class = None
         max_count = 0
-        for class_name, count in class_count.items():
+        for class_name, count in class_counts.items():
             if count > max_count:
                 max_count = count
                 most_popular_class = class_name
+        
         return most_popular_class

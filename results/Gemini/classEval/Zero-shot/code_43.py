@@ -66,7 +66,7 @@ class HRManagementSystem:
         """
         if employee_id in self.employees:
             for key, value in employee_info.items():
-                if key in self.employees[employee_id]:
+                if key in ['name', 'position', 'department', 'salary']:
                     self.employees[employee_id][key] = value
                 else:
                     return False

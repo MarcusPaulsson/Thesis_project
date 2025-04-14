@@ -53,24 +53,21 @@ class MovieBookingSystem:
         >>> system.book_ticket('batman', [(0, 0)])
         'Movie not found.'
         """
-        movie_found = False
         for movie in self.movies:
             if movie['name'] == name:
-                movie_found = True
                 seats = movie['seats']
-                booking_possible = True
+                success = True
                 for row, col in seats_to_book:
                     if seats[row][col] == 1:
-                        booking_possible = False
+                        success = False
                         break
-                if booking_possible:
+                if success:
                     for row, col in seats_to_book:
                         seats[row][col] = 1
                     return 'Booking success.'
                 else:
                     return 'Booking failed.'
-        if not movie_found:
-            return 'Movie not found.'
+        return 'Movie not found.'
 
     def available_movies(self, start_time, end_time):
         """
@@ -85,7 +82,8 @@ class MovieBookingSystem:
         available_movies = []
         start_time_dt = datetime.strptime(start_time, '%H:%M')
         end_time_dt = datetime.strptime(end_time, '%H:%M')
+
         for movie in self.movies:
-            if movie['start_time'] <= end_time_dt and movie['end_time'] >= start_time_dt:
+            if movie['start_time'].time() <= end_time_dt.time() and movie['end_time'].time() >= start_time_dt.time():
                 available_movies.append(movie['name'])
         return available_movies

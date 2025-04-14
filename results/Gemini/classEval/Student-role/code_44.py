@@ -54,20 +54,32 @@ class HtmlUtil:
         -CODE-
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        text = ''
-        for element in soup.recursiveChildGenerator():
-            if isinstance(element, str):
-                text += element.strip() + '\n'
-            elif element.name == 'pre':
-                text += self.CODE_MARK + '\n'
-            elif element.name == 'ul':
-                for li in element.find_all('li'):
-                    text += '[-]'+li.text+'.' + '\n'
-            elif element.name == 'li':
-                text += '[-]'+element.text+'.' + '\n'
-            elif element.name == 'div':
-                text += element.text + '\n'
-        return HtmlUtil.__format_line_feed(text.strip())
+        codes = soup.find_all('pre')
+        for code in codes:
+            code.extract()
+        text = soup.get_text()
+        text = text.replace('\n\n', '\n')
+        text = text.replace('\n\n', '\n')
+        text = text.replace('  ', '')
+        text = HtmlUtil.__format_line_feed(text)
+        text_list = text.split('\n')
+        text_list = [t.strip() for t in text_list]
+        text_list = [t for t in text_list if len(t) > 0]
+        text = '\n'.join(text_list)
+        code_marks = [self.CODE_MARK] * len(codes)
+        res = ''
+        text_index = 0
+        code_index = 0
+        while text_index < len(text.split('\n')) or code_index < len(code_marks):
+            if text_index < len(text.split('\n')):
+                res += text.split('\n')[text_index] + '\n'
+                text_index += 1
+            if code_index < len(code_marks):
+                res += code_marks[code_index] + '\n'
+                code_index += 1
+        res = res.strip()
+        res = res.replace('[-] ', '[-]')
+        return res
 
     def extract_code_from_html_text(self, html_text):
         """
@@ -88,11 +100,12 @@ class HtmlUtil:
         ["print('Hello, world!')", 'for i in range(5):\n                print(i)']
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        code_list = []
-        for pre in soup.find_all('pre'):
-            code = pre.find('code')
+        code_blocks = soup.find_all('pre')
+        codes = []
+        for block in code_blocks:
+            code = block.find('code')
             if code:
-                code_list.append(code.text)
+                codes.append(code.text)
             else:
-                code_list.append(pre.text)
-        return code_list
+                codes.append(block.text)
+        return codes

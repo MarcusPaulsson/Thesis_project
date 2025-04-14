@@ -88,16 +88,18 @@ class MetricsCalculator2:
             if not isinstance(ground_truth_num, int):
                 raise TypeError("The second element of the tuple must be an integer.")
 
+            relevant_count = 0
+            precision_sum = 0.0
+            for i, result in enumerate(results):
+                if result == 1:
+                    relevant_count += 1
+                    precision_sum += float(relevant_count) / (i + 1)
+
             if ground_truth_num == 0:
                 ap = 0.0
             else:
-                cumulative_precision = 0.0
-                relevant_count = 0
-                for i, result in enumerate(results):
-                    if result == 1:
-                        relevant_count += 1
-                        cumulative_precision += relevant_count / (i + 1)
-                ap = cumulative_precision / ground_truth_num if ground_truth_num > 0 else 0.0
+                ap = precision_sum / ground_truth_num
+
             average_precisions.append(ap)
 
         return np.mean(average_precisions), average_precisions

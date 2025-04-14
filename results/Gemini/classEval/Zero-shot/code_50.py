@@ -26,7 +26,6 @@ class JSONProcessor:
         except Exception:
             return -1
 
-
     def write_json(self, data, file_path):
         """
         Write data to a JSON file and save it to the given path.
@@ -61,23 +60,18 @@ class JSONProcessor:
         >>> json.read_json('test.json')
         {'key2': 'value2'}
         """
-        if not os.path.exists(file_path):
+        data = self.read_json(file_path)
+        if data == 0:
             return 0
-        try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-        except json.JSONDecodeError:
-            return 0
-        except Exception:
+
+        if data == -1:
             return 0
 
         if remove_key in data:
             del data[remove_key]
-            try:
-                with open(file_path, 'w') as f:
-                    json.dump(data, f)
+            if self.write_json(data, file_path) == 1:
                 return 1
-            except Exception:
+            else:
                 return 0
         else:
             return 0

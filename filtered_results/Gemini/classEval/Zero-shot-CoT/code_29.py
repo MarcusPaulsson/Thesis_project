@@ -27,14 +27,10 @@ class DataStatistics:
         >>> ds.median([2, 5, 1, 3, 4])
         3.00
         """
-        data.sort()
+        data = sorted(data)
         n = len(data)
         if n % 2 == 0:
-            median = (data[n // 2 - 1] + data[n // 2]) / 2
-            if isinstance(median, float):
-                return round(median, 2)
-            else:
-                return median
+            return round((data[n // 2 - 1] + data[n // 2]) / 2, 2)
         else:
             return data[n // 2]
 
@@ -49,6 +45,6 @@ class DataStatistics:
         """
         count = Counter(data)
         max_count = max(count.values())
-        modes = [k for k, v in count.items() if v == max_count]
+        modes = [key for key, value in count.items() if value == max_count]
         modes.sort()
         return modes

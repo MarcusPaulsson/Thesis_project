@@ -54,31 +54,20 @@ class HtmlUtil:
         -CODE-
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        codes = soup.find_all('pre')
-        for code in codes:
-            code.extract()
-
-        text = soup.get_text()
-        text = text.replace('<li>', '[-]').replace('</li>', '.')
-        text = '\n'.join(line.strip() for line in text.splitlines())
-        text = HtmlUtil.__format_line_feed(text)
-        text = text.strip()
-
-        code_marks = [self.CODE_MARK] * len(codes)
-        result = []
-        text_lines = text.splitlines()
-        code_index = 0
-
-        for line in text_lines:
-            result.append(line)
-            if code_index < len(codes):
-                result.append(code_marks[code_index])
-                code_index += 1
-
-        if code_index < len(codes):
-            result.extend(code_marks[code_index:])
-
-        return '\n'.join(result)
+        text_parts = []
+        for element in soup.recursiveChildGenerator():
+            if isinstance(element, str):
+                text = element.strip()
+                if text:
+                    text_parts.append(text)
+            elif element.name == 'pre':
+                text_parts.append(self.CODE_MARK)
+            elif element.name == 'code':
+                continue
+            elif element.name == 'li':
+                text = '[-]'+element.text+"."
+                text_parts.append(text)
+        return '\n'.join(text_parts)
 
     def extract_code_from_html_text(self, html_text):
         """
@@ -99,12 +88,11 @@ class HtmlUtil:
         ["print('Hello, world!')", 'for i in range(5):\n                print(i)']
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        code_blocks = soup.find_all('pre')
-        codes = []
-        for block in code_blocks:
-            code_element = block.find('code')
-            if code_element:
-                codes.append(code_element.text)
+        code_blocks = []
+        for pre in soup.find_all('pre'):
+            code = pre.find('code')
+            if code:
+                code_blocks.append(code.text)
             else:
-                codes.append(block.text)
-        return codes
+                code_blocks.append(pre.text)
+        return code_blocks

@@ -43,6 +43,7 @@ class MinesweeperGame:
                         if minesweeper_map[i][j] == 'X':
                             count += 1
                 minesweeper_map[row][col] = count
+        self.minesweeper_map = minesweeper_map
         return minesweeper_map
 
     def generate_playerMap(self):
@@ -68,13 +69,14 @@ class MinesweeperGame:
         False
 
         """
-        for row in range(self.n):
-            for col in range(self.n):
-                if self.minesweeper_map[row][col] == 'X':
-                    continue
-                if map[row][col] == '-':
-                    return False
-        return True
+        revealed_count = 0
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.player_map[i][j] != '-':
+                    revealed_count += 1
+        if revealed_count == self.n * self.n - self.k:
+            return True
+        return False
 
     def sweep(self, x, y):
         """

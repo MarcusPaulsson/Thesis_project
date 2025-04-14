@@ -20,16 +20,9 @@ class VectorUtil:
         >>> VectorUtil.similarity(vector_1, vector_2)
         0.7071067811865475
         """
-        vector_1 = vector_1.astype(float)
-        vector_2 = vector_2.astype(float)
-        norm_1 = np.linalg.norm(vector_1)
-        norm_2 = np.linalg.norm(vector_2)
-
-        if norm_1 == 0 or norm_2 == 0:
+        if np.linalg.norm(vector_1) == 0 or np.linalg.norm(vector_2) == 0:
             return 0.0
-
-        return dot(vector_1, vector_2) / (norm_1 * norm_2)
-
+        return dot(vector_1, vector_2) / (np.linalg.norm(vector_1) * np.linalg.norm(vector_2))
 
     @staticmethod
     def cosine_similarities(vector_1, vectors_all):
@@ -45,7 +38,10 @@ class VectorUtil:
         """
         similarities = []
         for vector in vectors_all:
-            similarities.append(VectorUtil.similarity(vector_1, vector))
+            if np.linalg.norm(vector_1) == 0 or np.linalg.norm(vector) == 0:
+                similarities.append(0.0)
+            else:
+                similarities.append(dot(vector_1, vector) / (np.linalg.norm(vector_1) * np.linalg.norm(vector)))
         return similarities
 
 
@@ -62,12 +58,13 @@ class VectorUtil:
         0.9897287473881233
         """
         if not vector_list_1 or not vector_list_2:
-            return 0.0
+            return None
 
         sum_sim = 0.0
         for vector1 in vector_list_1:
             for vector2 in vector_list_2:
-                sum_sim += VectorUtil.similarity(vector1, vector2)
+                sim = VectorUtil.similarity(vector1, vector2)
+                sum_sim += sim
 
         return sum_sim / (len(vector_list_1) * len(vector_list_2))
 
@@ -83,7 +80,7 @@ class VectorUtil:
         >>> VectorUtil.compute_idf_weight_dict(2, num_dict)
         {'key1': 1.0033021088637848, 'key2': 0.6931471805599453}
         """
-        idf_weight = {}
+        idf_weight_dict = {}
         for key, count in number_dict.items():
-            idf_weight[key] = math.log((total_num + 1) / (count + 1))
-        return idf_weight
+            idf_weight_dict[key] = math.log((total_num + 1) / (count + 1))
+        return idf_weight_dict

@@ -20,9 +20,6 @@ class Calculator:
         Calculate the value of a given expression
         :param expression: string, given expression
         :return:If successful, returns the value of the expression; otherwise, returns None
-        >>> calculator = Calculator()
-        >>> calculator.calculate('1+2-3')
-        0.0
         """
         if not expression:
             return None
@@ -31,23 +28,29 @@ class Calculator:
         operator_stack = []
         i = 0
         while i < len(expression):
-            if expression[i].isdigit():
+            char = expression[i]
+
+            if char.isdigit():
                 num = 0
                 while i < len(expression) and expression[i].isdigit():
                     num = num * 10 + int(expression[i])
                     i += 1
                 operand_stack.append(float(num))
-                i -= 1 
-            elif expression[i] in self.operators:
-                while operator_stack and self.precedence(expression[i]) <= self.precedence(operator_stack[-1]):
+                i -= 1  # Correct the index after reading the number
+
+            elif char in self.operators:
+                while operator_stack and self.precedence(char) <= self.precedence(operator_stack[-1]):
                     self.apply_operator(operand_stack, operator_stack)
-                operator_stack.append(expression[i])
-            elif expression[i] == '(':
-                operator_stack.append(expression[i])
-            elif expression[i] == ')':
+                operator_stack.append(char)
+
+            elif char == '(':
+                operator_stack.append(char)
+
+            elif char == ')':
                 while operator_stack and operator_stack[-1] != '(':
                     self.apply_operator(operand_stack, operator_stack)
-                operator_stack.pop()  # Remove '('
+                operator_stack.pop()  # Remove the '('
+
             i += 1
 
         while operator_stack:
@@ -58,17 +61,11 @@ class Calculator:
         else:
             return None
 
-
     def precedence(self, operator):
         """
         Returns the priority of the specified operator, where the higher the priority, the greater the assignment. The priority of '^' is greater than '/' and '*', and the priority of '/' and '*' is greater than '+' and '-'
         :param operator: string, given operator
         :return: int, the priority of the given operator, otherwise return 0
-        >>> calculator = Calculator()
-        >>> calculator.precedence('+')
-        1
-        >>> calculator.precedence('^')
-        3
         """
         if operator == '+' or operator == '-':
             return 1
@@ -76,8 +73,7 @@ class Calculator:
             return 2
         elif operator == '^':
             return 3
-        else:
-            return 0
+        return 0
 
     def apply_operator(self, operand_stack, operator_stack):
         """
@@ -85,18 +81,10 @@ class Calculator:
         :param operand_stack:list
         :param operator_stack:list
         :return: the updated operand_stack and operator_stack
-        >>> calculator = Calculator()
-        >>> calculator.apply_operator([1, 2, 3], ['+', '-'])
-        ([1, -1], ['-'])
         """
-        if len(operand_stack) < 2 or not operator_stack:
-            return operand_stack, operator_stack
-        
         operator = operator_stack.pop()
         operand2 = operand_stack.pop()
         operand1 = operand_stack.pop()
-        
         result = self.operators[operator](operand1, operand2)
         operand_stack.append(result)
-        
         return operand_stack, operator_stack

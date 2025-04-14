@@ -23,11 +23,18 @@ class EmailClient:
         :param size: The size of the email, float.
         :return: True if the email is sent successfully, False if the receiver's email box is full.
         """
-        if self.is_full_with_one_more_email(size):
+        if recv.is_full_with_one_more_email(size):
             return False
         else:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            email = {'sender': self.addr, 'receiver': recv.addr, 'content': content, 'size': size, 'time': timestamp, 'state': 'unread'}
+            email = {
+                'sender': self.addr,
+                'receiver': recv.addr,
+                'content': content,
+                'size': size,
+                'time': timestamp,
+                'state': 'unread'
+            }
             recv.inbox.append(email)
             return True
 
@@ -65,22 +72,23 @@ class EmailClient:
         Clears the email box by deleting the oldest emails until the email box has enough space to accommodate the given size.
         :param size: The size of the email, float.
         """
-        
         if not self.inbox:
             return None
-
         
-        emails_to_remove = []
         occupied_size = self.get_occupied_size()
         
         if occupied_size + size <= self.capacity:
             return None
 
+        emails_to_remove = []
+        total_removed_size = 0
         
-        self.inbox.sort(key=lambda x: x.get('time', datetime.now().strftime("%Y-%m-%d %H:%M:%S")), reverse=False)
-        
-        
-        while occupied_size + size > self.capacity and self.inbox:
+        for i in range(len(self.inbox)):
+            emails_to_remove.append(self.inbox[i])
+            total_removed_size += self.inbox[i]['size']
             
-            oldest_email = self.inbox.pop(0)
-            occupied_size -= oldest_email['size']
+            if occupied_size - total_removed_size + size <= self.capacity:
+                break
+        
+        for email in emails_to_remove:
+            self.inbox.remove(email)

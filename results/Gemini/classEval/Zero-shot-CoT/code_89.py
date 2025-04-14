@@ -40,7 +40,7 @@ class TwentyFourPointGame:
         True
         """
         if not self.nums:
-            return [0, 0, 0, 0]
+            return [0,0,0,0]
         try:
             result = eval(expression)
             return abs(result - 24) < 1e-6

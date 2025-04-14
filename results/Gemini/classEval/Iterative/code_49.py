@@ -107,6 +107,6 @@ class JobMarketplace:
         This function is used to determine whether the candidate information meets the requirements.
         :param resume: The resume information,dict.
         :param requirements: The requirements of the position,list.
-        :return: Whether the candidate information meets the requirements,bool.
+        :return: True or False
         """
-        return all(req in resume['skills'] for req in requirements)
+        return all(requirement in resume['skills'] for requirement in requirements)

@@ -15,15 +15,8 @@ class SplitSentence:
         >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
         ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        sentences = re.split(r'(?<!Mr)(?<!Mrs)(?<!Ms)(?<!Dr)(?<!A\.B\.C)(?<!A\.B)(?<!A)(?<!B)(?<!C)(?<!D)(?<!E)(?<!F)(?<!G)(?<!H)(?<!I)(?<!J)(?<!K)(?<!L)(?<!M)(?<!N)(?<!O)(?<!P)(?<!Q)(?<!R)(?<!S)(?<!T)(?<!U)(?<!V)(?<!W)(?<!X)(?<!Y)(?<!Z)(?<![A-Z][a-z])([.][\s]|[\?][\s])', sentences_string)
-        sentences = [s.strip() for s in sentences if s.strip()]
-        result = []
-        for i in range(0, len(sentences), 2):
-            if i + 1 < len(sentences):
-                result.append(sentences[i] + sentences[i + 1])
-            else:
-                result.append(sentences[i])
-        return result
+        sentences = re.split(r'(?<!Mr)(?<!A)(?<!B)(?<!C)(?<!Mrs)(?<!Ms)(?<!Dr)(?<![A-Z][a-z])(?<=[.?])\s+', sentences_string)
+        return sentences
 
     def count_words(self, sentence):
         """
@@ -36,7 +29,7 @@ class SplitSentence:
         words = sentence.split()
         count = 0
         for word in words:
-            if re.match(r'^[a-zA-Z]+$', word):
+            if not re.match(r'^[0-9]+$', word):
                 count += 1
         return count
 

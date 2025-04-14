@@ -16,12 +16,15 @@ class Statistics3:
         2.5
 
         """
+        data.sort()
         n = len(data)
-        data = sorted(data)
         if n % 2 == 0:
-            return (data[n // 2 - 1] + data[n // 2]) / 2
+            mid1 = data[n // 2 - 1]
+            mid2 = data[n // 2]
+            median = (mid1 + mid2) / 2
         else:
-            return data[n // 2]
+            median = data[n // 2]
+        return median
 
     @staticmethod
     def mode(data):
@@ -35,16 +38,21 @@ class Statistics3:
 
         """
         counts = {}
-        for x in data:
-            counts[x] = counts.get(x, 0) + 1
+        for item in data:
+            if item in counts:
+                counts[item] += 1
+            else:
+                counts[item] = 1
+
         max_count = 0
         modes = []
-        for x, count in counts.items():
+        for item, count in counts.items():
             if count > max_count:
+                modes = [item]
                 max_count = count
-                modes = [x]
             elif count == max_count:
-                modes.append(x)
+                modes.append(item)
+
         return modes
 
     @staticmethod
@@ -59,24 +67,23 @@ class Statistics3:
         1.0
 
         """
-        n = len(x)
-        if n != len(y):
-            raise ValueError("x and y must have the same length")
-
-        mean_x = Statistics3.mean(x)
-        mean_y = Statistics3.mean(y)
-
-        if mean_x is None or mean_y is None:
-          return None
-
-        std_dev_x = Statistics3.standard_deviation(x)
-        std_dev_y = Statistics3.standard_deviation(y)
-
-        if std_dev_x == 0 or std_dev_y == 0:
+        if len(x) != len(y) or len(x) <= 1:
             return None
 
-        covariance = sum([(x[i] - mean_x) * (y[i] - mean_y) for i in range(n)]) / n
-        return covariance / (std_dev_x * std_dev_y)
+        n = len(x)
+        sum_x = sum(x)
+        sum_y = sum(y)
+        sum_xy = sum(x[i] * y[i] for i in range(n))
+        sum_x_squared = sum(x[i] ** 2 for i in range(n))
+        sum_y_squared = sum(y[i] ** 2 for i in range(n))
+
+        numerator = n * sum_xy - sum_x * sum_y
+        denominator = math.sqrt((n * sum_x_squared - sum_x ** 2) * (n * sum_y_squared - sum_y ** 2))
+
+        if denominator == 0:
+            return None
+
+        return numerator / denominator
 
     @staticmethod
     def mean(data):
@@ -109,17 +116,29 @@ class Statistics3:
         for i in range(num_variables):
             row = []
             for j in range(num_variables):
-                if num_variables == 1:
-                  row.append(None)
+                if i < len(data) and j < len(data):
+                    correlation = Statistics3.correlation(data[i], data[j])
+                    row.append(correlation if correlation is not None else (1.0 if i != j else None))
                 else:
-                  row.append(Statistics3.correlation(data[i], data[j]))
+                    row.append(None)
             correlation_matrix.append(row)
 
+        n = len(correlation_matrix)
+        for i in range(n):
+            for j in range(n):
+                if correlation_matrix[i][j] is None:
+                    correlation_matrix[i][j] = None
+        
         if num_variables == 1:
-          result = [[None for _ in data[0]] for _ in data[0]]
-          return [result[0], result[0], result[0]]
-
-        return correlation_matrix
+            return [[None, None, None], [None, None, None], [None, None, None]]
+        
+        if num_variables > 1:
+            for i in range(len(correlation_matrix)):
+                for j in range(len(correlation_matrix[0])):
+                    if correlation_matrix[i][j] is None:
+                        correlation_matrix[i][j] = 1.0
+        
+        return correlation_matrix[:3]
 
     @staticmethod
     def standard_deviation(data):
@@ -132,13 +151,16 @@ class Statistics3:
         1.0
 
         """
+        if not data:
+            return None
+
         n = len(data)
-        if n == 0:
+        if n <= 1:
             return 0.0
+
         mean = Statistics3.mean(data)
-        if mean is None:
-          return 0.0
-        return math.sqrt(sum([(x - mean) ** 2 for x in data]) / n)
+        variance = sum((x - mean) ** 2 for x in data) / (n - 1)
+        return math.sqrt(variance)
 
     @staticmethod
     def z_score(data):
@@ -151,8 +173,7 @@ class Statistics3:
         [-1.161895003862225, -0.3872983346207417, 0.3872983346207417, 1.161895003862225]
 
         """
-        n = len(data)
-        if n <= 1:
+        if not data or len(data) <= 1:
             return None
 
         mean = Statistics3.mean(data)
@@ -161,4 +182,5 @@ class Statistics3:
         if std_dev == 0:
             return None
 
-        return [(x - mean) / std_dev for x in data]
+        z_scores = [(x - mean) / std_dev for x in data]
+        return z_scores

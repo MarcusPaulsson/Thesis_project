@@ -20,10 +20,11 @@ class SignInSystem:
         >>> signInSystem.add_user("mike")
         False
         """
-        if username in self.users:
+        if username not in self.users:
+            self.users[username] = False
+            return True
+        else:
             return False
-        self.users[username] = False
-        return True
 
     def sign_in(self, username):
         """
@@ -38,7 +39,8 @@ class SignInSystem:
         if username in self.users:
             self.users[username] = True
             return True
-        return False
+        else:
+            return False
 
     def check_sign_in(self, username):
         """
@@ -53,9 +55,10 @@ class SignInSystem:
         >>> signInSystem.check_sign_in("jack")
         True
         """
-        if username not in self.users:
+        if username in self.users:
+            return self.users[username]
+        else:
             return False
-        return self.users[username]
 
     def all_signed_in(self):
         """
@@ -69,7 +72,10 @@ class SignInSystem:
         """
         if not self.users:
             return True
-        return all(self.users.values())
+        for username in self.users:
+            if not self.users[username]:
+                return False
+        return True
 
     def all_not_signed_in(self):
         """
@@ -83,4 +89,8 @@ class SignInSystem:
         >>> signInSystem.all_not_signed_in()
         ['a', 'b']
         """
-        return [user for user, signed_in in self.users.items() if not signed_in]
+        not_signed_in = []
+        for username in self.users:
+            if not self.users[username]:
+                not_signed_in.append(username)
+        return not_signed_in

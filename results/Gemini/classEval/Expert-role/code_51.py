@@ -17,10 +17,11 @@ class KappaCalculator:
         0.25
         """
         matrix = np.array(testData)
+        n = matrix.shape[0]
         po = np.trace(matrix) / np.sum(matrix)
-        row_sums = np.sum(matrix, axis=1)
-        col_sums = np.sum(matrix, axis=0)
-        pe = np.sum(row_sums * col_sums) / (np.sum(matrix) ** 2)
+        row_sum = np.sum(matrix, axis=1)
+        col_sum = np.sum(matrix, axis=0)
+        pe = np.sum(row_sum * col_sum) / (np.sum(matrix) ** 2)
         kappa = (po - pe) / (1 - pe)
         return kappa
 
@@ -45,9 +46,9 @@ class KappaCalculator:
         >>>                              [0, 2, 2, 3, 7]], 10, 5, 14)
         0.20993070442195522
         """
-        testData = np.array(testData)
-        p = np.sum(testData, axis=0) / (N * n)
-        P = (np.sum(testData ** 2, axis=1) - n) / (n * (n - 1))
+        data = np.array(testData)
+        p = np.sum(data, axis=0) / (N * n)
+        P = (np.sum(data ** 2, axis=1) - n) / (n * (n - 1))
         P_mean = np.mean(P)
         P_e = np.sum(p ** 2)
         kappa = (P_mean - P_e) / (1 - P_e)

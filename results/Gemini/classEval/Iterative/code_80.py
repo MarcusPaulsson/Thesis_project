@@ -4,16 +4,6 @@ class SQLQueryBuilder:
     """
 
     @staticmethod
-    def _build_where_clause(where):
-        """Helper function to build the WHERE clause."""
-        if not where:
-            return ""
-        conditions = []
-        for key, value in where.items():
-            conditions.append(f"{key}='{value}'")
-        return " WHERE " + " AND ".join(conditions)
-
-    @staticmethod
     def select(table, columns='*', where=None):
         """
         Generate the SELECT SQL statement from the given parameters.
@@ -22,13 +12,10 @@ class SQLQueryBuilder:
         :param where: dict, {key1: value1, key2: value2 ...}. The query condition.
         return query: str, the SQL query statement.
         """
-        query = "SELECT "
-        if isinstance(columns, list):
-            query += ", ".join(columns)
-        else:
-            query += str(columns)  # Ensure columns is converted to string
-        query += " FROM " + table
-        query += SQLQueryBuilder._build_where_clause(where)
+        query = f"SELECT {', '.join(columns) if isinstance(columns, list) else columns} FROM {table}"
+        if where:
+            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {conditions}"
         return query
 
     @staticmethod
@@ -39,8 +26,8 @@ class SQLQueryBuilder:
         :param data: dict, the key and value in SQL insert statement
         :return query: str, the SQL insert statement.
         """
-        columns = ", ".join(data.keys())
-        values = ", ".join([f"'{str(value)}'" for value in data.values()])  # Ensure values are converted to string
+        columns = ', '.join(data.keys())
+        values = ', '.join([f"'{value}'" for value in data.values()])
         query = f"INSERT INTO {table} ({columns}) VALUES ({values})"
         return query
 
@@ -53,7 +40,9 @@ class SQLQueryBuilder:
         :return query: str, the SQL delete statement.
         """
         query = f"DELETE FROM {table}"
-        query += SQLQueryBuilder._build_where_clause(where)
+        if where:
+            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {conditions}"
         return query
 
     @staticmethod
@@ -64,10 +53,9 @@ class SQLQueryBuilder:
         :param data: dict, the key and value in SQL update statement
         :param where: dict, {key1: value1, key2: value2 ...}. The query condition.
         """
-        query = f"UPDATE {table} SET "
-        updates = []
-        for key, value in data.items():
-            updates.append(f"{key}='{value}'")
-        query += ", ".join(updates)
-        query += SQLQueryBuilder._build_where_clause(where)
+        updates = ", ".join([f"{key}='{value}'" for key, value in data.items()])
+        query = f"UPDATE {table} SET {updates}"
+        if where:
+            conditions = " WHERE " + " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += conditions
         return query

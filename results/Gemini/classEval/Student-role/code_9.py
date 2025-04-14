@@ -74,9 +74,9 @@ class BigNumCalculator:
         
         if len(num1) < len(num2) or (len(num1) == len(num2) and num1 < num2):
             num1, num2 = num2, num1
-            negative = True
+            sign = '-'
         else:
-            negative = False
+            sign = ''
         
         n1 = len(num1)
         n2 = len(num2)
@@ -89,39 +89,37 @@ class BigNumCalculator:
         
         while j >= 0:
             digit1 = int(num1[i])
-            digit2 = int(num2[j]) + borrow
+            digit2 = int(num2[j])
             
-            if digit1 < digit2:
-                digit1 += 10
+            diff = digit1 - digit2 - borrow
+            
+            if diff < 0:
+                diff += 10
                 borrow = 1
             else:
                 borrow = 0
             
-            result.append(str(digit1 - digit2))
+            result.append(str(diff))
             i -= 1
             j -= 1
         
         while i >= 0:
             digit1 = int(num1[i])
-            digit2 = borrow
+            diff = digit1 - borrow
             
-            if digit1 < digit2:
-                digit1 += 10
+            if diff < 0:
+                diff += 10
                 borrow = 1
             else:
                 borrow = 0
             
-            result.append(str(digit1 - digit2))
+            result.append(str(diff))
             i -= 1
         
         res = ''.join(result[::-1]).lstrip('0')
         if not res:
-            res = '0'
-        
-        if negative:
-            return '-' + res
-        else:
-            return res
+            return '0'
+        return sign + res
 
     @staticmethod
     def multiply(num1, num2):
@@ -143,22 +141,15 @@ class BigNumCalculator:
         n1 = len(num1)
         n2 = len(num2)
         
-        result = [0] * (n1 + n2)
+        product = [0] * (n1 + n2)
         
         for i in range(n1 - 1, -1, -1):
+            carry = 0
             for j in range(n2 - 1, -1, -1):
-                digit1 = int(num1[i])
-                digit2 = int(num2[j])
-                
-                product = digit1 * digit2
-                
-                p1 = i + j
-                p2 = i + j + 1
-                
-                sum_val = product + result[p2]
-                
-                result[p2] = sum_val % 10
-                result[p1] += sum_val // 10
+                product[i + j + 1] += int(num1[i]) * int(num2[j]) + carry
+                carry = product[i + j + 1] // 10
+                product[i + j + 1] %= 10
+            product[i] += carry
         
-        res = ''.join(map(str, result)).lstrip('0')
-        return res if res else '0'
+        result = ''.join(map(str, product)).lstrip('0')
+        return result if result else '0'

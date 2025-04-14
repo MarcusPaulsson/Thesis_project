@@ -55,6 +55,11 @@ class IpUtil:
 
         """
         try:
-            return socket.gethostbyaddr(ip_address)[0]
+            hostname = socket.gethostbyaddr(ip_address)[0]
+            return hostname
         except socket.herror:
+            if ip_address == '0.0.0.0':
+                return socket.gethostname()
+            return None
+        except socket.gaierror:
             return None

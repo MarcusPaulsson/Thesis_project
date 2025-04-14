@@ -18,71 +18,62 @@ class TextFileProcessor:
         Read the self.file_path file as json format.
         if the file content doesn't obey json format, the code will raise error.
         :return data: dict if the file is stored as json format, or str/int/float.. according to the file content otherwise.
-        >>> textFileProcessor = TextFileProcessor('test.json')
-        >>> textFileProcessor.read_file_as_json()
-        {'name': 'test', 'age': 12}
-        >>> type(textFileProcessor.read_file_as_json())
-        <class 'dict'>
         """
-        with open(self.file_path, 'r') as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                f.seek(0)
+        try:
+            with open(self.file_path, 'r') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            with open(self.file_path, 'r') as f:
                 content = f.read()
                 try:
-                    data = json.loads(f'[{content}]')[0]
-                except json.JSONDecodeError:
-                    f.seek(0)
-                    content = f.read()
-                    if content.startswith('"') and content.endswith('"'):
-                        data = content[1:-1]
-                    else:
+                    return json.loads(content)
+                except:
+                    try:
+                        return int(content)
+                    except:
                         try:
-                            data = int(content)
-                        except ValueError:
-                            try:
-                                data = float(content)
-                            except ValueError:
-                                data = content
-                
-        return data
+                            return float(content)
+                        except:
+                            content = content.strip()
+                            if content.startswith('"') and content.endswith('"'):
+                                return content[1:-1]
+                            else:
+                                return content
 
     def read_file(self):
         """
         Read the return the content of self.file_path file.
         :return: the same return as the read() method
-        >>> textFileProcessor = TextFileProcessor('test.json')
-        >>> textFileProcessor.read_file()
-        '{\n    "name": "test",\n    "age": 12\n}'
         """
-        with open(self.file_path, 'r') as f:
-            content = f.read()
-        return content
+        try:
+            with open(self.file_path, 'r') as f:
+                return f.read()
+        except FileNotFoundError:
+            return None
 
     def write_file(self, content):
         """
         Write content into the self.file_path file, and overwrite if the file has already existed.
         :param content: any content
-        >>> textFileProcessor = TextFileProcessor('test.json')
-        >>> textFileProcessor.write_file('Hello world!')
-        >>> textFileProcessor.read_file()
-        'Hello world!'
         """
-        with open(self.file_path, 'w') as f:
-            f.write(str(content))
+        try:
+            with open(self.file_path, 'w') as f:
+                f.write(str(content))
+        except Exception as e:
+            print(f"Error writing to file: {e}")
 
     def process_file(self):
         """
         Read the self.file_path file and filter out non-alphabetic characters from the content string.
         Overwrite the after-processed data into the same self.file_path file.
-        >>> textFileProcessor = TextFileProcessor('test.json')
-        >>> textFileProcessor.read_file()
-        '{\n    "name": "test",\n    "age": 12\n}'
-        >>> textFileProcessor.process_file()
-        'nametestage'
         """
-        content = self.read_file()
-        processed_content = ''.join(re.findall(r'[a-zA-Z]', content))
-        self.write_file(processed_content)
-        return processed_content
+        try:
+            content = self.read_file()
+            if content is None:
+                return ""
+            processed_content = ''.join(re.findall(r'[a-zA-Z]', content))
+            self.write_file(processed_content)
+            return processed_content
+        except Exception as e:
+            print(f"Error processing file: {e}")
+            return ""

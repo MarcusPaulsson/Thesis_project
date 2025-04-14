@@ -8,17 +8,7 @@ class AccessGatewayFilter:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
-        # Create a handler that writes log messages to a file
-        file_handler = logging.FileHandler('access.log')
-        file_handler.setLevel(logging.INFO)
-
-        # Create a formatter to format the log messages
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        file_handler.setFormatter(formatter)
-
-        # Add the file handler to the logger
-        self.logger.addHandler(file_handler)
+        logging.basicConfig(level=logging.INFO)
 
     def filter(self, request):
         """
@@ -30,32 +20,25 @@ class AccessGatewayFilter:
         True
 
         """
-        if self.is_start_with(request['path']):
+        if self.is_start_with(request.get('path')):
             return True
 
-        if 'headers' in request and 'Authorization' in request['headers']:
-            user_info = request['headers']['Authorization']
-            user = user_info.get('user')
-            jwt = user_info.get('jwt')
-
-            if user and jwt:
+        auth_header = request.get('headers', {}).get('Authorization')
+        if auth_header:
+            user = auth_header.get('user')
+            jwt_token = auth_header.get('jwt')
+            if user and jwt_token:
                 expected_jwt = user['name'] + str(datetime.date.today())
-                if jwt == expected_jwt:
-                    if user.get('level') is not None:
-                        if user['level'] > 3:
-                            self.set_current_user_info_and_log(user)
-                            return True
-                        elif user['level'] < 2:
-                            return None
-                        else:
-                            return False
-                    else:
-                        self.set_current_user_info_and_log(user)
+                if jwt_token == expected_jwt:
+                    self.set_current_user_info_and_log(user)
+                    if user.get('level') and user.get('level') >= 5:
                         return True
+                    elif user.get('level') and user.get('level') < 5 and user.get('level') > 1:
+                        return False
+                    else:
+                        return None
                 else:
                     return True
-            else:
-                return False
         return True
 
 
@@ -70,8 +53,9 @@ class AccessGatewayFilter:
         True
 
         """
-        return request_uri.startswith('/api') or request_uri.startswith('/login')
-
+        if request_uri.startswith('/api') or request_uri.startswith('/login'):
+            return True
+        return False
 
     def get_jwt_user(self, request):
         """
@@ -83,15 +67,14 @@ class AccessGatewayFilter:
         {'user': {'name': 'user1'}
 
         """
-        if 'headers' in request and 'Authorization' in request['headers']:
-            user_info = request['headers']['Authorization']
-            user = user_info.get('user')
-            jwt = user_info.get('jwt')
-
-            if user and jwt:
+        auth_header = request.get('headers', {}).get('Authorization')
+        if auth_header:
+            user = auth_header.get('user')
+            jwt_token = auth_header.get('jwt')
+            if user and jwt_token:
                 expected_jwt = user['name'] + str(datetime.date.today())
-                if jwt == expected_jwt:
-                    return {'user': user}
+                if jwt_token == expected_jwt:
+                    return user
         return None
 
     def set_current_user_info_and_log(self, user):
@@ -104,5 +87,4 @@ class AccessGatewayFilter:
         >>> filter.set_current_user_info_and_log(user)
 
         """
-        self.logger.info(f"Access granted for user: {user['name']} from address: {user['address']}")
-        return None
+        self.logger.info(f"Access from user: {user.get('name')}, address: {user.get('address')}")

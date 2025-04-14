@@ -9,46 +9,48 @@ class AvgPartition:
 
         Args:
             lst: The list to partition.
-            limit: The number of partitions to create.  Must be a positive integer.
-
-        Raises:
-            ValueError: If limit is not a positive integer.
+            limit: The desired number of partitions.
         """
-        if not isinstance(limit, int) or limit <= 0:
-            raise ValueError("Limit must be a positive integer.")
+        if not isinstance(lst, list):
+            raise TypeError("lst must be a list")
+        if not isinstance(limit, int):
+            raise TypeError("limit must be an integer")
+        if limit <= 0:
+            raise ValueError("limit must be greater than 0")
 
         self.lst = lst
         self.limit = limit
-        self.size = len(lst)
-        self.base_size = self.size // self.limit
-        self.remainder = self.size % self.limit
 
     def setNum(self):
         """
-        Calculates the base size and remainder.  This is now done during initialization
-        for efficiency.  This method remains for backwards compatibility and testing.
+        Calculates the base block size and the number of elements in the remainder.
 
         Returns:
-            A tuple containing the base size and remainder.
+            A tuple containing the base block size and the remainder.
         """
-        return (self.base_size, self.remainder)
+        block_size = len(self.lst) // self.limit
+        remainder = len(self.lst) % self.limit
+        return (block_size, remainder)
 
     def get(self, index):
         """
-        Returns a partition of the list.
+        Retrieves a specific partition.
 
         Args:
             index: The index of the partition to retrieve (0-based).
 
         Returns:
-            A list representing the partition.  Returns an empty list if the index is out of bounds.
+            A list representing the requested partition.
 
         Raises:
-            IndexError: If the index is out of range (negative or >= limit).
+            IndexError: If the index is out of bounds.
         """
-        if not 0 <= index < self.limit:
-            raise IndexError("Index out of range.")
+        if not isinstance(index, int):
+            raise TypeError("Index must be an integer")
+        if index < 0 or index >= self.limit:
+            raise IndexError("Index out of bounds")
 
-        start = index * self.base_size + min(index, self.remainder)
-        end = (index + 1) * self.base_size + min(index + 1, self.remainder)
+        block_size, remainder = self.setNum()
+        start = index * block_size + min(index, remainder)
+        end = (index + 1) * block_size + min(index + 1, remainder)
         return self.lst[start:end]

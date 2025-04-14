@@ -44,9 +44,9 @@ class PushBoxGame:
                     self.player_col = col
                 elif self.map[row][col] == 'G':
                     self.targets.append((row, col))
-                    self.target_count += 1
                 elif self.map[row][col] == 'X':
                     self.boxes.append((row, col))
+        self.target_count = len(self.targets)
 
     def check_win(self):
         """
@@ -60,7 +60,7 @@ class PushBoxGame:
         for box in self.boxes:
             if box in self.targets:
                 boxes_on_targets += 1
-        self.is_game_over = boxes_on_targets == len(self.boxes) and len(self.boxes) == len(self.targets)
+        self.is_game_over = boxes_on_targets == len(self.boxes)
         return self.is_game_over
 
 
@@ -115,7 +115,6 @@ class PushBoxGame:
         if box_index != -1:
             box_row = self.boxes[box_index][0]
             box_col = self.boxes[box_index][1]
-
             new_box_row = box_row + (new_row - self.player_row)
             new_box_col = box_col + (new_col - self.player_col)
 
@@ -127,6 +126,7 @@ class PushBoxGame:
                 if other_box[0] == new_box_row and other_box[1] == new_box_col:
                     box_collision = True
                     break
+
             if box_collision:
                 return self.check_win()
 
@@ -134,7 +134,7 @@ class PushBoxGame:
             self.player_row = new_row
             self.player_col = new_col
             return self.check_win()
-        else:
-            self.player_row = new_row
-            self.player_col = new_col
-            return self.check_win()
+
+        self.player_row = new_row
+        self.player_col = new_col
+        return self.check_win()

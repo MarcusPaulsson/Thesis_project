@@ -21,7 +21,7 @@ class DecryptionUtils:
         'hello'
 
         """
-        result = ''
+        plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
                 start = ord('a')
@@ -31,8 +31,8 @@ class DecryptionUtils:
                 shifted_char = chr((ord(char) - start - shift) % 26 + start)
             else:
                 shifted_char = char
-            result += shifted_char
-        return result
+            plaintext += shifted_char
+        return plaintext
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -44,24 +44,24 @@ class DecryptionUtils:
         'ybocl'
 
         """
+        plaintext = ''
         key = self.key
-        result = ''
-        key_len = len(key)
+        key_length = len(key)
         for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
-                key_char = key[i % key_len]
-                shift = ord(key_char) - ord('a')
                 start = ord('a')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                key_char = key[i % key_length]
+                key_shift = ord(key_char) - ord('a')
+                shifted_char = chr((ord(char) - start - key_shift) % 26 + start)
             elif 'A' <= char <= 'Z':
-                key_char = key[i % key_len]
-                shift = ord(key_char.lower()) - ord('a')
                 start = ord('A')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                key_char = key[i % key_length]
+                key_shift = ord(key_char.lower()) - ord('a')
+                shifted_char = chr((ord(char) - start - key_shift) % 26 + start)
             else:
                 shifted_char = char
-            result += shifted_char
-        return result
+            plaintext += shifted_char
+        return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):
         """
@@ -74,17 +74,19 @@ class DecryptionUtils:
         'Hello, World!'
 
         """
-        n = len(encrypted_text)
-        rail = [['\n' for i in range(n)] for j in range(rails)]
+        length = len(encrypted_text)
+        rail = [['\n' for i in range(length)]
+                for j in range(rails)]
 
         dir_down = None
         row, col = 0, 0
 
-        for i in range(n):
+        for i in range(length):
             if row == 0:
                 dir_down = True
             if row == rails - 1:
                 dir_down = False
+
             rail[row][col] = '*'
             col += 1
 
@@ -95,23 +97,24 @@ class DecryptionUtils:
 
         index = 0
         for i in range(rails):
-            for j in range(n):
-                if rail[i][j] == '*' and index < n:
+            for j in range(length):
+                if rail[i][j] == '*' and index < length:
                     rail[i][j] = encrypted_text[index]
                     index += 1
 
-        result = ''
+        result = ""
         row, col = 0, 0
         dir_down = None
 
-        for i in range(n):
+        for i in range(length):
             if row == 0:
                 dir_down = True
             if row == rails - 1:
                 dir_down = False
 
-            result += rail[row][col]
-            col += 1
+            if rail[row][col] != '*':
+                result += rail[row][col]
+                col += 1
 
             if dir_down:
                 row += 1

@@ -42,14 +42,14 @@ class CSVProcessor:
         >>> csvProcessor.write_csv([['a', 'b', 'c', 'd'], ['1', '2', '3', '4']], 'write_test.csv')
         1
         """
-        if not data:
+        if not data or not file_name:
             return 0
+
         try:
             with open(file_name, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(data[0])
-                for row in data[1:]:
-                    writer.writerow(row)
+                writer.writerow(data[1])
             return 1
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -76,21 +76,22 @@ class CSVProcessor:
             if not title or not data:
                 return 0
 
-            new_data = []
+            processed_data = []
             for row in data:
                 if len(row) > N:
-                    new_data.append([row[N].upper()])
+                    processed_data.append([row[N].upper()])
                 else:
                     return 0
 
-            new_file_name = save_file_name.replace('.csv', '_process.csv')
+            new_file_name = save_file_name.replace(".csv", "_process.csv")
             
             with open(new_file_name, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(title)
-                for row in new_data:
+                for row in processed_data:
                     writer.writerow(row)
             return 1
+
         except Exception as e:
             print(f"An error occurred: {e}")
             return 0

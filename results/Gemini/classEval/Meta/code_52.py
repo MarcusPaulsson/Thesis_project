@@ -31,20 +31,21 @@ class Lemmatization:
 
         """
         sentence = self.remove_punctuation(sentence)
-        tokens = word_tokenize(sentence)
-        pos_tags = pos_tag(tokens)
+        words = word_tokenize(sentence)
+        pos_tags = self.get_pos_tag(sentence)
         lemmatized_words = []
-        for token, pos_tag in zip(tokens, pos_tags):
-            if pos_tag.startswith('V'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='v'))
-            elif pos_tag.startswith('J'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='a'))
-            elif pos_tag.startswith('R'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='r'))
-            elif pos_tag.startswith('N'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='n'))
+        for i, word in enumerate(words):
+            pos = pos_tags[i]
+            if pos.startswith('V'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='v'))
+            elif pos.startswith('N'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='n'))
+            elif pos.startswith('J'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='a'))
+            elif pos.startswith('R'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='r'))
             else:
-                lemmatized_words.append(self.lemmatizer.lemmatize(token))
+                lemmatized_words.append(self.lemmatizer.lemmatize(word))
         return lemmatized_words
 
     def get_pos_tag(self, sentence):
@@ -58,9 +59,9 @@ class Lemmatization:
 
         """
         sentence = self.remove_punctuation(sentence)
-        tokens = word_tokenize(sentence)
-        pos_tags = pos_tag(tokens)
-        return [tag for token, tag in pos_tags]
+        words = word_tokenize(sentence)
+        pos_tags = [tag for word, tag in pos_tag(words)]
+        return pos_tags
 
     def remove_punctuation(self, sentence):
         """
@@ -72,4 +73,5 @@ class Lemmatization:
         'I am running in a race'
 
         """
-        return sentence.translate(str.maketrans('', '', string.punctuation))
+        translator = str.maketrans('', '', string.punctuation)
+        return sentence.translate(translator)

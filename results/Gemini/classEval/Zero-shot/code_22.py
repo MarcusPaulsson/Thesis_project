@@ -3,6 +3,7 @@ class ClassRegistrationSystem:
     This is a class as a class registration system, allowing to register students, register them for classes, retrieve students by major, get a list of all majors, and determine the most popular class within a specific major.
     """
 
+
     def __init__(self):
         """
         Initialize the registration system with the attribute students and students_registration_class.
@@ -87,9 +88,8 @@ class ClassRegistrationSystem:
         class_counts = {}
         for student in self.students:
             if student["major"] == major:
-                student_name = student["name"]
-                if student_name in self.students_registration_classes:
-                    for class_name in self.students_registration_classes[student_name]:
+                if student["name"] in self.students_registration_classes:
+                    for class_name in self.students_registration_classes[student["name"]]:
                         if class_name not in class_counts:
                             class_counts[class_name] = 0
                         class_counts[class_name] += 1

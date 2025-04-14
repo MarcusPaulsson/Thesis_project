@@ -1,31 +1,19 @@
 class BankAccount:
     """
-    A class representing a bank account.
-
-    Supports deposit, withdraw, balance view, and transfer functionalities.
+    This is a class as a bank account system, which supports deposit money, withdraw money, view balance, and transfer money.
     """
 
     def __init__(self, balance=0):
         """
-        Initializes a BankAccount object.
-
-        Args:
-            balance (int, optional): Initial balance of the account. Defaults to 0.
+        Initializes a bank account object with an attribute balance, default value is 0.
         """
         self.balance = balance
 
     def deposit(self, amount):
         """
-        Deposits money into the account.
-
-        Args:
-            amount (int): The amount to deposit.
-
-        Returns:
-            int: The updated balance after the deposit.
-
-        Raises:
-            ValueError: If the amount is negative.
+        Deposits a certain amount into the account, increasing the account balance, return the current account balance.
+        If amount is negative, raise a ValueError("Invalid amount").
+        :param amount: int
         """
         if amount < 0:
             raise ValueError("Invalid amount")
@@ -34,16 +22,10 @@ class BankAccount:
 
     def withdraw(self, amount):
         """
-        Withdraws money from the account.
-
-        Args:
-            amount (int): The amount to withdraw.
-
-        Returns:
-            int: The updated balance after the withdrawal.
-
-        Raises:
-            ValueError: If the amount is negative or exceeds the balance.
+        Withdraws a certain amount from the account, decreasing the account balance, return the current account balance.
+        If amount is negative, raise a ValueError("Invalid amount").
+        If the withdrawal amount is greater than the account balance, raise a ValueError("Insufficient balance.").
+        :param amount: int
         """
         if amount < 0:
             raise ValueError("Invalid amount")
@@ -54,23 +36,15 @@ class BankAccount:
 
     def view_balance(self):
         """
-        Returns the current balance of the account.
-
-        Returns:
-            int: The current balance.
+        Return the account balance.
         """
         return self.balance
 
     def transfer(self, other_account, amount):
         """
-        Transfers money from this account to another account.
-
-        Args:
-            other_account (BankAccount): The account to transfer money to.
-            amount (int): The amount to transfer.
-
-        Raises:
-            ValueError: If the amount is negative or exceeds the balance.
+        Transfers a certain amount from the current account to another account.
+        :param other_account: BankAccount
+        :param amount: int
         """
         if amount < 0:
             raise ValueError("Invalid amount")

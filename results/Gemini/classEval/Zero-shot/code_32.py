@@ -21,18 +21,16 @@ class DecryptionUtils:
         'hello'
 
         """
-        result = ''
+        plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
-                start = ord('a')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                decrypted_char = chr(((ord(char) - ord('a') - shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
-                start = ord('A')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                decrypted_char = chr(((ord(char) - ord('A') - shift) % 26) + ord('A'))
             else:
-                shifted_char = char
-            result += shifted_char
-        return result
+                decrypted_char = char
+            plaintext += decrypted_char
+        return plaintext
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -44,21 +42,18 @@ class DecryptionUtils:
         'ybocl'
 
         """
-        key = self.key
         plaintext = ''
+        key = self.key
         key_length = len(key)
-        for i in range(len(ciphertext)):
-            char = ciphertext[i]
+        for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
                 key_char = key[i % key_length]
-                key_shift = ord(key_char) - ord('a')
-                start = ord('a')
-                decrypted_char = chr((ord(char) - start - key_shift) % 26 + start)
+                shift = ord(key_char) - ord('a')
+                decrypted_char = chr(((ord(char) - ord('a') - shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
                 key_char = key[i % key_length]
-                key_shift = ord(key_char.lower()) - ord('a')
-                start = ord('A')
-                decrypted_char = chr((ord(char) - start - key_shift) % 26 + start)
+                shift = ord(key_char.lower()) - ord('a')
+                decrypted_char = chr(((ord(char) - ord('A') - shift) % 26) + ord('A'))
             else:
                 decrypted_char = char
             plaintext += decrypted_char
@@ -75,43 +70,44 @@ class DecryptionUtils:
         'Hello, World!'
 
         """
-        length = len(encrypted_text)
-        fence = [['' for _ in range(length)] for _ in range(rails)]
-        rail = 0
-        down = True
+        text_length = len(encrypted_text)
+        rail_matrix = [['' for _ in range(text_length)] for _ in range(rails)]
+        direction_down = False
+        row, col = 0, 0
 
-        for i in range(length):
-            fence[rail][i] = '*'
-            if rail == rails - 1:
-                down = False
-            elif rail == 0:
-                down = True
+        for i in range(text_length):
+            if row == 0 or row == rails - 1:
+                direction_down = not direction_down
 
-            if down:
-                rail += 1
+            rail_matrix[row][col] = '*'
+            col += 1
+
+            if direction_down:
+                row += 1
             else:
-                rail -= 1
+                row -= 1
 
         index = 0
         for i in range(rails):
-            for j in range(length):
-                if fence[i][j] == '*':
-                    fence[i][j] = encrypted_text[index]
+            for j in range(text_length):
+                if rail_matrix[i][j] == '*':
+                    rail_matrix[i][j] = encrypted_text[index]
                     index += 1
 
-        rail = 0
-        down = True
         result = ''
-        for i in range(length):
-            result += fence[rail][i]
-            if rail == rails - 1:
-                down = False
-            elif rail == 0:
-                down = True
+        row, col = 0, 0
+        direction_down = False
 
-            if down:
-                rail += 1
+        for i in range(text_length):
+            if row == 0 or row == rails - 1:
+                direction_down = not direction_down
+
+            result += rail_matrix[row][col]
+            col += 1
+
+            if direction_down:
+                row += 1
             else:
-                rail -= 1
+                row -= 1
 
         return result

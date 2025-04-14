@@ -1,107 +1,64 @@
-from datetime import datetime, time
+from datetime import datetime
 
 class Classroom:
     """
-    Represents a classroom and its scheduling functionalities.
+    This is a class representing a classroom, capable of adding and removing courses, checking availability at a given time, and detecting conflicts when scheduling new courses.
     """
 
-    def __init__(self, classroom_id: int):
-        """
-        Initializes a Classroom object.
+    TIME_FORMAT = '%H:%M'
 
-        Args:
-            classroom_id: The unique identifier for the classroom.
+    def __init__(self, id):
         """
-        self.id = classroom_id
-        self.courses = []  # List of courses scheduled in the classroom
-
-    def add_course(self, course: dict):
+        Initialize the classroom management system.
+        :param id: int, the id of classroom
         """
-        Adds a course to the classroom schedule.
+        self.id = id
+        self.courses = []
 
-        Args:
-            course: A dictionary containing course information, including 'name', 'start_time', and 'end_time'.
+    def add_course(self, course):
         """
-        if not isinstance(course, dict):
-            raise TypeError("Course must be a dictionary.")
-        if 'name' not in course or 'start_time' not in course or 'end_time' not in course:
-            raise ValueError("Course dictionary must contain 'name', 'start_time', and 'end_time' keys.")
-
+        Add course to self.courses list if the course wasn't in it.
+        :param course: dict, information of the course, including 'start_time', 'end_time' and 'name'
+        """
         if course not in self.courses:
             self.courses.append(course)
 
-    def remove_course(self, course: dict):
+    def remove_course(self, course):
         """
-        Removes a course from the classroom schedule.
-
-        Args:
-            course: A dictionary containing course information to be removed.
+        Remove course from self.courses list if the course was in it.
+        :param course: dict, information of the course, including 'start_time', 'end_time' and 'name'
         """
-        if not isinstance(course, dict):
-            raise TypeError("Course must be a dictionary.")
-
         if course in self.courses:
             self.courses.remove(course)
 
-    def is_free_at(self, check_time: str) -> bool:
+    def is_free_at(self, check_time):
         """
-        Checks if the classroom is free at a given time.
-
-        Args:
-            check_time: A string representing the time to check in 'HH:MM' format.
-
-        Returns:
-            True if the classroom is free at the given time, False otherwise.
+        Check if the classroom is free at the given time.
+        :param check_time: str, the time to check (format: HH:MM)
+        :return: True if the classroom is free, False otherwise.
         """
-        try:
-            check_time_dt = datetime.strptime(check_time, '%H:%M').time()
-        except ValueError:
-            raise ValueError("Invalid time format.  Use 'HH:MM'.")
-
+        check_time_dt = datetime.strptime(check_time, self.TIME_FORMAT).time()
         for course in self.courses:
-            start_time = course['start_time']
-            end_time = course['end_time']
-
-            try:
-                start_time_dt = datetime.strptime(start_time, '%H:%M').time()
-                end_time_dt = datetime.strptime(end_time, '%H:%M').time()
-            except ValueError:
-                raise ValueError("Invalid time format in course schedule. Use 'HH:MM'.")
-
+            start_time_dt = datetime.strptime(course['start_time'], self.TIME_FORMAT).time()
+            end_time_dt = datetime.strptime(course['end_time'], self.TIME_FORMAT).time()
             if start_time_dt <= check_time_dt < end_time_dt:
-                return False  # Classroom is occupied at this time
-        return True  # Classroom is free
+                return False
+        return True
 
-    def check_course_conflict(self, new_course: dict) -> bool:
+    def check_course_conflict(self, new_course):
         """
-        Checks if a new course conflicts with the existing schedule.
-
-        Args:
-            new_course: A dictionary containing information about the new course.
-
-        Returns:
-            True if the new course does not conflict with the existing schedule, False otherwise.
+        Check if the new course conflicts with any existing courses.
+        :param new_course: dict, information of the course, including 'start_time', 'end_time' and 'name'
+        :return: True if there is no conflict, False otherwise.
         """
-        if not isinstance(new_course, dict):
-            raise TypeError("New course must be a dictionary.")
-
-        try:
-            new_start_time = datetime.strptime(new_course['start_time'], '%H:%M').time()
-            new_end_time = datetime.strptime(new_course['end_time'], '%H:%M').time()
-        except ValueError:
-            raise ValueError("Invalid time format in new course. Use 'HH:MM'.")
+        new_start_time = datetime.strptime(new_course['start_time'], self.TIME_FORMAT).time()
+        new_end_time = datetime.strptime(new_course['end_time'], self.TIME_FORMAT).time()
 
         for existing_course in self.courses:
-            existing_start_time = existing_course['start_time']
-            existing_end_time = existing_course['end_time']
+            existing_start_time = datetime.strptime(existing_course['start_time'], self.TIME_FORMAT).time()
+            existing_end_time = datetime.strptime(existing_course['end_time'], self.TIME_FORMAT).time()
 
-            try:
-                existing_start_time_dt = datetime.strptime(existing_start_time, '%H:%M').time()
-                existing_end_time_dt = datetime.strptime(existing_end_time, '%H:%M').time()
-            except ValueError:
-                raise ValueError("Invalid time format in existing course. Use 'HH:MM'.")
+            if not (new_end_time <= existing_start_time or new_start_time >= existing_end_time):
+                return False
 
-            if not (new_end_time <= existing_start_time_dt or new_start_time >= existing_end_time_dt):
-                return False  # Conflict detected
-
-        return True  # No conflict
+        return True

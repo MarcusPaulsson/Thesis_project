@@ -1,7 +1,5 @@
-import re
 from collections import deque
-from decimal import Decimal
-
+import decimal
 
 class ExpressionCalculator:
     """
@@ -13,8 +11,8 @@ class ExpressionCalculator:
         Initialize the expression calculator
         """
         self.postfix_stack = deque()
+        self.operat_stack = deque()
         self.operat_priority = [0, 3, 2, 1, -1, 1, 0, 2]
-        self.operator_stack = []
 
     def calculate(self, expression):
         """
@@ -24,21 +22,22 @@ class ExpressionCalculator:
         >>> expression_calculator = ExpressionCalculator()
         >>> expression_calculator.calculate("2 + 3 * 4")
         14.0
+
         """
         expression = self.transform(expression)
         self.prepare(expression)
-        postfix_queue = self.postfix_stack
         stack = []
-        while postfix_queue:
-            token = postfix_queue.popleft()
-            if token.isdigit() or (token.startswith('~') and token[1:].isdigit()):
+        while self.postfix_stack:
+            token = self.postfix_stack.popleft()
+            if not self.is_operator(token):
                 stack.append(token)
             else:
                 second_value = stack.pop()
                 first_value = stack.pop()
                 result = self._calculate(first_value, second_value, token)
-                stack.append(str(result))
+                stack.append(result)
         return float(stack[0])
+
 
     def prepare(self, expression):
         """
@@ -50,24 +49,36 @@ class ExpressionCalculator:
         expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
         self.postfix_stack = deque()
-        self.operator_stack = []
-        tokens = re.findall(r'(\d+|[+\-*/%()])', expression)
-        for token in tokens:
-            if token.isdigit() or (token.startswith('~') and token[1:].isdigit()):
-                self.postfix_stack.append(token)
-            elif token == '(':
-                self.operator_stack.append(token)
-            elif token == ')':
-                while self.operator_stack and self.operator_stack[-1] != '(':
-                    self.postfix_stack.append(self.operator_stack.pop())
-                self.operator_stack.pop()  # Remove '('
+        self.operat_stack = deque()
+        expression = self.transform(expression)
+        i = 0
+        while i < len(expression):
+            c = expression[i]
+            if c.isdigit():
+                j = i
+                while j < len(expression) and expression[j].isdigit():
+                    j += 1
+                self.postfix_stack.append(expression[i:j])
+                i = j
+            elif c == '(':
+                self.operat_stack.append(c)
+                i += 1
+            elif c == ')':
+                while self.operat_stack and self.operat_stack[-1] != '(':
+                    self.postfix_stack.append(self.operat_stack.pop())
+                self.operat_stack.pop()
+                i += 1
+            elif self.is_operator(c):
+                while self.operat_stack and self.operat_stack[-1] != '(' and self.compare(c, self.operat_stack[-1]):
+                    self.postfix_stack.append(self.operat_stack.pop())
+                self.operat_stack.append(c)
+                i += 1
             else:
-                while self.operator_stack and self.operator_stack[-1] != '(' and self.compare(token,
-                                                                                                    self.operator_stack[-1]):
-                    self.postfix_stack.append(self.operator_stack.pop())
-                self.operator_stack.append(token)
-        while self.operator_stack:
-            self.postfix_stack.append(self.operator_stack.pop())
+                i += 1
+
+        while self.operat_stack:
+            self.postfix_stack.append(self.operat_stack.pop())
+
 
     @staticmethod
     def is_operator(c):
@@ -78,8 +89,10 @@ class ExpressionCalculator:
         >>> expression_calculator = ExpressionCalculator()
         >>> expression_calculator.is_operator("+")
         True
+
         """
-        return c in {'+', '-', '*', '/', '(', ')', '%'}
+        return c in {'+', '-', '*', '/', '(', ')', '%', '~'}
+
 
     def compare(self, cur, peek):
         """
@@ -90,9 +103,11 @@ class ExpressionCalculator:
         >>> expression_calculator = ExpressionCalculator()
         >>> expression_calculator.compare("+", "-")
         True
+
         """
-        priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
-        return priority.get(cur, 0) <= priority.get(peek, -1)
+        priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2, '~': 3}
+        return priority[cur] <= priority[peek]
+
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -105,21 +120,25 @@ class ExpressionCalculator:
         >>> expression_calculator = ExpressionCalculator()
         >>> expression_calculator._calculate("2", "3", "+")
         5.0
+
         """
-        first_value = float(first_value.replace('~', '-'))
-        second_value = float(second_value.replace('~', '-'))
+        first_value = decimal.Decimal(first_value)
+        second_value = decimal.Decimal(second_value)
         if current_op == '+':
-            return Decimal(first_value + second_value)
+            return first_value + second_value
         elif current_op == '-':
-            return Decimal(first_value - second_value)
+            return first_value - second_value
         elif current_op == '*':
-            return Decimal(first_value * second_value)
+            return first_value * second_value
         elif current_op == '/':
-            return Decimal(first_value / second_value)
+            return first_value / second_value
         elif current_op == '%':
-            return Decimal(first_value % second_value)
+            return first_value % second_value
+        elif current_op == '~':
+            return 0 - second_value
         else:
             raise ValueError("Invalid operator")
+
 
     @staticmethod
     def transform(expression):
@@ -130,10 +149,13 @@ class ExpressionCalculator:
         >>> expression_calculator = ExpressionCalculator()
         >>> expression_calculator.transform("2 + 3 * 4")
         "2+3*4"
+
         """
         expression = expression.replace(" ", "")
-        expression = re.sub(r'-\d+', lambda m: '~' + m.group(0)[1:], expression)
-        expression = expression.replace("~(", "0-(")
-        if expression.startswith('~'):
-            expression = "0" + expression
-        return expression
+        new_expression = ""
+        for i in range(len(expression)):
+            if expression[i] == '-' and (i == 0 or expression[i - 1] in {'(', '+', '-', '*', '/'}):
+                new_expression += '~'
+            else:
+                new_expression += expression[i]
+        return new_expression

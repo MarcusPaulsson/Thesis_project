@@ -42,15 +42,25 @@ class EightPuzzle:
         if direction == 'up':
             if blank_i > 0:
                 new_state[blank_i][blank_j], new_state[blank_i - 1][blank_j] = new_state[blank_i - 1][blank_j], new_state[blank_i][blank_j]
+            else:
+                return state
         elif direction == 'down':
             if blank_i < 2:
                 new_state[blank_i][blank_j], new_state[blank_i + 1][blank_j] = new_state[blank_i + 1][blank_j], new_state[blank_i][blank_j]
+            else:
+                return state
         elif direction == 'left':
             if blank_j > 0:
                 new_state[blank_i][blank_j], new_state[blank_i][blank_j - 1] = new_state[blank_i][blank_j - 1], new_state[blank_i][blank_j]
+            else:
+                return state
         elif direction == 'right':
             if blank_j < 2:
                 new_state[blank_i][blank_j], new_state[blank_i][blank_j + 1] = new_state[blank_i][blank_j + 1], new_state[blank_i][blank_j]
+            else:
+                return state
+        else:
+            return state
 
         return new_state
 
@@ -88,16 +98,19 @@ class EightPuzzle:
         >>> eightPuzzle.solve()
         ['right']
         """
-        if self.initial_state == [[0, 0, 0], [0, 0, 0], [0, 0, 0]]:
+        initial_state = self.initial_state
+        goal_state = self.goal_state
+
+        if not any(0 in row for row in initial_state):
             return None
 
-        open_list = [(self.initial_state, [])]
-        visited = {tuple(tuple(row) for row in self.initial_state)}
+        open_list = [(initial_state, [])]  # (state, path)
+        visited = {tuple(tuple(row) for row in initial_state)}
 
         while open_list:
             current_state, path = open_list.pop(0)
 
-            if current_state == self.goal_state:
+            if current_state == goal_state:
                 return path
 
             possible_moves = self.get_possible_moves(current_state)

@@ -3,6 +3,7 @@ class Server:
     This is a class as a server, which handles a white list, message sending and receiving, and information display.
     """
 
+
     def __init__(self):
         """
         Initialize the whitelist as an empty list, and initialize the sending and receiving information as an empty dictionary
@@ -10,6 +11,8 @@ class Server:
         self.white_list = []
         self.send_struct = {}
         self.receive_struct = {}
+
+
 
     def add_white_list(self, addr):
         """
@@ -49,15 +52,12 @@ class Server:
         >>> server.recv({"addr":88,"content":"abc"})
         abc
         """
-        if type(info) != dict:
-            return -1
-
-        if "addr" not in info or "content" not in info:
+        if type(info) != dict or "addr" not in info or "content" not in info:
             return -1
 
         if info["addr"] in self.white_list:
             self.receive_struct = info
-            # return info["content"]
+            return info["content"]
         else:
             return False
 
@@ -69,13 +69,11 @@ class Server:
         >>> server.send({"addr":66,"content":"ABC"})
         self.send_struct = {"addr":66,"content":"ABC"}
         """
-        if type(info) != dict:
+        if type(info) != dict or "addr" not in info or "content" not in info:
             return "info structure is not correct"
-
-        if "addr" not in info or "content" not in info:
-            return "info structure is not correct"
-
-        self.send_struct = info
+        else:
+            self.send_struct = info
+            return
 
     def show(self, type):
         """
@@ -87,9 +85,9 @@ class Server:
         >>> server.show("send")
         {"addr":66,"content":"ABC"}
         """
-        if type == 'send':
+        if type == "send":
             return self.send_struct
-        elif type == 'receive':
+        elif type == "receive":
             return self.receive_struct
         else:
             return False

@@ -48,8 +48,14 @@ class Hotel:
         if self.available_rooms[room_type] >= room_number:
             if room_type not in self.booked_rooms:
                 self.booked_rooms[room_type] = {}
+
             self.available_rooms[room_type] -= room_number
-            self.booked_rooms[room_type][name] = room_number
+
+            if name not in self.booked_rooms[room_type]:
+                self.booked_rooms[room_type][name] = 0
+
+            self.booked_rooms[room_type][name] += room_number
+
             return 'Success!'
         elif self.available_rooms[room_type] > 0:
             return self.available_rooms[room_type]
@@ -73,20 +79,19 @@ class Hotel:
         >>> hotel.booked_rooms
         {'single': {}}
         """
-        if room_type not in self.booked_rooms:
+        if room_type not in self.booked_rooms or name not in self.booked_rooms[room_type]:
             return False
-        if name not in self.booked_rooms[room_type]:
+
+        if room_number > self.booked_rooms[room_type][name]:
             return False
-        if self.booked_rooms[room_type][name] < room_number:
-            return False
-        
-        if self.booked_rooms[room_type][name] == room_number:
-            self.booked_rooms[room_type].pop(name)
+
+        self.booked_rooms[room_type][name] -= room_number
+        if self.booked_rooms[room_type][name] == 0:
+            del self.booked_rooms[room_type][name]
             if not self.booked_rooms[room_type]:
-                self.booked_rooms[room_type] = {}
-        else:
-            self.booked_rooms[room_type][name] -= room_number
-        
+                del self.booked_rooms[room_type]
+        return
+
     def check_out(self, room_type, room_number):
         """
         Check out rooms, add number for specific type in available_rooms.

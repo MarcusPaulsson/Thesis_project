@@ -40,7 +40,7 @@ class SQLGenerator:
         "INSERT INTO table1 (key1, key2) VALUES ('value1', 'value2');"
         """
         fields = ", ".join(data.keys())
-        values = ", ".join(["'" + str(v) + "'" for v in data.values()])
+        values = ", ".join("'" + str(v) + "'" for v in data.values())
         sql = "INSERT INTO " + self.table_name + " (" + fields + ") VALUES (" + values + ");"
         return sql
 

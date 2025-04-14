@@ -25,7 +25,7 @@ class MetricsCalculator2:
         0.75, [1.0, 0.5]
         """
         if not isinstance(data, list) and not isinstance(data, tuple):
-            raise TypeError("Input data must be a list or tuple")
+            raise TypeError("Input data must be a list or tuple.")
 
         if isinstance(data, tuple):
             data = [data]
@@ -40,12 +40,13 @@ class MetricsCalculator2:
             results, ground_truth_num = item
             if not isinstance(results, list):
                 continue
-            try:
-                first_relevant_rank = results.index(1) + 1
-                reciprocal_rank = 1.0 / first_relevant_rank
-            except ValueError:
-                reciprocal_rank = 0.0
-            reciprocal_ranks.append(reciprocal_rank)
+
+            rr = 0.0
+            for i, result in enumerate(results):
+                if result == 1:
+                    rr = 1.0 / (i + 1)
+                    break
+            reciprocal_ranks.append(rr)
 
         if not reciprocal_ranks:
             return 0.0, [0.0]
@@ -68,7 +69,7 @@ class MetricsCalculator2:
         0.3333333333333333, [0.41666666666666663, 0.25]
         """
         if not isinstance(data, list) and not isinstance(data, tuple):
-            raise TypeError("Input data must be a list or tuple")
+            raise TypeError("Input data must be a list or tuple.")
 
         if isinstance(data, tuple):
             data = [data]
@@ -83,18 +84,20 @@ class MetricsCalculator2:
             results, ground_truth_num = item
             if not isinstance(results, list):
                 continue
-            
+
             relevant_count = 0
             precision_sum = 0.0
             for i, result in enumerate(results):
                 if result == 1:
                     relevant_count += 1
-                    precision_sum += float(relevant_count) / (i + 1)
+                    precision_sum += relevant_count / (i + 1)
 
             if ground_truth_num == 0:
                 ap = 0.0
+            elif relevant_count == 0:
+                ap = 0.0
             else:
-                ap = precision_sum / min(ground_truth_num, sum(results)) if sum(results) > 0 else 0.0
+                ap = precision_sum / ground_truth_num
             average_precisions.append(ap)
 
         if not average_precisions:

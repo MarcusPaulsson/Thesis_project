@@ -22,13 +22,16 @@ class Manacher:
         2
 
         """
-        if center - diff < 0 or center + diff >= len(string):
-            return diff - 1
+        left = center - diff
+        right = center + diff
 
-        if string[center - diff] == string[center + diff]:
-            return self.palindromic_length(center, diff + 1, string)
+        if left < 0 or right >= len(string):
+            return 0
+
+        if string[left] == string[right]:
+            return diff
         else:
-            return diff - 1
+            return 0
 
     def palindromic_string(self):
         """
@@ -39,16 +42,29 @@ class Manacher:
         'ababa'
 
         """
-        formatted_string = '|'.join(list(self.input_string))
-        formatted_string = '|' + formatted_string + '|'
-        max_length = 0
-        center_index = 0
-        for i in range(len(formatted_string)):
-            current_length = self.palindromic_length(i, 1, formatted_string)
-            if current_length > max_length:
-                max_length = current_length
-                center_index = i
+        s = '#'.join(f'^{self.input_string}$')
+        p = [0] * len(s)
+        center = 0
+        right = 0
+        max_len = 0
+        max_center = 0
 
-        start = (center_index - max_length) // 2
-        end = start + max_length
-        return self.input_string[start:end]
+        for i in range(1, len(s) - 1):
+            mirror = 2 * center - i
+
+            if right > i:
+                p[i] = min(right - i, p[mirror])
+
+            while s[i + (1 + p[i])] == s[i - (1 + p[i])]:
+                p[i] += 1
+
+            if i + p[i] > right:
+                center = i
+                right = i + p[i]
+
+            if p[i] > max_len:
+                max_len = p[i]
+                max_center = i
+
+        start = (max_center - max_len) // 2
+        return self.input_string[start: start + max_len]

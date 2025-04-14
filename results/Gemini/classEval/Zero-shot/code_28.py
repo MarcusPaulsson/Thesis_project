@@ -25,13 +25,13 @@ class DatabaseProcessor:
         """
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
-        cursor.execute(f"""
+        cursor.execute(f'''
             CREATE TABLE IF NOT EXISTS {table_name} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 {key1} TEXT,
                 {key2} INTEGER
             )
-        """)
+        ''')
         conn.commit()
         conn.close()
 
@@ -52,7 +52,10 @@ class DatabaseProcessor:
             columns = ', '.join(row.keys())
             placeholders = ', '.join(['?'] * len(row))
             values = tuple(row.values())
-            cursor.execute(f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})", values)
+            cursor.execute(f'''
+                INSERT INTO {table_name} ({columns})
+                VALUES ({placeholders})
+            ''', values)
         conn.commit()
         conn.close()
 
@@ -69,7 +72,10 @@ class DatabaseProcessor:
         """
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM {table_name} WHERE name = ?", (name,))
+        cursor.execute(f'''
+            SELECT * FROM {table_name}
+            WHERE name = ?
+        ''', (name,))
         result = cursor.fetchall()
         conn.close()
         if result:
@@ -87,6 +93,9 @@ class DatabaseProcessor:
         """
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
-        cursor.execute(f"DELETE FROM {table_name} WHERE name = ?", (name,))
+        cursor.execute(f'''
+            DELETE FROM {table_name}
+            WHERE name = ?
+        ''', (name,))
         conn.commit()
         conn.close()

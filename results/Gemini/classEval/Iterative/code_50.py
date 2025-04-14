@@ -18,7 +18,7 @@ class JSONProcessor:
         try:
             with open(file_path, 'r') as f:
                 data = json.load(f)
-                return data
+            return data
         except json.JSONDecodeError:
             return -1
         except Exception:
@@ -48,28 +48,18 @@ class JSONProcessor:
         :return: 1, if the specified key is successfully removed and the data is written back.
                     0, if the file does not exist or the specified key does not exist in the data.
         """
-        if not os.path.exists(file_path):
+        data = self.read_json(file_path)
+        if data == 0:
             return 0
 
-        try:
-            with open(file_path, 'r') as f:
-                try:
-                    data = json.load(f)
-                except json.JSONDecodeError:
-                    return 0
-        except FileNotFoundError:
-            return 0
-        except Exception:
+        if data == -1:
             return 0
 
-
-        if remove_key in data:
+        if isinstance(data, dict) and remove_key in data:
             del data[remove_key]
-            try:
-                with open(file_path, 'w') as f:
-                    json.dump(data, f)
+            if self.write_json(data, file_path) == 1:
                 return 1
-            except Exception:
+            else:
                 return 0
         else:
             return 0

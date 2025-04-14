@@ -37,15 +37,14 @@ class BalancedBrackets:
         True
 
         """
-        self.clear_expr()
-        stack = []
+        self.stack = []
         for char in self.expr:
             if char in self.left_brackets:
-                stack.append(char)
+                self.stack.append(char)
             elif char in self.right_brackets:
-                if not stack:
+                if not self.stack:
                     return False
-                top = stack.pop()
+                top = self.stack.pop()
                 if self.left_brackets.index(top) != self.right_brackets.index(char):
                     return False
-        return not stack
+        return not self.stack

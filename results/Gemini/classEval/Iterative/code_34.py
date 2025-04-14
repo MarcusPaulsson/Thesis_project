@@ -1,6 +1,7 @@
 from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+import os
 
 
 class DocFileHandler:
@@ -22,10 +23,8 @@ class DocFileHandler:
         """
         try:
             document = Document(self.file_path)
-            full_text = []
-            for paragraph in document.paragraphs:
-                full_text.append(paragraph.text)
-            return '\n'.join(full_text)
+            text = '\n'.join([paragraph.text for paragraph in document.paragraphs])
+            return text
         except Exception as e:
             print(f"Error reading document: {e}")
             return ""
@@ -41,9 +40,15 @@ class DocFileHandler:
         try:
             document = Document()
             paragraph = document.add_paragraph(content)
-            paragraph.alignment = self._get_alignment_value(alignment)
+
+            # Set font size for all runs in the paragraph
             for run in paragraph.runs:
                 run.font.size = Pt(font_size)
+
+            # Set alignment
+            alignment_value = self._get_alignment_value(alignment)
+            paragraph.alignment = alignment_value
+
             document.save(self.file_path)
             return True
         except Exception as e:
@@ -52,13 +57,13 @@ class DocFileHandler:
 
     def add_heading(self, heading, level=1):
         """
-        Adds a heading to the Word document.
+        Adds a heading to the Word document.  If the document doesn't exist, it creates it.
         :param heading: str, the text of the heading.
         :param level: int, optional, the level of the heading (1, 2, 3, etc.; default is 1).
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path)
+            document = Document(self.file_path) if os.path.exists(self.file_path) else Document()
             document.add_heading(heading, level=level)
             document.save(self.file_path)
             return True
@@ -68,25 +73,26 @@ class DocFileHandler:
 
     def add_table(self, data):
         """
-        Adds a table to the Word document with the specified data.
+        Adds a table to the Word document with the specified data. If the document doesn't exist, it creates it.
         :param data: list of lists, the data to populate the table.
         :return: bool, True if the table is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path)
-            table = document.add_table(rows=1, cols=len(data[0]) if data else 0)
-            table.style = 'Table Grid'
+            document = Document(self.file_path) if os.path.exists(self.file_path) else Document()
+            if not data:
+                table = document.add_table(rows=1, cols=1)
+            else:
+                table = document.add_table(rows=1, cols=len(data[0]))
 
-            # Add header row
-            heading_cells = table.rows[0].cells
-            for i, heading in enumerate(data[0]):
-                heading_cells[i].text = str(heading)
+                # Add header row
+                for i, header in enumerate(data[0]):
+                    table.cell(0, i).text = str(header)
 
-            # Add data rows
-            for row_data in data[1:]:
-                row_cells = table.add_row().cells
-                for i, item in enumerate(row_data):
-                    row_cells[i].text = str(item)
+                # Add data rows
+                for row_idx in range(1, len(data)):
+                    row_cells = table.add_row().cells
+                    for i, item in enumerate(data[row_idx]):
+                        row_cells[i].text = str(item)
 
             document.save(self.file_path)
             return True
@@ -101,9 +107,11 @@ class DocFileHandler:
         :return: int, the alignment value.
         """
         alignment = alignment.lower()
-        if alignment == 'center':
+        if alignment == 'left':
+            return WD_PARAGRAPH_ALIGNMENT.LEFT
+        elif alignment == 'center':
             return WD_PARAGRAPH_ALIGNMENT.CENTER
         elif alignment == 'right':
             return WD_PARAGRAPH_ALIGNMENT.RIGHT
         else:
-            return WD_PARAGRAPH_ALIGNMENT.LEFT
+            return WD_PARAGRAPH_ALIGNMENT.LEFT  # Default to left alignment

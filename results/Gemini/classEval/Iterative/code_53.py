@@ -31,11 +31,13 @@ class LongestWord:
         >>> longestWord.find_longest_word('I am a student.')
         'a'
         """
-        longest_word = ''
-        
+        if not self.word_list:
+            return ''
+
         sentence = sentence.translate(str.maketrans('', '', string.punctuation))
         words = sentence.split()
 
+        longest_word = ''
         for word in words:
             if word in self.word_list:
                 if len(word) > len(longest_word):

@@ -32,14 +32,18 @@ class Order:
         """
         if not dish:
             return True
+
         dish_name = dish.get("dish")
         dish_count = dish.get("count")
         dish_price = dish.get("price")
-        
-        for item in self.menu:
-            if item["dish"] == dish_name:
-                if item["count"] >= dish_count:
-                    item["count"] -= dish_count
+
+        if not dish_name or not dish_count or not dish_price:
+            return True
+
+        for menu_dish in self.menu:
+            if menu_dish["dish"] == dish_name:
+                if menu_dish["count"] >= dish_count:
+                    menu_dish["count"] -= dish_count
                     self.selected_dishes.append({"dish": dish_name, "count": dish_count, "price": dish_price})
                     return True
                 else:
@@ -59,12 +63,12 @@ class Order:
         32.0
         """
         total = 0.0
-        for dish in self.selected_dishes:
-            dish_name = dish["dish"]
-            dish_count = dish["count"]
-            dish_price = dish["price"]
-            sales_rate = self.sales.get(dish_name, 1)  # Default to 1 if no sales rate found
-            total += dish_count * dish_price * sales_rate
+        for selected_dish in self.selected_dishes:
+            dish_name = selected_dish["dish"]
+            dish_count = selected_dish["count"]
+            dish_price = selected_dish["price"]
+            sales = self.sales.get(dish_name, 1)
+            total += dish_count * dish_price * sales
         return total
 
     def checkout(self):
@@ -84,13 +88,11 @@ class Order:
             return False
         else:
             total = self.calculate_total()
-            # Update menu counts after checkout
             for selected_dish in self.selected_dishes:
                 dish_name = selected_dish["dish"]
                 dish_count = selected_dish["count"]
-                for item in self.menu:
-                    if item["dish"] == dish_name:
-                        # item["count"] -= dish_count #already deduct at add_dish method
+                for menu_dish in self.menu:
+                    if menu_dish["dish"] == dish_name:
                         break
-            self.selected_dishes = []  # Clear selected dishes after checkout
+            self.selected_dishes = []
             return total

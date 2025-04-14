@@ -28,7 +28,7 @@ class CSVProcessor:
             print(f"Error: File '{file_name}' not found.")
             return [], []
         except Exception as e:
-            print(f"Error reading CSV file: {e}")
+            print(f"An error occurred: {e}")
             return [], []
 
     def write_csv(self, data, file_name):
@@ -50,7 +50,7 @@ class CSVProcessor:
                     writer.writerow(row)
             return 1
         except Exception as e:
-            print(f"Error writing CSV file: {e}")
+            print(f"An error occurred: {e}")
             return 0
 
     def process_csv_data(self, N, save_file_name):
@@ -74,12 +74,7 @@ class CSVProcessor:
             if not title or not data:
                 return 0
 
-            processed_data = []
-            for row in data:
-                try:
-                    processed_data.append([row[N].upper()])
-                except IndexError:
-                    return 0
+            processed_data = [[row[N].upper()] for row in data]
 
             new_file_name = save_file_name.replace(".csv", "_process.csv")
             
@@ -87,11 +82,14 @@ class CSVProcessor:
 
             with open(new_file_name, 'w', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(write_data[0])
-                for row in write_data[1:]:
+                writer.writerow(title)
+                for row in processed_data:
                     writer.writerow(row)
 
             return 1
+        except IndexError:
+            print(f"Error: Column {N} does not exist in the CSV file.")
+            return 0
         except Exception as e:
-            print(f"Error processing CSV data: {e}")
+            print(f"An error occurred: {e}")
             return 0

@@ -20,14 +20,9 @@ class SQLGenerator:
         >>> sql.select(['field1', 'field2'], 'filed3 = value1')
         'SELECT field1, field2 FROM table1 WHERE filed3 = value1;'
         """
-        sql = "SELECT "
-        if fields:
-            sql += ", ".join(fields)
-        else:
-            sql += "*"
-        sql += " FROM " + self.table_name
+        sql = f"SELECT {', '.join(fields) if fields else '*'} FROM {self.table_name}"
         if condition:
-            sql += " WHERE " + condition
+            sql += f" WHERE {condition}"
         sql += ";"
         return sql
 
@@ -39,9 +34,9 @@ class SQLGenerator:
         >>> sql.insert({'key1': 'value1', 'key2': 'value2'})
         "INSERT INTO table1 (key1, key2) VALUES ('value1', 'value2');"
         """
-        fields = ", ".join(data.keys())
-        values = ", ".join(["'" + str(v) + "'" for v in data.values()])
-        sql = "INSERT INTO " + self.table_name + " (" + fields + ") VALUES (" + values + ");"
+        fields = ', '.join(data.keys())
+        values = ', '.join([f"'{v}'" for v in data.values()])
+        sql = f"INSERT INTO {self.table_name} ({fields}) VALUES ({values});"
         return sql
 
 
@@ -54,8 +49,8 @@ class SQLGenerator:
         >>> sql.update({'field1': 'new_value1', 'field2': 'new_value2'}, "field3 = value1")
         "UPDATE table1 SET field1 = 'new_value1', field2 = 'new_value2' WHERE field3 = value1;"
         """
-        set_clause = ", ".join([f"{k} = '{v}'" for k, v in data.items()])
-        sql = "UPDATE " + self.table_name + " SET " + set_clause + " WHERE " + condition + ";"
+        set_clause = ', '.join([f"{k} = '{v}'" for k, v in data.items()])
+        sql = f"UPDATE {self.table_name} SET {set_clause} WHERE {condition};"
         return sql
 
     def delete(self, condition):
@@ -66,7 +61,7 @@ class SQLGenerator:
         >>> sql.delete("field1 = value1")
         'DELETE FROM table1 WHERE field1 = value1;'
         """
-        sql = "DELETE FROM " + self.table_name + " WHERE " + condition + ";"
+        sql = f"DELETE FROM {self.table_name} WHERE {condition};"
         return sql
 
     def select_female_under_age(self, age):
@@ -77,7 +72,7 @@ class SQLGenerator:
         >>> sql.select_female_under_age(30)
         "SELECT * FROM table1 WHERE age < 30 AND gender = 'female';"
         """
-        sql = "SELECT * FROM " + self.table_name + " WHERE age < " + str(age) + " AND gender = 'female';"
+        sql = f"SELECT * FROM {self.table_name} WHERE age < {age} AND gender = 'female';"
         return sql
 
     def select_by_age_range(self, min_age, max_age):
@@ -89,5 +84,5 @@ class SQLGenerator:
         >>> sql.select_by_age_range(20, 30)
         'SELECT * FROM table1 WHERE age BETWEEN 20 AND 30;'
         """
-        sql = "SELECT * FROM " + self.table_name + " WHERE age BETWEEN " + str(min_age) + " AND " + str(max_age) + ";"
+        sql = f"SELECT * FROM {self.table_name} WHERE age BETWEEN {min_age} AND {max_age};"
         return sql

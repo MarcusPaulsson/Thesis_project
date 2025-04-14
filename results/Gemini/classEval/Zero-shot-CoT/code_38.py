@@ -1,5 +1,4 @@
 import openpyxl
-import os
 
 
 class ExcelProcessor:
@@ -49,9 +48,9 @@ class ExcelProcessor:
         >>> ]
         >>> data = processor.write_excel(new_data, 'test_data.xlsx')
         """
+        if not file_name:
+            return 0
         try:
-            if not file_name:
-                return 0
             workbook = openpyxl.Workbook()
             sheet = workbook.active
             for row in data:
@@ -61,7 +60,7 @@ class ExcelProcessor:
         except:
             return 0
 
-    def process_excel_data(self, N, file_name):
+    def process_excel_data(self, N, save_file_name):
         """
         Change the specified column in the Excel file to uppercase
         :param N: int, The serial number of the column that want to change
@@ -70,19 +69,23 @@ class ExcelProcessor:
         >>> processor = ExcelProcessor()
         >>> success, output_file = processor.process_excel_data(1, 'test_data.xlsx')
         """
-        try:
-            data = self.read_excel(file_name)
-            if data is None:
-                return 0
-            new_data = []
-            output_file = 'processed_' + os.path.basename(file_name)
-            for row in data:
-                row = list(row)
-                if len(row) > N:
-                    uppercase_value = str(row[N]).upper() if row[N] is not None else None
-                    row.append(uppercase_value)
-                new_data.append(tuple(row))
-            write_result = self.write_excel(new_data, output_file)
-            return write_result, output_file
-        except:
+        data = self.read_excel(save_file_name)
+        if not data:
             return 0
+
+        new_data = []
+        output_file_name = "processed_" + save_file_name
+
+        for row in data:
+            new_row = list(row)
+            if N < len(row):
+                try:
+                    new_row.append(str(row[N]).upper())
+                except:
+                    new_row.append(row[N])
+            else:
+                return 0
+            new_data.append(tuple(new_row))
+
+        success = self.write_excel(new_data, output_file_name)
+        return success, output_file_name

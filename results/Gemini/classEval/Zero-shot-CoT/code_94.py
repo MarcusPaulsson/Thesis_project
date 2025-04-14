@@ -59,7 +59,7 @@ class VendingMachine:
             if self.inventory[item_name]['quantity'] > 0 and self.balance >= self.inventory[item_name]['price']:
                 self.balance -= self.inventory[item_name]['price']
                 self.inventory[item_name]['quantity'] -= 1
-                return round(self.balance,2)
+                return round(self.balance, 2)
             else:
                 return False
         else:

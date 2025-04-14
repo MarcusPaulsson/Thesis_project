@@ -30,9 +30,9 @@ class MahjongConnect:
                     ['a', 'b', 'c', 'a'],
                     ['a', 'b', 'c', 'a']]
         """
-        num_icons = self.BOARD_SIZE[0] * self.BOARD_SIZE[1]
-        icons_needed = num_icons // 2
-        icons = random.choices(self.ICONS, k=icons_needed) * 2
+        num_icons = self.BOARD_SIZE[0] * self.BOARD_SIZE[1] // 2
+        icons = self.ICONS * (num_icons // len(self.ICONS)) + self.ICONS[:num_icons % len(self.ICONS)]
+        icons = icons * 2
         random.shuffle(icons)
         board = []
         for i in range(self.BOARD_SIZE[0]):
@@ -86,61 +86,6 @@ class MahjongConnect:
         >>> mc.is_valid_move((0, 0), (1, 0))
         True
         """
-
-        def is_valid(x, y):
-            return 0 <= x < self.BOARD_SIZE[0] and 0 <= y < self.BOARD_SIZE[1]
-
-        def solve(start, end):
-            q = [(start, [])]
-            visited = {start}
-            while q:
-                (x, y), path = q.pop(0)
-                if (x, y) == end:
-                    return True
-
-                # Move horizontally
-                for ny in range(self.BOARD_SIZE[1]):
-                    if (x, ny) != (x,y) and (x, ny) not in visited:
-                        valid = True
-                        if ny > y:
-                            for i in range(y+1, ny):
-                                if self.board[x][i] != ' ':
-                                    valid = False
-                                    break
-                        else:
-                            for i in range(ny+1, y):
-                                if self.board[x][i] != ' ':
-                                    valid = False
-                                    break
-
-                        if valid and self.board[x][ny] == ' ':
-                            q.append(((x, ny), path + [(x, ny)]))
-                            visited.add((x, ny))
-                        if valid and (x, ny) == end:
-                            return True
-
-                # Move vertically
-                for nx in range(self.BOARD_SIZE[0]):
-                    if (nx, y) != (x,y) and (nx, y) not in visited:
-                        valid = True
-                        if nx > x:
-                            for i in range(x+1, nx):
-                                if self.board[i][y] != ' ':
-                                    valid = False
-                                    break
-                        else:
-                            for i in range(nx+1, x):
-                                if self.board[i][y] != ' ':
-                                    valid = False
-                                    break
-
-                        if valid and self.board[nx][y] == ' ':
-                            q.append(((nx, y), path + [(nx, y)]))
-                            visited.add((nx, y))
-                        if valid and (nx, y) == end:
-                            return True
-            return False
-
         if not (0 <= pos1[0] < self.BOARD_SIZE[0] and 0 <= pos1[1] < self.BOARD_SIZE[1] and
                 0 <= pos2[0] < self.BOARD_SIZE[0] and 0 <= pos2[1] < self.BOARD_SIZE[1]):
             return False
@@ -148,17 +93,62 @@ class MahjongConnect:
         if pos1 == pos2:
             return True
 
-        if self.board[pos1[0]][pos1[1]] == ' ' or self.board[pos2[0]][pos2[1]] == ' ':
+        def is_valid(x, y):
+            return 0 <= x < self.BOARD_SIZE[0] and 0 <= y < self.BOARD_SIZE[1]
+
+        def find_path(p1, p2):
+            q = [(p1, [])]
+            visited = {p1}
+
+            while q:
+                (x, y), path = q.pop(0)
+
+                if (x, y) == p2:
+                    return True
+
+                # Move up
+                for i in range(x - 1, -1, -1):
+                    if (i, y) == p2 and (self.board[x][y] == ' ' or self.board[i][y] == ' ' or self.board[x][y] == self.board[i][y]):
+                        return True
+                    if self.board[i][y] != ' ':
+                        break
+                    if (i, y) not in visited:
+                        q.append(((i, y), path + [(i, y)]))
+                        visited.add((i, y))
+
+                # Move down
+                for i in range(x + 1, self.BOARD_SIZE[0]):
+                    if (i, y) == p2 and (self.board[x][y] == ' ' or self.board[i][y] == ' ' or self.board[x][y] == self.board[i][y]):
+                        return True
+                    if self.board[i][y] != ' ':
+                        break
+                    if (i, y) not in visited:
+                        q.append(((i, y), path + [(i, y)]))
+                        visited.add((i, y))
+
+                # Move left
+                for j in range(y - 1, -1, -1):
+                    if (x, j) == p2 and (self.board[x][y] == ' ' or self.board[x][j] == ' ' or self.board[x][y] == self.board[x][j]):
+                        return True
+                    if self.board[x][j] != ' ':
+                        break
+                    if (x, j) not in visited:
+                        q.append(((x, j), path + [(x, j)]))
+                        visited.add((x, j))
+
+                # Move right
+                for j in range(y + 1, self.BOARD_SIZE[1]):
+                    if (x, j) == p2 and (self.board[x][y] == ' ' or self.board[x][j] == ' ' or self.board[x][y] == self.board[x][j]):
+                        return True
+                    if self.board[x][j] != ' ':
+                        break
+                    if (x, j) not in visited:
+                        q.append(((x, j), path + [(x, j)]))
+                        visited.add((x, j))
+
             return False
 
-        if self.board[pos1[0]][pos1[1]] != self.board[pos2[0]][pos2[1]]:
-            return False
-
-        self.board[pos1[0]][pos1[1]] = ' '
-        self.board[pos2[0]][pos2[1]] = ' '
-        path_exists = solve(pos1, pos2)
-        self.board[pos1[0]][pos1[1]] = self.board[pos2[0]][pos2[1]] = self.ICONS[0] if self.ICONS else 'a'
-        return path_exists
+        return find_path(pos1, pos2)
 
 
     def remove_icons(self, pos1, pos2):

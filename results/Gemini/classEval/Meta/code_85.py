@@ -53,8 +53,7 @@ class Thermostat:
         if mode in ['heat', 'cool']:
             self.mode = mode
             return True
-        else:
-            return False
+        return False
 
     def auto_set_mode(self):
         """
@@ -80,14 +79,13 @@ class Thermostat:
         >>> thermostat.mode
         'heat'
         """
-        if self.mode == 'heat' and self.current_temperature >= self.target_temperature:
+        if self.mode == 'heat' and self.current_temperature > self.target_temperature:
             self.mode = 'cool'
             return False
-        elif self.mode == 'cool' and self.current_temperature <= self.target_temperature:
+        elif self.mode == 'cool' and self.current_temperature < self.target_temperature:
             self.mode = 'heat'
             return False
-        else:
-            return True
+        return True
 
     def simulate_operation(self):
         """
@@ -100,12 +98,10 @@ class Thermostat:
         """
         start_time = 0
         self.auto_set_mode()
-        while abs(self.current_temperature - self.target_temperature) > 0.2:
+        while abs(self.current_temperature - self.target_temperature) > 0.3:
             if self.mode == 'heat':
                 self.current_temperature += 1
             else:
                 self.current_temperature -= 1
             start_time += 1
-            if start_time > 100:
-               break
         return start_time

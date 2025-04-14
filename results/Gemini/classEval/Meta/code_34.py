@@ -21,14 +21,14 @@ class DocFileHandler:
         :return: str, the content of the Word document.
         """
         try:
-            document = Document(self.file_path)
+            doc = Document(self.file_path)
             text = ""
-            for paragraph in document.paragraphs:
+            for paragraph in doc.paragraphs:
                 text += paragraph.text + "\n"
             return text.rstrip("\n")
         except Exception as e:
             print(f"Error reading document: {e}")
-            return None
+            return ""
 
     def write_text(self, content, font_size=12, alignment='left'):
         """
@@ -49,7 +49,7 @@ class DocFileHandler:
             # Set alignment
             alignment_value = self._get_alignment_value(alignment)
             paragraph.alignment = alignment_value
-            
+
             document.save(self.file_path)
             return True
         except Exception as e:

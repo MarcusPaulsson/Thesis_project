@@ -23,7 +23,7 @@ class URLHandler:
         try:
             parsed_url = urlparse(self.url)
             return parsed_url.scheme or None
-        except Exception:
+        except:
             return None
 
     def get_host(self):
@@ -37,7 +37,7 @@ class URLHandler:
         try:
             parsed_url = urlparse(self.url)
             return parsed_url.netloc or None
-        except Exception:
+        except:
             return None
 
     def get_path(self):
@@ -54,14 +54,15 @@ class URLHandler:
             query = parsed_url.query
             fragment = parsed_url.fragment
 
-            full_path = path
-            if query:
-                full_path += '?' + query
-            if fragment:
-                full_path += '#' + fragment
+            result = path
 
-            return full_path or None
-        except Exception:
+            if query:
+                result += "?" + query
+            if fragment:
+                result += "#" + fragment
+
+            return result or None
+        except:
             return None
 
     def get_query_params(self):
@@ -75,18 +76,10 @@ class URLHandler:
         try:
             parsed_url = urlparse(self.url)
             query_params = parse_qs(parsed_url.query)
-
-            if not query_params and parsed_url.query:
-                return {}
-
-            if query_params:
-                result = {}
-                for key, value in query_params.items():
-                    result[key] = value[0]
-                return result
-            else:
+            if not query_params:
                 return None
-        except Exception:
+            return {k: v[0] for k, v in query_params.items()}
+        except:
             return None
 
     def get_fragment(self):
@@ -100,5 +93,5 @@ class URLHandler:
         try:
             parsed_url = urlparse(self.url)
             return parsed_url.fragment or None
-        except Exception:
+        except:
             return None

@@ -15,17 +15,8 @@ class SplitSentence:
         >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
         ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        sentences = re.split(r'(?<!Mr)(?<!Mrs)(?<!Dr)(?<!A\.B\.C)\.(?=\s)|(?<!Mr)(?<!Mrs)(?<!Dr)\?(?=\s)', sentences_string)
-        sentences = [s.strip() for s in sentences if s]
-        result = []
-        temp = ""
-        for s in sentences:
-            if s.endswith(".") or s.endswith("?"):
-                result.append(temp + s)
-                temp = ""
-            else:
-                temp += s
-        return result
+        sentences = re.split(r'(?<!Mr)(?<!Mrs)(?<!Dr)(?<!A\.B\.C)(?<!A\.B)(?<!A)(?<!B)(?<!C)(?<!D)(?<!E)(?<!F)(?<!G)(?<!H)(?<!I)(?<!J)(?<!K)(?<!L)(?<!M)(?<!N)(?<!O)(?<!P)(?<!Q)(?<!R)(?<!S)(?<!T)(?<!U)(?<!V)(?<!W)(?<!X)(?<!Y)(?<!Z)(?<![A-Z][a-z])(?<=[.?])\s+', sentences_string)
+        return sentences
 
     def count_words(self, sentence):
         """
@@ -39,7 +30,10 @@ class SplitSentence:
         count = 0
         for word in words:
             if not word.isdigit():
-                count += 1
+                if re.match("^[a-zA-Z]+$", word):
+                    count += 1
+                elif re.match("^[a-zA-Z0-9]+$", word):
+                    count += 1
         return count
 
     def process_text_file(self, sentences_string):

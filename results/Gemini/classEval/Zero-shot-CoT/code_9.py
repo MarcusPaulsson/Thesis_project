@@ -22,26 +22,34 @@ class BigNumCalculator:
         if not num2:
             num2 = '0'
 
-        num1 = num1[::-1]
-        num2 = num2[::-1]
+        n1 = len(num1)
+        n2 = len(num2)
+        if n1 < n2:
+            num1, num2 = num2, num1
+            n1, n2 = n2, n1
 
-        len1 = len(num1)
-        len2 = len(num2)
+        result = []
         carry = 0
-        result = ''
+        i = n1 - 1
+        j = n2 - 1
 
-        for i in range(max(len1, len2)):
-            digit1 = int(num1[i]) if i < len1 else 0
-            digit2 = int(num2[i]) if i < len2 else 0
+        while j >= 0:
+            digit_sum = int(num1[i]) + int(num2[j]) + carry
+            result.append(str(digit_sum % 10))
+            carry = digit_sum // 10
+            i -= 1
+            j -= 1
 
-            sum_digits = digit1 + digit2 + carry
-            carry = sum_digits // 10
-            result += str(sum_digits % 10)
+        while i >= 0:
+            digit_sum = int(num1[i]) + carry
+            result.append(str(digit_sum % 10))
+            carry = digit_sum // 10
+            i -= 1
 
         if carry:
-            result += str(carry)
+            result.append(str(carry))
 
-        return result[::-1]
+        return ''.join(result[::-1])
 
     @staticmethod
     def subtract(num1, num2):
@@ -68,31 +76,41 @@ class BigNumCalculator:
         else:
             sign = ''
 
-        num1 = num1[::-1]
-        num2 = num2[::-1]
-
-        len1 = len(num1)
-        len2 = len(num2)
+        n1 = len(num1)
+        n2 = len(num2)
+        result = []
         borrow = 0
-        result = ''
+        i = n1 - 1
+        j = n2 - 1
 
-        for i in range(len1):
+        while j >= 0:
             digit1 = int(num1[i])
-            digit2 = int(num2[i]) if i < len2 else 0
-
+            digit2 = int(num2[j])
             diff = digit1 - digit2 - borrow
             if diff < 0:
                 diff += 10
                 borrow = 1
             else:
                 borrow = 0
-            result += str(diff)
+            result.append(str(diff))
+            i -= 1
+            j -= 1
 
-        result = result[::-1].lstrip('0')
-        if not result:
+        while i >= 0:
+            digit1 = int(num1[i])
+            diff = digit1 - borrow
+            if diff < 0:
+                diff += 10
+                borrow = 1
+            else:
+                borrow = 0
+            result.append(str(diff))
+            i -= 1
+
+        res = ''.join(result[::-1]).lstrip('0')
+        if not res:
             return '0'
-
-        return sign + result
+        return sign + res
 
     @staticmethod
     def multiply(num1, num2):
@@ -111,25 +129,21 @@ class BigNumCalculator:
         if not num1 or not num2:
             return '0'
 
-        num1 = num1[::-1]
-        num2 = num2[::-1]
+        n1 = len(num1)
+        n2 = len(num2)
+        result = [0] * (n1 + n2)
 
-        len1 = len(num1)
-        len2 = len(num2)
-
-        result = [0] * (len1 + len2)
-
-        for i in range(len1):
-            for j in range(len2):
+        for i in range(n1 - 1, -1, -1):
+            for j in range(n2 - 1, -1, -1):
                 digit1 = int(num1[i])
                 digit2 = int(num2[j])
                 product = digit1 * digit2
-                result[i + j] += product
-                result[i + j + 1] += result[i + j] // 10
-                result[i + j] %= 10
+                p1 = i + j
+                p2 = i + j + 1
+                sum_val = product + result[p2]
 
-        result_str = ''.join(map(str, result[::-1])).lstrip('0')
-        if not result_str:
-            return '0'
+                result[p2] = sum_val % 10
+                result[p1] += sum_val // 10
 
-        return result_str
+        res = ''.join(map(str, result)).lstrip('0')
+        return res if res else '0'

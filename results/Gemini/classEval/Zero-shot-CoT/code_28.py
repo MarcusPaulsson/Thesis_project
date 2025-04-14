@@ -49,12 +49,10 @@ class DatabaseProcessor:
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
         for row in data:
-            keys = ', '.join(row.keys())
-            values = ', '.join(['?'] * len(row))
-            cursor.execute(f"""
-                INSERT INTO {table_name} ({keys})
-                VALUES ({values})
-            """, tuple(row.values()))
+            columns = ', '.join(row.keys())
+            placeholders = ', '.join(['?'] * len(row))
+            values = tuple(row.values())
+            cursor.execute(f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})", values)
         conn.commit()
         conn.close()
 
@@ -71,10 +69,7 @@ class DatabaseProcessor:
         """
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
-        cursor.execute(f"""
-            SELECT * FROM {table_name}
-            WHERE name = ?
-        """, (name,))
+        cursor.execute(f"SELECT * FROM {table_name} WHERE name=?", (name,))
         result = cursor.fetchall()
         conn.close()
         if result:
@@ -92,9 +87,6 @@ class DatabaseProcessor:
         """
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
-        cursor.execute(f"""
-            DELETE FROM {table_name}
-            WHERE name = ?
-        """, (name,))
+        cursor.execute(f"DELETE FROM {table_name} WHERE name=?", (name,))
         conn.commit()
         conn.close()

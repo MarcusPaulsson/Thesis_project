@@ -11,11 +11,11 @@ class UserLoginDB:
         :param db_name: str, the name of the SQLite database.
         """
         self.db_name = db_name
-        self.connection = sqlite3.connect(db_name)
+        self.connection = sqlite3.connect(self.db_name)
         self.cursor = self.connection.cursor()
-        self._create_table()
+        self.create_table()
 
-    def _create_table(self):
+    def create_table(self):
         """
         Creates the 'users' table if it doesn't exist.
         """
@@ -30,7 +30,6 @@ class UserLoginDB:
             self.connection.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
 
     def insert_user(self, username, password):
         """
@@ -45,21 +44,21 @@ class UserLoginDB:
             self.connection.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
 
     def search_user_by_username(self, username):
         """
         Searches for users in the "users" table by username.
         :param username: str, the username of the user to search for.
-        :return: tuple or None: A tuple containing (username, password) if the user is found, otherwise None.
+        :return: tuple, the row from the "users" table that matches the search criteria, or None if not found.
         """
         try:
             query = "SELECT username, password FROM users WHERE username = ?"
             self.cursor.execute(query, (username,))
-            return self.cursor.fetchone()
+            result = self.cursor.fetchone()
+            return result
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
+            return None
 
     def delete_user_by_username(self, username):
         """
@@ -73,18 +72,15 @@ class UserLoginDB:
             self.connection.commit()
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            raise
 
     def validate_user_login(self, username, password):
         """
-        Validates user login by checking if the user exists and the password matches.
-        :param username: str, the username of the user to validate.
-        :param password: str, the password of the user to validate.
-        :return: bool, True if the user can log in, False otherwise.
+        Determine whether the user can log in, that is, the user is in the database and the password is correct
+        :param username:str, the username of the user to validate.
+        :param password:str, the password of the user to validate.
+        :return:bool, representing whether the user can log in correctly
         """
         user = self.search_user_by_username(username)
-        return user is not None and user[1] == password
-
-    def close(self):
-        """Closes the database connection."""
-        self.connection.close()
+        if user:
+            return user[1] == password
+        return False

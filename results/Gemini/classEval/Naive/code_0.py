@@ -8,49 +8,65 @@ class AccessGatewayFilter:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
 
     def filter(self, request):
         """
         Filter the incoming request based on certain rules and conditions.
         :param request: dict, the incoming request details
         :return: bool, True if the request is allowed, False otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.filter({'path': '/login', 'method': 'POST'})
-        True
-
         """
-        if self.is_start_with(request.get('path')):
+        if not isinstance(request, dict):
+            self.logger.warning("Invalid request format. Expected a dictionary.")
+            return False
+
+        path = request.get('path')
+        method = request.get('method')
+        headers = request.get('headers', {})
+
+        if not path or not method:
+            self.logger.warning("Request missing 'path' or 'method'.")
+            return False
+
+        if self.is_start_with(path):
             return True
 
-        auth_header = request.get('headers', {}).get('Authorization')
+        auth_header = headers.get('Authorization')
         if auth_header:
-            user = auth_header.get('user')
-            jwt_token = auth_header.get('jwt')
-
-            if user and jwt_token:
-                user_from_jwt = self.get_jwt_user(request)
-                if user_from_jwt:
-                    level = user.get('level')
-                    if level is not None:
-                        if level > 3:
-                            return True
-                        elif level == 3:
-                            return True
+            user_info = self.get_jwt_user(request)
+            if user_info:
+                user = auth_header.get('user')
+                jwt_token = auth_header.get('jwt')
+                if user and jwt_token:
+                    try:
+                        user_name = user.get('name')
+                        jwt_date_str = jwt_token.replace(user_name, '')
+                        jwt_date = datetime.datetime.strptime(jwt_date_str, '%Y-%m-%d').date()
+                        today = datetime.date.today()
+                        if jwt_date <= today:
+                            time_difference = today - jwt_date
+                            if time_difference.days <= 365:
+                                user_level = user.get('level')
+                                if user_level and user_level > 3:
+                                    self.set_current_user_info_and_log(user)
+                                    return True
+                                elif user_level and user_level == 1:
+                                    return None
+                                else:
+                                    self.set_current_user_info_and_log(user)
+                                    return True
+                            else:
+                                return False
                         else:
-                            return None
-                    else:
+                            return False
+                    except (ValueError, TypeError) as e:
+                        self.logger.error(f"Error processing JWT: {e}")
                         return True
                 else:
                     return False
             else:
-                return False
+                return True
         else:
-            return None
+            return True
 
 
     def is_start_with(self, request_uri):
@@ -59,35 +75,42 @@ class AccessGatewayFilter:
         Currently, the prefixes being checked are "/api" and "/login".
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.is_start_with('/api/data')
-        True
-
         """
-        return request_uri.startswith('/api') or request_uri.startswith('/login')
+        if not isinstance(request_uri, str):
+            self.logger.warning("Invalid request URI format. Expected a string.")
+            return False
 
+        return request_uri.startswith("/api") or request_uri.startswith("/login")
 
     def get_jwt_user(self, request):
         """
         Get the user information from the JWT token in the request.
         :param request: dict, the incoming request details
         :return: dict or None, the user information if the token is valid, None otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.get_jwt_user({'headers': {'Authorization': {'user': {'name': 'user1'}, 'jwt': 'user1'+str(datetime.date.today())}}})
-        {'user': {'name': 'user1'}
-
         """
-        auth_header = request.get('headers', {}).get('Authorization')
+        if not isinstance(request, dict):
+            self.logger.warning("Invalid request format. Expected a dictionary.")
+            return None
+
+        headers = request.get('headers', {})
+        auth_header = headers.get('Authorization')
 
         if auth_header:
             user = auth_header.get('user')
             jwt_token = auth_header.get('jwt')
 
             if user and jwt_token:
-                expected_jwt = user['name'] + str(datetime.date.today())
-                if jwt_token == expected_jwt:
-                    return user
-                else:
+                try:
+                    user_name = user.get('name')
+                    jwt_date_str = jwt_token.replace(user_name, '')
+                    jwt_date = datetime.datetime.strptime(jwt_date_str, '%Y-%m-%d').date()
+                    today = datetime.date.today()
+                    if jwt_date <= today:
+                        return user
+                    else:
+                        return None
+                except (ValueError, TypeError) as e:
+                    self.logger.error(f"Error processing JWT: {e}")
                     return None
             else:
                 return None
@@ -99,9 +122,12 @@ class AccessGatewayFilter:
         Set the current user information and log the access.
         :param user: dict, the user information
         :return: None
-        >>> filter = AccessGatewayFilter()
-        >>> user = {'name': 'user1', 'address': '127.0.0.1'}
-        >>> filter.set_current_user_info_and_log(user)
-
         """
-        self.logger.info(f"Access granted for user: {user}")
+        if not isinstance(user, dict):
+            self.logger.warning("Invalid user format. Expected a dictionary.")
+            return
+
+        user_name = user.get('name', 'Unknown User')
+        user_address = user.get('address', 'Unknown Address')
+
+        self.logger.info(f"User '{user_name}' from '{user_address}' accessed the gateway.")

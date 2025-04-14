@@ -28,14 +28,12 @@ class GomokuGame:
         """
         if not (0 <= row < self.board_size and 0 <= col < self.board_size):
             return False
+
         if self.board[row][col] != ' ':
             return False
 
         self.board[row][col] = self.current_player
-        if self.current_player == 'X':
-            self.current_player = 'O'
-        else:
-            self.current_player = 'X'
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
         return True
 
     def check_winner(self):
@@ -52,15 +50,18 @@ class GomokuGame:
         for row in range(self.board_size):
             for col in range(self.board_size):
                 if self.board[row][col] != ' ':
-                    player = self.board[row][col]
-                    if self._check_five_in_a_row(row, col, (0, 1)):  # Horizontal
-                        return player
-                    if self._check_five_in_a_row(row, col, (1, 0)):  # Vertical
-                        return player
-                    if self._check_five_in_a_row(row, col, (1, 1)):  # Diagonal
-                        return player
-                    if self._check_five_in_a_row(row, col, (1, -1)):  # Anti-Diagonal
-                        return player
+                    # Check horizontal
+                    if self._check_five_in_a_row(row, col, (0, 1)):
+                        return self.board[row][col]
+                    # Check vertical
+                    if self._check_five_in_a_row(row, col, (1, 0)):
+                        return self.board[row][col]
+                    # Check diagonal (top-left to bottom-right)
+                    if self._check_five_in_a_row(row, col, (1, 1)):
+                        return self.board[row][col]
+                    # Check diagonal (top-right to bottom-left)
+                    if self._check_five_in_a_row(row, col, (1, -1)):
+                        return self.board[row][col]
         return None
 
     def _check_five_in_a_row(self, row, col, direction):
@@ -89,5 +90,4 @@ class GomokuGame:
                 count += 1
             else:
                 return False
-
         return count == 5

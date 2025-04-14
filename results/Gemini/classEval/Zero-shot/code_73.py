@@ -59,8 +59,8 @@ class RPGCharacter:
         5
         """
         self.exp += amount
-        while self.exp >= self.level * 100:
-            self.exp -= self.level * 100
+        while self.exp >= 100 * self.level:
+            self.exp -= 100 * self.level
             self.level_up()
 
     def level_up(self):
@@ -72,12 +72,13 @@ class RPGCharacter:
         >>> player_1.level_up()
         (2, 120, 15, 8)
         """
-        if self.level < 100:
+         if self.level < 100:
             self.level += 1
             self.hp += 20
             self.attack_power += 5
             self.defense += 5
-        return (self.level, self.hp, self.attack_power, self.defense)
+            self.exp = 0
+         return (self.level, self.hp, self.attack_power, self.defense)
 
     def is_alive(self):
         """

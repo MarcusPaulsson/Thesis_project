@@ -13,8 +13,8 @@ class NumberConverter:
         '1010010110110111'
         """
         if decimal_num == 0:
-            return "0"
-        binary_num = ""
+            return '0'
+        binary_num = ''
         while decimal_num > 0:
             remainder = decimal_num % 2
             binary_num = str(remainder) + binary_num
@@ -49,8 +49,8 @@ class NumberConverter:
         '122667'
         """
         if decimal_num == 0:
-            return "0"
-        octal_num = ""
+            return '0'
+        octal_num = ''
         while decimal_num > 0:
             remainder = decimal_num % 8
             octal_num = str(remainder) + octal_num
@@ -82,10 +82,10 @@ class NumberConverter:
         >>> NumberConverter.decimal_to_hex(42423)
         'a5b7'
         """
-        hex_digits = "0123456789abcdef"
         if decimal_num == 0:
-            return "0"
-        hex_num = ""
+            return '0'
+        hex_num = ''
+        hex_digits = "0123456789abcdef"
         while decimal_num > 0:
             remainder = decimal_num % 16
             hex_num = hex_digits[remainder] + hex_num
@@ -103,11 +103,8 @@ class NumberConverter:
         """
         decimal_num = 0
         power = 0
-        for digit in reversed(hex_num):
-            if '0' <= digit <= '9':
-                value = int(digit)
-            else:
-                value = ord(digit) - ord('a') + 10
-            decimal_num += value * (16 ** power)
+        hex_digits = "0123456789abcdef"
+        for digit in reversed(hex_num.lower()):
+            decimal_num += hex_digits.index(digit) * (16 ** power)
             power += 1
         return decimal_num

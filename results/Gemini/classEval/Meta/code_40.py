@@ -25,7 +25,7 @@ class FitnessTracker:
         21.604938271604937
 
         """
-        return self.weight / (self.height ** 2)
+        return self.weight / (self.height * self.height)
 
     def condition_judge(self):
         """
@@ -68,9 +68,8 @@ class FitnessTracker:
 
         condition = self.condition_judge()
         if condition == 1:
-            calorie_intake = BMR * 1.2
+            return BMR * 1.2
         elif condition == -1:
-            calorie_intake = BMR * 1.6
+            return BMR * 1.6
         else:
-            calorie_intake = BMR * 1.4
-        return calorie_intake
+            return BMR * 1.4

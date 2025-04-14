@@ -35,10 +35,10 @@ class ClassRegistrationSystem:
         ["CS101", "CS102"]
         """
         if student_name not in self.students_registration_classes:
-            self.students_registration_classes[student_name] = []
-        if class_name not in self.students_registration_classes[student_name]:
-            self.students_registration_classes[student_name].append(class_name)
-
+            self.students_registration_classes[student_name] = [class_name]
+        else:
+            if class_name not in self.students_registration_classes[student_name]:
+                self.students_registration_classes[student_name].append(class_name)
         return self.students_registration_classes[student_name]
 
     def get_students_by_major(self, major):
@@ -94,12 +94,11 @@ class ClassRegistrationSystem:
                         if class_name not in class_counts:
                             class_counts[class_name] = 0
                         class_counts[class_name] += 1
-
+        
         most_popular_class = None
         max_count = 0
         for class_name, count in class_counts.items():
             if count > max_count:
-                most_popular_class = class_name
                 max_count = count
-
+                most_popular_class = class_name
         return most_popular_class

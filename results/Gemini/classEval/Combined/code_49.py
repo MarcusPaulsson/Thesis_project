@@ -1,6 +1,6 @@
 class JobMarketplace:
     """
-    A class to manage job postings and resume submissions.
+    This is a class that provides functionalities to publish positions, remove positions, submit resumes, withdraw resumes, search for positions, and obtain candidate information.
     """
 
     def __init__(self):
@@ -12,12 +12,12 @@ class JobMarketplace:
 
     def post_job(self, job_title, company, requirements):
         """
-        Posts a new job listing.
+        Publishes a new job listing.
 
-        Args:
-            job_title (str): The title of the job.
-            company (str): The company offering the job.
-            requirements (list): A list of required skills.
+        :param job_title: The title of the position (str).
+        :param company: The company offering the position (str).
+        :param requirements: A list of required skills or qualifications (list of str).
+        :return: None
         """
         job = {
             'job_title': job_title,
@@ -28,29 +28,22 @@ class JobMarketplace:
 
     def remove_job(self, job):
         """
-        Removes a job listing.
+        Removes a job listing from the marketplace.
 
-        Args:
-            job (dict): The job listing to remove.  It must be an identical dictionary
-                        to a job listing already in the job_listings list.
+        :param job: The job listing to remove (dict).
+        :return: None
         """
-        try:
+        if job in self.job_listings:
             self.job_listings.remove(job)
-        except ValueError:
-            # Job not found in the list.  It's arguably better to not raise an
-            # error in this case, as the desired outcome (job not being present)
-            # is already achieved.  However, for debugging purposes, it might
-            # be useful to log this.
-            pass
 
     def submit_resume(self, name, skills, experience):
         """
         Submits a resume to the marketplace.
 
-        Args:
-            name (str): The name of the applicant.
-            skills (list): A list of skills the applicant possesses.
-            experience (str): A description of the applicant's experience.
+        :param name: The name of the applicant (str).
+        :param skills: A list of skills possessed by the applicant (list of str).
+        :param experience: A brief description of the applicant's experience (str).
+        :return: None
         """
         resume = {
             'name': name,
@@ -63,25 +56,18 @@ class JobMarketplace:
         """
         Withdraws a resume from the marketplace.
 
-        Args:
-             resume (dict): The resume to withdraw. It must be an identical dictionary
-                        to a resume already in the resumes list.
+        :param resume: The resume to withdraw (dict).
+        :return: None
         """
-        try:
+        if resume in self.resumes:
             self.resumes.remove(resume)
-        except ValueError:
-            # Resume not found. Similar to remove_job, handle silently or log.
-            pass
 
     def search_jobs(self, criteria):
         """
-        Searches for jobs that match the given criteria.
+        Searches for job listings that match the given criteria.
 
-        Args:
-            criteria (str): The skill to search for in job requirements.
-
-        Returns:
-            list: A list of job listings that include the criteria in their requirements.
+        :param criteria: The search criteria (str).  Looks for this string within the job requirements.
+        :return: A list of job listings that match the criteria (list of dict).
         """
         results = []
         for job in self.job_listings:
@@ -91,13 +77,10 @@ class JobMarketplace:
 
     def get_job_applicants(self, job):
         """
-        Retrieves a list of applicants who match the requirements of a given job.
+        Retrieves a list of applicants whose skills match the job requirements.
 
-        Args:
-            job (dict): The job listing to find applicants for.
-
-        Returns:
-            list: A list of resumes that match the job's requirements.
+        :param job: The job listing to find applicants for (dict).
+        :return: A list of resumes that match the job requirements (list of dict).
         """
         applicants = []
         for resume in self.resumes:
@@ -107,14 +90,13 @@ class JobMarketplace:
 
     def matches_requirements(self, resume, requirements):
         """
-        Checks if a resume matches the given requirements.  All requirements must be
-        present in the resume's skills for it to be considered a match.
+        Checks if a resume's skills meet all the job requirements.
 
-        Args:
-            resume (dict): The resume to check.
-            requirements (list): A list of required skills.
-
-        Returns:
-            bool: True if the resume meets all requirements, False otherwise.
+        :param resume: The resume to check (dict).
+        :param requirements: A list of required skills (list of str).
+        :return: True if the resume meets all requirements, False otherwise (bool).
         """
-        return all(requirement in resume['skills'] for requirement in requirements)
+        for requirement in requirements:
+            if requirement not in resume['skills']:
+                return False
+        return True

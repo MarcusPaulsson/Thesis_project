@@ -12,7 +12,6 @@ class MusicPlayer:
         self.playlist = []
         self.current_song = None
         self.volume = 50
-        self.current_song_index = -1
 
     def add_song(self, song):
         """
@@ -30,13 +29,6 @@ class MusicPlayer:
             self.playlist.remove(song)
             if self.current_song == song:
                 self.current_song = None
-                self.current_song_index = -1
-            else:
-                try:
-                    self.current_song_index = self.playlist.index(self.current_song)
-                except ValueError:
-                    self.current_song = None
-                    self.current_song_index = -1
 
     def play(self):
         """
@@ -46,12 +38,13 @@ class MusicPlayer:
         if self.current_song:
             return self.current_song
         elif self.playlist:
-            if self.current_song is None and self.current_song_index == -1:
-                self.current_song = self.playlist[0]
-                self.current_song_index = 0
-                return False
+            if not self.current_song:
+                if len(self.playlist) > 0:
+                    self.current_song = self.playlist[0]
+                    return False
         else:
             return None
+        return False
 
     def stop(self):
         """
@@ -60,7 +53,6 @@ class MusicPlayer:
         """
         if self.current_song:
             self.current_song = None
-            self.current_song_index = -1
             return True
         else:
             return False
@@ -73,20 +65,12 @@ class MusicPlayer:
         if not self.playlist:
             return False
 
-        if self.current_song is None and self.playlist:
-           return False
-        if self.current_song_index == -1 and self.current_song is None and self.playlist:
+        if not self.current_song:
             return False
 
-        if self.current_song_index == -1 and self.current_song is not None:
-            try:
-                self.current_song_index = self.playlist.index(self.current_song)
-            except ValueError:
-                return False
-
-        if self.current_song_index < len(self.playlist) - 1:
-            self.current_song_index += 1
-            self.current_song = self.playlist[self.current_song_index]
+        current_index = self.playlist.index(self.current_song)
+        if current_index < len(self.playlist) - 1:
+            self.current_song = self.playlist[current_index + 1]
             return True
         else:
             return False
@@ -99,20 +83,12 @@ class MusicPlayer:
         if not self.playlist:
             return False
 
-        if self.current_song is None and self.playlist:
-           return False
-        if self.current_song_index == -1 and self.current_song is None and self.playlist:
+        if not self.current_song:
             return False
 
-        if self.current_song_index == -1 and self.current_song is not None:
-            try:
-                self.current_song_index = self.playlist.index(self.current_song)
-            except ValueError:
-                return False
-
-        if self.current_song_index > 0:
-            self.current_song_index -= 1
-            self.current_song = self.playlist[self.current_song_index]
+        current_index = self.playlist.index(self.current_song)
+        if current_index > 0:
+            self.current_song = self.playlist[current_index - 1]
             return True
         else:
             return False
@@ -134,13 +110,7 @@ class MusicPlayer:
         Shuffles the playlist.
         :return: True if the playlist was shuffled, False if the playlist was empty.
         """
-        if self.playlist:
-            random.shuffle(self.playlist)
-            try:
-                self.current_song_index = self.playlist.index(self.current_song)
-            except ValueError:
-                self.current_song = None
-                self.current_song_index = -1
-            return True
-        else:
+        if not self.playlist:
             return False
+        random.shuffle(self.playlist)
+        return True

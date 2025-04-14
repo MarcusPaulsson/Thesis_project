@@ -37,11 +37,9 @@ class Calculator:
                     num = num * 10 + int(expression[i])
                     i += 1
                 operand_stack.append(float(num))
-                i -= 1  # Correct the index after reading the number.
-
+                i -= 1  # Correct the index after reading the number
             elif expression[i] in self.operators:
-                while (operator_stack and
-                       self.precedence(operator_stack[-1]) >= self.precedence(expression[i])):
+                while operator_stack and self.precedence(operator_stack[-1]) >= self.precedence(expression[i]):
                     self.apply_operator(operand_stack, operator_stack)
                 operator_stack.append(expression[i])
             elif expression[i] == '(':
@@ -59,7 +57,6 @@ class Calculator:
             return operand_stack[0]
         else:
             return None
-
 
     def precedence(self, operator):
         """
@@ -91,9 +88,14 @@ class Calculator:
         >>> calculator.apply_operator([1, 2, 3], ['+', '-'])
         ([1, -1], ['-'])
         """
+        if len(operand_stack) < 2 or not operator_stack:
+            return operand_stack, operator_stack
+
         operator = operator_stack.pop()
         operand2 = operand_stack.pop()
         operand1 = operand_stack.pop()
+
         result = self.operators[operator](operand1, operand2)
         operand_stack.append(result)
+
         return operand_stack, operator_stack

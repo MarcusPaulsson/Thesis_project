@@ -20,25 +20,26 @@ class MahjongConnect:
         create the game board with the given board size and icons
         :return: 2-dimensional list, the game board
         """
-        num_tiles = self.BOARD_SIZE[0] * self.BOARD_SIZE[1]
-        num_icons = len(self.ICONS)
-        pairs_needed = num_tiles // 2
+        board = []
+        total_cells = self.BOARD_SIZE[0] * self.BOARD_SIZE[1]
+        num_pairs = total_cells // 2
         
-        if pairs_needed * 2 != num_tiles:
-            raise ValueError("Board size must allow for an even number of tiles to form pairs.")
-
-        icons = self.ICONS * (pairs_needed // num_icons)
-        remaining = pairs_needed % num_icons
-        icons += self.ICONS[:remaining]
+        # Ensure enough icons are provided
+        if len(self.ICONS) == 0:
+            raise ValueError("ICONS list cannot be empty.")
         
-        icons = icons * 2  # Double the icons to create pairs
+        # Repeat icons to create enough pairs
+        icons = (self.ICONS * (num_pairs // len(self.ICONS))) + self.ICONS[:num_pairs % len(self.ICONS)]
+        icons = icons * 2  # Double for pairs
         random.shuffle(icons)
 
-        board = []
+        # Populate the board
+        icon_index = 0
         for i in range(self.BOARD_SIZE[0]):
             row = []
             for j in range(self.BOARD_SIZE[1]):
-                row.append(icons[i * self.BOARD_SIZE[1] + j])
+                row.append(icons[icon_index])
+                icon_index += 1
             board.append(row)
         return board
 
@@ -58,11 +59,12 @@ class MahjongConnect:
 
         if self.board[pos1[0]][pos1[1]] == ' ' or self.board[pos2[0]][pos2[1]] == ' ':
             return False
-
+        
         if self.board[pos1[0]][pos1[1]] != self.board[pos2[0]][pos2[1]]:
             return False
 
         return self.has_path(pos1, pos2)
+
 
     def has_path(self, pos1, pos2):
         """
@@ -75,66 +77,63 @@ class MahjongConnect:
                 0 <= pos2[0] < self.BOARD_SIZE[0] and 0 <= pos2[1] < self.BOARD_SIZE[1]):
             return False
 
-        if pos1 == pos2:
-            return True 
+        def is_valid(x, y):
+            return 0 <= x < self.BOARD_SIZE[0] and 0 <= y < self.BOARD_SIZE[1]
 
-        def find_path(p1, p2):
-            q = [(p1, [])]
-            visited = {p1}
-            rows, cols = self.BOARD_SIZE
+        def bfs(start, end):
+            queue = [(start, [])]
+            visited = {start}
 
-            while q:
-                (x, y), path = q.pop(0)
+            while queue:
+                (x, y), path = queue.pop(0)
 
-                if (x, y) == p2:
+                if (x, y) == end:
                     return True
 
                 # Move up
                 for i in range(x - 1, -1, -1):
-                    if (i, y) == p2 or self.board[i][y] == ' ':
-                        if (i, y) not in visited:
-                            q.append(((i, y), path + [(i, y)]))
-                            visited.add((i, y))
-                    else:
+                    if (i, y) == end:
+                        return True
+                    if self.board[i][y] != ' ' and (i, y) != start:
                         break
+                    if (i, y) not in visited:
+                        queue.append(((i, y), path + [(i, y)]))
+                        visited.add((i, y))
 
                 # Move down
-                for i in range(x + 1, rows):
-                    if (i, y) == p2 or self.board[i][y] == ' ':
-                        if (i, y) not in visited:
-                            q.append(((i, y), path + [(i, y)]))
-                            visited.add((i, y))
-                    else:
+                for i in range(x + 1, self.BOARD_SIZE[0]):
+                    if (i, y) == end:
+                        return True
+                    if self.board[i][y] != ' ' and (i, y) != start:
                         break
+                    if (i, y) not in visited:
+                        queue.append(((i, y), path + [(i, y)]))
+                        visited.add((i, y))
 
                 # Move left
                 for j in range(y - 1, -1, -1):
-                    if (x, j) == p2 or self.board[x][j] == ' ':
-                        if (x, j) not in visited:
-                            q.append(((x, j), path + [(x, j)]))
-                            visited.add((x, j))
-                    else:
+                    if (x, j) == end:
+                        return True
+                    if self.board[x][j] != ' ' and (x, j) != start:
                         break
+                    if (x, j) not in visited:
+                        queue.append(((x, j), path + [(x, j)]))
+                        visited.add((x, j))
 
                 # Move right
-                for j in range(y + 1, cols):
-                    if (x, j) == p2 or self.board[x][j] == ' ':
-                        if (x, j) not in visited:
-                            q.append(((x, j), path + [(x, j)]))
-                            visited.add((x, j))
-                    else:
+                for j in range(y + 1, self.BOARD_SIZE[1]):
+                    if (x, j) == end:
+                        return True
+                    if self.board[x][j] != ' ' and (x, j) != start:
                         break
+                    if (x, j) not in visited:
+                        queue.append(((x, j), path + [(x, j)]))
+                        visited.add((x, j))
+
             return False
 
-        temp1 = self.board[pos1[0]][pos1[1]]
-        temp2 = self.board[pos2[0]][pos2[1]]
+        return bfs(pos1, pos2)
 
-        self.board[pos1[0]][pos1[1]] = ' '
-        self.board[pos2[0]][pos2[1]] = ' '
-        has_path = find_path(pos1,pos2)
-        self.board[pos1[0]][pos1[1]] = temp1
-        self.board[pos2[0]][pos2[1]] = temp2
-        return has_path
 
     def remove_icons(self, pos1, pos2):
         """
@@ -145,6 +144,7 @@ class MahjongConnect:
         """
         self.board[pos1[0]][pos1[1]] = ' '
         self.board[pos2[0]][pos2[1]] = ' '
+
 
     def is_game_over(self):
         """

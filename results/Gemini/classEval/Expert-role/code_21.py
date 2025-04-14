@@ -73,4 +73,5 @@ class Classroom:
 
             if not (new_end_time <= existing_start_time or new_start_time >= existing_end_time):
                 return False
+
         return True

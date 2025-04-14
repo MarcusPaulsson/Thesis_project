@@ -24,7 +24,7 @@ class EightPuzzle:
         for i in range(3):
             for j in range(3):
                 if state[i][j] == 0:
-                    return (i, j)
+                    return i, j
         return None
 
     def move(self, state, direction):
@@ -36,8 +36,8 @@ class EightPuzzle:
         >>> eightPuzzle.move([[2, 3, 4], [5, 8, 1], [6, 0, 7]], 'left')
         [[2, 3, 4], [5, 8, 1], [0, 6, 7]]
         """
-        new_state = [row[:] for row in state]
         blank_row, blank_col = self.find_blank(state)
+        new_state = [row[:] for row in state]  # Create a copy of the state
 
         if direction == 'up':
             if blank_row > 0:
@@ -61,9 +61,8 @@ class EightPuzzle:
         >>> eightPuzzle.get_possible_moves([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
         ['up', 'left', 'right']
         """
-        moves = []
         blank_row, blank_col = self.find_blank(state)
-
+        moves = []
         if blank_row > 0:
             moves.append('up')
         if blank_row < 2:
@@ -72,7 +71,6 @@ class EightPuzzle:
             moves.append('left')
         if blank_col < 2:
             moves.append('right')
-
         return moves
 
     def solve(self):
@@ -87,11 +85,12 @@ class EightPuzzle:
         >>> eightPuzzle.solve()
         ['right']
         """
-        if self.initial_state == [[0, 0, 0], [0, 0, 0], [0, 0, 0]]:
+        initial_state = self.initial_state
+        if not any(0 in row for row in initial_state):
             return None
 
-        open_list = [(self.initial_state, [])]  # (state, path)
-        visited = {tuple(map(tuple, self.initial_state))}
+        open_list = [(initial_state, [])]  # (state, path)
+        visited = {tuple(tuple(row) for row in initial_state)}
 
         while open_list:
             current_state, path = open_list.pop(0)
@@ -103,10 +102,11 @@ class EightPuzzle:
 
             for move in possible_moves:
                 new_state = self.move(current_state, move)
-                new_state_tuple = tuple(map(tuple, new_state))
+                state_tuple = tuple(tuple(row) for row in new_state)
 
-                if new_state_tuple not in visited:
-                    open_list.append((new_state, path + [move]))
-                    visited.add(new_state_tuple)
+                if state_tuple not in visited:
+                    visited.add(state_tuple)
+                    new_path = path + [move]
+                    open_list.append((new_state, new_path))
 
-        return None
+        return None  # No solution found

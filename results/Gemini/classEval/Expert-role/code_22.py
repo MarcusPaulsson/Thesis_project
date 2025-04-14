@@ -88,8 +88,9 @@ class ClassRegistrationSystem:
         class_counts = {}
         for student in self.students:
             if student["major"] == major:
-                if student["name"] in self.students_registration_classes:
-                    for class_name in self.students_registration_classes[student["name"]]:
+                student_name = student["name"]
+                if student_name in self.students_registration_classes:
+                    for class_name in self.students_registration_classes[student_name]:
                         if class_name not in class_counts:
                             class_counts[class_name] = 0
                         class_counts[class_name] += 1
@@ -100,4 +101,5 @@ class ClassRegistrationSystem:
             if count > max_count:
                 most_popular_class = class_name
                 max_count = count
+
         return most_popular_class

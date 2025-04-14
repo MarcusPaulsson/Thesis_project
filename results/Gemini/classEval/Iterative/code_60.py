@@ -24,10 +24,10 @@ class MovieTicketDB:
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS tickets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                movie_name TEXT NOT NULL,
-                theater_name TEXT NOT NULL,
-                seat_number TEXT NOT NULL,
-                customer_name TEXT NOT NULL
+                movie_name TEXT,
+                theater_name TEXT,
+                seat_number TEXT,
+                customer_name TEXT
             )
         """)
         self.connection.commit()
@@ -41,16 +41,11 @@ class MovieTicketDB:
         :param customer_name: str, the name of the customer.
         :return: None
         """
-        try:
-            self.cursor.execute("""
-                INSERT INTO tickets (movie_name, theater_name, seat_number, customer_name)
-                VALUES (?, ?, ?, ?)
-            """, (movie_name, theater_name, seat_number, customer_name))
-            self.connection.commit()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            self.connection.rollback()
-
+        self.cursor.execute("""
+            INSERT INTO tickets (movie_name, theater_name, seat_number, customer_name)
+            VALUES (?, ?, ?, ?)
+        """, (movie_name, theater_name, seat_number, customer_name))
+        self.connection.commit()
 
     def search_tickets_by_customer(self, customer_name):
         """
@@ -63,14 +58,11 @@ class MovieTicketDB:
         >>> result = ticket_db.search_tickets_by_customer("John Doe")
         len(result) = 1
         """
-        try:
-            self.cursor.execute("""
-                SELECT * FROM tickets WHERE customer_name = ?
-            """, (customer_name,))
-            return self.cursor.fetchall()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            return []
+        self.cursor.execute("""
+            SELECT * FROM tickets
+            WHERE customer_name = ?
+        """, (customer_name,))
+        return self.cursor.fetchall()
 
     def delete_ticket(self, ticket_id):
         """
@@ -78,11 +70,8 @@ class MovieTicketDB:
         :param ticket_id: int, the ID of the ticket to delete.
         :return: None
         """
-        try:
-            self.cursor.execute("""
-                DELETE FROM tickets WHERE id = ?
-            """, (ticket_id,))
-            self.connection.commit()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            self.connection.rollback()
+        self.cursor.execute("""
+            DELETE FROM tickets
+            WHERE id = ?
+        """, (ticket_id,))
+        self.connection.commit()

@@ -44,23 +44,21 @@ class Hotel:
         """
         if room_type not in self.available_rooms:
             return False
-        
-        available = self.available_rooms[room_type]
-        
-        if room_number <= available:
+
+        if room_number <= self.available_rooms[room_type]:
             if room_type not in self.booked_rooms:
                 self.booked_rooms[room_type] = {}
-            
+
             self.available_rooms[room_type] -= room_number
-            
+
             if name not in self.booked_rooms[room_type]:
                 self.booked_rooms[room_type][name] = 0
-            
+
             self.booked_rooms[room_type][name] += room_number
-            
+
             return 'Success!'
-        elif available > 0:
-            return available
+        elif self.available_rooms[room_type] != 0:
+            return self.available_rooms[room_type]
         else:
             return False
     
@@ -83,13 +81,13 @@ class Hotel:
         """
         if room_type not in self.booked_rooms or name not in self.booked_rooms[room_type] or self.booked_rooms[room_type][name] < room_number:
             return False
-        
-        if self.booked_rooms[room_type][name] == room_number:
+
+        self.booked_rooms[room_type][name] -= room_number
+        if self.booked_rooms[room_type][name] == 0:
             del self.booked_rooms[room_type][name]
             if not self.booked_rooms[room_type]:
                 del self.booked_rooms[room_type]
-        else:
-            self.booked_rooms[room_type][name] -= room_number
+        return
 
     def check_out(self, room_type, room_number):
         """
@@ -119,7 +117,4 @@ class Hotel:
         >>> hotel.get_available_rooms('single')
         5
         """
-        if room_type in self.available_rooms:
-            return self.available_rooms[room_type]
-        else:
-            return 0
+        return self.available_rooms.get(room_type, 0)

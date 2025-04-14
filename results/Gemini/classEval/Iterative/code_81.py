@@ -12,8 +12,6 @@ class Statistics3:
         :param data: the given list, list.
         :return: the median of the given list, float.
         """
-        if not data:
-            return None
         data_sorted = sorted(data)
         n = len(data_sorted)
         if n % 2 == 0:
@@ -31,9 +29,6 @@ class Statistics3:
         :param data: the given list, list.
         :return: the mode of the given list, list.
         """
-        if not data:
-            return []
-
         counts = {}
         for item in data:
             counts[item] = counts.get(item, 0) + 1
@@ -57,24 +52,21 @@ class Statistics3:
         :param y: the given list, list.
         :return: the correlation of the given list, float.
         """
+        if len(x) != len(y) or len(x) <= 1:
+            return None
+
         n = len(x)
-        if n != len(y):
-            raise ValueError("The two lists must have the same length")
+        sum_x = sum(x)
+        sum_y = sum(y)
+        sum_xy = sum(x[i] * y[i] for i in range(n))
+        sum_x2 = sum(x[i] ** 2 for i in range(n))
+        sum_y2 = sum(y[i] ** 2 for i in range(n))
 
-        mean_x = Statistics3.mean(x)
-        mean_y = Statistics3.mean(y)
+        numerator = n * sum_xy - sum_x * sum_y
+        denominator = math.sqrt((n * sum_x2 - sum_x ** 2) * (n * sum_y2 - sum_y ** 2))
 
-        if mean_x is None or mean_y is None:
+        if denominator == 0:
             return None
-
-        numerator = sum((xi - mean_x) * (yi - mean_y) for xi, yi in zip(x, y))
-        denominator_x = sum((xi - mean_x)**2 for xi in x)
-        denominator_y = sum((yi - mean_y)**2 for yi in y)
-
-        if denominator_x == 0 or denominator_y == 0:
-            return None
-
-        denominator = math.sqrt(denominator_x * denominator_y)
 
         return numerator / denominator
 
@@ -97,11 +89,15 @@ class Statistics3:
         :return: the correlation matrix of the given list, list.
         """
         num_variables = len(data)
-        correlation_matrix = [[None] * num_variables for _ in range(num_variables)]
+        correlation_matrix = [[None for _ in range(num_variables)] for _ in range(num_variables)]
 
         for i in range(num_variables):
             for j in range(num_variables):
-                correlation_matrix[i][j] = Statistics3.correlation(data[i], data[j])
+                if len(data[i]) != len(data[j]):
+                    correlation_matrix[i][j] = None
+                else:
+                    correlation = Statistics3.correlation(data[i], data[j])
+                    correlation_matrix[i][j] = correlation if correlation is not None else (1.0 if len(data[i]) > 1 else None)
 
         return correlation_matrix
 
@@ -112,15 +108,12 @@ class Statistics3:
         :param data: the given list, list.
         :return: the standard deviation of the given list, float.
         """
-        if not data:
+        n = len(data)
+        if n <= 1:
             return 0.0
 
-        mean = Statistics3.mean(data)
-
-        if mean is None:
-            return 0.0
-
-        variance = sum((x - mean)**2 for x in data) / len(data)
+        mean = sum(data) / n
+        variance = sum((x - mean) ** 2 for x in data) / (n - 1)
         return math.sqrt(variance)
 
     @staticmethod
@@ -130,14 +123,14 @@ class Statistics3:
         :param data: the given list, list.
         :return: the z-score of the given list, list.
         """
-        if not data:
+        n = len(data)
+        if n <= 1:
             return None
 
-        mean = Statistics3.mean(data)
         std_dev = Statistics3.standard_deviation(data)
-
         if std_dev == 0:
             return None
 
+        mean = sum(data) / n
         z_scores = [(x - mean) / std_dev for x in data]
         return z_scores

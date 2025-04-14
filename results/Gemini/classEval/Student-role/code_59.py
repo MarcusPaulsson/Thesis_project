@@ -35,13 +35,8 @@ class MovieBookingSystem:
         start_time_dt = datetime.strptime(start_time, '%H:%M')
         end_time_dt = datetime.strptime(end_time, '%H:%M')
         seats = np.zeros((n, n))
-        self.movies.append({
-            'name': name,
-            'price': price,
-            'start_time': start_time_dt,
-            'end_time': end_time_dt,
-            'seats': seats
-        })
+        movie = {'name': name, 'price': price, 'start_time': start_time_dt, 'end_time': end_time_dt, 'seats': seats}
+        self.movies.append(movie)
 
     def book_ticket(self, name, seats_to_book):
         """
@@ -58,25 +53,21 @@ class MovieBookingSystem:
         >>> system.book_ticket('batman', [(0, 0)])
         'Movie not found.'
         """
-        movie_found = False
         for movie in self.movies:
             if movie['name'] == name:
-                movie_found = True
+                seats = movie['seats']
                 booking_success = True
                 for row, col in seats_to_book:
-                    if movie['seats'][row][col] == 1:
+                    if seats[row][col] == 1:
                         booking_success = False
                         break
-                
                 if booking_success:
                     for row, col in seats_to_book:
-                        movie['seats'][row][col] = 1
+                        seats[row][col] = 1
                     return 'Booking success.'
                 else:
                     return 'Booking failed.'
-        
-        if not movie_found:
-            return 'Movie not found.'
+        return 'Movie not found.'
 
     def available_movies(self, start_time, end_time):
         """
@@ -88,17 +79,10 @@ class MovieBookingSystem:
         >>> system.available_movies('12:00', '22:00')
         ['Batman']
         """
-        available_movie_names = []
+        available_movies_list = []
         start_time_dt = datetime.strptime(start_time, '%H:%M')
         end_time_dt = datetime.strptime(end_time, '%H:%M')
-        
         for movie in self.movies:
-            if movie['start_time'] >= start_time_dt and movie['end_time'] <= end_time_dt:
-                available_movie_names.append(movie['name'])
-            elif movie['start_time'] <= start_time_dt and movie['end_time'] >= end_time_dt:
-                 available_movie_names.append(movie['name'])
-            elif start_time_dt <= movie['start_time'] <= end_time_dt:
-                available_movie_names.append(movie['name'])
-            elif start_time_dt <= movie['end_time'] <= end_time_dt:
-                available_movie_names.append(movie['name'])
-        return available_movie_names
+            if movie['start_time'].time() <= end_time_dt.time() and movie['end_time'].time() >= start_time_dt.time():
+                available_movies_list.append(movie['name'])
+        return available_movies_list

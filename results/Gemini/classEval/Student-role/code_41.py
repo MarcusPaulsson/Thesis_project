@@ -26,11 +26,17 @@ class GomokuGame:
         >>> gomokuGame.make_move(5, 5)
         False
         """
-        if 0 <= row < self.board_size and 0 <= col < self.board_size and self.board[row][col] == ' ':
-            self.board[row][col] = self.current_player
-            self.current_player = 'O' if self.current_player == 'X' else 'X'
-            return True
-        return False
+        if row < 0 or row >= self.board_size or col < 0 or col >= self.board_size:
+            return False
+        if self.board[row][col] != ' ':
+            return False
+
+        self.board[row][col] = self.current_player
+        if self.current_player == 'X':
+            self.current_player = 'O'
+        else:
+            self.current_player = 'X'
+        return True
 
     def check_winner(self):
         """
@@ -46,9 +52,18 @@ class GomokuGame:
         for row in range(self.board_size):
             for col in range(self.board_size):
                 if self.board[row][col] != ' ':
-                    for direction in [(0, 1), (1, 0), (1, 1), (1, -1)]:
-                        if self._check_five_in_a_row(row, col, direction):
-                            return self.board[row][col]
+                    # Check horizontal
+                    if self._check_five_in_a_row(row, col, (0, 1)):
+                        return self.board[row][col]
+                    # Check vertical
+                    if self._check_five_in_a_row(row, col, (1, 0)):
+                        return self.board[row][col]
+                    # Check diagonal (top-left to bottom-right)
+                    if self._check_five_in_a_row(row, col, (1, 1)):
+                        return self.board[row][col]
+                    # Check diagonal (top-right to bottom-left)
+                    if self._check_five_in_a_row(row, col, (1, -1)):
+                        return self.board[row][col]
         return None
 
     def _check_five_in_a_row(self, row, col, direction):
@@ -68,13 +83,14 @@ class GomokuGame:
         >>> gomokuGame._check_five_in_a_row(5, 1, (1, 1))
         False
         """
+        dx, dy = direction
         count = 0
         symbol = self.board[row][col]
-        dx, dy = direction
         for i in range(5):
-            new_row, new_col = row + i * dx, col + i * dy
+            new_row = row + i * dx
+            new_col = col + i * dy
             if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size and self.board[new_row][new_col] == symbol:
                 count += 1
             else:
-                break
+                return False
         return count == 5

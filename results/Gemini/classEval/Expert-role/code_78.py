@@ -15,9 +15,7 @@ class SplitSentence:
         >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
         ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        sentences = re.split(r'(?<!Mr)(?<!Mrs)(?<!Ms)\.|\?', sentences_string)
-        sentences = [s.strip() + ('.' if sentences_string.count(s.strip() + '.') > sentences_string.count(s.strip() + '.') else '?' if sentences_string.count(s.strip() + '?') > sentences_string.count(s.strip() + '.') else '') for s in sentences if s.strip()]
-        
+        sentences = re.split(r'(?<!Mr)(?<!A\.B\.C)(?<!Mrs)(?<!Dr)(?<![A-Z][a-z]\.)(?<=[.?!])\s', sentences_string)
         return sentences
 
     def count_words(self, sentence):
@@ -28,8 +26,12 @@ class SplitSentence:
         >>> ss.count_words("abc def")
         2
         """
-        words = re.findall(r'[a-zA-Z]+', sentence)
-        return len(words)
+        words = sentence.split()
+        count = 0
+        for word in words:
+            if not re.match(r'^[0-9]+$', word):
+                count += 1
+        return count
 
     def process_text_file(self, sentences_string):
         """

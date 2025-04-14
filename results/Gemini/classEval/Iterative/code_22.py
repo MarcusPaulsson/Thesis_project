@@ -17,15 +17,10 @@ class ClassRegistrationSystem:
         """
         register a student to the system, add the student to the students list, if the student is already registered, return 0, else return 1
         """
-        if not isinstance(student, dict) or "name" not in student or "major" not in student:
-            return 0  # Or raise an exception, depending on desired behavior
-
         for s in self.students:
             if s["name"] == student["name"] and s["major"] == student["major"]:
                 return 0
         self.students.append(student)
-        self.students_registration_classes[student["name"]] = []
-
         return 1
 
     def register_class(self, student_name, class_name):
@@ -39,11 +34,8 @@ class ClassRegistrationSystem:
         >>> registration_system.register_class(student_name="John", class_name="CS102")
         ["CS101", "CS102"]
         """
-        if not isinstance(student_name, str) or not isinstance(class_name, str):
-            return [] # Or raise an Exception
         if student_name not in self.students_registration_classes:
             self.students_registration_classes[student_name] = []
-
         if class_name not in self.students_registration_classes[student_name]:
             self.students_registration_classes[student_name].append(class_name)
         return self.students_registration_classes[student_name]
@@ -59,9 +51,6 @@ class ClassRegistrationSystem:
         >>> registration_system.get_students_by_major("Computer Science")
         ["John"]
         """
-        if not isinstance(major, str):
-            return [] # Or raise an Exception
-
         student_names = []
         for student in self.students:
             if student["major"] == major:
@@ -96,16 +85,14 @@ class ClassRegistrationSystem:
         >>> registration_system.get_most_popular_class_in_major("Computer Science")
         "Data Structures"
         """
-        if not isinstance(major, str):
-            return None
-
         class_counts = {}
         for student in self.students:
             if student["major"] == major:
-                student_name = student["name"]
-                if student_name in self.students_registration_classes:
-                    for class_name in self.students_registration_classes[student_name]:
-                        class_counts[class_name] = class_counts.get(class_name, 0) + 1
+                if student["name"] in self.students_registration_classes:
+                    for class_name in self.students_registration_classes[student["name"]]:
+                        if class_name not in class_counts:
+                            class_counts[class_name] = 0
+                        class_counts[class_name] += 1
 
         most_popular_class = None
         max_count = 0

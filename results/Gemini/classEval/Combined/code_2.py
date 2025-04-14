@@ -16,9 +16,9 @@ class ArgumentParser:
 
     def parse_arguments(self, command_string):
         """
-        Parses the given command line argument string and stores the parsed result in specific type in the arguments dictionary.
+        Parses the given command line argument string and stores the parsed result in the arguments dictionary.
         Checks for missing required arguments, if any, and returns False with the missing argument names, otherwise returns True.
-        :param command_string: str, command line argument string, formatted like "script --arg1=value1 -arg2 value2 --option1 -option2"
+        :param command_string: str, command line argument string, formatted like "python script.py --arg1=value1 -arg2 value2 --option1 -option2"
         :return tuple: (True, None) if parsing is successful, (False, missing_args) if parsing fails,
             where missing_args is a set of the missing argument names which are str.
         """
@@ -27,10 +27,9 @@ class ArgumentParser:
         while i < len(args):
             arg = args[i]
             if arg.startswith("--"):
-                arg_name_value = arg[2:].split("=", 1)  # Split only once
-                arg_name = arg_name_value[0]
-                if len(arg_name_value) > 1:
-                    arg_value = arg_name_value[1]
+                arg_name = arg[2:].split("=")[0]
+                if "=" in arg:
+                    arg_value = arg[2:].split("=")[1]
                     self.arguments[arg_name] = self._convert_type(arg_name, arg_value)
                 else:
                     self.arguments[arg_name] = True
@@ -66,18 +65,17 @@ class ArgumentParser:
         The argument type and name are stored in the types dictionary as key-value pairs.
         :param arg: str, argument name
         :param required: bool, whether the argument is required, default is False
-        :param arg_type: Argument type, default is str
+        :param arg_type:str, Argument type, default is str
         """
+        self.types[arg] = arg_type
         if required:
             self.required.add(arg)
-        self.types[arg] = arg_type
 
     def _convert_type(self, arg, value):
         """
         Try to convert the type of input value by searching in self.types.
-        :param arg: str, argument name
         :param value: str, the input value in command line
-        :return: return corresponding value in self.types if convert successfully, or the input value otherwise
+        :return: return corresponding value in self.types if convert successfully, or the input value oherwise
         """
         arg_type = self.types.get(arg)
         if arg_type:
@@ -87,10 +85,9 @@ class ArgumentParser:
                 elif arg_type == float:
                     return float(value)
                 elif arg_type == bool:
-                    return value.lower() == 'true' or value.lower() == '1' or value == ''
+                    return value.lower() == 'true' or value == ''
                 else:
                     return value
             except ValueError:
                 return value
-        else:
-            return value
+        return value

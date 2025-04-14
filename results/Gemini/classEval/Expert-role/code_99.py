@@ -22,8 +22,13 @@ class ZipFileProcessor:
         >>> file = zfp.read_zip_file()
         """
         try:
-            return zipfile.ZipFile(self.file_name, 'r')
-        except:
+            zip_file = zipfile.ZipFile(self.file_name, 'r')
+            return zip_file
+        except FileNotFoundError:
+            return None
+        except zipfile.BadZipFile:
+            return None
+        except Exception:
             return None
 
     def extract_all(self, output_path):
@@ -38,7 +43,11 @@ class ZipFileProcessor:
             with zipfile.ZipFile(self.file_name, 'r') as zip_file:
                 zip_file.extractall(output_path)
             return True
-        except:
+        except FileNotFoundError:
+            return False
+        except zipfile.BadZipFile:
+            return False
+        except Exception:
             return False
 
     def extract_file(self, file_name, output_path):
@@ -54,7 +63,13 @@ class ZipFileProcessor:
             with zipfile.ZipFile(self.file_name, 'r') as zip_file:
                 zip_file.extract(file_name, output_path)
             return True
-        except:
+        except FileNotFoundError:
+            return False
+        except KeyError:
+            return False
+        except zipfile.BadZipFile:
+            return False
+        except Exception:
             return False
 
     def create_zip_file(self, files, output_file_name):
@@ -71,6 +86,10 @@ class ZipFileProcessor:
                 for file in files:
                     if os.path.exists(file):
                         zip_file.write(file, os.path.basename(file))
+                    else:
+                        return False
             return True
-        except:
+        except FileNotFoundError:
+            return False
+        except Exception:
             return False

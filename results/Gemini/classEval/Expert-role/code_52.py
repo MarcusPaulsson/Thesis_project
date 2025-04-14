@@ -36,17 +36,17 @@ class Lemmatization:
         lemmatized_words = []
         for i, token in enumerate(tokens):
             pos_tag = pos_tags[i]
-            if pos_tag.startswith('V'):
-                lemma = self.lemmatizer.lemmatize(token, pos='v')
+            if pos_tag.startswith('J'):
+                lemmatized_word = self.lemmatizer.lemmatize(token, pos='a')
+            elif pos_tag.startswith('V'):
+                lemmatized_word = self.lemmatizer.lemmatize(token, pos='v')
             elif pos_tag.startswith('N'):
-                lemma = self.lemmatizer.lemmatize(token, pos='n')
-            elif pos_tag.startswith('J'):
-                lemma = self.lemmatizer.lemmatize(token, pos='a')
+                lemmatized_word = self.lemmatizer.lemmatize(token, pos='n')
             elif pos_tag.startswith('R'):
-                lemma = self.lemmatizer.lemmatize(token, pos='r')
+                lemmatized_word = self.lemmatizer.lemmatize(token, pos='r')
             else:
-                lemma = self.lemmatizer.lemmatize(token)
-            lemmatized_words.append(lemma)
+                lemmatized_word = self.lemmatizer.lemmatize(token)
+            lemmatized_words.append(lemmatized_word)
         return lemmatized_words
 
     def get_pos_tag(self, sentence):
@@ -74,4 +74,5 @@ class Lemmatization:
         'I am running in a race'
 
         """
-        return sentence.translate(str.maketrans('', '', string.punctuation))
+        translator = str.maketrans('', '', string.punctuation)
+        return sentence.translate(translator)

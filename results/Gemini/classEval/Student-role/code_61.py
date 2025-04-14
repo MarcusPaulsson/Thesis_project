@@ -87,15 +87,24 @@ class MusicPlayer:
         """
         if not self.playlist:
             return False
+
         if not self.current_song:
             return False
 
-        current_index = self.playlist.index(self.current_song)
-        if current_index < len(self.playlist) - 1:
-            self.current_song = self.playlist[current_index + 1]
-            return True
-        else:
-            return False
+        try:
+            current_index = self.playlist.index(self.current_song)
+            next_index = current_index + 1
+            if next_index < len(self.playlist):
+                self.current_song = self.playlist[next_index]
+                return True
+            else:
+                return False
+        except ValueError:
+            if self.playlist:
+                self.current_song = self.playlist[0]
+                return True
+            else:
+                return False
 
     def previous_song(self):
         """
@@ -110,13 +119,19 @@ class MusicPlayer:
         """
         if not self.playlist:
             return False
+
         if not self.current_song:
             return False
-        current_index = self.playlist.index(self.current_song)
-        if current_index > 0:
-            self.current_song = self.playlist[current_index - 1]
-            return True
-        else:
+
+        try:
+            current_index = self.playlist.index(self.current_song)
+            previous_index = current_index - 1
+            if previous_index >= 0:
+                self.current_song = self.playlist[previous_index]
+                return True
+            else:
+                return False
+        except ValueError:
             return False
 
     def set_volume(self, volume):

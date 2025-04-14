@@ -40,34 +40,29 @@ class Words2Numbers:
         """
         textnum = textnum.replace('-', ' ')
         current_number = 0
-        result = 0
-        ordinal = False
-        parts = textnum.split()
-        for word in parts:
+        final_number = 0
+        for word in textnum.split():
             if word in self.numwords:
                 scale, increment = self.numwords[word]
                 current_number = current_number * scale + increment
                 if scale > 100:
-                    result += current_number
+                    final_number += current_number
                     current_number = 0
             elif word in self.ordinal_words:
-                result += self.ordinal_words[word]
-                ordinal = True
-                current_number = 0
+                current_number = self.ordinal_words[word]
             else:
-                for ending, replacement in self.ordinal_endings:
+                for ending, replace in self.ordinal_endings:
                     if word.endswith(ending):
-                        word = word[:-len(ending)] + replacement
-                        if word in self.numwords:
-                            scale, increment = self.numwords[word]
+                        base_word = word[:-len(ending)] + replace
+                        if base_word in self.numwords:
+                            scale, increment = self.numwords[base_word]
                             current_number = current_number * scale + increment
-                            result += current_number
-                            ordinal = True
-                            current_number = 0
                             break
-
-        result += current_number
-        return str(result)
+                        elif base_word in self.units:
+                            current_number = self.units.index(base_word)
+                            break
+        final_number += current_number
+        return str(final_number)
 
     def is_valid_input(self, textnum):
         """
@@ -79,17 +74,21 @@ class Words2Numbers:
         False
         """
         textnum = textnum.replace('-', ' ')
-        parts = textnum.split()
-        valid_words = set(self.numwords.keys()) | set(self.ordinal_words.keys())
-        for ending, replacement in self.ordinal_endings:
-            valid_words.add(ending)
-        for word in parts:
-            if word not in self.numwords and word not in self.ordinal_words:
-                valid = False
-                for ending, replacement in self.ordinal_endings:
+        valid_words = list(self.numwords.keys()) + list(self.ordinal_words.keys())
+        for ending, replace in self.ordinal_endings:
+            valid_words += [word + ending for word in self.units + self.tens]
+
+        for word in textnum.split():
+            found = False
+            if word in self.numwords or word in self.ordinal_words:
+                found = True
+            else:
+                for ending, replace in self.ordinal_endings:
                     if word.endswith(ending):
-                        valid = True
-                        break
-                if not valid:
-                    return False
+                        base_word = word[:-len(ending)] + replace
+                        if base_word in self.numwords or base_word in self.units:
+                            found = True
+                            break
+            if not found:
+                return False
         return True

@@ -15,9 +15,19 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.select('table1', columns = ["col1","col2"], where = {"age": 15})
         "SELECT col1, col2 FROM table1 WHERE age='15'"
         """
-        query = f"SELECT {', '.join(columns) if isinstance(columns, list) else columns} FROM {table}"
+        query = "SELECT "
+        if isinstance(columns, list):
+            query += ", ".join(columns)
+        else:
+            query += columns
+        query += " FROM " + table
+
         if where:
-            query += " WHERE " + " AND ".join([f"{k}='{v}'" for k, v in where.items()])
+            query += " WHERE "
+            conditions = []
+            for key, value in where.items():
+                conditions.append(f"{key}='{value}'")
+            query += " AND ".join(conditions)
         return query
 
     @staticmethod
@@ -30,8 +40,8 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.insert('table1', {'name': 'Test', 'age': 14})
         "INSERT INTO table1 (name, age) VALUES ('Test', '14')"
         """
-        columns = ', '.join(data.keys())
-        values = ', '.join([f"'{v}'" for v in data.values()])
+        columns = ", ".join(data.keys())
+        values = ", ".join([f"'{value}'" for value in data.values()])
         return f"INSERT INTO {table} ({columns}) VALUES ({values})"
 
     @staticmethod
@@ -44,9 +54,13 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.delete('table1', {'name': 'Test', 'age': 14})
         "DELETE FROM table1 WHERE name='Test' AND age='14'"
         """
-        query = f"DELETE FROM {table}"
+        query = "DELETE FROM " + table
         if where:
-            query += " WHERE " + " AND ".join([f"{k}='{v}'" for k, v in where.items()])
+            query += " WHERE "
+            conditions = []
+            for key, value in where.items():
+                conditions.append(f"{key}='{value}'")
+            query += " AND ".join(conditions)
         return query
 
     @staticmethod
@@ -59,7 +73,16 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.update('table1', {'name': 'Test2', 'age': 15}, where = {'name':'Test'})
         "UPDATE table1 SET name='Test2', age='15' WHERE name='Test'"
         """
-        query = f"UPDATE {table} SET " + ", ".join([f"{k}='{v}'" for k, v in data.items()])
+        query = f"UPDATE {table} SET "
+        updates = []
+        for key, value in data.items():
+            updates.append(f"{key}='{value}'")
+        query += ", ".join(updates)
+
         if where:
-            query += " WHERE " + " AND ".join([f"{k}='{v}'" for k, v in where.items()])
+            query += " WHERE "
+            conditions = []
+            for key, value in where.items():
+                conditions.append(f"{key}='{value}'")
+            query += " AND ".join(conditions)
         return query

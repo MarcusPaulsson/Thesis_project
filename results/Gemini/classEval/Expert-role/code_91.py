@@ -61,8 +61,9 @@ class UrlPath:
         """
         if not path:
             return ''
-        if path.startswith('/'):
+
+        while path.startswith('/'):
             path = path[1:]
-        if path.endswith('/'):
+        while path.endswith('/') and len(path) > 0:
             path = path[:-1]
         return path

@@ -34,8 +34,7 @@ class JobMarketplace:
         []
 
         """
-        if job in self.job_listings:
-            self.job_listings.remove(job)
+        self.job_listings.remove(job)
 
     def submit_resume(self, name, skills, experience):
         """
@@ -64,8 +63,7 @@ class JobMarketplace:
         []
 
         """
-        if resume in self.resumes:
-            self.resumes.remove(resume)
+        self.resumes.remove(resume)
 
     def search_jobs(self, criteria):
         """
@@ -93,7 +91,7 @@ class JobMarketplace:
         >>> jobMarketplace.resumes = [{"name": "Tom", "skills": ['skill1', 'skill2'], "experience": "experience"}]
         >>> jobMarketplace.job_listings = [{"job_title": "Software Engineer", "company": "ABC Company", "requirements": ['skill1', 'skill2']}]
         >>> jobMarketplace.get_job_applicants(jobMarketplace.job_listings[0])
-        [{'name': 'Tom', 'skills': ['skill1', 'skill2'], 'experience': 'experience'}]
+        [{'name': 'Tom', 'skills': ['skill1', 'skill2'], 'experience': 'experience'}])
 
         """
         applicants = []
@@ -104,10 +102,10 @@ class JobMarketplace:
 
     def matches_requirements(self, resume, requirements):
         """
-        This function is used to check if the candidate information meets the requirements.
+        This function is used to determine whether the candidate information meets the requirements.
         :param resume: The resume information,dict.
         :param requirements: The requirements of the position,list.
-        :return: True if the candidate information meets the requirements,False otherwise.
+        :return: Whether the candidate information meets the requirements,bool.
         """
         for requirement in requirements:
             if requirement not in resume['skills']:

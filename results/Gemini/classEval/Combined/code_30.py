@@ -10,17 +10,15 @@ class DataStatistics2:
         Initialize Data List
         :param data:list
         """
-        if not isinstance(data, list):
-            raise TypeError("Input data must be a list.")
-        if not data:  # Check if the list is empty
-            raise ValueError("Input data list cannot be empty.")
-
         self.data = np.array(data)
 
     def get_sum(self):
         """
         Calculate the sum of data
         :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_sum()
+        10
         """
         return float(np.sum(self.data))
 
@@ -28,6 +26,9 @@ class DataStatistics2:
         """
         Calculate the minimum value in the data
         :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_min()
+        1
         """
         return float(np.min(self.data))
 
@@ -35,6 +36,9 @@ class DataStatistics2:
         """
         Calculate the maximum value in the data
         :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_max()
+        4
         """
         return float(np.max(self.data))
 
@@ -42,6 +46,9 @@ class DataStatistics2:
         """
         Calculate variance, accurate to two digits after the Decimal separator
         :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_variance()
+        1.25
         """
         variance = np.var(self.data)
         return round(float(variance), 2)
@@ -50,6 +57,9 @@ class DataStatistics2:
         """
         Calculate standard deviation, accurate to two digits after the Decimal separator
         :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_std_deviation()
+        1.12
         """
         std_deviation = np.std(self.data)
         return round(float(std_deviation), 2)
@@ -58,7 +68,11 @@ class DataStatistics2:
         """
         Calculate correlation
         :return:float
+        >>> ds2 = DataStatistics2([1, 2, 3, 4])
+        >>> ds2.get_correlation()
+        1.0
         """
         if len(self.data) <= 1:
-            return 1.0  # Or raise an exception, depending on desired behavior
-        return float(np.corrcoef(self.data, self.data)[0, 1])
+            return 1.0
+        correlation_matrix = np.corrcoef(self.data)
+        return float(round(correlation_matrix[0, 0], 2))

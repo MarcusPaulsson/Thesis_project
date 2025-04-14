@@ -1,5 +1,4 @@
 import random
-
 class BlackjackGame:
     """
     This is a class representing a game of blackjack, which includes creating a deck, calculating the value of a hand, and determine the winner based on the hand values of the player and dealer.

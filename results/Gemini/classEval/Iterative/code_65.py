@@ -33,22 +33,30 @@ class NumberWordFormatter:
             integer_words = self.format(integer_part)
             decimal_words = self.trans_two(str(decimal_part).zfill(2))
             if integer_words == "ZERO ONLY":
-                return "ZERO AND CENTS " + decimal_words + " ONLY"
+                return "CENTS " + decimal_words + " ONLY"
             return integer_words.replace("ONLY", "").strip() + " AND CENTS " + decimal_words + " ONLY"
 
         if x == 0:
             return "ZERO ONLY"
 
-        s = str(int(x))
-        n = len(s)
-        res = []
-        for i in range(n // 3, -1, -1):
-            part = s[max(0, n - 3 * (i + 1)): n - 3 * i]
-            if part:
-                words = self.trans_three(part)
-                if words:
-                    res.append(words + " " + self.parse_more(i))
-        return " ".join(res).strip() + " ONLY"
+        num_str = str(int(x))
+        num_len = len(num_str)
+        words = []
+        group_index = 0
+
+        while num_len > 0:
+            group = num_str[max(0, num_len - 3):num_len]
+            num_len -= 3
+
+            if int(group) != 0:
+                group_words = self.trans_three(group)
+                more_word = self.parse_more(group_index)
+                words.insert(0, group_words + " " + more_word)
+
+            group_index += 1
+
+        result = " ".join(w for w in words if w.strip())
+        return result.strip() + " ONLY"
 
     def format_string(self, x):
         """
@@ -78,18 +86,15 @@ class NumberWordFormatter:
             return ""
 
         if s[0] == '0':
-            if s[1] == '0':
-                return ""
-            else:
-                return self.NUMBER[int(s[1])]
+            return self.NUMBER[int(s[1])]
 
         if s[0] == '1':
             return self.NUMBER_TEEN[int(s[1])]
-        else:
-            if s[1] == '0':
-                return self.NUMBER_TEN[int(s[0]) - 1]
-            else:
-                return self.NUMBER_TEN[int(s[0]) - 1] + " " + self.NUMBER[int(s[1])]
+
+        if s[1] == '0':
+            return self.NUMBER_TEN[int(s[0]) - 1]
+
+        return self.NUMBER_TEN[int(s[0]) - 1] + " " + self.NUMBER[int(s[1])]
 
     def trans_three(self, s):
         """
@@ -103,16 +108,18 @@ class NumberWordFormatter:
         if len(s) != 3:
             return ""
 
-        res = []
+        words = []
         if s[0] != '0':
-            res.append(self.NUMBER[int(s[0])] + " HUNDRED")
-        two = self.trans_two(s[1:])
-        if two:
-            if res:
-                res.append("AND " + two)
-            else:
-                res.append(two)
-        return " ".join(res)
+            words.append(self.NUMBER[int(s[0])])
+            words.append("HUNDRED")
+
+        two_digits = self.trans_two(s[1:])
+        if two_digits:
+            if words:
+                words.append("AND")
+            words.append(two_digits)
+
+        return " ".join(words)
 
     def parse_more(self, i):
         """
@@ -123,4 +130,6 @@ class NumberWordFormatter:
         >>> formatter.parse_more(1)
         "THOUSAND"
         """
-        return self.NUMBER_MORE[i]
+        if 0 <= i < len(self.NUMBER_MORE):
+            return self.NUMBER_MORE[i]
+        return ""

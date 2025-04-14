@@ -25,16 +25,14 @@ class Interpolation:
         y_interp = []
         for x_i in x_interp:
             if x_i <= x[0]:
-                y_interp.append(y[0] + (x_i - x[0]) * (y[1] - y[0]) / (x[1] - x[0]))
-
+                y_interp.append(y[0] + (x_i - x[0]) * (y[1] - y[0]) / (x[1] - x[0]) if len(x) > 1 else y[0])
             elif x_i >= x[-1]:
-                 y_interp.append(y[-2] + (x_i - x[-2]) * (y[-1] - y[-2]) / (x[-1] - x[-2]))
-
+                y_interp.append(y[-2] + (x_i - x[-2]) * (y[-1] - y[-2]) / (x[-1] - x[-2]) if len(x) > 1 else y[-1])
             else:
                 for i in range(len(x) - 1):
                     if x[i] <= x_i <= x[i + 1]:
-                        y_interp_val = y[i] + (x_i - x[i]) * (y[i + 1] - y[i]) / (x[i + 1] - x[i])
-                        y_interp.append(y_interp_val)
+                        y_i = y[i] + (x_i - x[i]) * (y[i + 1] - y[i]) / (x[i + 1] - x[i])
+                        y_interp.append(y_i)
                         break
         return y_interp
 
@@ -55,20 +53,46 @@ class Interpolation:
         """
         z_interp = []
         for x_i, y_i in zip(x_interp, y_interp):
-            for i in range(len(x) - 1):
-                for j in range(len(y) - 1):
-                    if x[i] <= x_i <= x[i + 1] and y[j] <= y_i <= y[j + 1]:
-                        # Bilinear interpolation
-                        z_interp_val = (
-                            (z[i][j] * (x[i + 1] - x_i) * (y[j + 1] - y_i) +
-                             z[i + 1][j] * (x_i - x[i]) * (y[j + 1] - y_i) +
-                             z[i][j + 1] * (x[i + 1] - x_i) * (y_i - y[j]) +
-                             z[i + 1][j + 1] * (x_i - x[i]) * (y_i - y[j])) /
-                            ((x[i + 1] - x[i]) * (y[j + 1] - y[j]))
-                        )
-                        z_interp.append(z_interp_val)
-                        break
+            # Find the four nearest data points
+            x1 = x[0]
+            x2 = x[-1]
+            y1 = y[0]
+            y2 = y[-1]
+            for i in range(len(x)):
+                if x[i] <= x_i:
+                    x1 = x[i]
+                if x[i] >= x_i:
+                    x2 = x[i]
+                    break
+            for i in range(len(y)):
+                if y[i] <= y_i:
+                    y1 = y[i]
+                if y[i] >= y_i:
+                    y2 = y[i]
+                    break
+
+            # Interpolate
+            if x1 == x2 or y1 == y2:
+                if x1 == x2 and y1 == y2:
+                    z_interp.append(z[x.index(x1)][y.index(y1)])
+                elif x1 == x2:
+                    z1 = z[x.index(x1)][y.index(y1)]
+                    z2 = z[x.index(x1)][y.index(y2)]
+                    z_interp.append(z1 + (y_i - y1) * (z2 - z1) / (y2 - y1))
                 else:
-                    continue
-                break
+                    z1 = z[x.index(x1)][y.index(y1)]
+                    z2 = z[x.index(x2)][y.index(y1)]
+                    z_interp.append(z1 + (x_i - x1) * (z2 - z1) / (x2 - x1))
+            else:
+                z11 = z[x.index(x1)][y.index(y1)]
+                z12 = z[x.index(x1)][y.index(y2)]
+                z21 = z[x.index(x2)][y.index(y1)]
+                z22 = z[x.index(x2)][y.index(y2)]
+
+                z_interp_x1 = z11 + (y_i - y1) * (z12 - z11) / (y2 - y1)
+                z_interp_x2 = z21 + (y_i - y1) * (z22 - z21) / (y2 - y1)
+
+                z_i = z_interp_x1 + (x_i - x1) * (z_interp_x2 - z_interp_x1) / (x2 - x1)
+                z_interp.append(z_i)
+
         return z_interp

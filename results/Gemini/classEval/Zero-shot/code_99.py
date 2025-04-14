@@ -24,6 +24,10 @@ class ZipFileProcessor:
         try:
             zip_file = zipfile.ZipFile(self.file_name, 'r')
             return zip_file
+        except FileNotFoundError:
+            return None
+        except zipfile.BadZipFile:
+            return None
         except Exception:
             return None
 
@@ -39,6 +43,10 @@ class ZipFileProcessor:
             with zipfile.ZipFile(self.file_name, 'r') as zip_file:
                 zip_file.extractall(output_path)
             return True
+        except FileNotFoundError:
+            return False
+        except zipfile.BadZipFile:
+            return False
         except Exception:
             return False
 
@@ -55,6 +63,12 @@ class ZipFileProcessor:
             with zipfile.ZipFile(self.file_name, 'r') as zip_file:
                 zip_file.extract(file_name, output_path)
             return True
+        except FileNotFoundError:
+            return False
+        except KeyError:
+            return False
+        except zipfile.BadZipFile:
+            return False
         except Exception:
             return False
 
@@ -73,5 +87,7 @@ class ZipFileProcessor:
                     if os.path.exists(file):
                         zip_file.write(file, os.path.basename(file))
             return True
+        except FileNotFoundError:
+            return False
         except Exception:
             return False

@@ -3,6 +3,7 @@ class SQLQueryBuilder:
     This class provides to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements. 
     """
 
+
     @staticmethod
     def select(table, columns='*', where=None):
         """
@@ -46,8 +47,8 @@ class SQLQueryBuilder:
         """
         query = f"DELETE FROM {table}"
         if where:
-            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
-            query += f" WHERE {conditions}"
+            conditions = " WHERE " + " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += conditions
         return query
 
     @staticmethod
@@ -60,9 +61,8 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.update('table1', {'name': 'Test2', 'age': 15}, where = {'name':'Test'})
         "UPDATE table1 SET name='Test2', age='15' WHERE name='Test'"
         """
-        query = f"UPDATE {table} SET "
         set_values = ", ".join([f"{key}='{value}'" for key, value in data.items()])
-        query += set_values
+        query = f"UPDATE {table} SET {set_values}"
         if where:
             conditions = " WHERE " + " AND ".join([f"{key}='{value}'" for key, value in where.items()])
             query += conditions

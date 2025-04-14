@@ -21,12 +21,12 @@ class NLPDataProcessor:
         >>> NLPDataProcessor.process(['This is a test.'])
         [['This', 'is', 'test.']]
         """
-        result = []
+        words_list = []
         for sentence in string_list:
             words = sentence.split()
             filtered_words = [word for word in words if word not in stop_word_list]
-            result.append(filtered_words)
-        return result
+            words_list.append(filtered_words)
+        return words_list
 
     def process(self, string_list):
         """

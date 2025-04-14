@@ -3,6 +3,7 @@ class ClassRegistrationSystem:
     This is a class as a class registration system, allowing to register students, register them for classes, retrieve students by major, get a list of all majors, and determine the most popular class within a specific major.
     """
 
+
     def __init__(self):
         """
         Initialize the registration system with the attribute students and students_registration_class.
@@ -17,7 +18,7 @@ class ClassRegistrationSystem:
         register a student to the system, add the student to the students list, if the student is already registered, return 0, else return 1
         """
         for s in self.students:
-            if s['name'] == student['name'] and s['major'] == student['major']:
+            if s["name"] == student["name"] and s["major"] == student["major"]:
                 return 0
         self.students.append(student)
         return 1
@@ -34,10 +35,11 @@ class ClassRegistrationSystem:
         ["CS101", "CS102"]
         """
         if student_name not in self.students_registration_classes:
-            self.students_registration_classes[student_name] = []
-        if class_name not in self.students_registration_classes[student_name]:
-            self.students_registration_classes[student_name].append(class_name)
-        return self.students_registration_classes[student_name]
+            self.students_registration_classes[student_name] = [class_name]
+        else:
+            if class_name not in self.students_registration_classes[student_name]:
+                self.students_registration_classes[student_name].append(class_name)
+        return self.students_registration_classes.get(student_name, [])
 
     def get_students_by_major(self, major):
         """
@@ -52,8 +54,8 @@ class ClassRegistrationSystem:
         """
         student_names = []
         for student in self.students:
-            if student['major'] == major:
-                student_names.append(student['name'])
+            if student["major"] == major:
+                student_names.append(student["name"])
         return student_names
 
     def get_all_major(self):
@@ -67,8 +69,8 @@ class ClassRegistrationSystem:
         """
         majors = []
         for student in self.students:
-            if student['major'] not in majors:
-                majors.append(student['major'])
+            if student["major"] not in majors:
+                majors.append(student["major"])
         return majors
 
     def get_most_popular_class_in_major(self, major):
@@ -86,16 +88,18 @@ class ClassRegistrationSystem:
         """
         class_counts = {}
         for student in self.students:
-            if student['major'] == major:
-                if student['name'] in self.students_registration_classes:
-                    for class_name in self.students_registration_classes[student['name']]:
+            if student["major"] == major:
+                if student["name"] in self.students_registration_classes:
+                    for class_name in self.students_registration_classes[student["name"]]:
                         if class_name not in class_counts:
                             class_counts[class_name] = 0
                         class_counts[class_name] += 1
+
         most_popular_class = None
         max_count = 0
         for class_name, count in class_counts.items():
             if count > max_count:
-                max_count = count
                 most_popular_class = class_name
+                max_count = count
+
         return most_popular_class

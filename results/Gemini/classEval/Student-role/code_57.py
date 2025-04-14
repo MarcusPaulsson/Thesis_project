@@ -36,23 +36,20 @@ class MetricsCalculator2:
         reciprocal_ranks = []
         for item in data:
             if not isinstance(item, tuple) or len(item) != 2:
-                reciprocal_ranks.append(0.0)
-                continue
+                raise ValueError("Each item in the list must be a tuple of (list, int).")
 
-            result, ground_truth_num = item
-            if not isinstance(result, list):
-                reciprocal_ranks.append(0.0)
-                continue
+            results, ground_truth_num = item
+            if not isinstance(results, list):
+                raise TypeError("The first element of the tuple must be a list.")
+            if not isinstance(ground_truth_num, int):
+                raise TypeError("The second element of the tuple must be an integer.")
 
-            try:
-                first_relevant_rank = result.index(1) + 1
-                reciprocal_rank = 1.0 / first_relevant_rank
-                reciprocal_ranks.append(reciprocal_rank)
-            except ValueError:
-                reciprocal_ranks.append(0.0)
-
-        if not reciprocal_ranks:
-            return 0.0, [0.0]
+            rr = 0.0
+            for i, result in enumerate(results):
+                if result == 1:
+                    rr = 1.0 / (i + 1)
+                    break
+            reciprocal_ranks.append(rr)
 
         return np.mean(reciprocal_ranks), reciprocal_ranks
 
@@ -83,30 +80,26 @@ class MetricsCalculator2:
         average_precisions = []
         for item in data:
             if not isinstance(item, tuple) or len(item) != 2:
-                average_precisions.append(0.0)
-                continue
+                raise ValueError("Each item in the list must be a tuple of (list, int).")
 
-            result, ground_truth_num = item
-            if not isinstance(result, list):
-                average_precisions.append(0.0)
-                continue
+            results, ground_truth_num = item
+            if not isinstance(results, list):
+                raise TypeError("The first element of the tuple must be a list.")
+            if not isinstance(ground_truth_num, int):
+                raise TypeError("The second element of the tuple must be an integer.")
 
             relevant_count = 0
             precision_sum = 0.0
-            for i, hit in enumerate(result):
-                if hit == 1:
+            for i, result in enumerate(results):
+                if result == 1:
                     relevant_count += 1
                     precision_sum += float(relevant_count) / (i + 1)
 
             if ground_truth_num == 0:
                 ap = 0.0
-            elif relevant_count == 0:
-                ap = 0.0
             else:
-                ap = precision_sum / min(ground_truth_num, len(result))
-            average_precisions.append(ap)
+                ap = precision_sum / ground_truth_num
 
-        if not average_precisions:
-            return 0.0, [0.0]
+            average_precisions.append(ap)
 
         return np.mean(average_precisions), average_precisions

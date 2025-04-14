@@ -56,7 +56,7 @@ class DiscountStrategy:
         discount = 0
         if self.promotion:
             discount = self.promotion(self)
-        return self.total() - discount
+        return self._total - discount
 
     @staticmethod
     def FidelityPromo(order):
@@ -72,7 +72,7 @@ class DiscountStrategy:
 
         """
         if order.customer['fidelity'] >= 1000:
-            return order.total() * 0.05
+            return order._total * 0.05
         return 0
 
     @staticmethod
@@ -108,5 +108,5 @@ class DiscountStrategy:
 
         """
         if len(order.cart) >= 10:
-            return order.total() * 0.07
+            return order._total * 0.07
         return 0

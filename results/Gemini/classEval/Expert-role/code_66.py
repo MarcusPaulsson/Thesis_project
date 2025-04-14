@@ -16,35 +16,30 @@ class NumericEntityUnescaper:
         'ABC'
 
         """
-        result = ""
+        result = ''
         i = 0
         while i < len(string):
-            if string[i:i + 2] == "&#":
+            if string[i:i + 2] == '&#':
                 j = i + 2
-                is_hex = False
-                if j < len(string) and string[j:j+1].lower() == 'x':
-                    is_hex = True
+                while j < len(string) and string[j] != ';':
                     j += 1
-                
-                end = string.find(";", j)
-                if end != -1:
+                if j < len(string) and string[j] == ';':
+                    entity = string[i + 2:j]
                     try:
-                        if is_hex:
-                            entity = string[j:end]
-                            val = int(entity, 16)
+                        if entity.lower().startswith('x'):
+                            char_code = int(entity[1:], 16)
                         else:
-                            entity = string[j:end]
-                            val = int(entity)
-                        result += chr(val)
-                        i = end + 1
+                            char_code = int(entity)
+                        result += chr(char_code)
+                        i = j + 1
                     except ValueError:
-                        result += string[i:end+1]
-                        i = end + 1
+                        result += string[i:j+1]
+                        i = j + 1
                     except OverflowError:
-                        i += 2
+                        i += 1
                 else:
-                    result += string[i:i+2]
-                    i += 2
+                    result += string[i]
+                    i += 1
             else:
                 result += string[i]
                 i += 1

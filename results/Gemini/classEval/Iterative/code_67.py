@@ -43,7 +43,7 @@ class Order:
                     return True
                 else:
                     return False
-        return True
+        return False
 
     def calculate_total(self):
         """
@@ -62,9 +62,9 @@ class Order:
             dish_name = selected_dish["dish"]
             dish_count = selected_dish["count"]
             dish_price = selected_dish["price"]
-            sales = self.sales.get(dish_name, 1.0)  # Default to 1.0 if no sale price
+            sales = self.sales.get(dish_name, 1.0)  # Default sales to 1.0 if not found
             total += dish_count * dish_price * sales
-        return round(total, 2)
+        return total
 
     def checkout(self):
         """

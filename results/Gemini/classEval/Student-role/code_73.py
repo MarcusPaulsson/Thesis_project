@@ -77,10 +77,7 @@ class RPGCharacter:
             self.hp += 20
             self.attack_power += 5
             self.defense += 5
-            self.exp = 0
-            return (self.level, self.hp, self.attack_power, self.defense)
-         else:
-             return (self.level, self.hp, self.attack_power, self.defense)
+         return (self.level, self.hp, self.attack_power, self.defense)
 
     def is_alive(self):
         """

@@ -22,11 +22,12 @@ class AutomaticGuitarSimulator:
         play_list = []
         parts = self.play_text.split()
         for part in parts:
-            chord = ''.join([char for char in part if char.isalpha()])
-            tune = ''.join([char for char in part if char.isdigit()])
+            chord = ''.join([c for c in part if c.isalpha()])
+            tune = ''.join([c for c in part if c.isdigit()])
             play_list.append({'Chord': chord, 'Tune': tune})
 
         return play_list
+
 
     def display(self, key, value):
         """

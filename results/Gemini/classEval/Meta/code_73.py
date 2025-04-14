@@ -32,6 +32,8 @@ class RPGCharacter:
         damage = self.attack_power - other_character.defense
         if damage > 0:
             other_character.hp -= damage
+            if other_character.hp < 0:
+                other_character.hp = 0
 
     def heal(self):
         """
@@ -59,8 +61,8 @@ class RPGCharacter:
         5
         """
         self.exp += amount
-        while self.exp >= 100 * self.level:
-            self.exp -= 100 * self.level
+        while self.exp >= self.level * 100:
+            self.exp -= self.level * 100
             self.level_up()
 
     def level_up(self):
@@ -78,7 +80,7 @@ class RPGCharacter:
             self.attack_power += 5
             self.defense += 5
             self.exp = 0
-         return self.level, self.hp, self.attack_power, self.defense
+         return (self.level, self.hp, self.attack_power, self.defense)
 
     def is_alive(self):
         """

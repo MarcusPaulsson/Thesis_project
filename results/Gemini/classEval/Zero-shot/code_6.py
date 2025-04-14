@@ -19,10 +19,9 @@ class AvgPartition:
         (2, 0)
 
         """
-        size = len(self.lst) // self.limit
+        block_size = len(self.lst) // self.limit
         remainder = len(self.lst) % self.limit
-        return (size, remainder)
-
+        return (block_size, remainder)
 
     def get(self, index):
         """
@@ -34,7 +33,7 @@ class AvgPartition:
         [1, 2]
 
         """
-        size, remainder = self.setNum()
-        start = index * size + min(index, remainder)
-        end = (index + 1) * size + min(index + 1, remainder)
+        block_size, remainder = self.setNum()
+        start = index * block_size + min(index, remainder)
+        end = (index + 1) * block_size + min(index + 1, remainder)
         return self.lst[start:end]

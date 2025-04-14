@@ -1,47 +1,61 @@
 class Manacher:
     """
-    This class implements the Manacher's algorithm to find the longest palindromic substring in a given string.
+    his is a class that implements a manacher algorithm to find the Longest palindromic substring in a given string.
     """
 
-    def __init__(self, input_string):
+    def __init__(self, input_string) -> None:
         """
         Initializes the Manacher class with the given input_string.
         :param input_string: The input_string to be searched, str.
         """
         self.input_string = input_string
 
-    def palindromic_length(self, center, string):
+    def palindromic_length(self, center, diff, string):
         """
-        Calculates the length of the palindromic substring centered at the given center.
+        Calculates the length of the palindromic substring based on a given center, difference value, and input string.
         :param center: The center of the palindromic substring, int.
-        :param string: The processed string with '|' inserted, str.
-        :return: The length of the palindromic substring radius, int.
+        :param diff: The difference between the center and the current position, int.
+        :param string: The string to be searched, str.
+        :return: The length of the palindromic substring, int.
         """
-        length = 0
-        left = center - 1
-        right = center + 1
+        if center - diff < 0 or center + diff >= len(string):
+            return 0
 
-        while left >= 0 and right < len(string) and string[left] == string[right]:
-            length += 1
-            left -= 1
-            right += 1
-
-        return length
+        if string[center - diff] == string[center + diff]:
+            diff += self.palindromic_length(center, diff + 1, string)
+            return 1
+        else:
+            return 0
 
     def palindromic_string(self):
         """
         Finds the longest palindromic substring in the given string.
         :return: The longest palindromic substring, str.
         """
-        processed_string = '#' + '#'.join(self.input_string) + '#'
-        max_length = 0
+        s = '#'.join('^{}$'.format(self.input_string))
+        n = len(s)
+        p = [0] * n
+        center = 0
+        right = 0
+        max_len = 0
         center_index = 0
 
-        for i in range(len(processed_string)):
-            current_length = self.palindromic_length(i, processed_string)
-            if current_length > max_length:
-                max_length = current_length
+        for i in range(1, n - 1):
+            mirror = 2 * center - i
+
+            if right > i:
+                p[i] = min(right - i, p[mirror])
+
+            while s[i + (1 + p[i])] == s[i - (1 + p[i])]:
+                p[i] += 1
+
+            if i + p[i] > right:
+                center = i
+                right = i + p[i]
+
+            if p[i] > max_len:
+                max_len = p[i]
                 center_index = i
 
-        start = (center_index - max_length) // 2
-        return self.input_string[start:start + max_length]
+        start = (center_index - max_len) // 2
+        return self.input_string[start:start + max_len]

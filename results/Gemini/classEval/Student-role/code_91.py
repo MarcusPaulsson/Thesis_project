@@ -35,25 +35,23 @@ class UrlPath:
 
         url_path.segments = ['foo', 'bar']
         """
-        
         if not path:
             self.segments = []
             self.with_end_tag = False
             return
 
-        if path.startswith('/'):
-            path = path[1:]
-        if path.endswith('/'):
-            path = path[:-1]
+        path = self.fix_path(path)
+        if path:
+            self.segments = path.split('/')
+        else:
+            self.segments = []
+
+        if path and path.endswith('/'):
+            self.with_end_tag = True
+        elif not path and path == '//':
             self.with_end_tag = True
         else:
             self.with_end_tag = False
-        
-        if not path:
-            self.segments = []
-            return
-            
-        self.segments = path.split('/')
 
 
     @staticmethod
@@ -70,9 +68,8 @@ class UrlPath:
         if not path:
             return ''
 
-        if path.startswith('/'):
+        while path.startswith('/'):
             path = path[1:]
-        if path.endswith('/'):
+        while path.endswith('/') and path != '/':
             path = path[:-1]
-
         return path

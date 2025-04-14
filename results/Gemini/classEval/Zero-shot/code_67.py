@@ -32,20 +32,17 @@ class Order:
         """
         if not dish:
             return True
-
-        dish_name = dish.get("dish")
-        dish_count = dish.get("count")
-        dish_price = dish.get("price")
-
+        dish_name = dish["dish"]
+        dish_count = dish["count"]
         for menu_dish in self.menu:
             if menu_dish["dish"] == dish_name:
                 if menu_dish["count"] >= dish_count:
                     menu_dish["count"] -= dish_count
-                    self.selected_dishes.append({"dish": dish_name, "count": dish_count, "price": dish_price})
+                    self.selected_dishes.append(dish)
                     return True
                 else:
                     return False
-        return False
+        return True
 
     def calculate_total(self):
         """
@@ -59,12 +56,12 @@ class Order:
         >>> order.calculate_total()
         32.0
         """
-        total = 0.0
+        total = 0
         for selected_dish in self.selected_dishes:
             dish_name = selected_dish["dish"]
             dish_count = selected_dish["count"]
             dish_price = selected_dish["price"]
-            sales = self.sales.get(dish_name, 1.0)
+            sales = self.sales.get(dish_name, 1)
             total += dish_count * dish_price * sales
         return total
 
@@ -85,7 +82,6 @@ class Order:
             return False
         else:
             total = self.calculate_total()
-            # Update menu counts
             for selected_dish in self.selected_dishes:
                 dish_name = selected_dish["dish"]
                 dish_count = selected_dish["count"]

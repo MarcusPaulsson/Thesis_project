@@ -66,13 +66,16 @@ class HRManagementSystem:
         """
         if employee_id in self.employees:
             for key, value in employee_info.items():
-                if key in self.employees[employee_id]:
-                    self.employees[employee_id][key] = value
+                if key.lower() == 'name':
+                    self.employees[employee_id]['name'] = value
+                elif key.lower() == 'position':
+                    self.employees[employee_id]['position'] = value
+                elif key.lower() == 'department':
+                    self.employees[employee_id]['department'] = value
+                elif key.lower() == 'salary':
+                    self.employees[employee_id]['salary'] = value
                 else:
-                    if key.lower() == 'name':
-                        return False
-
-                    self.employees[employee_id][key] = value
+                    return False
             return True
         else:
             return False

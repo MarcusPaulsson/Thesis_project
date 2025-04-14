@@ -34,13 +34,9 @@ class MovieBookingSystem:
         """
         start_time_dt = datetime.strptime(start_time, '%H:%M')
         end_time_dt = datetime.strptime(end_time, '%H:%M')
-        self.movies.append({
-            'name': name,
-            'price': price,
-            'start_time': start_time_dt,
-            'end_time': end_time_dt,
-            'seats': np.zeros((n, n))
-        })
+        seats = np.zeros((n, n))
+        movie = {'name': name, 'price': price, 'start_time': start_time_dt, 'end_time': end_time_dt, 'seats': seats}
+        self.movies.append(movie)
 
     def book_ticket(self, name, seats_to_book):
         """
@@ -62,13 +58,12 @@ class MovieBookingSystem:
                 seats = movie['seats']
                 booking_possible = True
                 for row, col in seats_to_book:
-                    if seats[row, col] == 1:
+                    if seats[row][col] == 1:
                         booking_possible = False
                         break
-                
                 if booking_possible:
                     for row, col in seats_to_book:
-                        seats[row, col] = 1
+                        seats[row][col] = 1
                     return 'Booking success.'
                 else:
                     return 'Booking failed.'
@@ -87,9 +82,9 @@ class MovieBookingSystem:
         available_movies_list = []
         start_time_dt = datetime.strptime(start_time, '%H:%M')
         end_time_dt = datetime.strptime(end_time, '%H:%M')
-        
+
         for movie in self.movies:
             if movie['start_time'] <= end_time_dt and movie['end_time'] >= start_time_dt:
                 available_movies_list.append(movie['name'])
-        
+
         return available_movies_list

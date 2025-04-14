@@ -20,16 +20,9 @@ class VectorUtil:
         >>> VectorUtil.similarity(vector_1, vector_2)
         0.7071067811865475
         """
-        vector_1 = vector_1.astype(float)
-        vector_2 = vector_2.astype(float)
-
-        norm_1 = np.linalg.norm(vector_1)
-        norm_2 = np.linalg.norm(vector_2)
-
-        if norm_1 == 0 or norm_2 == 0:
+        if np.linalg.norm(vector_1) == 0 or np.linalg.norm(vector_2) == 0:
             return 0.0
-
-        return dot(vector_1, vector_2) / (norm_1 * norm_2)
+        return dot(vector_1, vector_2) / (np.linalg.norm(vector_1) * np.linalg.norm(vector_2))
 
     @staticmethod
     def cosine_similarities(vector_1, vectors_all):
@@ -45,7 +38,10 @@ class VectorUtil:
         """
         similarities = []
         for vector_2 in vectors_all:
-            similarities.append(VectorUtil.similarity(vector_1, vector_2))
+            if np.linalg.norm(vector_1) == 0 or np.linalg.norm(vector_2) == 0:
+                similarities.append(0.0)
+            else:
+                similarities.append(dot(vector_1, vector_2) / (np.linalg.norm(vector_1) * np.linalg.norm(vector_2)))
         return similarities
 
     @staticmethod
@@ -62,13 +58,16 @@ class VectorUtil:
         """
         if not vector_list_1 or not vector_list_2:
             return 0.0
-        
-        similarity_sum = 0.0
+
+        sum_sim = 0.0
         for vector1 in vector_list_1:
             for vector2 in vector_list_2:
-                similarity_sum += VectorUtil.similarity(vector1, vector2)
-        
-        return similarity_sum / (len(vector_list_1) * len(vector_list_2))
+                if np.linalg.norm(vector1) == 0 or np.linalg.norm(vector2) == 0:
+                    sim = 0.0
+                else:
+                    sim = dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2))
+                sum_sim += sim
+        return sum_sim / (len(vector_list_1) * len(vector_list_2))
 
     @staticmethod
     def compute_idf_weight_dict(total_num, number_dict):

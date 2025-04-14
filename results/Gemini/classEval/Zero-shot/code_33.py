@@ -17,7 +17,17 @@ class DiscountStrategy:
         self.customer = customer
         self.cart = cart
         self.promotion = promotion
-        # self.total()
+        self._total = self._calculate_total()
+
+    def _calculate_total(self):
+        """
+        Calculate the total cost of items in the cart.
+        :return: float, total cost of items
+        """
+        total = 0
+        for item in self.cart:
+            total += item['quantity'] * item['price']
+        return total
 
     def total(self):
         """
@@ -30,11 +40,7 @@ class DiscountStrategy:
         329.0
 
         """
-        total = 0
-        for item in self.cart:
-            total += item['quantity'] * item['price']
-        return total
-
+        return self._total
 
     def due(self):
         """
@@ -47,12 +53,11 @@ class DiscountStrategy:
         312.55
 
         """
-        total = self.total()
         if self.promotion:
             discount = self.promotion(self)
-            return total - discount
-        return total
-
+        else:
+            discount = 0
+        return self._total - discount
 
     @staticmethod
     def FidelityPromo(order):
@@ -67,10 +72,9 @@ class DiscountStrategy:
         16.45
 
         """
-        if order.customer['fidelity'] >= 1000:
-            return order.total() * 0.05
-        return 0.0
-
+        if order.customer.get('fidelity', 0) >= 1000:
+            return order._total * 0.05
+        return 0
 
     @staticmethod
     def BulkItemPromo(order):
@@ -91,7 +95,6 @@ class DiscountStrategy:
                 discount += item['quantity'] * item['price'] * 0.1
         return discount
 
-
     @staticmethod
     def LargeOrderPromo(order):
         """
@@ -106,5 +109,5 @@ class DiscountStrategy:
 
         """
         if len(order.cart) >= 10:
-            return order.total() * 0.07
-        return 0.0
+            return order._total * 0.07
+        return 0

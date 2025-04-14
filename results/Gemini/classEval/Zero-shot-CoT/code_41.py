@@ -26,16 +26,10 @@ class GomokuGame:
         >>> gomokuGame.make_move(5, 5)
         False
         """
-        if not (0 <= row < self.board_size and 0 <= col < self.board_size):
+        if row < 0 or row >= self.board_size or col < 0 or col >= self.board_size or self.board[row][col] != ' ':
             return False
-        if self.board[row][col] != ' ':
-            return False
-
         self.board[row][col] = self.current_player
-        if self.current_player == 'X':
-            self.current_player = 'O'
-        else:
-            self.current_player = 'X'
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
         return True
 
     def check_winner(self):
@@ -52,15 +46,14 @@ class GomokuGame:
         for row in range(self.board_size):
             for col in range(self.board_size):
                 if self.board[row][col] != ' ':
-                    player = self.board[row][col]
                     if self._check_five_in_a_row(row, col, (0, 1)):  # Horizontal
-                        return player
+                        return self.board[row][col]
                     if self._check_five_in_a_row(row, col, (1, 0)):  # Vertical
-                        return player
+                        return self.board[row][col]
                     if self._check_five_in_a_row(row, col, (1, 1)):  # Diagonal
-                        return player
-                    if self._check_five_in_a_row(row, col, (1, -1)):  # Anti-Diagonal
-                        return player
+                        return self.board[row][col]
+                    if self._check_five_in_a_row(row, col, (1, -1)):  # Anti-diagonal
+                        return self.board[row][col]
         return None
 
     def _check_five_in_a_row(self, row, col, direction):
@@ -81,13 +74,13 @@ class GomokuGame:
         False
         """
         dx, dy = direction
-        player = self.board[row][col]
         count = 0
+        symbol = self.board[row][col]
         for i in range(5):
             new_row = row + i * dx
             new_col = col + i * dy
-            if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size and self.board[new_row][new_col] == player:
+            if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size and self.board[new_row][new_col] == symbol:
                 count += 1
             else:
-                break
+                return False
         return count == 5

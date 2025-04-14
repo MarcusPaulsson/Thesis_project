@@ -18,9 +18,7 @@ class TriCalculator:
         >>> tricalculator.cos(60)
         0.5
         """
-        x_rad = x * pi / 180
-        result = self.taylor(x, 50)
-        return result
+        return self.taylor(x, 50)
 
     def factorial(self, a):
         """
@@ -33,10 +31,10 @@ class TriCalculator:
         if a == 0:
             return 1
         else:
-            fact = 1
+            result = 1
             for i in range(1, a + 1):
-                fact = fact * i
-            return fact
+                result *= i
+            return result
 
     def taylor(self, x, n):
         """
@@ -65,8 +63,7 @@ class TriCalculator:
         """
         x_rad = x * pi / 180
         sin_approx = 0
-        n = 50
-        for i in range(n):
+        for i in range(50):
             numerator = (-1)**i * x_rad**(2*i + 1)
             denominator = self.factorial(2*i + 1)
             sin_approx += numerator / denominator
@@ -81,7 +78,7 @@ class TriCalculator:
         >>> tricalculator.tan(45)
         1.0
         """
-        if x == 90:
+        if x % 180 == 90:
             return False
         else:
             return self.sin(x) / self.cos(x)

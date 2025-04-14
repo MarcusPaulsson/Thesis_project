@@ -22,7 +22,7 @@ class URLHandler:
         """
         try:
             parsed_url = urlparse(self.url)
-            return parsed_url.scheme if parsed_url.scheme else None
+            return parsed_url.scheme
         except:
             return None
 
@@ -36,7 +36,7 @@ class URLHandler:
         """
         try:
             parsed_url = urlparse(self.url)
-            return parsed_url.netloc if parsed_url.netloc else None
+            return parsed_url.netloc
         except:
             return None
 
@@ -50,7 +50,7 @@ class URLHandler:
         """
         try:
             parsed_url = urlparse(self.url)
-            return parsed_url.path + '?' + parsed_url.query + '#' + parsed_url.fragment if parsed_url.path or parsed_url.query or parsed_url.fragment else None
+            return parsed_url.path + '?' + parsed_url.query + '#' + parsed_url.fragment if parsed_url.query or parsed_url.fragment else parsed_url.path
         except:
             return None
 

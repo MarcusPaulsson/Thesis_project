@@ -72,4 +72,4 @@ class DataStatistics2:
         """
         if len(self.data) <= 1:
             return 1.0
-        return float(np.corrcoef(self.data, self.data)[0, 1])
+        return float(round(np.corrcoef(self.data, self.data)[0, 1], 2))

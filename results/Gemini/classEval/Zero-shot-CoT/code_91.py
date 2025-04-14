@@ -24,6 +24,7 @@ class UrlPath:
         """
         self.segments.append(segment)
 
+
     def parse(self, path, charset):
         """
         Parses a given path string and populates the list of segments in the UrlPath.
@@ -40,10 +41,12 @@ class UrlPath:
             path = path[:-1]
         else:
             self.with_end_tag = False
+
         if path:
             self.segments = path.split('/')
         else:
             self.segments = []
+
 
     @staticmethod
     def fix_path(path):
@@ -56,6 +59,9 @@ class UrlPath:
         'foo/bar'
 
         """
+        if not path:
+            return ''
+
         if path.startswith('/'):
             path = path[1:]
         if path.endswith('/') and path:

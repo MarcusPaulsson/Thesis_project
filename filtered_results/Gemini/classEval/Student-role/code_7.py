@@ -37,7 +37,7 @@ class BalancedBrackets:
         True
 
         """
-        self.clear_expr()
+        self.stack = []
         for char in self.expr:
             if char in self.left_brackets:
                 self.stack.append(char)

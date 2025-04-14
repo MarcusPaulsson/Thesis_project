@@ -76,11 +76,11 @@ class Warehouse:
         """
         if product_id not in self.inventory:
             return False
-
         if self.inventory[product_id]['quantity'] < quantity:
             return False
 
         self.orders[order_id] = {'product_id': product_id, 'quantity': quantity, 'status': 'Shipped'}
+        self.update_product_quantity(product_id, -quantity)
         return True
 
     def change_order_status(self, order_id, status):

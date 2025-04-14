@@ -25,13 +25,13 @@ class DataStatistics4:
         mean2 = sum(data2) / n
 
         numerator = sum([(data1[i] - mean1) * (data2[i] - mean2) for i in range(n)])
-        denominator1 = sum([(data1[i] - mean1) ** 2 for i in range(n)])
-        denominator2 = sum([(data2[i] - mean2) ** 2 for i in range(n)])
+        denominator1 = math.sqrt(sum([(data1[i] - mean1) ** 2 for i in range(n)]))
+        denominator2 = math.sqrt(sum([(data2[i] - mean2) ** 2 for i in range(n)]))
 
         if denominator1 == 0 or denominator2 == 0:
-            return 0.0  # Handle cases where variance is zero to avoid division by zero
+            return 0.0
 
-        return numerator / (math.sqrt(denominator1) * math.sqrt(denominator2))
+        return numerator / (denominator1 * denominator2)
 
     @staticmethod
     def skewness(data):

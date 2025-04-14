@@ -22,12 +22,12 @@ class NLPDataProcessor:
         >>> NLPDataProcessor.process(['This is a test.'])
         [['This', 'is', 'test.']]
         """
-        result = []
+        words_list = []
         for string in string_list:
             words = string.split()
-            filtered_words = [word for word in words if word not in stop_word_list]
-            result.append(filtered_words)
-        return result
+            words_without_stop_words = [word for word in words if word not in stop_word_list]
+            words_list.append(words_without_stop_words)
+        return words_list
 
     def process(self, string_list):
         """
@@ -38,9 +38,9 @@ class NLPDataProcessor:
         [['This', 'is', 'test.']]
         """
         stop_word_list = self.construct_stop_word_list()
-        result = []
+        words_list = []
         for string in string_list:
             words = string.split()
-            filtered_words = [word for word in words if word not in stop_word_list]
-            result.append(filtered_words)
-        return result
+            words_without_stop_words = [word for word in words if word not in stop_word_list]
+            words_list.append(words_without_stop_words)
+        return words_list

@@ -31,8 +31,9 @@ class XMLProcessor:
             return None
         except ET.ParseError:
             return None
-        except OSError:
+        except:
             return None
+
 
     def write_xml(self, file_name):
         """
@@ -54,6 +55,7 @@ class XMLProcessor:
         except:
             return False
 
+
     def process_xml_data(self, file_name):
         """
         Modifies the data in XML elements and writes the updated XML data to a new file.
@@ -67,14 +69,16 @@ class XMLProcessor:
         """
         if self.root is None:
             return False
-        for element in self.root.findall('item'):
-            element.text = element.text.upper()
         try:
+            for element in self.root.findall('.//item'):
+                element.text = element.text.upper()
+
             tree = ET.ElementTree(self.root)
             tree.write(file_name)
             return True
         except:
             return False
+
 
     def find_element(self, element_name):
         """

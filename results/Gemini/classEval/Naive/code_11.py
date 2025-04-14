@@ -10,10 +10,6 @@ class BitStatusUtil:
         :param states: Current status,int.
         :param stat: Status to be added,int.
         :return: The status after adding the status,int.
-        >>> bit_status_util = BitStatusUtil()
-        >>> bit_status_util.add(2,4)
-        6
-
         """
         return states | stat
 
@@ -24,10 +20,6 @@ class BitStatusUtil:
         :param states: Current status,int.
         :param stat: Specified status,int.
         :return: True if the current status contains the specified status,otherwise False,bool.
-        >>> bit_status_util = BitStatusUtil()
-        >>> bit_status_util.has(6,2)
-        True
-
         """
         return (states & stat) == stat
 
@@ -38,12 +30,8 @@ class BitStatusUtil:
         :param states: Current status,int.
         :param stat: Specified status,int.
         :return: The status after removing the specified status,int.
-        >>> bit_status_util = BitStatusUtil()
-        >>> bit_status_util.remove(6,2)
-        4
-
         """
-        return states & (~stat)
+        return states & ~stat
 
     @staticmethod
     def check(args):
@@ -51,11 +39,6 @@ class BitStatusUtil:
         Check if the parameters are legal, args must be greater than or equal to 0 and must be even,if not,raise ValueError.
         :param args: Parameters to be checked,list.
         :return: None.
-        >>> bit_status_util = BitStatusUtil()
-        >>> bit_status_util.check([2,3,4])
-        Traceback (most recent call last):
-        ...
-        ValueError: 3 not even
         """
         for arg in args:
             if arg < 0:

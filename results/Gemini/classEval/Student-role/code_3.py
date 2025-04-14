@@ -58,7 +58,11 @@ class ArrangementCalculator:
         """
         if m is None:
             m = len(self.datas)
-        return list(map(list, itertools.permutations(self.datas, m)))
+
+        arrangements = []
+        for permutation in itertools.permutations(self.datas, m):
+            arrangements.append(list(permutation))
+        return arrangements
 
 
     def select_all(self):
@@ -72,8 +76,7 @@ class ArrangementCalculator:
         """
         all_arrangements = []
         for i in range(1, len(self.datas) + 1):
-            permutations = list(itertools.permutations(self.datas, i))
-            for permutation in permutations:
+            for permutation in itertools.permutations(self.datas, i):
                 all_arrangements.append(list(permutation))
         return all_arrangements
 

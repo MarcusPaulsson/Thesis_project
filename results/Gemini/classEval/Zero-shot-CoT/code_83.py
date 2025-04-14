@@ -21,7 +21,7 @@ class StudentDatabaseProcessor:
         """
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
-        cursor.execute('''
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS students (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
@@ -29,7 +29,7 @@ class StudentDatabaseProcessor:
                 gender TEXT,
                 grade INTEGER
             )
-        ''')
+        """)
         conn.commit()
         conn.close()
 
@@ -45,10 +45,10 @@ class StudentDatabaseProcessor:
         """
         conn = sqlite3.connect(self.database_name)
         cursor = conn.cursor()
-        cursor.execute('''
+        cursor.execute("""
             INSERT INTO students (name, age, gender, grade)
             VALUES (?, ?, ?, ?)
-        ''', (student_data['name'], student_data['age'], student_data['gender'], student_data['grade']))
+        """, (student_data['name'], student_data['age'], student_data['gender'], student_data['grade']))
         conn.commit()
         conn.close()
 

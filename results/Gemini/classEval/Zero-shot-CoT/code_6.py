@@ -23,7 +23,6 @@ class AvgPartition:
         remainder = len(self.lst) % self.limit
         return (block_size, remainder)
 
-
     def get(self, index):
         """
         calculate the size of each block and the remainder of the division, and calculate the corresponding start and end positions based on the index of the partition.

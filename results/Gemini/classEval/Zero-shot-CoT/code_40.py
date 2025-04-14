@@ -38,17 +38,17 @@ class FitnessTracker:
         """
         bmi = self.get_BMI()
         if self.sex == "male":
-            if bmi < self.BMI_std[0]["male"][0]:
-                return -1
-            elif bmi > self.BMI_std[0]["male"][1]:
+            if bmi > 25:
                 return 1
+            elif bmi < 20:
+                return -1
             else:
                 return 0
         else:
-            if bmi < self.BMI_std[1]["female"][0]:
-                return -1
-            elif bmi > self.BMI_std[1]["female"][1]:
+            if bmi > 24:
                 return 1
+            elif bmi < 19:
+                return -1
             else:
                 return 0
 
@@ -68,8 +68,8 @@ class FitnessTracker:
 
         condition = self.condition_judge()
         if condition == 1:
-            return BMR * 1.2
+            return BMR * 1.2 / 100
         elif condition == -1:
-            return BMR * 1.4
+            return BMR * 1.6 / 100
         else:
-            return BMR * 1.4
+            return BMR * 1.4 / 100

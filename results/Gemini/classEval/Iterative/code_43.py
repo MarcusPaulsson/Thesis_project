@@ -18,6 +18,11 @@ class HRManagementSystem:
         :param department: The employee's department, str.
         :param salary: The employee's salary, int.
         :return: If the employee is already in the HRManagementSystem, returns False, otherwise, returns True.
+        >>> hrManagementSystem = HRManagementSystem()
+        >>> hrManagementSystem.add_employee(1, 'John', 'Manager', 'Sales', 100000)
+        True
+        >>> hrManagementSystem.add_employee(1, 'John', 'Manager', 'Sales', 100000)
+        False
 
         """
         if employee_id in self.employees:
@@ -31,6 +36,12 @@ class HRManagementSystem:
         Remove an employee from the HRManagementSystem.
         :param employee_id: The employee's id, int.
         :return: If the employee is already in the HRManagementSystem, returns True, otherwise, returns False.
+        >>> hrManagementSystem = HRManagementSystem()
+        >>> hrManagementSystem.employees = {1: {'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 100000}}
+        >>> hrManagementSystem.remove_employee(1)
+        True
+        >>> hrManagementSystem.remove_employee(2)
+        False
 
         """
         if employee_id in self.employees:
@@ -45,14 +56,22 @@ class HRManagementSystem:
         :param employee_id: The employee's id, int.
         :param employee_info: The employee's information, dict.
         :return: If the employee is already in the HRManagementSystem, returns True, otherwise, returns False.
+        >>> hrManagementSystem = HRManagementSystem()
+        >>> hrManagementSystem.employees = {1: {'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 100000}}
+        >>> hrManagementSystem.update_employee(1, {'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 20000})
+        True
+        >>> hrManagementSystem.update_employee(2, {'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 20000})
+        False
 
         """
         if employee_id in self.employees:
-            valid_keys = {'name', 'position', 'department', 'salary'}
-            for key in employee_info:
-                if key.lower() not in valid_keys:
+            valid_keys = ['name', 'position', 'department', 'salary']
+            for key, value in employee_info.items():
+                key_lower = key.lower()
+                if key_lower in valid_keys:
+                    self.employees[employee_id][key_lower] = value
+                else:
                     return False
-            self.employees[employee_id].update(employee_info)
             return True
         else:
             return False
@@ -62,6 +81,12 @@ class HRManagementSystem:
         Get an employee's information from the HRManagementSystem.
         :param employee_id: The employee's id, int.
         :return: If the employee is already in the HRManagementSystem, returns the employee's information, otherwise, returns False.
+        >>> hrManagementSystem = HRManagementSystem()
+        >>> hrManagementSystem.employees = {1: {'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 100000}}
+        >>> hrManagementSystem.get_employee(1)
+        {'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 100000}
+        >>> hrManagementSystem.get_employee(2)
+        False
 
         """
         if employee_id in self.employees:
@@ -73,6 +98,10 @@ class HRManagementSystem:
         """
         List all employees' information in the HRManagementSystem.
         :return: A list of all employees' information,dict.
+        >>> hrManagementSystem = HRManagementSystem()
+        >>> hrManagementSystem.employees = {1: {'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 100000}}
+        >>> hrManagementSystem.list_employees()
+        {1: {'employee_ID': 1, 'name': 'John', 'position': 'Manager', 'department': 'Sales', 'salary': 100000}}
 
         """
         employee_list = {}

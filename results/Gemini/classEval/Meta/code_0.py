@@ -8,28 +8,12 @@ class AccessGatewayFilter:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
-
-        # Create a handler that writes log messages to a file
-        fh = logging.FileHandler('access_gateway.log')
-        fh.setLevel(logging.INFO)
-
-        # Create a formatter and set the formatter for the handler
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        fh.setFormatter(formatter)
-
-        # Add the handler to the logger
-        self.logger.addHandler(fh)
 
     def filter(self, request):
         """
         Filter the incoming request based on certain rules and conditions.
         :param request: dict, the incoming request details
         :return: bool, True if the request is allowed, False otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.filter({'path': '/login', 'method': 'POST'})
-        True
-
         """
         if self.is_start_with(request['path']):
             return True
@@ -42,18 +26,20 @@ class AccessGatewayFilter:
             if user and jwt_token:
                 jwt_user = self.get_jwt_user(request)
                 if jwt_user:
-                    if user['level'] == 1:
-                        return None
-                    elif user['level'] >= 3:
-                        return True
+                    user_level = user.get('level')
+                    if user_level is not None:
+                        if user_level > 3:
+                            return True
+                        elif user_level == 3:
+                            return True
+                        else:
+                            return None
                     else:
                         return True
                 else:
-                    return False
-            else:
-                return True
-        else:
-            return True
+                    return True # even if jwt is invalid, still return true for other checks
+
+        return True
 
 
     def is_start_with(self, request_uri):
@@ -62,10 +48,6 @@ class AccessGatewayFilter:
         Currently, the prefixes being checked are "/api" and "/login".
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.is_start_with('/api/data')
-        True
-
         """
         return request_uri.startswith('/api') or request_uri.startswith('/login')
 
@@ -75,10 +57,6 @@ class AccessGatewayFilter:
         Get the user information from the JWT token in the request.
         :param request: dict, the incoming request details
         :return: dict or None, the user information if the token is valid, None otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.get_jwt_user({'headers': {'Authorization': {'user': {'name': 'user1'}, 'jwt': 'user1'+str(datetime.date.today())}}})
-        {'user': {'name': 'user1'}
-
         """
         if 'headers' in request and 'Authorization' in request['headers']:
             auth_data = request['headers']['Authorization']
@@ -88,22 +66,15 @@ class AccessGatewayFilter:
             if user and jwt_token:
                 expected_jwt = user['name'] + str(datetime.date.today())
                 if jwt_token == expected_jwt:
-                    return user
+                    return {'user': user}
                 else:
                     return None
-            else:
-                return None
-        else:
-            return None
+        return None
 
     def set_current_user_info_and_log(self, user):
         """
         Set the current user information and log the access.
         :param user: dict, the user information
         :return: None
-        >>> filter = AccessGatewayFilter()
-        >>> user = {'name': 'user1', 'address': '127.0.0.1'}
-        >>> filter.set_current_user_info_and_log(user)
-
         """
-        self.logger.info(f"User access: {user}")
+        self.logger.info(f"User {user['name']} from {user['address']} accessed the gateway.")

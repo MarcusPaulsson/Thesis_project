@@ -1,18 +1,20 @@
-from math import pi
-
-
+from math import pi, fabs
 
 class TriCalculator:
     """
     The class allows to calculate trigonometric values, including cosine, sine, and tangent, using Taylor series approximations.
     """
 
-    def __init__(self, taylor_order=50):
+    def __init__(self):
+        pass
+
+    def cos(self, x):
         """
-        Initializes the TriCalculator with a default Taylor series order.
-        :param taylor_order: int, the order of the Taylor series approximation.  Defaults to 50.
+        Calculate the cos value of the x-degree angle
+        :param x: float
+        :return: float
         """
-        self.taylor_order = taylor_order
+        return self.taylor(x, 50)
 
     def factorial(self, a):
         """
@@ -24,63 +26,52 @@ class TriCalculator:
             raise TypeError("Input must be an integer.")
         if a < 0:
             raise ValueError("Input must be a non-negative integer.")
-
         if a == 0:
             return 1
-        result = 1
-        for i in range(1, a + 1):
-            result *= i
-        return result
+        else:
+            result = 1
+            for i in range(1, a + 1):
+                result *= i
+            return result
 
     def taylor(self, x, n):
         """
         Finding the n-order Taylor expansion value of cos (x/180 * pi)
-        :param x: float
+        :param x: int
         :param n: int
         :return: float
         """
-        x_rad = x * pi / 180
-        cos_approx = 0
+        x = x / 180 * pi
+        result = 0
         for i in range(n):
-            numerator = x_rad ** (2 * i)
-            denominator = self.factorial(2 * i)
-            term = (-1) ** i * (numerator / denominator)
-            cos_approx += term
-        return cos_approx
-
-    def cos(self, x):
-        """
-        Calculate the cos value of the x-degree angle using Taylor series.
-        :param x: float
-        :return: float
-        """
-        return self.taylor(x, self.taylor_order)
+            numerator = (-1)**i * x**(2*i)
+            denominator = self.factorial(2*i)
+            result += numerator / denominator
+        return result
 
     def sin(self, x):
         """
-        Calculate the sin value of the x-degree angle using Taylor series.
+        Calculate the sin value of the x-degree angle
         :param x: float
         :return: float
         """
-        x_rad = x * pi / 180
-        sin_approx = 0
-        for n in range(self.taylor_order):
-            term = ((-1) ** n) * (x_rad ** (2 * n + 1)) / self.factorial(2 * n + 1)
-            sin_approx += term
-        return sin_approx
+        x = x / 180 * pi
+        result = 0
+        n = 50
+        for i in range(n):
+            numerator = (-1)**i * x**(2*i + 1)
+            denominator = self.factorial(2*i + 1)
+            result += numerator / denominator
+        return result
+
 
     def tan(self, x):
         """
-        Calculate the tan value of the x-degree angle.
+        Calculate the tan value of the x-degree angle
         :param x: float
-        :return: float or False if cos(x) is 0
+        :return: float
         """
         if x % 180 == 90:
             return False
-
-        cos_x = self.cos(x)
-        if abs(cos_x) < 1e-15:  # Using a small tolerance for floating-point comparison
-            return False
-        sin_x = self.sin(x)
-        return sin_x / cos_x
-
+        else:
+            return self.sin(x) / self.cos(x)

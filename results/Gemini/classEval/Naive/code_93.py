@@ -3,7 +3,7 @@ from gensim import matutils
 from numpy import dot, array
 import logging
 from numpy.linalg import norm
-from math import log
+import math
 
 class VectorUtil:
     """
@@ -22,9 +22,22 @@ class VectorUtil:
         >>> VectorUtil.similarity(vector_1, vector_2)
         0.7071067811865475
         """
-        if norm(vector_1) == 0 or norm(vector_2) == 0:
+        if not isinstance(vector_1, np.ndarray) or not isinstance(vector_2, np.ndarray):
+            logging.error("Inputs must be numpy arrays.")
             return 0.0
-        return dot(vector_1, vector_2) / (norm(vector_1) * norm(vector_2))
+
+        if vector_1.shape != vector_2.shape:
+            logging.warning("Vectors have different dimensions.")
+            return 0.0
+
+        norm_1 = norm(vector_1)
+        norm_2 = norm(vector_2)
+
+        if norm_1 == 0 or norm_2 == 0:
+            return 0.0
+
+        return dot(vector_1, vector_2) / (norm_1 * norm_2)
+
 
     @staticmethod
     def cosine_similarities(vector_1, vectors_all):
@@ -38,14 +51,19 @@ class VectorUtil:
         >>> VectorUtil.cosine_similarities(vector1, vectors_all)
         [0.97463185 0.95941195]
         """
+        if not isinstance(vector_1, np.ndarray) or not isinstance(vectors_all, list):
+            logging.error("Inputs must be a numpy array and a list of numpy arrays.")
+            return np.array([])
+
+        if not all(isinstance(v, np.ndarray) for v in vectors_all):
+            logging.error("vectors_all must be a list of numpy arrays.")
+            return np.array([])
+
         similarities = []
-        for vector in vectors_all:
-            if norm(vector_1) == 0 or norm(vector) == 0:
-                similarity = 0.0
-            else:
-                similarity = dot(vector_1, vector) / (norm(vector_1) * norm(vector))
-            similarities.append(similarity)
-        return similarities
+        for vector_2 in vectors_all:
+            similarities.append(VectorUtil.similarity(vector_1, vector_2))
+        return np.array(similarities)
+
 
     @staticmethod
     def n_similarity(vector_list_1, vector_list_2):
@@ -59,19 +77,24 @@ class VectorUtil:
         >>> VectorUtil.n_similarity(vector_list1, vector_list2)
         0.9897287473881233
         """
-        if not vector_list_1 or not vector_list_2:
-            logging.warning("At least one of the vector lists is empty.")
+        if not isinstance(vector_list_1, list) or not isinstance(vector_list_2, list):
+            logging.error("Inputs must be lists of numpy arrays.")
             return 0.0
-        
-        sum_sim = 0.0
-        for v1 in vector_list_1:
-            for v2 in vector_list_2:
-                if norm(v1) == 0 or norm(v2) == 0:
-                    sim = 0.0
-                else:
-                    sim = dot(v1, v2) / (norm(v1) * norm(v2))
-                sum_sim += sim
-        return sum_sim / (len(vector_list_1) * len(vector_list_2))
+
+        if not all(isinstance(v, np.ndarray) for v in vector_list_1) or not all(isinstance(v, np.ndarray) for v in vector_list_2):
+            logging.error("Inputs must be lists of numpy arrays.")
+            return 0.0
+
+        if not vector_list_1 or not vector_list_2:
+            return 1.0
+
+        similarity_sum = 0.0
+        for vector1 in vector_list_1:
+            for vector2 in vector_list_2:
+                similarity_sum += VectorUtil.similarity(vector1, vector2)
+
+        return similarity_sum / (len(vector_list_1) * len(vector_list_2))
+
 
     @staticmethod
     def compute_idf_weight_dict(total_num, number_dict):
@@ -84,7 +107,15 @@ class VectorUtil:
         >>> VectorUtil.compute_idf_weight_dict(2, num_dict)
         {'key1': 1.0033021088637848, 'key2': 0.6931471805599453}
         """
+        if not isinstance(total_num, int):
+            logging.error("total_num must be an integer.")
+            return {}
+
+        if not isinstance(number_dict, dict):
+            logging.error("number_dict must be a dictionary.")
+            return {}
+
         idf_weight_dict = {}
         for key, count in number_dict.items():
-            idf_weight_dict[key] = log((total_num + 1) / (count + 1))
+            idf_weight_dict[key] = math.log((total_num + 1) / (count + 1))
         return idf_weight_dict

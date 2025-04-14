@@ -25,17 +25,19 @@ class WeatherSystem:
 
         """
         if self.city in weather_list:
-            city_data = weather_list[self.city]
-            temperature = city_data['temperature']
-            weather = city_data['weather']
-            temperature_units = city_data['temperature units']
+            weather_data = weather_list[self.city]
+            temperature = weather_data['temperature']
+            weather = weather_data['weather']
+            temperature_units = weather_data['temperature units']
 
-            if temperature_units == 'celsius' and tmp_units == 'fahrenheit':
-                self.temperature = temperature
-                temperature = self.celsius_to_fahrenheit()
-            elif temperature_units == 'fahrenheit' and tmp_units == 'celsius':
-                self.temperature = temperature
-                temperature = self.fahrenheit_to_celsius()
+            if temperature_units != tmp_units:
+                if tmp_units == 'celsius':
+                    if temperature_units == 'fahrenheit':
+                        temperature = self.fahrenheit_to_celsius_static(temperature)
+                elif tmp_units == 'fahrenheit':
+                    if temperature_units == 'celsius':
+                        temperature = self.celsius_to_fahrenheit_static(temperature)
+
             return (temperature, weather)
         else:
             return False
@@ -63,7 +65,7 @@ class WeatherSystem:
         80.6
 
         """
-        return self.temperature * 9 / 5 + 32
+        return self.celsius_to_fahrenheit_static(self.temperature)
 
     def fahrenheit_to_celsius(self):
         """
@@ -75,4 +77,18 @@ class WeatherSystem:
         26.999999999999996
 
         """
-        return (self.temperature - 32) * 5 / 9
+        return self.fahrenheit_to_celsius_static(self.temperature)
+
+    @staticmethod
+    def celsius_to_fahrenheit_static(celsius):
+        """
+        Convert Celsius to Fahrenheit.
+        """
+        return celsius * 9 / 5 + 32
+
+    @staticmethod
+    def fahrenheit_to_celsius_static(fahrenheit):
+        """
+        Convert Fahrenheit to Celsius.
+        """
+        return (fahrenheit - 32) * 5 / 9

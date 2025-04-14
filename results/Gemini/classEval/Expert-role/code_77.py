@@ -36,17 +36,20 @@ class Snake:
         new_head = (x + direction[0], y + direction[1])
 
         if new_head == self.food_position:
-            self.eat_food()
+            self.length += 1
+            self.score += 100
             self.positions.insert(0, new_head)
+            self.random_food_position()
         elif new_head in self.positions[1:]:
             self.reset()
         else:
             self.positions.insert(0, new_head)
             self.positions.pop()
-            if new_head[0] < 0 or new_head[0] >= self.SCREEN_WIDTH or new_head[1] < 0 or new_head[1] >= self.SCREEN_HEIGHT:
-              self.reset()
-              return
-              
+
+        if self.positions[0][0] < 0 or self.positions[0][0] >= self.SCREEN_WIDTH or self.positions[0][1] < 0 or self.positions[0][1] >= self.SCREEN_HEIGHT:
+            self.reset()
+
+
     def random_food_position(self):
         """
         Randomly generate a new food position, but don't place it on the snake.

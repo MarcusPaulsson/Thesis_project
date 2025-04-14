@@ -20,7 +20,7 @@ class DataStatistics2:
         >>> ds2.get_sum()
         10
         """
-        return np.sum(self.data)
+        return float(np.sum(self.data))
 
     def get_min(self):
         """
@@ -30,7 +30,7 @@ class DataStatistics2:
         >>> ds2.get_min()
         1
         """
-        return np.min(self.data)
+        return float(np.min(self.data))
 
     def get_max(self):
         """
@@ -40,7 +40,7 @@ class DataStatistics2:
         >>> ds2.get_max()
         4
         """
-        return np.max(self.data)
+        return float(np.max(self.data))
 
     def get_variance(self):
         """
@@ -50,7 +50,8 @@ class DataStatistics2:
         >>> ds2.get_variance()
         1.25
         """
-        return round(np.var(self.data), 2)
+        variance = np.var(self.data)
+        return float(round(variance, 2))
 
     def get_std_deviation(self):
         """
@@ -60,7 +61,8 @@ class DataStatistics2:
         >>> ds2.get_std_deviation()
         1.12
         """
-        return round(np.std(self.data), 2)
+        std_deviation = np.std(self.data)
+        return float(round(std_deviation, 2))
 
     def get_correlation(self):
         """
@@ -72,4 +74,5 @@ class DataStatistics2:
         """
         if len(self.data) <= 1:
             return 1.0
-        return np.corrcoef(self.data, self.data)[0, 1]
+        correlation = np.corrcoef(self.data, self.data)[0, 1]
+        return float(round(correlation, 2))

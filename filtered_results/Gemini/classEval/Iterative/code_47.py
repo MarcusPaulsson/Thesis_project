@@ -33,6 +33,7 @@ class IPAddress:
                 return False
         return True
 
+
     def get_octets(self):
         """
         If the IP address is valid, the list of four decimal numbers separated by "." constituting the IP address is returned; otherwise, an empty list is returned
@@ -44,6 +45,7 @@ class IPAddress:
         if not self.is_valid():
             return []
         return self.ip_address.split('.')
+
 
     def get_binary(self):
         """
@@ -58,6 +60,6 @@ class IPAddress:
         octets = self.get_octets()
         binary_octets = []
         for octet in octets:
-            binary = bin(int(octet))[2:].zfill(8)
-            binary_octets.append(binary)
+            binary_octet = bin(int(octet))[2:].zfill(8)
+            binary_octets.append(binary_octet)
         return '.'.join(binary_octets)

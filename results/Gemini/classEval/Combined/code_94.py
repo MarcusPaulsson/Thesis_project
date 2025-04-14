@@ -1,15 +1,11 @@
 class VendingMachine:
     """
-    This class simulates a vending machine, allowing users to add products,
-    insert coins, purchase items, restock inventory, and display product information.
+    This is a class to simulate a vending machine, including adding products, inserting coins, purchasing products, viewing balance, replenishing product inventory, and displaying product information.
     """
 
     def __init__(self):
         """
         Initializes the vending machine's inventory and balance.
-        Inventory is a dictionary where keys are item names and values are
-        dictionaries containing 'price' and 'quantity'.
-        Balance represents the amount of money inserted by the user.
         """
         self.inventory = {}
         self.balance = 0.0
@@ -17,11 +13,10 @@ class VendingMachine:
     def add_item(self, item_name, price, quantity):
         """
         Adds a product to the vending machine's inventory.
-
-        Args:
-            item_name (str): The name of the product to be added.
-            price (float): The price of the product.
-            quantity (int): The quantity of the product to be added.
+        :param item_name: The name of the product to be added, str.
+        :param price: The price of the product to be added, float.
+        :param quantity: The quantity of the product to be added, int.
+        :return: None
         """
         if not isinstance(item_name, str):
             raise TypeError("item_name must be a string")
@@ -29,10 +24,10 @@ class VendingMachine:
             raise TypeError("price must be a number")
         if not isinstance(quantity, int):
             raise TypeError("quantity must be an integer")
-        if quantity < 0:
-            raise ValueError("quantity must be non-negative")
         if price <= 0:
             raise ValueError("price must be positive")
+        if quantity <= 0:
+            raise ValueError("quantity must be positive")
 
         if item_name in self.inventory:
             self.inventory[item_name]['quantity'] += quantity
@@ -41,13 +36,9 @@ class VendingMachine:
 
     def insert_coin(self, amount):
         """
-        Inserts coins into the vending machine, increasing the balance.
-
-        Args:
-            amount (float): The amount of money inserted.
-
-        Returns:
-            float: The updated balance of the vending machine.
+        Inserts coins into the vending machine.
+        :param amount: The amount of coins to be inserted, float.
+        :return: The balance of the vending machine after the coins are inserted, float.
         """
         if not isinstance(amount, (int, float)):
             raise TypeError("amount must be a number")
@@ -55,20 +46,13 @@ class VendingMachine:
             raise ValueError("amount must be positive")
 
         self.balance += amount
-        return self.balance
+        return round(self.balance, 2)
 
     def purchase_item(self, item_name):
         """
-        Purchases a product from the vending machine if it's in stock and the
-        user has enough balance.
-
-        Args:
-            item_name (str): The name of the product to be purchased.
-
-        Returns:
-            float: The remaining balance after the purchase, if successful.
-            bool: False if the purchase is unsuccessful (e.g., item out of stock,
-                  insufficient balance, or item not found).
+        Purchases a product from the vending machine and returns the balance after the purchase and display purchase unsuccessful if the product is out of stock.
+        :param item_name: The name of the product to be purchased, str.
+        :return: If successful, returns the balance of the vending machine after the product is purchased, float,otherwise,returns False.
         """
         if not isinstance(item_name, str):
             raise TypeError("item_name must be a string")
@@ -76,35 +60,29 @@ class VendingMachine:
         if item_name not in self.inventory:
             return False
 
-        item = self.inventory[item_name]
-        if item['quantity'] <= 0:
+        if self.inventory[item_name]['quantity'] <= 0:
             return False
 
-        if self.balance < item['price']:
+        if self.balance < self.inventory[item_name]['price']:
             return False
 
-        self.balance -= item['price']
-        item['quantity'] -= 1
-        return self.balance
+        self.balance -= self.inventory[item_name]['price']
+        self.inventory[item_name]['quantity'] -= 1
+        return round(self.balance, 2)
 
     def restock_item(self, item_name, quantity):
         """
         Replenishes the inventory of a product already in the vending machine.
-
-        Args:
-            item_name (str): The name of the product to be replenished.
-            quantity (int): The quantity to add to the existing stock.
-
-        Returns:
-            bool: True if the item was restocked successfully (item exists).
-                  False if the item does not exist in the inventory.
+        :param item_name: The name of the product to be replenished, str.
+        :param quantity: The quantity of the product to be replenished, int.
+        :return: If the product is already in the vending machine, returns True, otherwise, returns False.
         """
         if not isinstance(item_name, str):
             raise TypeError("item_name must be a string")
         if not isinstance(quantity, int):
             raise TypeError("quantity must be an integer")
-        if quantity < 0:
-            raise ValueError("quantity must be non-negative")
+        if quantity <= 0:
+            raise ValueError("quantity must be positive")
 
         if item_name not in self.inventory:
             return False
@@ -114,17 +92,16 @@ class VendingMachine:
 
     def display_items(self):
         """
-        Displays the products in the vending machine in a user-friendly format.
-
-        Returns:
-            str: A string representation of the items and their quantities.
-                 Returns False if the vending machine is empty.
+        Displays the products in the vending machine.
+        :return: If the vending machine is empty, returns False, otherwise, returns a list of the products in the vending machine, str.
         """
         if not self.inventory:
             return False
 
         display_string = ""
-        for item_name, item_data in self.inventory.items():
-            display_string += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]\n"
-
-        return display_string.strip()
+        items = list(self.inventory.items())
+        for i, (item_name, item_data) in enumerate(items):
+            display_string += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]"
+            if i < len(items) - 1:
+                display_string += "\n"
+        return display_string

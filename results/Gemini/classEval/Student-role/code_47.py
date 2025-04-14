@@ -26,8 +26,8 @@ class IPAddress:
             if not octet.isdigit():
                 return False
             try:
-                num = int(octet)
-                if num < 0 or num > 255:
+                octet_int = int(octet)
+                if octet_int < 0 or octet_int > 255:
                     return False
             except ValueError:
                 return False
@@ -42,10 +42,10 @@ class IPAddress:
         >>> ipaddress.get_octets()
         ["10", "10", "10", "10"]
         """
-        if not self.is_valid():
-            return []
-        else:
+        if self.is_valid():
             return self.ip_address.split('.')
+        else:
+            return []
 
 
     def get_binary(self):
@@ -56,12 +56,12 @@ class IPAddress:
         >>> ipaddress.get_binary()
         "00001010.00001010.00001010.00001010"
         """
-        if not self.is_valid():
-            return ''
-        else:
+        if self.is_valid():
             octets = self.ip_address.split('.')
             binary_octets = []
             for octet in octets:
-                binary = bin(int(octet))[2:].zfill(8)
-                binary_octets.append(binary)
+                binary_octet = bin(int(octet))[2:].zfill(8)
+                binary_octets.append(binary_octet)
             return '.'.join(binary_octets)
+        else:
+            return ''

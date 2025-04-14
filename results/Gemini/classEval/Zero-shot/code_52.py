@@ -34,17 +34,19 @@ class Lemmatization:
         words = word_tokenize(sentence)
         pos_tags = self.get_pos_tag(sentence)
         lemmatized_words = []
-        for word, pos_tag in zip(words, pos_tags):
-            if pos_tag.startswith('N'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='n'))
+        for i, word in enumerate(words):
+            pos_tag = pos_tags[i]
+            if pos_tag.startswith('J'):
+                lemmatized_word = self.lemmatizer.lemmatize(word, pos='a')
             elif pos_tag.startswith('V'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='v'))
-            elif pos_tag.startswith('J'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='a'))
+                lemmatized_word = self.lemmatizer.lemmatize(word, pos='v')
+            elif pos_tag.startswith('N'):
+                lemmatized_word = self.lemmatizer.lemmatize(word, pos='n')
             elif pos_tag.startswith('R'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='r'))
+                lemmatized_word = self.lemmatizer.lemmatize(word, pos='r')
             else:
-                lemmatized_words.append(word)
+                lemmatized_word = self.lemmatizer.lemmatize(word)
+            lemmatized_words.append(lemmatized_word)
         return lemmatized_words
 
     def get_pos_tag(self, sentence):

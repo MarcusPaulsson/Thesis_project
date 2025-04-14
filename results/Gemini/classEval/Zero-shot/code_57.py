@@ -25,38 +25,47 @@ class MetricsCalculator2:
         0.75, [1.0, 0.5]
         """
         if not isinstance(data, list) and not isinstance(data, tuple):
-            raise TypeError("Input data must be a list or tuple")
-
-        if isinstance(data, tuple):
-            data = [data]
+            raise TypeError("Input data must be a list or tuple.")
 
         if not data:
             return 0.0, [0.0]
 
+        if isinstance(data, tuple):
+            data = [data]
+
         reciprocal_ranks = []
         for item in data:
             if not isinstance(item, tuple) or len(item) != 2:
+                raise ValueError("Each item in the list must be a tuple of (result_list, ground_truth_num).")
+
+            result_list, ground_truth_num = item
+            if not isinstance(result_list, list):
+                raise TypeError("Result list must be a list.")
+
+            try:
+                ground_truth_num = int(ground_truth_num)
+            except:
+                raise TypeError("ground_truth_num must be int.")
+
+            if ground_truth_num == 0:
+                reciprocal_ranks.append(0.0)
                 continue
 
-            results, ground_truth_num = item
-            if not isinstance(results, list):
-                continue
-
-            first_relevant_rank = -1
-            for i, result in enumerate(results):
+            rank = 0
+            for i, result in enumerate(result_list):
                 if result == 1:
-                    first_relevant_rank = i + 1
+                    rank = i + 1
                     break
 
-            if first_relevant_rank > 0:
-                reciprocal_ranks.append(1.0 / first_relevant_rank)
+            if rank > 0:
+                reciprocal_ranks.append(1.0 / rank)
             else:
                 reciprocal_ranks.append(0.0)
 
-        if reciprocal_ranks:
-            return np.mean(reciprocal_ranks), reciprocal_ranks
-        else:
+        if not reciprocal_ranks:
             return 0.0, [0.0]
+
+        return np.mean(reciprocal_ranks), reciprocal_ranks
 
     @staticmethod
     def map(data):
@@ -74,38 +83,45 @@ class MetricsCalculator2:
         0.3333333333333333, [0.41666666666666663, 0.25]
         """
         if not isinstance(data, list) and not isinstance(data, tuple):
-            raise TypeError("Input data must be a list or tuple")
-
-        if isinstance(data, tuple):
-            data = [data]
+            raise TypeError("Input data must be a list or tuple.")
 
         if not data:
             return 0.0, [0.0]
 
+        if isinstance(data, tuple):
+            data = [data]
+
         average_precisions = []
         for item in data:
             if not isinstance(item, tuple) or len(item) != 2:
+                raise ValueError("Each item in the list must be a tuple of (result_list, ground_truth_num).")
+
+            result_list, ground_truth_num = item
+            if not isinstance(result_list, list):
+                raise TypeError("Result list must be a list.")
+            try:
+                ground_truth_num = int(ground_truth_num)
+            except:
+                raise TypeError("ground_truth_num must be int.")
+
+            if ground_truth_num == 0:
+                average_precisions.append(0.0)
                 continue
 
-            results, ground_truth_num = item
-            if not isinstance(results, list):
-                continue
-
+            cumulative_precision = 0.0
             relevant_count = 0
-            precision_sum = 0.0
-            for i, result in enumerate(results):
+            for i, result in enumerate(result_list):
                 if result == 1:
                     relevant_count += 1
-                    precision_sum += float(relevant_count) / (i + 1)
+                    cumulative_precision += float(relevant_count) / (i + 1)
 
-            if ground_truth_num > 0:
-                average_precision = precision_sum / ground_truth_num
+            if relevant_count > 0:
+                average_precision = cumulative_precision / ground_truth_num
+                average_precisions.append(average_precision)
             else:
-                average_precision = 0.0
+                average_precisions.append(0.0)
 
-            average_precisions.append(average_precision)
-
-        if average_precisions:
-            return np.mean(average_precisions), average_precisions
-        else:
+        if not average_precisions:
             return 0.0, [0.0]
+
+        return np.mean(average_precisions), average_precisions

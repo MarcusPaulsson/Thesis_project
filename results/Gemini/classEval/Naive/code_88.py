@@ -1,4 +1,4 @@
-from math import pi, fabs
+from math import pi, fabs, cos, sin, tan
 
 class TriCalculator:
     """
@@ -45,13 +45,12 @@ class TriCalculator:
         >>> tricalculator.taylor(60, 50)
         0.5000000000000001
         """
-        x = x / 180 * pi
-        cos_val = 0
+        x_rad = x * pi / 180.0
+        result = 0.0
         for i in range(n):
-            numerator = (-1) ** i * x ** (2 * i)
-            denominator = self.factorial(2 * i)
-            cos_val += numerator / denominator
-        return cos_val
+            term = ((-1)**i) * (x_rad**(2*i)) / self.factorial(2*i)
+            result += term
+        return result
 
     def sin(self, x):
         """
@@ -61,13 +60,13 @@ class TriCalculator:
         >>> tricalculator.sin(30)
         0.5
         """
-        x = x / 180 * pi
-        sin_val = 0
-        for i in range(50):
-            numerator = (-1) ** i * x ** (2 * i + 1)
-            denominator = self.factorial(2 * i + 1)
-            sin_val += numerator / denominator
-        return sin_val
+        x_rad = x * pi / 180.0
+        result = 0.0
+        n = 50
+        for i in range(n):
+            term = ((-1)**i) * (x_rad**(2*i + 1)) / self.factorial(2*i + 1)
+            result += term
+        return result
 
 
     def tan(self, x):
@@ -80,4 +79,5 @@ class TriCalculator:
         """
         if x % 180 == 90:
             return False
-        return self.sin(x) / self.cos(x)
+        else:
+            return self.sin(x) / self.cos(x)

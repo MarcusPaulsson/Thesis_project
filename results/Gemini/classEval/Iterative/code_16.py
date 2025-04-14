@@ -30,10 +30,8 @@ class Calculator:
         operand_stack = []
         operator_stack = []
         i = 0
-
         while i < len(expression):
             char = expression[i]
-
             if char.isdigit():
                 num = 0
                 while i < len(expression) and expression[i].isdigit():
@@ -41,27 +39,19 @@ class Calculator:
                     i += 1
                 operand_stack.append(float(num))
                 i -= 1
-
             elif char in self.operators:
                 while operator_stack and operator_stack[-1] != '(' and self.precedence(operator_stack[-1]) >= self.precedence(char):
                     self.apply_operator(operand_stack, operator_stack)
                 operator_stack.append(char)
-
             elif char == '(':
                 operator_stack.append(char)
-
             elif char == ')':
                 while operator_stack and operator_stack[-1] != '(':
                     self.apply_operator(operand_stack, operator_stack)
                 if operator_stack:
-                    operator_stack.pop()
-
-            elif char.isspace():
-                pass
-
-            else:
-                pass
-
+                    operator_stack.pop()  # Remove '('
+                else:
+                    return None #Mismatched parentheses
             i += 1
 
         while operator_stack:
@@ -102,9 +92,16 @@ class Calculator:
         >>> calculator.apply_operator([1, 2, 3], ['+', '-'])
         ([1, -1], ['-'])
         """
+        if len(operand_stack) < 2 or not operator_stack:
+            return
+
         operator = operator_stack.pop()
         operand2 = operand_stack.pop()
         operand1 = operand_stack.pop()
-        result = self.operators[operator](operand1, operand2)
+
+        try:
+            result = self.operators[operator](operand1, operand2)
+        except ZeroDivisionError:
+            return None
+
         operand_stack.append(result)
-        return operand_stack, operator_stack

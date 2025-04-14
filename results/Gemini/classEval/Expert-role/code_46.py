@@ -19,7 +19,7 @@ class Interpolation:
         [1.5, 2.5]
 
         """
-        if not x or not y or not x_interp:
+        if not x_interp:
             return []
 
         y_interp = []
@@ -31,8 +31,8 @@ class Interpolation:
             else:
                 for i in range(len(x) - 1):
                     if x[i] <= x_i <= x[i + 1]:
-                        y_i = y[i] + (x_i - x[i]) * (y[i + 1] - y[i]) / (x[i + 1] - x[i])
-                        y_interp.append(y_i)
+                        y_interp_i = y[i] + (x_i - x[i]) * (y[i + 1] - y[i]) / (x[i + 1] - x[i])
+                        y_interp.append(y_interp_i)
                         break
         return y_interp
 
@@ -52,17 +52,38 @@ class Interpolation:
 
         """
         z_interp = []
-        for xi, yi in zip(x_interp, y_interp):
-            # Find the four closest data points
-            x1, x2 = x[0], x[-1]
-            y1, y2 = y[0], y[-1]
-            
-            # Interpolate along x direction
-            z1 = Interpolation.interpolate_1d(x, [z[i][0] for i in range(len(z))], [xi])[0]
-            z2 = Interpolation.interpolate_1d(x, [z[i][1] for i in range(len(z))], [xi])[0]
-            z3 = Interpolation.interpolate_1d(x, [z[i][2] for i in range(len(z))], [xi])[0]
+        for x_i, y_i in zip(x_interp, y_interp):
+            # Find the bounding box
+            x_idx = -1
+            y_idx = -1
+            for i in range(len(x) - 1):
+                if x[i] <= x_i <= x[i + 1]:
+                    x_idx = i
+                    break
+            if x_idx == -1:
+                x_idx = len(x) - 2
 
-            # Interpolate along y direction            
-            z_interp_val = Interpolation.interpolate_1d(y, [z1, z2, z3], [yi])[0]
-            z_interp.append(z_interp_val)
+            for j in range(len(y) - 1):
+                if y[j] <= y_i <= y[j + 1]:
+                    y_idx = j
+                    break
+            if y_idx == -1:
+                y_idx = len(y) - 2
+
+            # Interpolate
+            x1, x2 = x[x_idx], x[x_idx + 1]
+            y1, y2 = y[y_idx], y[y_idx + 1]
+
+            z11 = z[x_idx][y_idx]
+            z12 = z[x_idx][y_idx + 1]
+            z21 = z[x_idx + 1][y_idx]
+            z22 = z[x_idx + 1][y_idx + 1]
+
+            z_interp_i = (z11 * (x2 - x_i) * (y2 - y_i) +
+                          z21 * (x_i - x1) * (y2 - y_i) +
+                          z12 * (x2 - x_i) * (y_i - y1) +
+                          z22 * (x_i - x1) * (y_i - y1)) / ((x2 - x1) * (y2 - y1))
+
+            z_interp.append(z_interp_i)
+
         return z_interp

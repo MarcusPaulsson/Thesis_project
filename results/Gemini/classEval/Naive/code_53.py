@@ -34,7 +34,10 @@ class LongestWord:
         if not self.word_list:
             return ''
 
+        # Remove punctuation
         sentence = sentence.translate(str.maketrans('', '', string.punctuation))
+
+        # Split the sentence into words
         words = sentence.split()
 
         longest_word = ''

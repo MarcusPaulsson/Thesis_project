@@ -44,10 +44,11 @@ class Hotel:
         """
         if room_type not in self.available_rooms:
             return False
-        
+
         if self.available_rooms[room_type] >= room_number:
             if room_type not in self.booked_rooms:
                 self.booked_rooms[room_type] = {}
+
             self.booked_rooms[room_type][name] = room_number
             self.available_rooms[room_type] -= room_number
             return 'Success!'
@@ -76,16 +77,15 @@ class Hotel:
         if room_type not in self.booked_rooms or name not in self.booked_rooms[room_type]:
             return False
 
-        if self.booked_rooms[room_type].get(name, 0) < room_number:
+        if self.booked_rooms[room_type][name] < room_number:
             return False
 
         if self.booked_rooms[room_type][name] == room_number:
-            self.booked_rooms[room_type].pop(name)
+            del self.booked_rooms[room_type][name]
             if not self.booked_rooms[room_type]:
-                self.booked_rooms.pop(room_type)
+                del self.booked_rooms[room_type]
         else:
             self.booked_rooms[room_type][name] -= room_number
-        return
 
     def check_out(self, room_type, room_number):
         """

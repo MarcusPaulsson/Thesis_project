@@ -9,23 +9,17 @@ class PDFHandler:
         """
         takes a list of file paths filepaths as a parameter.
         It creates a list named readers using PyPDF2, where each reader opens a file from the given paths.
-        If a file is not found or cannot be read, a None is appended to the readers list.
         """
         self.filepaths = filepaths
         self.readers = []
         for fp in filepaths:
             try:
-                with open(fp, 'rb') as f:
-                    self.readers.append(PyPDF2.PdfFileReader(f))
-            except FileNotFoundError:
-                print(f"File not found: {fp}")
-                self.readers.append(None)
-            except PyPDF2.utils.PdfReadError:
-                print(f"Could not read PDF: {fp}")
-                self.readers.append(None)
+                reader = PyPDF2.PdfFileReader(fp)
+                self.readers.append(reader)
             except Exception as e:
                 print(f"Error opening {fp}: {e}")
-                self.readers.append(None)
+                self.readers.append(None)  # Append None if file cannot be opened
+
 
     def merge_pdfs(self, output_filepath):
         """
@@ -39,7 +33,7 @@ class PDFHandler:
         """
         merger = PyPDF2.PdfFileMerger()
         for reader in self.readers:
-            if reader:
+            if reader:  # Only merge if the reader is valid (not None)
                 try:
                     merger.append(reader)
                 except Exception as e:
@@ -65,16 +59,16 @@ class PDFHandler:
         """
         pdf_texts = []
         for reader in self.readers:
-            if reader:
+            if reader:  # Only extract text if the reader is valid (not None)
                 text = ""
                 try:
                     for page_num in range(reader.getNumPages()):
                         page = reader.getPage(page_num)
-                        text += page.extractText()
+                        text += page.extractText() + "\n"
                 except Exception as e:
                     print(f"Error extracting text: {e}")
-                    text = "" # Ensure an empty string is added even if extraction fails
+                    text = ""  # Assign empty string if extraction fails
                 pdf_texts.append(text)
             else:
-                pdf_texts.append("")
+                pdf_texts.append("")  # Append empty string if file could not be opened
         return pdf_texts

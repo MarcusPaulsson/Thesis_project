@@ -19,14 +19,14 @@ class NumericEntityUnescaper:
         result = ""
         i = 0
         while i < len(string):
-            if string[i:i+2] == "&#":
+            if string[i:i + 2] == "&#":
                 j = i + 2
                 while j < len(string) and string[j] != ';':
                     j += 1
                 if j < len(string) and string[j] == ';':
-                    entity = string[i+2:j]
+                    entity = string[i + 2:j]
                     try:
-                        if entity.lower().startswith("x"):
+                        if entity[0].lower() == 'x':
                             char_code = int(entity[1:], 16)
                         else:
                             char_code = int(entity)
@@ -36,16 +36,13 @@ class NumericEntityUnescaper:
                         result += string[i:j+1]
                         i = j + 1
                     except OverflowError:
-                         result += string[i:j+1]
-                         i = j + 1
+                        i += 1
                 else:
-                    result += string[i]
-                    i += 1
+                    i += 2
             else:
                 result += string[i]
                 i += 1
         return result
-
 
     @staticmethod
     def is_hex_char(char):
@@ -57,6 +54,4 @@ class NumericEntityUnescaper:
         True
 
         """
-        if '0' <= char <= '9' or 'a' <= char.lower() <= 'f':
-            return True
-        return False
+        return '0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F'

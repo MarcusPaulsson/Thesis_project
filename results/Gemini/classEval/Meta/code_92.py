@@ -12,20 +12,6 @@ class UserLoginDB:
         """
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
-        self.create_table()
-
-    def create_table(self):
-        """
-        Creates the "users" table if it doesn't exist.
-        """
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS users (
-            username TEXT,
-            password TEXT
-        )
-        """
-        self.cursor.execute(create_table_query)
-        self.connection.commit()
 
     def insert_user(self, username, password):
         """
@@ -37,8 +23,8 @@ class UserLoginDB:
         >>> user_db.create_table()
         >>> user_db.insert_user('user1', 'pass1')
         """
-        insert_query = "INSERT INTO users (username, password) VALUES (?, ?)"
-        self.cursor.execute(insert_query, (username, password))
+        query = "INSERT INTO users (username, password) VALUES (?, ?)"
+        self.cursor.execute(query, (username, password))
         self.connection.commit()
 
 
@@ -53,8 +39,8 @@ class UserLoginDB:
         >>> result = user_db.search_user_by_username('user1')
         len(result) = 1
         """
-        search_query = "SELECT username, password FROM users WHERE username = ?"
-        self.cursor.execute(search_query, (username,))
+        query = "SELECT username, password FROM users WHERE username = ?"
+        self.cursor.execute(query, (username,))
         result = self.cursor.fetchone()
         return result
 
@@ -69,8 +55,8 @@ class UserLoginDB:
         >>> user_db.insert_user('user1', 'pass1')
         >>> user_db.delete_user_by_username('user1')
         """
-        delete_query = "DELETE FROM users WHERE username = ?"
-        self.cursor.execute(delete_query, (username,))
+        query = "DELETE FROM users WHERE username = ?"
+        self.cursor.execute(query, (username,))
         self.connection.commit()
 
 
@@ -86,11 +72,18 @@ class UserLoginDB:
         >>> user_db.validate_user_login('user1', 'pass1')
         True
         """
-        search_query = "SELECT password FROM users WHERE username = ?"
-        self.cursor.execute(search_query, (username,))
-        result = self.cursor.fetchone()
-
-        if result:
-            return result[0] == password
+        user = self.search_user_by_username(username)
+        if user:
+            return user[1] == password
         else:
             return False
+
+    def create_table(self):
+        query = """
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT,
+            password TEXT
+        )
+        """
+        self.cursor.execute(query)
+        self.connection.commit()

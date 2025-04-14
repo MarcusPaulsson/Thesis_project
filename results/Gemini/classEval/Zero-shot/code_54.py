@@ -30,17 +30,20 @@ class MahjongConnect:
                     ['a', 'b', 'c', 'a'],
                     ['a', 'b', 'c', 'a']]
         """
-        total_cells = self.BOARD_SIZE[0] * self.BOARD_SIZE[1]
-        num_icons = len(self.ICONS)
-        num_pairs = total_cells // 2
-        icons_needed = [self.ICONS[i % num_icons] for i in range(num_pairs)] * 2
+        board = []
+        num_icons = self.BOARD_SIZE[0] * self.BOARD_SIZE[1]
+        icons_needed = []
+        for i in range(num_icons // 2):
+            icons_needed.append(self.ICONS[i % len(self.ICONS)])
+            icons_needed.append(self.ICONS[i % len(self.ICONS)])
         random.shuffle(icons_needed)
 
-        board = []
+        index = 0
         for i in range(self.BOARD_SIZE[0]):
             row = []
             for j in range(self.BOARD_SIZE[1]):
-                row.append(icons_needed[i * self.BOARD_SIZE[1] + j])
+                row.append(icons_needed[index])
+                index += 1
             board.append(row)
         return board
 
@@ -73,7 +76,6 @@ class MahjongConnect:
 
         return self.has_path(pos1, pos2)
 
-
     def has_path(self, pos1, pos2):
         """
         check if there is a path between two icons
@@ -92,41 +94,56 @@ class MahjongConnect:
                 0 <= pos2[0] < self.BOARD_SIZE[0] and 0 <= pos2[1] < self.BOARD_SIZE[1]):
             return False
 
+        if pos1 == pos2:
+            return True
+
         def is_valid(x, y):
             return 0 <= x < self.BOARD_SIZE[0] and 0 <= y < self.BOARD_SIZE[1]
 
-        def bfs(start, end):
-            queue = [(start, [])]  # (position, path)
-            visited = {start}
+        def find_path(p1, p2):
+            q = [(p1, [])]
+            visited = {p1}
 
-            while queue:
-                (x, y), path = queue.pop(0)
+            while q:
+                (curr_x, curr_y), path = q.pop(0)
 
-                if (x, y) == end:
+                if (curr_x, curr_y) == p2:
                     return True
 
-                # Move horizontally
-                for ny in range(self.BOARD_SIZE[1]):
-                    if (ny < y and all(self.board[x][i] == ' ' for i in range(ny + 1, y))) or \
-                       (ny > y and all(self.board[x][i] == ' ' for i in range(y + 1, ny))):
-                        new_pos = (x, ny)
-                        if new_pos not in visited and (self.board[x][ny] == ' ' or new_pos == end):
-                            queue.append((new_pos, path + [new_pos]))
-                            visited.add(new_pos)
+                # Move up
+                for x in range(curr_x - 1, -1, -1):
+                    if self.board[x][curr_y] != ' ' and (x, curr_y) != p2:
+                        break
+                    if (x, curr_y) not in visited:
+                        q.append(((x, curr_y), path + [(x, curr_y)]))
+                        visited.add((x, curr_y))
 
-                # Move vertically
-                for nx in range(self.BOARD_SIZE[0]):
-                    if (nx < x and all(self.board[i][y] == ' ' for i in range(nx + 1, x))) or \
-                       (nx > x and all(self.board[i][y] == ' ' for i in range(x + 1, nx))):
-                        new_pos = (nx, y)
-                        if new_pos not in visited and (self.board[nx][y] == ' ' or new_pos == end):
-                            queue.append((new_pos, path + [new_pos]))
-                            visited.add(new_pos)
+                # Move down
+                for x in range(curr_x + 1, self.BOARD_SIZE[0]):
+                    if self.board[x][curr_y] != ' ' and (x, curr_y) != p2:
+                        break
+                    if (x, curr_y) not in visited:
+                        q.append(((x, curr_y), path + [(x, curr_y)]))
+                        visited.add((x, curr_y))
 
+                # Move left
+                for y in range(curr_y - 1, -1, -1):
+                    if self.board[curr_x][y] != ' ' and (curr_x, y) != p2:
+                        break
+                    if (curr_x, y) not in visited:
+                        q.append(((curr_x, y), path + [(curr_x, y)]))
+                        visited.add((curr_x, y))
+
+                # Move right
+                for y in range(curr_y + 1, self.BOARD_SIZE[1]):
+                    if self.board[curr_x][y] != ' ' and (curr_x, y) != p2:
+                        break
+                    if (curr_x, y) not in visited:
+                        q.append(((curr_x, y), path + [(curr_x, y)]))
+                        visited.add((curr_x, y))
             return False
 
-        return bfs(pos1, pos2)
-
+        return find_path(pos1, pos2)
 
     def remove_icons(self, pos1, pos2):
         """
@@ -148,7 +165,6 @@ class MahjongConnect:
         self.board[pos1[0]][pos1[1]] = ' '
         self.board[pos2[0]][pos2[1]] = ' '
 
-
     def is_game_over(self):
         """
         Check if the game is over (i.e., if there are no more icons on the game board)
@@ -162,6 +178,7 @@ class MahjongConnect:
         True
         """
         for row in self.board:
-            if any(icon != ' ' for icon in row):
-                return False
+            for icon in row:
+                if icon != ' ':
+                    return False
         return True

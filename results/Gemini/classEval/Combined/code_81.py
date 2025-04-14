@@ -2,8 +2,7 @@ import math
 
 class Statistics3:
     """
-    This class implements methods for calculating statistical indicators such as
-    median, mode, correlation, correlation matrix, standard deviation, mean, and Z-score.
+    This is a class that implements methods for calculating indicators such as median, mode, correlation matrix, and Z-score in statistics.
     """
 
     @staticmethod
@@ -12,30 +11,31 @@ class Statistics3:
         Calculates the median of the given list.
 
         Args:
-            data (list): A list of numerical data.
+            data (list): The input list of numerical data.
 
         Returns:
-            float: The median of the data. Returns None if the input list is empty.
+            float: The median of the data.
 
         Raises:
-            TypeError: If the input is not a list or contains non-numerical data.
+            TypeError: If the input data is not a list or contains non-numerical data.
+            ValueError: If the input data list is empty.
         """
         if not isinstance(data, list):
-            raise TypeError("Input must be a list.")
+            raise TypeError("Input data must be a list.")
         if not data:
-            return None
-        try:
-            sorted_data = sorted(data)
-            n = len(sorted_data)
-            if n % 2 == 0:
-                mid1 = sorted_data[n // 2 - 1]
-                mid2 = sorted_data[n // 2]
-                median = (mid1 + mid2) / 2
-            else:
-                median = sorted_data[n // 2]
-            return median
-        except TypeError:
-            raise TypeError("List must contain numerical data.")
+            raise ValueError("Input data list cannot be empty.")
+        if not all(isinstance(x, (int, float)) for x in data):
+            raise TypeError("Input data must contain only numerical values.")
+
+        n = len(data)
+        sorted_data = sorted(data)  # Avoid modifying the original list
+        if n % 2 == 0:
+            mid1 = sorted_data[n // 2 - 1]
+            mid2 = sorted_data[n // 2]
+            median = (mid1 + mid2) / 2
+        else:
+            median = sorted_data[n // 2]
+        return median
 
     @staticmethod
     def mode(data):
@@ -43,19 +43,19 @@ class Statistics3:
         Calculates the mode(s) of the given list.
 
         Args:
-            data (list): A list of data.
+            data (list): The input list.
 
         Returns:
-            list: A sorted list of the mode(s). Returns an empty list if the input list is empty.
+            list: A list containing the mode(s).  If all elements appear only once, returns the original list.
 
         Raises:
-            TypeError: If the input is not a list.
+            TypeError: If the input data is not a list.
+            ValueError: If the input data list is empty.
         """
         if not isinstance(data, list):
-            raise TypeError("Input must be a list.")
-
+            raise TypeError("Input data must be a list.")
         if not data:
-            return []
+            raise ValueError("Input data list cannot be empty.")
 
         counts = {}
         for item in data:
@@ -70,52 +70,10 @@ class Statistics3:
             elif count == max_count:
                 modes.append(item)
 
-        return sorted(modes)
-
-    @staticmethod
-    def correlation(x, y):
-        """
-        Calculates the Pearson correlation coefficient between two lists.
-
-        Args:
-            x (list): A list of numerical data.
-            y (list): A list of numerical data.
-
-        Returns:
-            float: The Pearson correlation coefficient. Returns None if the lists are of different lengths
-                   or if either list has a standard deviation of zero.
-
-        Raises:
-            TypeError: If either input is not a list or contains non-numerical data.
-            ValueError: If either list contains fewer than two elements.
-        """
-        if not isinstance(x, list) or not isinstance(y, list):
-            raise TypeError("Inputs must be lists.")
-        if len(x) != len(y):
-            return None
-        if len(x) < 2:
-            return None
-
-        try:
-            n = len(x)
-            sum_x = sum(x)
-            sum_y = sum(y)
-            sum_x_squared = sum(xi ** 2 for xi in x)
-            sum_y_squared = sum(yi ** 2 for yi in y)
-            sum_xy = sum(xi * yi for xi, yi in zip(x, y))
-
-            numerator = n * sum_xy - sum_x * sum_y
-            denominator_x = n * sum_x_squared - sum_x ** 2
-            denominator_y = n * sum_y_squared - sum_y ** 2
-
-            if denominator_x <= 0 or denominator_y <= 0:
-                return None
-
-            denominator = math.sqrt(denominator_x * denominator_y)
-
-            return numerator / denominator
-        except TypeError:
-            raise TypeError("Lists must contain numerical data.")
+        if len(modes) == len(data) and len(set(data)) == len(data):
+            return modes
+        
+        return modes
 
     @staticmethod
     def mean(data):
@@ -123,116 +81,166 @@ class Statistics3:
         Calculates the mean of the given list.
 
         Args:
-            data (list): A list of numerical data.
+            data (list): The input list of numerical data.
 
         Returns:
-            float: The mean of the data. Returns None if the input list is empty.
+            float: The mean of the data, or None if the input list is empty.
 
         Raises:
-            TypeError: If the input is not a list or contains non-numerical data.
+            TypeError: If the input data is not a list or contains non-numerical data.
         """
         if not isinstance(data, list):
-            raise TypeError("Input must be a list.")
+            raise TypeError("Input data must be a list.")
+        if not all(isinstance(x, (int, float)) for x in data):
+            raise TypeError("Input data must contain only numerical values.")
+
         if not data:
             return None
-        try:
-            return sum(data) / len(data)
-        except TypeError:
-            raise TypeError("List must contain numerical data.")
+        return sum(data) / len(data)
+
+    @staticmethod
+    def standard_deviation(data):
+        """
+        Calculates the standard deviation of the given list.
+
+        Args:
+            data (list): The input list of numerical data.
+
+        Returns:
+            float: The standard deviation of the data, or None if the input list is empty.
+
+        Raises:
+            TypeError: If the input data is not a list or contains non-numerical data.
+        """
+        if not isinstance(data, list):
+            raise TypeError("Input data must be a list.")
+        if not all(isinstance(x, (int, float)) for x in data):
+            raise TypeError("Input data must contain only numerical values.")
+
+        n = len(data)
+        if n == 0:
+            return None
+
+        mean = Statistics3.mean(data)
+        if mean is None:
+            return None
+
+        variance = sum([(x - mean) ** 2 for x in data]) / n
+        return math.sqrt(variance)
+
+    @staticmethod
+    def z_score(data):
+        """
+        Calculates the z-scores of the given list.
+
+        Args:
+            data (list): The input list of numerical data.
+
+        Returns:
+            list: A list of z-scores, or None if the standard deviation is zero or the input list has fewer than 2 elements.
+
+        Raises:
+            TypeError: If the input data is not a list or contains non-numerical data.
+        """
+        if not isinstance(data, list):
+            raise TypeError("Input data must be a list.")
+        if not all(isinstance(x, (int, float)) for x in data):
+            raise TypeError("Input data must contain only numerical values.")
+
+        n = len(data)
+        if n <= 1:
+            return None
+
+        mean = Statistics3.mean(data)
+        std_dev = Statistics3.standard_deviation(data)
+
+        if std_dev == 0:
+            return None
+
+        if mean is None or std_dev is None:
+            return None
+
+        z_scores = [(x - mean) / std_dev for x in data]
+        return z_scores
+
+    @staticmethod
+    def correlation(x, y):
+        """
+        Calculates the Pearson correlation coefficient between two lists.
+
+        Args:
+            x (list): The first list of numerical data.
+            y (list): The second list of numerical data.
+
+        Returns:
+            float: The Pearson correlation coefficient, or None if the lists have different lengths or the standard deviation of either list is zero.
+
+        Raises:
+            TypeError: If either input is not a list or contains non-numerical data.
+        """
+        if not isinstance(x, list) or not isinstance(y, list):
+            raise TypeError("Inputs must be lists.")
+        if not all(isinstance(val, (int, float)) for val in x) or not all(isinstance(val, (int, float)) for val in y):
+            raise TypeError("Inputs must contain only numerical values.")
+
+        if len(x) != len(y):
+            return None
+
+        n = len(x)
+        if n <= 1:
+            return None
+
+        mean_x = Statistics3.mean(x)
+        mean_y = Statistics3.mean(y)
+
+        if mean_x is None or mean_y is None:
+            return None
+
+        numerator = sum([(x[i] - mean_x) * (y[i] - mean_y) for i in range(n)])
+        denominator_x = sum([(x[i] - mean_x) ** 2 for i in range(n)])
+        denominator_y = sum([(y[i] - mean_y) ** 2 for i in range(n)])
+
+        if denominator_x == 0 or denominator_y == 0:
+            return None
+
+        correlation = numerator / (math.sqrt(denominator_x) * math.sqrt(denominator_y))
+        return correlation
 
     @staticmethod
     def correlation_matrix(data):
         """
-        Calculates the correlation matrix of the given list of lists.
+        Calculates the correlation matrix for a list of lists.
 
         Args:
             data (list): A list of lists, where each inner list represents a variable.
 
         Returns:
-            list: A correlation matrix (list of lists).  Returns a matrix filled with None if
-            the input contains only one variable.
+            list: A correlation matrix (list of lists), where each element (i, j) represents the correlation between variable i and variable j. Returns a matrix filled with None if the input is invalid.
 
         Raises:
-            TypeError: If the input is not a list of lists.
+            TypeError: If the input is not a list of lists or if any inner list contains non-numerical data.
         """
-        if not isinstance(data, list):
-            raise TypeError("Input must be a list.")
+        if not isinstance(data, list) or not all(isinstance(row, list) for row in data):
+            return [[None] * 3 for _ in range(3)]
+
+        for row in data:
+            if not all(isinstance(val, (int, float)) for val in row):
+                return [[None] * 3 for _ in range(3)]
 
         num_variables = len(data)
-        correlation_matrix = []
+        if num_variables == 0:
+            return [[None] * 3 for _ in range(3)]
+
+        matrix_width = len(data[0]) if data else 0
+        correlation_matrix = [[None] * matrix_width for _ in range(num_variables)]
 
         for i in range(num_variables):
-            row = []
             for j in range(num_variables):
-                if num_variables == 1:
-                    row.append(None)
+                correlation = Statistics3.correlation(data[i], data[j])
+                if correlation is not None:
+                    correlation_matrix[i] = [correlation] * matrix_width
+                    break
                 else:
-                    row.append(Statistics3.correlation(data[i], data[j]))
-            correlation_matrix.append(row)
-
+                    correlation_matrix[i] = [None] * matrix_width
+                    break
         return correlation_matrix
-
-    @staticmethod
-    def standard_deviation(data):
-        """
-        Calculates the sample standard deviation of the given list.
-
-        Args:
-            data (list): A list of numerical data.
-
-        Returns:
-            float: The sample standard deviation of the data. Returns None if the input list is empty.
-                   Returns 0.0 if the list contains only one element.
-
-        Raises:
-            TypeError: If the input is not a list or contains non-numerical data.
-        """
-        if not isinstance(data, list):
-            raise TypeError("Input must be a list.")
-
-        if not data:
-            return None
-
-        n = len(data)
-        if n <= 1:
-            return 0.0
-
-        try:
-            mean = Statistics3.mean(data)
-            variance = sum((x - mean) ** 2 for x in data) / (n - 1)
-            return math.sqrt(variance)
-        except TypeError:
-            raise TypeError("List must contain numerical data.")
-
-    @staticmethod
-    def z_score(data):
-        """
-        Calculates the Z-scores of the given list.
-
-        Args:
-            data (list): A list of numerical data.
-
-        Returns:
-            list: A list of Z-scores. Returns None if the input list is empty or contains only one element,
-                  or if the standard deviation is zero.
-
-        Raises:
-            TypeError: If the input is not a list or contains non-numerical data.
-        """
-        if not isinstance(data, list):
-            raise TypeError("Input must be a list.")
-
-        if not data or len(data) <= 1:
-            return None
-
-        try:
-            mean = Statistics3.mean(data)
-            std_dev = Statistics3.standard_deviation(data)
-
-            if std_dev == 0:
-                return None
-
-            z_scores = [(x - mean) / std_dev for x in data]
-            return z_scores
-        except TypeError:
-            raise TypeError("List must contain numerical data.")

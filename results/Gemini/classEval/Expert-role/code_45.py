@@ -54,7 +54,7 @@ class ImageProcessor:
         >>> processor.resize_image(90)
         """
         if self.image:
-            self.image = self.image.rotate(degrees)
+            self.image = self.image.rotate(-degrees)
 
     def adjust_brightness(self, factor):
         """

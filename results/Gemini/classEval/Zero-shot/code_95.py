@@ -74,11 +74,13 @@ class Warehouse:
         >>> warehouse.create_order(1, 2, 2)
         False
         """
-        if product_id not in self.inventory or self.inventory[product_id]['quantity'] < quantity:
+        if product_id not in self.inventory:
             return False
-        else:
-            self.orders[order_id] = {'product_id': product_id, 'quantity': quantity, 'status': 'Shipped'}
-            return True
+        if self.inventory[product_id]['quantity'] < quantity:
+            return False
+
+        self.orders[order_id] = {'product_id': product_id, 'quantity': quantity, 'status': 'Shipped'}
+        return True
 
     def change_order_status(self, order_id, status):
         """
@@ -92,10 +94,10 @@ class Warehouse:
         >>> warehouse.orders
         {1: {'product_id': 1, 'quantity': 2, 'status': 'done'}}
         """
-        if order_id in self.orders:
-            self.orders[order_id]['status'] = status
-        else:
+        if order_id not in self.orders:
             return False
+        self.orders[order_id]['status'] = status
+        return True
 
     def track_order(self, order_id):
         """
@@ -107,7 +109,6 @@ class Warehouse:
         >>> warehouse.track_order(1)
         'Shipped'
         """
-        if order_id in self.orders:
-            return self.orders[order_id]['status']
-        else:
+        if order_id not in self.orders:
             return False
+        return self.orders[order_id]['status']

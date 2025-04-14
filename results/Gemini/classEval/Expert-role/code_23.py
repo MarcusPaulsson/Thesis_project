@@ -46,10 +46,7 @@ class CombinationCalculator:
             return False
         if n == 63:
             return float("inf")
-        if n == 0:
-            return 0
-
-        return (1 << n) - 1
+        return (1 << n) - 1 if n > 0 else 0
 
     def select(self, m: int) -> List[List[str]]:
         """
@@ -95,9 +92,17 @@ class CombinationCalculator:
 
         """
         if resultIndex == len(resultList):
-            result.append(resultList[:])
+            combination = [item for item in resultList if item is not None]
+            if combination:
+                result.append(combination.copy())
+            else:
+                result.append([])
             return
 
-        for i in range(dataIndex, len(self.datas)):
-            resultList[resultIndex] = self.datas[i]
-            self._select(i + 1, resultList, resultIndex + 1, result)
+        if dataIndex >= len(self.datas):
+            return
+
+        resultList[resultIndex] = self.datas[dataIndex]
+        self._select(dataIndex + 1, resultList, resultIndex + 1, result)
+        resultList[resultIndex] = None
+        self._select(dataIndex + 1, resultList, resultIndex, result)

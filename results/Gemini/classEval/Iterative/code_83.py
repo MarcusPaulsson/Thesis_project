@@ -19,25 +19,19 @@ class StudentDatabaseProcessor:
         >>> processor = StudentDatabaseProcessor("students.db")
         >>> processor.create_student_table()
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS students (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    age INTEGER NOT NULL,
-                    gender TEXT NOT NULL,
-                    grade INTEGER NOT NULL
-                )
-            """)
-            conn.commit()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-        finally:
-            if conn:
-                conn.close()
-
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS students (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                age INTEGER,
+                gender TEXT,
+                grade INTEGER
+            )
+        """)
+        conn.commit()
+        conn.close()
 
     def insert_student(self, student_data):
         """
@@ -49,20 +43,16 @@ class StudentDatabaseProcessor:
         >>> student_data = {'name': 'John', 'age': 15, 'gender': 'Male', 'grade': 9}
         >>> processor.insert_student(student_data)
         """
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
         try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO students (name, age, gender, grade)
                 VALUES (?, ?, ?, ?)
             """, (student_data['name'], student_data['age'], student_data['gender'], student_data['grade']))
             conn.commit()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
         finally:
-            if conn:
-                conn.close()
-
+            conn.close()
 
     def search_student_by_name(self, name):
         """
@@ -73,19 +63,14 @@ class StudentDatabaseProcessor:
         >>> processor.create_student_table()
         >>> result = processor.search_student_by_name("John")
         """
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
         try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
             cursor.execute("SELECT * FROM students WHERE name=?", (name,))
             result = cursor.fetchall()
             return result
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            return []
         finally:
-            if conn:
-                conn.close()
-
+            conn.close()
 
     def delete_student_by_name(self, name):
         """
@@ -98,13 +83,10 @@ class StudentDatabaseProcessor:
         >>> processor.insert_student(student_data)
         >>> processor.delete_student_by_name("John")
         """
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
         try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
             cursor.execute("DELETE FROM students WHERE name=?", (name,))
             conn.commit()
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
         finally:
-            if conn:
-                conn.close()
+            conn.close()

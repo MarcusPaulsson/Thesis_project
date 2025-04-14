@@ -23,15 +23,6 @@ class VendingMachine:
         {'Coke': {'price': 1.25, 'quantity': 10}}
 
         """
-        if not isinstance(item_name, str):
-            raise TypeError("item_name must be a string")
-        if not isinstance(price, (int, float)):
-            raise TypeError("price must be a number")
-        if not isinstance(quantity, int):
-            raise TypeError("quantity must be an integer")
-        if quantity < 0:
-            raise ValueError("quantity must be non-negative")
-
         if item_name in self.inventory:
             self.inventory[item_name]['quantity'] += quantity
         else:
@@ -47,13 +38,8 @@ class VendingMachine:
         1.25
 
         """
-        if not isinstance(amount, (int, float)):
-            raise TypeError("amount must be a number")
-        if amount <= 0:
-            raise ValueError("amount must be positive")
-
         self.balance += amount
-        return self.balance
+        return round(self.balance, 2)
 
     def purchase_item(self, item_name):
         """
@@ -69,17 +55,11 @@ class VendingMachine:
         False
 
         """
-        if not isinstance(item_name, str):
-            raise TypeError("item_name must be a string")
-
         if item_name in self.inventory:
-            if self.inventory[item_name]['quantity'] > 0:
-                if self.balance >= self.inventory[item_name]['price']:
-                    self.inventory[item_name]['quantity'] -= 1
-                    self.balance -= self.inventory[item_name]['price']
-                    return self.balance
-                else:
-                    return False
+            if self.inventory[item_name]['quantity'] > 0 and self.balance >= self.inventory[item_name]['price']:
+                self.inventory[item_name]['quantity'] -= 1
+                self.balance -= self.inventory[item_name]['price']
+                return round(self.balance,2)
             else:
                 return False
         else:
@@ -99,13 +79,6 @@ class VendingMachine:
         False
 
         """
-        if not isinstance(item_name, str):
-            raise TypeError("item_name must be a string")
-        if not isinstance(quantity, int):
-            raise TypeError("quantity must be an integer")
-        if quantity < 0:
-            raise ValueError("quantity must be non-negative")
-
         if item_name in self.inventory:
             self.inventory[item_name]['quantity'] += quantity
             return True
@@ -128,8 +101,6 @@ class VendingMachine:
             return False
         else:
             result = ""
-            for item_name, details in self.inventory.items():
-                result += f"{item_name} - ${details['price']} [{details['quantity']}]"
-                if item_name != list(self.inventory.keys())[-1]:
-                    result += "\n"
-            return result
+            for item_name, item_data in self.inventory.items():
+                result += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]\n"
+            return result.strip()

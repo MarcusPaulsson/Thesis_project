@@ -27,13 +27,13 @@ class DataStatistics:
         >>> ds.median([2, 5, 1, 3, 4])
         3.00
         """
-        data = sorted(data)
-        n = len(data)
+        data_sorted = sorted(data)
+        n = len(data_sorted)
         if n % 2 == 0:
-            median = (data[n // 2 - 1] + data[n // 2]) / 2
+            median = (data_sorted[n // 2 - 1] + data_sorted[n // 2]) / 2
         else:
-            median = data[n // 2]
-        return round(float(median), 2)
+            median = data_sorted[n // 2]
+        return round(float(median), 2) if isinstance(median, (int, float)) else median
 
     def mode(self, data):
         """

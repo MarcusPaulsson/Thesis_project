@@ -55,5 +55,5 @@ class BankAccount:
             raise ValueError("Invalid amount")
         if amount > self.balance:
             raise ValueError("Insufficient balance.")
-        self.balance -= amount
+        self.withdraw(amount)
         other_account.deposit(amount)

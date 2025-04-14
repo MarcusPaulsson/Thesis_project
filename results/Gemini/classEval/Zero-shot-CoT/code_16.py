@@ -36,7 +36,7 @@ class Calculator:
                 while i < len(expression) and expression[i].isdigit():
                     num = num * 10 + int(expression[i])
                     i += 1
-                operand_stack.append(float(num))
+                operand_stack.append(num)
                 i -= 1
             elif expression[i] in self.operators:
                 while operator_stack and self.precedence(operator_stack[-1]) >= self.precedence(expression[i]):
@@ -54,7 +54,7 @@ class Calculator:
             self.apply_operator(operand_stack, operator_stack)
 
         if operand_stack:
-            return operand_stack[0]
+            return float(operand_stack[0])
         else:
             return None
 
@@ -88,9 +88,6 @@ class Calculator:
         >>> calculator.apply_operator([1, 2, 3], ['+', '-'])
         ([1, -1], ['-'])
         """
-        if not operator_stack or len(operand_stack) < 2:
-          return operand_stack, operator_stack
-
         operator = operator_stack.pop()
         operand2 = operand_stack.pop()
         operand1 = operand_stack.pop()

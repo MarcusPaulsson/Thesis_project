@@ -20,8 +20,10 @@ class JSONProcessor:
         try:
             with open(file_path, 'r') as f:
                 data = json.load(f)
-            return data
-        except Exception as e:
+                return data
+        except json.JSONDecodeError:
+            return -1
+        except Exception:
             return -1
 
     def write_json(self, data, file_path):
@@ -40,7 +42,7 @@ class JSONProcessor:
             with open(file_path, 'w') as f:
                 json.dump(data, f)
             return 1
-        except Exception as e:
+        except Exception:
             return -1
 
     def process_json(self, file_path, remove_key):
@@ -58,17 +60,24 @@ class JSONProcessor:
         >>> json.read_json('test.json')
         {'key2': 'value2'}
         """
-        data = self.read_json(file_path)
-        if data == 0:
+        if not os.path.exists(file_path):
             return 0
-        if data == -1:
+
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            return 0
+        except Exception:
             return 0
 
         if remove_key in data:
             del data[remove_key]
-            if self.write_json(data, file_path) == 1:
+            try:
+                with open(file_path, 'w') as f:
+                    json.dump(data, f)
                 return 1
-            else:
+            except Exception:
                 return 0
         else:
             return 0

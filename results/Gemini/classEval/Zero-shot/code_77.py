@@ -17,7 +17,7 @@ class Snake:
         self.SCREEN_WIDTH = SCREEN_WIDTH
         self.SCREEN_HEIGHT = SCREEN_HEIGHT
         self.BLOCK_SIZE = BLOCK_SIZE
-        self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
+        self.positions = [((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))]
         self.score = 0
         self.food_position = food_position
 
@@ -39,14 +39,12 @@ class Snake:
             self.length += 1
             self.score += 100
             self.positions.insert(0, new_head)
-            self.random_food_position()
+            self.eat_food()
         elif new_head in self.positions[1:]:
             self.reset()
         else:
             self.positions.insert(0, new_head)
             self.positions = self.positions[:self.length]
-
-
 
 
     def random_food_position(self):
@@ -74,7 +72,7 @@ class Snake:
         self.random_food_position()
         """
         self.length = 1
-        self.positions = [((self.SCREEN_WIDTH // 2), (self.SCREEN_HEIGHT // 2))]
+        self.positions = [((self.SCREEN_WIDTH / 2), (self.SCREEN_HEIGHT / 2))]
         self.score = 0
         self.random_food_position()
 

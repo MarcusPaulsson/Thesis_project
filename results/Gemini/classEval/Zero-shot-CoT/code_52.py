@@ -31,20 +31,20 @@ class Lemmatization:
 
         """
         sentence = self.remove_punctuation(sentence)
-        words = word_tokenize(sentence)
+        tokens = word_tokenize(sentence)
         pos_tags = self.get_pos_tag(sentence)
         lemmatized_words = []
-        for word, pos_tag in zip(words, pos_tags):
-            if pos_tag.startswith('N'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='n'))
-            elif pos_tag.startswith('V'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='v'))
-            elif pos_tag.startswith('J'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='a'))
-            elif pos_tag.startswith('R'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='r'))
+        for i, token in enumerate(tokens):
+            if pos_tags[i].startswith('J'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='a'))
+            elif pos_tags[i].startswith('V'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='v'))
+            elif pos_tags[i].startswith('N'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='n'))
+            elif pos_tags[i].startswith('R'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(token, pos='r'))
             else:
-                lemmatized_words.append(self.lemmatizer.lemmatize(word))
+                lemmatized_words.append(self.lemmatizer.lemmatize(token))
         return lemmatized_words
 
     def get_pos_tag(self, sentence):
@@ -58,9 +58,9 @@ class Lemmatization:
 
         """
         sentence = self.remove_punctuation(sentence)
-        words = word_tokenize(sentence)
-        pos_tags = pos_tag(words)
-        return [tag for word, tag in pos_tags]
+        tokens = word_tokenize(sentence)
+        pos_tags = pos_tag(tokens)
+        return [tag for token, tag in pos_tags]
 
     def remove_punctuation(self, sentence):
         """

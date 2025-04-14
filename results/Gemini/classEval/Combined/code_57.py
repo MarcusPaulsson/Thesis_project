@@ -3,8 +3,7 @@ import numpy as np
 
 class MetricsCalculator2:
     """
-    The class provides methods to calculate Mean Reciprocal Rank (MRR) and Mean Average Precision (MAP) based on input data.
-    MRR measures the ranking quality, and MAP measures the average precision.
+    The class provides to calculate Mean Reciprocal Rank (MRR) and Mean Average Precision (MAP) based on input data, where MRR measures the ranking quality and MAP measures the average precision.
     """
 
     def __init__(self):
@@ -13,20 +12,20 @@ class MetricsCalculator2:
     @staticmethod
     def mrr(data):
         """
-        Computes the Mean Reciprocal Rank (MRR) of the input data.
+        Compute the Mean Reciprocal Rank (MRR) of the input data.
 
-        :param data: A tuple or list of tuples, where each tuple contains:
-                     - results: A list of integers (0 or 1) representing the correctness of ranked results. 1 indicates a correct result, 0 indicates an incorrect result.
-                     - ground_truth_num: An integer representing the total number of relevant items.
+        Args:
+            data: A tuple or list of tuples. Each tuple should be in the format
+                  (results, ground_truth_num), where:
+                  - results is a list of 1s and 0s, representing correct and
+                    incorrect answers, respectively.
+                  - ground_truth_num is the total number of ground truth items.
 
-        :return: A tuple containing:
-                 - mean_rr: The mean reciprocal rank.
-                 - reciprocal_ranks: A list of reciprocal ranks for each input tuple.
-
-        :raises TypeError: If input data is not a list or tuple, or if 'results' is not a list, or if elements in 'results' are not 0 or 1.
-        :raises ValueError: If items in the list are not tuples of (results, ground_truth_num).
+        Returns:
+            A tuple containing:
+            - The mean reciprocal rank (float).
+            - A list of reciprocal ranks for each input tuple.
         """
-
         if not isinstance(data, (list, tuple)):
             raise TypeError("Input data must be a list or tuple.")
 
@@ -39,43 +38,41 @@ class MetricsCalculator2:
         reciprocal_ranks = []
         for item in data:
             if not isinstance(item, tuple) or len(item) != 2:
-                raise ValueError("Each item in the list must be a tuple of (results, ground_truth_num).")
+                raise ValueError(
+                    "Each item in the list must be a tuple of (results, ground_truth_num)."
+                )
 
             results, ground_truth_num = item
-
             if not isinstance(results, list):
                 raise TypeError("Results must be a list.")
 
-            if not all(isinstance(r, (int, np.integer)) and r in (0, 1) for r in results):
-                raise ValueError("Results must be a list of 0s and 1s.")
+            try:
+                rank = next(i + 1 for i, x in enumerate(results) if x == 1)
+                reciprocal_rank = 1.0 / rank
+            except StopIteration:
+                reciprocal_rank = 0.0
+            reciprocal_ranks.append(reciprocal_rank)
 
-            rr = 0.0
-            for i, result in enumerate(results):
-                if result == 1:
-                    rr = 1.0 / (i + 1)
-                    break  # Stop after the first relevant result
-            reciprocal_ranks.append(rr)
-
-        mean_rr = np.mean(reciprocal_ranks) if reciprocal_ranks else 0.0
-        return mean_rr, reciprocal_ranks
+        mean_reciprocal_rank = np.mean(reciprocal_ranks) if reciprocal_ranks else 0.0
+        return mean_reciprocal_rank, reciprocal_ranks
 
     @staticmethod
     def map(data):
         """
-        Computes the Mean Average Precision (MAP) of the input data.
+        Compute the Mean Average Precision (MAP) of the input data.
 
-        :param data: A tuple or list of tuples, where each tuple contains:
-                     - results: A list of integers (0 or 1) representing the correctness of ranked results. 1 indicates a correct result, 0 indicates an incorrect result.
-                     - ground_truth_num: An integer representing the total number of relevant items.
+        Args:
+            data: A tuple or list of tuples. Each tuple should be in the format
+                  (results, ground_truth_num), where:
+                  - results is a list of 1s and 0s, representing correct and
+                    incorrect answers, respectively.
+                  - ground_truth_num is the total number of ground truth items.
 
-        :return: A tuple containing:
-                 - mean_ap: The mean average precision.
-                 - average_precisions: A list of average precisions for each input tuple.
-
-        :raises TypeError: If input data is not a list or tuple, or if 'results' is not a list, or if elements in 'results' are not 0 or 1.
-        :raises ValueError: If items in the list are not tuples of (results, ground_truth_num).
+        Returns:
+            A tuple containing:
+            - The mean average precision (float).
+            - A list of average precisions for each input tuple.
         """
-
         if not isinstance(data, (list, tuple)):
             raise TypeError("Input data must be a list or tuple.")
 
@@ -88,15 +85,13 @@ class MetricsCalculator2:
         average_precisions = []
         for item in data:
             if not isinstance(item, tuple) or len(item) != 2:
-                raise ValueError("Each item in the list must be a tuple of (results, ground_truth_num).")
+                raise ValueError(
+                    "Each item in the list must be a tuple of (results, ground_truth_num)."
+                )
 
             results, ground_truth_num = item
-
             if not isinstance(results, list):
                 raise TypeError("Results must be a list.")
-
-            if not all(isinstance(r, (int, np.integer)) and r in (0, 1) for r in results):
-                raise ValueError("Results must be a list of 0s and 1s.")
 
             relevant_count = 0
             precision_sum = 0.0
@@ -106,11 +101,11 @@ class MetricsCalculator2:
                     precision_sum += float(relevant_count) / (i + 1)
 
             if ground_truth_num == 0:
-                ap = 0.0
+                average_precision = 0.0
             else:
-                ap = precision_sum / ground_truth_num
+                average_precision = precision_sum / ground_truth_num
 
-            average_precisions.append(ap)
+            average_precisions.append(average_precision)
 
-        mean_ap = np.mean(average_precisions) if average_precisions else 0.0
-        return mean_ap, average_precisions
+        mean_average_precision = np.mean(average_precisions) if average_precisions else 0.0
+        return mean_average_precision, average_precisions

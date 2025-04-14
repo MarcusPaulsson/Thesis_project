@@ -20,11 +20,7 @@ class SQLGenerator:
         >>> sql.select(['field1', 'field2'], 'filed3 = value1')
         'SELECT field1, field2 FROM table1 WHERE filed3 = value1;'
         """
-        sql = f"SELECT {', '.join(fields)} FROM {self.table_name}" if fields else f"SELECT * FROM {self.table_name}"
-
-        if fields and len(fields) == 1 and ',' in fields[0]:
-            sql = f"SELECT {fields[0]} FROM {self.table_name}"
-
+        sql = f"SELECT {', '.join(fields) if fields else '*'} FROM {self.table_name}"
         if condition:
             sql += f" WHERE {condition}"
         sql += ";"
@@ -53,8 +49,8 @@ class SQLGenerator:
         >>> sql.update({'field1': 'new_value1', 'field2': 'new_value2'}, "field3 = value1")
         "UPDATE table1 SET field1 = 'new_value1', field2 = 'new_value2' WHERE field3 = value1;"
         """
-        set_clause = ', '.join([f"{field} = '{value}'" for field, value in data.items()])
-        sql = f"UPDATE {self.table_name} SET {set_clause} WHERE {condition};"
+        updates = ', '.join([f"{field} = '{value}'" for field, value in data.items()])
+        sql = f"UPDATE {self.table_name} SET {updates} WHERE {condition};"
         return sql
 
     def delete(self, condition):

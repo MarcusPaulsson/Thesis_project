@@ -19,12 +19,10 @@ class CSVProcessor:
         (['a', 'b', 'c', 'd'], [['hElLo', 'YoU', 'ME', 'LoW']])
         """
         try:
-            with open(file_name, 'r', newline='') as csvfile:
-                reader = csv.reader(csvfile)
+            with open(file_name, 'r') as file:
+                reader = csv.reader(file)
                 title = next(reader)
-                data = []
-                for row in reader:
-                    data.append(row)
+                data = [row for row in reader]
                 return title, data
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
@@ -44,10 +42,9 @@ class CSVProcessor:
         """
         if not data:
             return 0
-
         try:
-            with open(file_name, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile)
+            with open(file_name, 'w', newline='') as file:
+                writer = csv.writer(file)
                 writer.writerow(data[0])
                 for row in data[1:]:
                     writer.writerow(row)
@@ -77,16 +74,20 @@ class CSVProcessor:
             if not title or not data:
                 return 0
 
-            new_data = []
-            for row in data:
-                if len(row) > N:
-                    new_data.append([row[N].upper()])
-                else:
-                    return 0
+            new_data = [[row[N].upper()] for row in data]
 
             new_file_name = save_file_name.replace(".csv", "_process.csv")
-            return self.write_csv([title, *new_data], new_file_name)
+            
+            with open(new_file_name, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(title)
+                for row in new_data:
+                    writer.writerow(row)
 
+            return 1
+        except IndexError:
+            print(f"Error: Column {N} does not exist in the CSV file.")
+            return 0
         except Exception as e:
             print(f"An error occurred: {e}")
             return 0

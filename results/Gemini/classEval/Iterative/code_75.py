@@ -24,6 +24,8 @@ class ShoppingCart:
             raise TypeError("Price must be a number")
         if not isinstance(quantity, int):
             raise TypeError("Quantity must be an integer")
+        if price <= 0:
+            raise ValueError("Price must be positive")
         if quantity <= 0:
             raise ValueError("Quantity must be positive")
 
@@ -51,6 +53,8 @@ class ShoppingCart:
             self.items[item]["quantity"] -= quantity
             if self.items[item]["quantity"] <= 0:
                 del self.items[item]
+        else:
+            pass
 
 
     def view_items(self) -> dict:
@@ -66,7 +70,7 @@ class ShoppingCart:
         Calculate the total price of all items in the shopping list, which is the quantity of each item multiplied by the price
         :return:float, the total price of all items in the shopping list
         """
-        total = 0
+        total = 0.0
         for item, details in self.items.items():
             total += details["price"] * details["quantity"]
-        return float(total)
+        return total

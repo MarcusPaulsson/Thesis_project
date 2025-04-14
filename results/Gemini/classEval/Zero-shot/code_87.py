@@ -27,6 +27,7 @@ class TimeUtils:
         """
         Return the current date in the format of "%Y-%m-%d"
         :return: string
+        >>> timeutils = TimeUtils()
         >>> timeutils.get_current_date()
         "2023-06-14"
         """
@@ -60,7 +61,7 @@ class TimeUtils:
         >>> timeutils.datetime_to_string(timeutils.datetime)
         "2023-06-14 19:30:03"
         """
-        return datetime.strftime(datetime, "%Y-%m-%d %H:%M:%S")
+        return datetime.strftime("%Y-%m-%d %H:%M:%S")
 
     def get_minutes(self, string_time1, string_time2):
         """

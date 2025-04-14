@@ -22,6 +22,7 @@ class CamelCaseMap:
         key = self._convert_key(key)
         return self._data[key]
 
+
     def __setitem__(self, key, value):
         """
         Set the value corresponding to the key to the specified value
@@ -35,6 +36,7 @@ class CamelCaseMap:
         """
         key = self._convert_key(key)
         self._data[key] = value
+
 
     def __delitem__(self, key):
         """
@@ -50,6 +52,7 @@ class CamelCaseMap:
         key = self._convert_key(key)
         del self._data[key]
 
+
     def __iter__(self):
         """
         Returning Iterateable Objects with Own Data
@@ -62,6 +65,7 @@ class CamelCaseMap:
         <dict_keyiterator object at 0x0000026739977C20>
         """
         return iter(self._data)
+
 
     def __len__(self):
         """

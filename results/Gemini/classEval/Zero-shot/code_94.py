@@ -102,5 +102,7 @@ class VendingMachine:
         else:
             result = ""
             for item_name, item_data in self.inventory.items():
-                result += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]\n"
-            return result.strip()
+                result += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]"
+                if item_name != list(self.inventory.keys())[-1]:
+                    result += "\n"
+            return result

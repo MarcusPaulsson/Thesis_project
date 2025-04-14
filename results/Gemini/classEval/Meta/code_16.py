@@ -30,24 +30,28 @@ class Calculator:
         operand_stack = []
         operator_stack = []
         i = 0
+
         while i < len(expression):
-            if expression[i].isdigit():
+            char = expression[i]
+
+            if char.isdigit():
                 num = 0
                 while i < len(expression) and expression[i].isdigit():
                     num = num * 10 + int(expression[i])
                     i += 1
                 operand_stack.append(float(num))
-                i -= 1
-            elif expression[i] in self.operators:
-                while operator_stack and self.precedence(operator_stack[-1]) >= self.precedence(expression[i]):
-                    self.apply_operator(operand_stack, operator_stack)
-                operator_stack.append(expression[i])
-            elif expression[i] == '(':
-                operator_stack.append(expression[i])
-            elif expression[i] == ')':
+                i -= 1  # Correct the index after reading the number
+
+            elif char == '(':
+                operator_stack.append(char)
+            elif char == ')':
                 while operator_stack and operator_stack[-1] != '(':
                     self.apply_operator(operand_stack, operator_stack)
                 operator_stack.pop()  # Remove the '('
+            elif char in self.operators:
+                while operator_stack and operator_stack[-1] != '(' and self.precedence(char) <= self.precedence(operator_stack[-1]):
+                    self.apply_operator(operand_stack, operator_stack)
+                operator_stack.append(char)
             i += 1
 
         while operator_stack:
@@ -88,13 +92,9 @@ class Calculator:
         >>> calculator.apply_operator([1, 2, 3], ['+', '-'])
         ([1, -1], ['-'])
         """
-        if len(operand_stack) < 2 or not operator_stack:
-            return operand_stack, operator_stack
-
         operator = operator_stack.pop()
         operand2 = operand_stack.pop()
         operand1 = operand_stack.pop()
-
         result = self.operators[operator](operand1, operand2)
         operand_stack.append(result)
         return operand_stack, operator_stack

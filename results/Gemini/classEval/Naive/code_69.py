@@ -15,9 +15,9 @@ class PDFHandler:
         for fp in filepaths:
             try:
                 self.readers.append(PyPDF2.PdfFileReader(fp))
-            except Exception as e:
-                print(f"Error opening {fp}: {e}")
-                self.readers.append(None)
+            except FileNotFoundError:
+                print(f"Error: File not found: {fp}")
+                self.readers.append(None)  # Append None to maintain list length
 
     def merge_pdfs(self, output_filepath):
         """
@@ -31,11 +31,15 @@ class PDFHandler:
         """
         merger = PyPDF2.PdfFileMerger()
         for reader in self.readers:
-            if reader:
+            if reader:  # Check if the reader is valid (not None)
                 merger.append(reader)
-        merger.write(output_filepath)
-        merger.close()
-        return f"Merged PDFs saved at {output_filepath}"
+
+        try:
+            merger.write(output_filepath)
+            merger.close()
+            return f"Merged PDFs saved at {output_filepath}"
+        except Exception as e:
+            return f"Error merging PDFs: {e}"
 
     def extract_text_from_pdfs(self):
         """
@@ -47,12 +51,12 @@ class PDFHandler:
         """
         pdf_texts = []
         for reader in self.readers:
-            if reader:
+            if reader:  # Check if the reader is valid (not None)
                 text = ""
                 for page_num in range(reader.getNumPages()):
                     page = reader.getPage(page_num)
-                    text += page.extractText()
+                    text += page.extractText() + "\n"
                 pdf_texts.append(text)
             else:
-                pdf_texts.append("")
+                pdf_texts.append("")  # Append empty string for invalid files
         return pdf_texts

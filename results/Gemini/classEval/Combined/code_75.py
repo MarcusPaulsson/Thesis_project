@@ -1,85 +1,70 @@
 class ShoppingCart:
     """
-    Manages items, prices, and quantities in a shopping cart.
-    Allows adding, removing, viewing items, and calculating the total price.
+    The class manages items, their prices, quantities, and allows to for add, remove, view items, and calculate the total price.
     """
 
     def __init__(self):
         """
-        Initializes the shopping cart with an empty dictionary of items.
+        Initialize the items representing the shopping list as an empty dictionary
         """
         self.items = {}
 
     def add_item(self, item, price, quantity=1):
         """
-        Adds an item to the shopping cart or updates its quantity if it already exists.
-
-        Args:
-            item (str): The name of the item to add.
-            price (float): The price of the item.
-            quantity (int, optional): The quantity of the item to add. Defaults to 1.
-
-        Raises:
-            TypeError: if price or quantity is not of the correct type
-            ValueError: if price or quantity is not a positive number
-
+        Add item information to the shopping list items, including price and quantity. The default quantity is 1
+        :param item: string, Item to be added
+        :param price: float, The price of the item
+        :param quantity: int, The number of items, defaults to 1
+        :return: None
         """
+        if not isinstance(item, str):
+            raise TypeError("Item must be a string")
         if not isinstance(price, (int, float)):
-            raise TypeError("Price must be a number.")
+            raise TypeError("Price must be a number")
         if not isinstance(quantity, int):
-            raise TypeError("Quantity must be an integer.")
+            raise TypeError("Quantity must be an integer")
         if price <= 0:
-            raise ValueError("Price must be a positive number.")
+            raise ValueError("Price must be positive")
         if quantity <= 0:
-            raise ValueError("Quantity must be a positive integer.")
+            raise ValueError("Quantity must be positive")
 
         if item in self.items:
-            self.items[item]["quantity"] += quantity
+            self.items[item]["quantity"] = quantity
         else:
             self.items[item] = {"price": price, "quantity": quantity}
 
     def remove_item(self, item, quantity=1):
         """
-        Removes a specified quantity of an item from the shopping cart.
-        If the quantity to remove is greater than or equal to the current quantity,
-        the item is removed entirely.
-
-        Args:
-            item (str): The name of the item to remove.
-            quantity (int, optional): The quantity of the item to remove. Defaults to 1.
-
-        Raises:
-            TypeError: if quantity is not of the correct type
-            ValueError: if quantity is not a positive number
+        Subtract the specified quantity of item from the shopping list items
+        :param item: string, Item to be subtracted in quantity
+        :param quantity: int, Quantity to be subtracted
+        :return: None
         """
+        if not isinstance(item, str):
+            raise TypeError("Item must be a string")
         if not isinstance(quantity, int):
-            raise TypeError("Quantity must be an integer.")
+            raise TypeError("Quantity must be an integer")
         if quantity <= 0:
-            raise ValueError("Quantity must be a positive integer.")
+            raise ValueError("Quantity must be positive")
 
         if item in self.items:
             self.items[item]["quantity"] -= quantity
             if self.items[item]["quantity"] <= 0:
                 del self.items[item]
 
-    def view_items(self):
+    def view_items(self) -> dict:
         """
-        Returns a dictionary representing the current items in the shopping cart.
-
-        Returns:
-            dict: A dictionary where keys are item names and values are dictionaries
-                  containing the item's price and quantity.
+        Return the current shopping list items
+        :return: dict, the current shopping list items
         """
-        return self.items.copy()  # Return a copy to prevent external modification
+        return self.items
 
-    def total_price(self):
+    def total_price(self) -> float:
         """
-        Calculates the total price of all items in the shopping cart.
-
-        Returns:
-            float: The total price of all items.
+        Calculate the total price of all items in the shopping list, which is the quantity of each item multiplied by the price
+        :return: float, the total price of all items in the shopping list
         """
         total = 0.0
-        for details in self.items.values():
+        for item, details in self.items.items():
             total += details["price"] * details["quantity"]
         return total

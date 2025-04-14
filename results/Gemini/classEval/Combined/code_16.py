@@ -11,7 +11,7 @@ class Calculator:
             '+': lambda x, y: x + y,
             '-': lambda x, y: x - y,
             '*': lambda x, y: x * y,
-            '/': lambda x, y: x / y if y != 0 else None,  # Handle division by zero
+            '/': lambda x, y: x / y if y != 0 else None,
             '^': lambda x, y: x ** y
         }
 
@@ -27,41 +27,47 @@ class Calculator:
         operand_stack = []
         operator_stack = []
         i = 0
+
         while i < len(expression):
             char = expression[i]
+
             if char.isdigit():
                 num = 0
                 while i < len(expression) and expression[i].isdigit():
                     num = num * 10 + int(expression[i])
                     i += 1
                 operand_stack.append(float(num))
-                i -= 1  # Correct the index after extracting the number
+                i -= 1
+
             elif char in self.operators:
-                while operator_stack and operator_stack[-1] in self.operators and self.precedence(char) <= self.precedence(operator_stack[-1]):
+                while operator_stack and operator_stack[-1] != '(' and self.precedence(char) <= self.precedence(operator_stack[-1]):
                     result = self.apply_operator(operand_stack, operator_stack)
                     if result is None:
-                        return None # Propagate errors from apply_operator
+                        return None
+
                 operator_stack.append(char)
+
             elif char == '(':
                 operator_stack.append(char)
+
             elif char == ')':
                 while operator_stack and operator_stack[-1] != '(':
                     result = self.apply_operator(operand_stack, operator_stack)
                     if result is None:
-                        return None  # Propagate errors from apply_operator
-                if not operator_stack:
-                    return None  # unbalanced parentheses
-                operator_stack.pop()  # Remove the '('
+                        return None
+                if operator_stack:
+                    operator_stack.pop()  # Remove the '('
+                else:
+                    return None #Mismatched parentheses
+
             i += 1
 
         while operator_stack:
             result = self.apply_operator(operand_stack, operator_stack)
             if result is None:
-                return None  # Propagate errors from apply_operator
+                return None
 
         if operand_stack:
-            if len(operand_stack) > 1:
-                return None # Invalid Expression
             return operand_stack[0]
         else:
             return None
@@ -78,8 +84,7 @@ class Calculator:
             return 2
         elif operator == '^':
             return 3
-        else:
-            return 0
+        return 0
 
     def apply_operator(self, operand_stack, operator_stack):
         """
@@ -88,17 +93,17 @@ class Calculator:
         :param operator_stack:list
         :return: the updated operand_stack and operator_stack
         """
-        if len(operand_stack) < 2 or not operator_stack:
+        if not operator_stack or len(operand_stack) < 2:
             return None
 
         operator = operator_stack.pop()
         operand2 = operand_stack.pop()
         operand1 = operand_stack.pop()
 
-        try:
-            result = self.operators[operator](operand1, operand2)
-        except ZeroDivisionError:
+        if operator not in self.operators:
             return None
+
+        result = self.operators[operator](operand1, operand2)
 
         if result is None:
             return None

@@ -46,7 +46,8 @@ class EncryptionUtils:
         key_len = len(self.key)
         for i, char in enumerate(plaintext):
             key_char = self.key[i % key_len]
-            shift = ord(key_char) - ord('a')
+            shift = ord(key_char.lower()) - ord('a')
+
             if 'a' <= char <= 'z':
                 shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
@@ -69,20 +70,19 @@ class EncryptionUtils:
         if rails <= 1:
             return plain_text
 
-        rail = [['\n' for _ in range(len(plain_text))]
-                for _ in range(rails)]
+        rail = [['\n' for _ in range(len(plain_text))] for _ in range(rails)]
 
-        dir_down = False
+        down = False
         row, col = 0, 0
 
         for i in range(len(plain_text)):
             if row == 0 or row == rails - 1:
-                dir_down = not dir_down
+                down = not down
 
             rail[row][col] = plain_text[i]
             col += 1
 
-            if dir_down:
+            if down:
                 row += 1
             else:
                 row -= 1

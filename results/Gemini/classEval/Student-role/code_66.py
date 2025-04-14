@@ -16,27 +16,37 @@ class NumericEntityUnescaper:
         'ABC'
 
         """
-        import re
-
-        def replace_entity(match):
-            entity = match.group(1)
-            if entity.startswith('x'):
-                try:
-                    code = int(entity[1:], 16)
-                except ValueError:
-                    return match.group(0)
+        result = ""
+        i = 0
+        while i < len(string):
+            if string[i:i + 2] == "&#":
+                j = i + 2
+                end = string.find(";", j)
+                if end != -1:
+                    entity = string[i + 2:end]
+                    if entity.startswith("X") or entity.startswith("x"):
+                        try:
+                            char_code = int(entity[1:], 16)
+                            result += chr(char_code)
+                            i = end + 1
+                        except ValueError:
+                            result += string[i:end + 1]
+                            i = end + 1
+                    else:
+                        try:
+                            char_code = int(entity)
+                            result += chr(char_code)
+                            i = end + 1
+                        except ValueError:
+                            result += string[i:end + 1]
+                            i = end + 1
+                else:
+                    result += string[i:]
+                    i = len(string)
             else:
-                try:
-                    code = int(entity)
-                except ValueError:
-                    return match.group(0)
-
-            try:
-                return chr(code)
-            except ValueError:
-                return match.group(0)
-
-        return re.sub(r"&#([xX]?[0-9a-fA-F]+);", replace_entity, string)
+                result += string[i]
+                i += 1
+        return result
 
     @staticmethod
     def is_hex_char(char):

@@ -6,71 +6,92 @@ class GomokuGame:
     def __init__(self, board_size):
         """
         Initializes the game with a given board size.
-        It initializes the board with empty spaces and sets the current player symbol as 'X'.
+        It initializes the board with empty spaces and sets the current player symble as 'X'.
         """
-        if not isinstance(board_size, int) or board_size <= 0:
-            raise ValueError("Board size must be a positive integer.")
-
         self.board_size = board_size
         self.board = [[' ' for _ in range(board_size)] for _ in range(board_size)]
         self.current_player = 'X'
-        self.other_player = 'O'
-
 
     def make_move(self, row, col):
         """
         Makes a move at the given row and column.
         If the move is valid, it places the current player's symbol on the board
-        and changes the current player to the other player.
+        and changes the current player to the other player (if the current player is 'X', then it becomes 'O' and vice versa).
         :param row: int, the row index of this move
         :param col: int, the column index
-        :return: True if the move is valid, or False otherwise.
+        return: True if the move is valid, or False otherwise.
         """
         if not (0 <= row < self.board_size and 0 <= col < self.board_size):
             return False
-
         if self.board[row][col] != ' ':
             return False
 
         self.board[row][col] = self.current_player
-        self.current_player, self.other_player = self.other_player, self.current_player
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
         return True
-
 
     def check_winner(self):
         """
         Checks if there is a winner by looking for five in a row in all directions (horizontal, vertical, diagonal).
-        :return: the symbol of the winning player (either 'X' or 'O') if there is a winner, or None otherwise.
+        return: the symbol of the winning player (either 'X' or 'O') if there is a winner, or None otherwise.
         """
         for row in range(self.board_size):
             for col in range(self.board_size):
                 if self.board[row][col] != ' ':
                     player = self.board[row][col]
-                    if self._check_five_in_a_row(row, col, (0, 1), player) or \
-                       self._check_five_in_a_row(row, col, (1, 0), player) or \
-                       self._check_five_in_a_row(row, col, (1, 1), player) or \
-                       self._check_five_in_a_row(row, col, (1, -1), player):
+                    # Check horizontal
+                    if self._check_line(row, col, 0, 1, player):
+                        return player
+                    # Check vertical
+                    if self._check_line(row, col, 1, 0, player):
+                        return player
+                    # Check diagonal (top-left to bottom-right)
+                    if self._check_line(row, col, 1, 1, player):
+                        return player
+                    # Check diagonal (top-right to bottom-left)
+                    if self._check_line(row, col, 1, -1, player):
                         return player
         return None
 
+    def _check_line(self, row, col, row_increment, col_increment, player):
+        """
+        Checks for five in a row in a specific direction.
 
-    def _check_five_in_a_row(self, row, col, direction, player):
+        :param row: Starting row.
+        :param col: Starting column.
+        :param row_increment: Increment for row.
+        :param col_increment: Increment for column.
+        :param player: The player to check for.
+        :return: True if five in a row is found, False otherwise.
         """
-        Checks if there are five consecutive symbols of the same player in a row starting from a given cell in a given direction.
-        :param row: int, row of the given cell
-        :param col: int, column of the given cell
-        :param direction: tuple, (int, int), representing the direction to check (dx, dy).
-        :param player: The player symbol to check for.
-        :return: True if there are five consecutive symbols of the same player, and False otherwise.
-        """
-        dx, dy = direction
         count = 0
-
         for i in range(5):
-            r, c = row + i * dx, col + i * dy
-            if 0 <= r < self.board_size and 0 <= c < self.board_size and self.board[r][c] == player:
+            new_row = row + i * row_increment
+            new_col = col + i * col_increment
+            if (0 <= new_row < self.board_size and
+                    0 <= new_col < self.board_size and
+                    self.board[new_row][new_col] == player):
                 count += 1
             else:
                 return False
+        return count == 5
 
+    def _check_five_in_a_row(self, row, col, direction):
+        """
+        checks if there are five consecutive symbols of the same player in a row starting from a given cell in a given direction (horizontal, vertical, diagonal).
+        Counts the number of consecutive symbols in that direction starting from the given cell,
+        :param row: int, row of the given cell
+        :param col: int, column of the given cell
+        :param direction: tuple, (int, int), named as (dx, dy). Row and col will plus several dx and dy repectively.
+        :return: True if there are five consecutive symbols of the same player, and False otherwise.
+        """
+        player = self.board[row][col]
+        count = 0
+        for i in range(5):
+            new_row = row + i * direction[0]
+            new_col = col + i * direction[1]
+            if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size and self.board[new_row][new_col] == player:
+                count += 1
+            else:
+                return False
         return count == 5

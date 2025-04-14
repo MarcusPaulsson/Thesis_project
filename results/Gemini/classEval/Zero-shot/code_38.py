@@ -20,13 +20,11 @@ class ExcelProcessor:
             sheet = workbook.active
             data = []
             for row in sheet.iter_rows():
-                row_data = []
-                for cell in row:
-                    row_data.append(cell.value)
-                data.append(tuple(row_data))
+                row_data = tuple(cell.value for cell in row)
+                data.append(row_data)
             return data
         except FileNotFoundError:
-            print(f"Error: The file '{file_name}' was not found.")
+            print(f"Error: File '{file_name}' not found.")
             return None
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -58,7 +56,7 @@ class ExcelProcessor:
             workbook.save(file_name)
             return 1
         except Exception as e:
-            print(f"An error occurred while writing to Excel: {e}")
+            print(f"An error occurred: {e}")
             return 0
 
     def process_excel_data(self, N, save_file_name):
@@ -73,26 +71,20 @@ class ExcelProcessor:
         try:
             data = self.read_excel(save_file_name)
             if data is None:
-                return 0
+                return 0, None
 
             new_data = []
-            output_file_name = "processed_" + save_file_name
-
             for row in data:
                 new_row = list(row)
-                if 0 <= N < len(row):
-                    try:
-                        new_row.append(str(row[N]).upper())
-                    except:
-                        return 0
+                if 0 <= N < len(new_row):
+                    new_row.append(str(new_row[N]).upper())
                 else:
-                    return 0
+                    return 0, None
                 new_data.append(tuple(new_row))
 
+            output_file_name = "processed_" + save_file_name
             success = self.write_excel(new_data, output_file_name)
-
             return success, output_file_name
-
         except Exception as e:
-            print(f"An error occurred while processing the Excel data: {e}")
-            return 0
+            print(f"An error occurred: {e}")
+            return 0, None

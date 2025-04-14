@@ -12,6 +12,8 @@ class PushBoxGame:
             - 'O' represents the initial position of the player;
             - 'G' represents the target position;
             - 'X' represents the initial position of the box.
+        >>> map = ["#####", "#O  #", "# X #", "#  G#", "#####"]   
+        >>> game = PushBoxGame(map)                
         """
         self.map = map
         self.player_row = 0
@@ -26,6 +28,8 @@ class PushBoxGame:
         """
         Initialize the game by setting the positions of the player, targets, and boxes based on the map.
         """
+        self.targets = []
+        self.boxes = []
         for row_index, row in enumerate(self.map):
             for col_index, cell in enumerate(row):
                 if cell == 'O':
@@ -33,9 +37,9 @@ class PushBoxGame:
                     self.player_col = col_index
                 elif cell == 'G':
                     self.targets.append((row_index, col_index))
-                    self.target_count += 1
                 elif cell == 'X':
                     self.boxes.append((row_index, col_index))
+        self.target_count = len(self.targets)
 
     def check_win(self):
         """
@@ -43,19 +47,11 @@ class PushBoxGame:
         And update the value of self.is_game_over.
         :return self.is_game_over: True if all the boxes are placed on target positions, or False otherwise.
         """
-        if not self.targets:
-            self.is_game_over = False
-            return self.is_game_over
-        
-        if len(self.boxes) != len(self.targets):
-            self.is_game_over = False
-            return self.is_game_over
-
+        boxes_on_targets = 0
         for box in self.boxes:
-            if box not in self.targets:
-                self.is_game_over = False
-                return self.is_game_over
-        self.is_game_over = True
+            if box in self.targets:
+                boxes_on_targets += 1
+        self.is_game_over = boxes_on_targets == self.target_count
         return self.is_game_over
 
 
@@ -104,27 +100,25 @@ class PushBoxGame:
 
             if self.map[new_box_row][new_box_col] == '#':
                 return self.check_win()
-            
-            another_box = False
-            for box2 in self.boxes:
-                if box2[0] == new_box_row and box2[1] == new_box_col:
-                    another_box = True
+
+            is_another_box = False
+            for other_box in self.boxes:
+                if other_box[0] == new_box_row and other_box[1] == new_box_col:
+                    is_another_box = True
                     break
-            if another_box:
+
+            if is_another_box:
                 return self.check_win()
 
             self.boxes[box_index] = (new_box_row, new_box_col)
             self.player_row = new_row
             self.player_col = new_col
             return self.check_win()
-        else:
-            self.player_row = new_row
-            self.player_col = new_col
-            return self.check_win()
+
+        self.player_row = new_row
+        self.player_col = new_col
+        return self.check_win()
 
     def print_map(self):
-        """
-        Print the current map of the game.
-        """
         for row in self.map:
             print(' '.join(row))

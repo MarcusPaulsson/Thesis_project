@@ -22,6 +22,15 @@ class Warehouse:
         :param name: str, product name
         :param quantity: int, product quantity
         """
+        if not isinstance(product_id, int):
+            raise TypeError("product_id must be an integer")
+        if not isinstance(name, str):
+            raise TypeError("name must be a string")
+        if not isinstance(quantity, int):
+            raise TypeError("quantity must be an integer")
+        if quantity < 0:
+            raise ValueError("quantity must be non-negative")
+
         if product_id in self.inventory:
             self.inventory[product_id]['quantity'] += quantity
         else:
@@ -31,8 +40,16 @@ class Warehouse:
         """
         According to product_id, add the quantity to the corresponding product in inventory.
         """
+        if not isinstance(product_id, int):
+            raise TypeError("product_id must be an integer")
+        if not isinstance(quantity, int):
+            raise TypeError("quantity must be an integer")
+
         if product_id in self.inventory:
             self.inventory[product_id]['quantity'] += quantity
+            if self.inventory[product_id]['quantity'] < 0:
+                self.inventory[product_id]['quantity'] = 0  # Ensure quantity doesn't go below 0
+        
 
     def get_product_quantity(self, product_id):
         """
@@ -41,6 +58,9 @@ class Warehouse:
         :return: if the product_id is in inventory then return the corresponding quantity,
                 or False otherwise.
         """
+        if not isinstance(product_id, int):
+            raise TypeError("product_id must be an integer")
+
         if product_id in self.inventory:
             return self.inventory[product_id]['quantity']
         else:
@@ -56,8 +76,18 @@ class Warehouse:
         :param quantity: the quantity of product that be selected.
         :return False: only if product_id is not in inventory or the quantity is not adequate
         """
+        if not isinstance(order_id, int):
+            raise TypeError("order_id must be an integer")
+        if not isinstance(product_id, int):
+            raise TypeError("product_id must be an integer")
+        if not isinstance(quantity, int):
+            raise TypeError("quantity must be an integer")
+        if quantity <= 0:
+            return False
+
         if product_id not in self.inventory:
             return False
+
         if self.inventory[product_id]['quantity'] < quantity:
             return False
 
@@ -71,8 +101,14 @@ class Warehouse:
         :param status: str, the state that is going to change to
         :return False: only if the order_id is not in self.orders
         """
+        if not isinstance(order_id, int):
+            raise TypeError("order_id must be an integer")
+        if not isinstance(status, str):
+            raise TypeError("status must be a string")
+
         if order_id not in self.orders:
             return False
+
         self.orders[order_id]['status'] = status
         return True
 
@@ -82,6 +118,10 @@ class Warehouse:
         :param order_id: int
         :return False: only if the order_id is not in self.orders.
         """
+        if not isinstance(order_id, int):
+            raise TypeError("order_id must be an integer")
+
         if order_id not in self.orders:
             return False
+
         return self.orders[order_id]['status']

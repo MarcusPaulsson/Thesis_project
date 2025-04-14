@@ -11,22 +11,9 @@ class UserLoginDB:
         :param db_name: str, the name of the SQLite database.
         """
         self.db_name = db_name
-        self.connection = sqlite3.connect(self.db_name)
+        self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
         self.create_table()
-
-    def create_table(self):
-        """
-        Creates the 'users' table if it doesn't exist.
-        """
-        create_table_query = """
-        CREATE TABLE IF NOT EXISTS users (
-            username TEXT PRIMARY KEY,
-            password TEXT
-        )
-        """
-        self.cursor.execute(create_table_query)
-        self.connection.commit()
 
     def insert_user(self, username, password):
         """
@@ -34,12 +21,9 @@ class UserLoginDB:
         :param username: str, the username of the user.
         :param password: str, the password of the user.
         :return: None
-        >>> user_db = UserLoginDB("user_database.db")
-        >>> user_db.create_table()
-        >>> user_db.insert_user('user1', 'pass1')
         """
-        insert_query = "INSERT OR REPLACE INTO users (username, password) VALUES (?, ?)"
-        self.cursor.execute(insert_query, (username, password))
+        query = "INSERT INTO users (username, password) VALUES (?, ?)"
+        self.cursor.execute(query, (username, password))
         self.connection.commit()
 
     def search_user_by_username(self, username):
@@ -47,14 +31,9 @@ class UserLoginDB:
         Searches for users in the "users" table by username.
         :param username: str, the username of the user to search for.
         :return:list of tuples, the rows from the "users" table that match the search criteria.
-        >>> user_db = UserLoginDB("user_database.db")
-        >>> user_db.create_table()
-        >>> user_db.insert_user('user1', 'pass1')
-        >>> result = user_db.search_user_by_username('user1')
-        len(result) = 1
         """
-        search_query = "SELECT username, password FROM users WHERE username = ?"
-        self.cursor.execute(search_query, (username,))
+        query = "SELECT username, password FROM users WHERE username = ?"
+        self.cursor.execute(query, (username,))
         result = self.cursor.fetchone()
         return result
 
@@ -63,13 +42,9 @@ class UserLoginDB:
         Deletes a user from the "users" table by username.
         :param username: str, the username of the user to delete.
         :return: None
-        >>> user_db = UserLoginDB("user_database.db")
-        >>> user_db.create_table()
-        >>> user_db.insert_user('user1', 'pass1')
-        >>> user_db.delete_user_by_username('user1')
         """
-        delete_query = "DELETE FROM users WHERE username = ?"
-        self.cursor.execute(delete_query, (username,))
+        query = "DELETE FROM users WHERE username = ?"
+        self.cursor.execute(query, (username,))
         self.connection.commit()
 
     def validate_user_login(self, username, password):
@@ -78,11 +53,6 @@ class UserLoginDB:
         :param username:str, the username of the user to validate.
         :param password:str, the password of the user to validate.
         :return:bool, representing whether the user can log in correctly
-        >>> user_db = UserLoginDB("user_database.db")
-        >>> user_db.create_table()
-        >>> user_db.insert_user('user1', 'pass1')
-        >>> user_db.validate_user_login('user1', 'pass1')
-        True
         """
         user = self.search_user_by_username(username)
         if user:
@@ -90,6 +60,15 @@ class UserLoginDB:
         else:
             return False
 
-    def close(self):
-        """Closes the database connection."""
-        self.connection.close()
+    def create_table(self):
+        """
+        Creates the "users" table in the database if it doesn't exist.
+        """
+        query = """
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT,
+            password TEXT
+        )
+        """
+        self.cursor.execute(query)
+        self.connection.commit()

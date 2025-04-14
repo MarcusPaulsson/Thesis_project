@@ -27,7 +27,7 @@ class DataStatistics:
         >>> ds.median([2, 5, 1, 3, 4])
         3.00
         """
-        data = sorted(data)
+        data.sort()
         n = len(data)
         if n % 2 == 0:
             median = (data[n // 2 - 1] + data[n // 2]) / 2

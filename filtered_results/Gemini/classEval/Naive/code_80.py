@@ -3,7 +3,6 @@ class SQLQueryBuilder:
     This class provides to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements. 
     """
 
-
     @staticmethod
     def select(table, columns='*', where=None):
         """
@@ -15,18 +14,10 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.select('table1', columns = ["col1","col2"], where = {"age": 15})
         "SELECT col1, col2 FROM table1 WHERE age='15'"
         """
-        query = "SELECT "
-        if isinstance(columns, list):
-            query += ", ".join(columns)
-        else:
-            query += columns
-        query += " FROM " + table
+        query = f"SELECT {', '.join(columns) if isinstance(columns, list) else columns} FROM {table}"
         if where:
-            query += " WHERE "
-            conditions = []
-            for key, value in where.items():
-                conditions.append(f"{key}='{value}'")
-            query += " AND ".join(conditions)
+            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {conditions}"
         return query
 
     @staticmethod
@@ -39,8 +30,8 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.insert('table1', {'name': 'Test', 'age': 14})
         "INSERT INTO table1 (name, age) VALUES ('Test', '14')"
         """
-        columns = ", ".join(data.keys())
-        values = ", ".join([f"'{value}'" for value in data.values()])
+        columns = ', '.join(data.keys())
+        values = ', '.join([f"'{value}'" for value in data.values()])
         return f"INSERT INTO {table} ({columns}) VALUES ({values})"
 
     @staticmethod
@@ -55,11 +46,8 @@ class SQLQueryBuilder:
         """
         query = f"DELETE FROM {table}"
         if where:
-            query += " WHERE "
-            conditions = []
-            for key, value in where.items():
-                conditions.append(f"{key}='{value}'")
-            query += " AND ".join(conditions)
+            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {conditions}"
         return query
 
     @staticmethod
@@ -72,15 +60,9 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.update('table1', {'name': 'Test2', 'age': 15}, where = {'name':'Test'})
         "UPDATE table1 SET name='Test2', age='15' WHERE name='Test'"
         """
-        query = f"UPDATE {table} SET "
-        updates = []
-        for key, value in data.items():
-            updates.append(f"{key}='{value}'")
-        query += ", ".join(updates)
+        set_values = ", ".join([f"{key}='{value}'" for key, value in data.items()])
+        query = f"UPDATE {table} SET {set_values}"
         if where:
-            query += " WHERE "
-            conditions = []
-            for key, value in where.items():
-                conditions.append(f"{key}='{value}'")
-            query += " AND ".join(conditions)
+            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {conditions}"
         return query

@@ -105,7 +105,7 @@ if __name__ == "__main__":
                 print(f"Task {i} failed during the first iteration.")
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "Gemini_test2", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "Gemini", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
 

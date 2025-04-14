@@ -20,7 +20,7 @@ class AreaCalculator:
         >>> areaCalculator.calculate_circle_area()
         12.566370614359172
         """
-        return math.pi * self.radius ** 2
+        return math.pi * self.radius**2
 
     def calculate_sphere_area(self):
         """
@@ -30,7 +30,7 @@ class AreaCalculator:
         >>> areaCalculator.calculate_sphere_area()
         50.26548245743669
         """
-        return 4 * math.pi * self.radius ** 2
+        return 4 * math.pi * self.radius**2
 
     def calculate_cylinder_area(self, height):
         """
@@ -41,7 +41,7 @@ class AreaCalculator:
         >>> areaCalculator.calculate_cylinder_area(3)
         62.83185307179586
         """
-        return 2 * math.pi * self.radius * (self.radius + height)
+        return 2 * math.pi * self.radius * height + 2 * math.pi * self.radius**2
 
     def calculate_sector_area(self, angle):
         """
@@ -52,7 +52,7 @@ class AreaCalculator:
         >>> areaCalculator.calculate_sector_area(math.pi)
         6.283185307179586
         """
-        return 0.5 * self.radius ** 2 * angle
+        return 0.5 * self.radius**2 * angle
 
     def calculate_annulus_area(self, inner_radius, outer_radius):
         """
@@ -63,4 +63,4 @@ class AreaCalculator:
         >>> areaCalculator.calculate_annulus_area(2, 3)
         15.707963267948966
         """
-        return math.pi * (outer_radius ** 2 - inner_radius ** 2)
+        return math.pi * (outer_radius**2 - inner_radius**2)

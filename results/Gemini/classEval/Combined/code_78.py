@@ -11,7 +11,7 @@ class SplitSentence:
         :param sentences_string: string, string to split
         :return:list, split sentence list
         """
-        sentences = re.split(r'(?<!\b(?:Mr|Mrs|Ms|Dr|A\.B\.C|A\.B)\.)(?<=[.?!])\s+', sentences_string)
+        sentences = re.split(r'(?<!Mr\.)(?<!Mrs\.)(?<!Ms\.)(?<!Dr\.)(?<![A-Z][a-z]\.)(?<=[.?!])\s+', sentences_string)
         return sentences
 
     def count_words(self, sentence):
@@ -25,8 +25,6 @@ class SplitSentence:
         for word in words:
             if word.isalpha():
                 count += 1
-            elif word.isalnum() and any(char.isalpha() for char in word):
-                count += 1
         return count
 
     def process_text_file(self, sentences_string):
@@ -36,9 +34,9 @@ class SplitSentence:
         :return:int, the number of words in the longest sentence
         """
         sentences = self.split_sentences(sentences_string)
-        max_count = 0
+        max_words = 0
         for sentence in sentences:
             word_count = self.count_words(sentence)
-            if word_count > max_count:
-                max_count = word_count
-        return max_count
+            if word_count > max_words:
+                max_words = word_count
+        return max_words

@@ -10,18 +10,12 @@ class URLHandler:
         """
         Initialize URLHandler's URL
         """
-        if not isinstance(url, str):
-            raise TypeError("URL must be a string")
         self.url = url
 
     def get_scheme(self):
         """
-        Get the scheme of the URL.
-
-        :return: string, If successful, return the scheme of the URL, otherwise None.
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_scheme()
-        "https"
+        get the scheme of the URL
+        :return: string, If successful, return the scheme of the URL
         """
         try:
             parsed_url = urlparse(self.url)
@@ -31,12 +25,8 @@ class URLHandler:
 
     def get_host(self):
         """
-        Get the host domain name of the URL.
-
-        :return: string, If successful, return the host domain name of the URL, otherwise None.
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_host()
-        "www.baidu.com"
+        Get the second part of the URL, which is the host domain name
+        :return: string, If successful, return the host domain name of the URL
         """
         try:
             parsed_url = urlparse(self.url)
@@ -46,12 +36,8 @@ class URLHandler:
 
     def get_path(self):
         """
-        Get the path of the URL.
-
-        :return: string, If successful, return the path of the URL, otherwise None.
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_path()
-        "/s?wd=aaa&rsv_spt=1#page"
+        Get the third part of the URL, which is the address of the resource
+        :return: string, If successful, return the address of the resource of the URL
         """
         try:
             parsed_url = urlparse(self.url)
@@ -60,23 +46,20 @@ class URLHandler:
             fragment = parsed_url.fragment
 
             result = path
+
             if query:
                 result += "?" + query
             if fragment:
                 result += "#" + fragment
 
-            return result or None  # Return None if the result is empty
+            return result or None
         except Exception:
             return None
 
     def get_query_params(self):
         """
-        Get the query parameters of the URL.
-
-        :return: dict, If successful, return the request parameters of the URL, otherwise None.
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_query_params()
-        {"wd": "aaa", "rsv_spt": "1"}
+        Get the request parameters for the URL
+        :return: dict, If successful, return the request parameters of the URL
         """
         try:
             parsed_url = urlparse(self.url)
@@ -89,12 +72,8 @@ class URLHandler:
 
     def get_fragment(self):
         """
-        Get the fragment of the URL.
-
-        :return: string, If successful, return the fragment of the URL, otherwise None.
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_fragment()
-        "page"
+        Get the fragment after '#' in the URL
+        :return: string, If successful, return the fragment after '#' of the URL
         """
         try:
             parsed_url = urlparse(self.url)

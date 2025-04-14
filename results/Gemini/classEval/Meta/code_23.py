@@ -58,9 +58,6 @@ class CombinationCalculator:
         [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D']]
 
         """
-        if m < 0 or m > len(self.datas):
-            return []
-
         result = []
         self._select(0, [None] * m, 0, result)
         return result

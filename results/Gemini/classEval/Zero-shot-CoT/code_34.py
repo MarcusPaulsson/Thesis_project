@@ -26,7 +26,7 @@ class DocFileHandler:
             return text
         except Exception as e:
             print(f"Error reading document: {e}")
-            return None
+            return ""
 
     def write_text(self, content, font_size=12, alignment='left'):
         """
@@ -43,11 +43,11 @@ class DocFileHandler:
             # Set font size
             for run in paragraph.runs:
                 run.font.size = Pt(font_size)
-            
+
             # Set alignment
             alignment_value = self._get_alignment_value(alignment)
             paragraph.alignment = alignment_value
-            
+
             document.save(self.file_path)
             return True
         except Exception as e:
@@ -62,7 +62,7 @@ class DocFileHandler:
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path) if os.path.exists(self.file_path) else Document()
+            document = Document(self.file_path)
             document.add_heading(heading, level=level)
             document.save(self.file_path)
             return True
@@ -77,19 +77,14 @@ class DocFileHandler:
         :return: bool, True if the table is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path) if os.path.exists(self.file_path) else Document()
+            document = Document(self.file_path)
             table = document.add_table(rows=0, cols=len(data[0]) if data else 0)
-            
-            # Add header row
-            for col in data[0]:
-                table.add_row().cells[0].text = col
 
-            # Add data rows
-            for row_data in data[1:]:
+            for row_data in data:
                 row_cells = table.add_row().cells
                 for i, item in enumerate(row_data):
                     row_cells[i].text = str(item)
-            
+
             document.save(self.file_path)
             return True
         except Exception as e:
@@ -102,7 +97,6 @@ class DocFileHandler:
         :param alignment: str, the alignment string ('left', 'center', or 'right').
         :return: int, the alignment value.
         """
-        alignment = alignment.lower()
         if alignment == 'left':
             return WD_PARAGRAPH_ALIGNMENT.LEFT
         elif alignment == 'center':
@@ -111,5 +105,3 @@ class DocFileHandler:
             return WD_PARAGRAPH_ALIGNMENT.RIGHT
         else:
             return WD_PARAGRAPH_ALIGNMENT.LEFT  # Default to left alignment
-
-import os

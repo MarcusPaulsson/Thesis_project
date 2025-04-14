@@ -1,160 +1,149 @@
 from collections import deque
 import decimal
-import re
-
 
 class ExpressionCalculator:
     """
-    A class to calculate the result of arithmetic expressions.
-    Supports +, -, *, /, %, and parentheses.
-    Handles negative numbers and operator precedence correctly.
+    This is a class in Python that can perform calculations with basic arithmetic operations, including addition, subtraction, multiplication, division, and modulo.
     """
 
     def __init__(self):
         """
-        Initializes the ExpressionCalculator with operator precedence and stacks.
+        Initialize the expression calculator
         """
-        self.precedence = {
-            '+': 1,
-            '-': 1,
-            '*': 2,
-            '/': 2,
-            '%': 2,
-            '~': 3,  # Unary minus (negative sign)
-            '(': 0,  # Lowest precedence to ensure it stays on the stack
-        }
+        self.postfix_stack = deque()
+        self.operator_stack = deque()
+        self.priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
 
     def calculate(self, expression):
         """
-        Calculates the result of the given expression.
-
-        Args:
-            expression (str): The arithmetic expression to calculate.
-
-        Returns:
-            float: The result of the expression, or None if an error occurs.
+        Calculate the result of the given infix expression
+        :param expression: string, the infix expression to be calculated
+        :return: float, the calculated result
         """
         try:
-            postfix = self._infix_to_postfix(expression)
-            result = self._evaluate_postfix(postfix)
-            return float(result)
+            postfix_expression = self.infix_to_postfix(expression)
+            return self.evaluate_postfix(postfix_expression)
         except Exception as e:
-            print(f"Error during calculation: {e}")
-            return None
+            raise ValueError(f"Invalid expression: {e}")
 
-    def _infix_to_postfix(self, expression):
+    def infix_to_postfix(self, expression):
         """
-        Converts an infix expression to postfix notation.
-
-        Args:
-            expression (str): The infix expression.
-
-        Returns:
-            list: The postfix expression as a list of tokens.
+        Convert an infix expression to postfix notation.
+        :param expression: The infix expression string.
+        :return: A deque representing the postfix expression.
         """
-        expression = self._preprocess_expression(expression)
-        output = []
-        operators = deque()
+        self.postfix_stack = deque()
+        self.operator_stack = deque()
+        expression = self.transform(expression)
 
-        for token in re.findall(r"(\d+(\.\d*)?|\.\d+|\+|-|\*|/|%|\(|\))", expression):
-            if self._is_number(token):
-                output.append(token)
-            elif token == '(':
-                operators.append(token)
-            elif token == ')':
-                while operators and operators[-1] != '(':
-                    output.append(operators.pop())
-                operators.pop()  # Remove the '('
-            elif token in self.precedence:
-                while operators and self.precedence[token] <= self.precedence.get(operators[-1], -1):
-                    output.append(operators.pop())
-                operators.append(token)
-
-        while operators:
-            output.append(operators.pop())
-
-        return output
-
-    def _evaluate_postfix(self, postfix):
-        """
-        Evaluates a postfix expression.
-
-        Args:
-            postfix (list): The postfix expression as a list of tokens.
-
-        Returns:
-            decimal.Decimal: The result of the evaluation.
-        """
-        stack = []
-        for token in postfix:
-            if self._is_number(token):
-                stack.append(decimal.Decimal(token))
-            else:
-                if token == '~':  # Unary minus
-                    operand = stack.pop()
-                    stack.append(-operand)
+        for char in expression:
+            if char.isalnum():
+                self.postfix_stack.append(char)
+            elif char == '(':
+                self.operator_stack.append(char)
+            elif char == ')':
+                while self.operator_stack and self.operator_stack[-1] != '(':
+                    self.postfix_stack.append(self.operator_stack.pop())
+                if self.operator_stack:
+                    self.operator_stack.pop()  # Remove the '('
                 else:
-                    operand2 = stack.pop()
-                    operand1 = stack.pop()
-                    result = self._apply_operator(operand1, operand2, token)
-                    stack.append(result)
+                    raise ValueError("Mismatched parentheses")
+            elif self.is_operator(char):
+                while self.operator_stack and self.operator_stack[-1] != '(' and self.compare(char, self.operator_stack[-1]):
+                    self.postfix_stack.append(self.operator_stack.pop())
+                self.operator_stack.append(char)
 
-        return stack[0]
+        while self.operator_stack:
+            if self.operator_stack[-1] == '(':
+                raise ValueError("Mismatched parentheses")
+            self.postfix_stack.append(self.operator_stack.pop())
 
-    def _apply_operator(self, operand1, operand2, operator):
+        return self.postfix_stack
+
+    def evaluate_postfix(self, postfix_expression):
         """
-        Applies the given operator to the two operands.
-
-        Args:
-            operand1 (decimal.Decimal): The first operand.
-            operand2 (decimal.Decimal): The second operand.
-            operator (str): The operator.
-
-        Returns:
-            decimal.Decimal: The result of the operation.
+        Evaluate a postfix expression.
+        :param postfix_expression: A deque representing the postfix expression.
+        :return: The result of the evaluation as a float.
         """
-        if operator == '+':
-            return operand1 + operand2
-        elif operator == '-':
-            return operand1 - operand2
-        elif operator == '*':
-            return operand1 * operand2
-        elif operator == '/':
-            return operand1 / operand2
-        elif operator == '%':
-            return operand1 % operand2
-        else:
-            raise ValueError(f"Unsupported operator: {operator}")
+        stack = deque()
+        for item in postfix_expression:
+            if not self.is_operator(item):
+                stack.append(item)
+            else:
+                if len(stack) < 2:
+                    raise ValueError("Invalid postfix expression")
+                second_value = stack.pop()
+                first_value = stack.pop()
+                result = self._calculate(first_value, second_value, item)
+                stack.append(str(result))
 
-    def _preprocess_expression(self, expression):
+        if len(stack) != 1:
+            raise ValueError("Invalid postfix expression")
+
+        return float(stack[0])
+
+    def prepare(self, expression):
         """
-        Preprocesses the expression to handle whitespace and unary minus.
-
-        Args:
-            expression (str): The original expression.
-
-        Returns:
-            str: The preprocessed expression.
+        Prepare the infix expression for conversion to postfix notation
+        :param expression: string, the infix expression to be prepared
         """
-        expression = expression.replace(" ", "")
-        expression = expression.replace("(-", "(0-")
-        if expression.startswith("-"):
-            expression = "0" + expression
-        return expression
+        self.infix_to_postfix(expression)
 
     @staticmethod
-    def _is_number(s):
+    def is_operator(c):
         """
-        Checks if a string is a number (integer or decimal).
-
-        Args:
-            s (str): The string to check.
-
-        Returns:
-            bool: True if the string is a number, False otherwise.
+        Check if a character is an operator in {'+', '-', '*', '/', '(', ')', '%'}
+        :param c: string, the character to be checked
+        :return: bool, True if the character is an operator, False otherwise
         """
-        try:
-            decimal.Decimal(s)
-            return True
-        except decimal.InvalidOperation:
-            return False
+        return c in {'+', '-', '*', '/', '%'}
+
+    def compare(self, cur, peek):
+        """
+        Compare the precedence of two operators
+        :param cur: string, the current operator
+        :param peek: string, the operator at the top of the operator stack
+        :return: bool, True if the current operator has higher or equal precedence, False otherwise
+        """
+        return self.priority.get(peek, 0) >= self.priority.get(cur, 0)
+
+    @staticmethod
+    def _calculate(first_value, second_value, current_op):
+        """
+        Perform the mathematical calculation based on the given operands and operator
+        :param first_value: string, the first operand
+        :param second_value: string, the second operand
+        :param current_op: string, the operator
+        :return: decimal.Decimal, the calculated result
+        """
+        first_value = decimal.Decimal(first_value)
+        second_value = decimal.Decimal(second_value)
+        if current_op == '+':
+            return first_value + second_value
+        elif current_op == '-':
+            return first_value - second_value
+        elif current_op == '*':
+            return first_value * second_value
+        elif current_op == '/':
+            if second_value == 0:
+                raise ZeroDivisionError("Division by zero")
+            return first_value / second_value
+        elif current_op == '%':
+            return first_value % second_value
+        else:
+            raise ValueError("Invalid operator")
+
+    @staticmethod
+    def transform(expression):
+        """
+        Transform the infix expression to a format suitable for conversion
+        :param expression: string, the infix expression to be transformed
+        :return: string, the transformed expression
+        """
+        expression = expression.replace(" ", "")
+        expression = expression.replace("(-", "(~")
+        expression = expression.replace("-", "~", 1) if expression.startswith('-') else expression
+        expression = expression.replace("~(", "0-(")
+        expression = expression.replace("~", "0-")
+        return expression

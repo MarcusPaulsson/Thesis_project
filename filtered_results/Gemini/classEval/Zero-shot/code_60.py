@@ -10,7 +10,6 @@ class MovieTicketDB:
         Initializes the MovieTicketDB object with the specified database name.
         :param db_name: str, the name of the SQLite database.
         """
-        self.db_name = db_name
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
         self.create_table()

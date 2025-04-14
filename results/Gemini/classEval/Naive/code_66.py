@@ -16,38 +16,34 @@ class NumericEntityUnescaper:
         'ABC'
 
         """
-        result = ''
+        result = ""
         i = 0
         while i < len(string):
-            if string[i:i+2] == '&#':
+            if string[i:i + 2] == "&#":
                 j = i + 2
-                end = string.find(';', j)
-                if end != -1:
-                    entity = string[i+2:end]
-                    if entity.startswith('X') or entity.startswith('x'):
-                        try:
+                while j < len(string) and string[j] != ';':
+                    j += 1
+
+                if j < len(string) and string[j] == ';':
+                    entity = string[i + 2:j]
+                    try:
+                        if entity.startswith('x') or entity.startswith('X'):
                             char_code = int(entity[1:], 16)
-                            result += chr(char_code)
-                            i = end + 1
-                        except ValueError:
-                            result += string[i:end+1]
-                            i = end + 1
-                    else:
-                        try:
+                        else:
                             char_code = int(entity)
-                            result += chr(char_code)
-                            i = end + 1
-                        except ValueError:
-                            result += string[i:end+1]
-                            i = end + 1
+
+                        result += chr(char_code)
+                        i = j + 1
+                    except ValueError:
+                        result += string[i:j+1]
+                        i = j + 1
                 else:
-                    result += string[i:]
-                    i = len(string)
+                    result += string[i]
+                    i += 1
             else:
                 result += string[i]
                 i += 1
         return result
-
 
     @staticmethod
     def is_hex_char(char):

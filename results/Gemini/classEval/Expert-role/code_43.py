@@ -66,8 +66,14 @@ class HRManagementSystem:
         """
         if employee_id in self.employees:
             for key, value in employee_info.items():
-                if key.lower() in ['name', 'position', 'department', 'salary']:
-                    self.employees[employee_id][key.lower()] = value
+                if key.lower() == 'name':
+                    self.employees[employee_id]['name'] = value
+                elif key.lower() == 'position':
+                    self.employees[employee_id]['position'] = value
+                elif key.lower() == 'department':
+                    self.employees[employee_id]['department'] = value
+                elif key.lower() == 'salary':
+                    self.employees[employee_id]['salary'] = value
                 else:
                     return False
             return True

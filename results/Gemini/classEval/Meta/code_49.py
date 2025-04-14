@@ -102,10 +102,10 @@ class JobMarketplace:
 
     def matches_requirements(self, resume, requirements):
         """
-        This function is used to determine whether the candidate meets the requirements.
+        This function is used to check if the candidate meets the requirements.
         :param resume: The resume information,dict.
         :param requirements: The requirements of the position,list.
-        :return: Whether the candidate meets the requirements,bool.
+        :return: True if the candidate meets the requirements,False otherwise.
         """
         for requirement in requirements:
             if requirement not in resume['skills']:

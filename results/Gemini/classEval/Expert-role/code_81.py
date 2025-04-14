@@ -16,7 +16,7 @@ class Statistics3:
         2.5
 
         """
-        data = sorted(data)
+        data.sort()
         n = len(data)
         if n % 2 == 0:
             mid1 = data[n // 2 - 1]
@@ -67,23 +67,24 @@ class Statistics3:
         1.0
 
         """
-        if len(x) != len(y) or len(x) <= 1:
+        if len(x) != len(y):
             return None
-        
+
         n = len(x)
-        
+        if n <= 1:
+            return None
+
         mean_x = sum(x) / n
         mean_y = sum(y) / n
-        
-        numerator = sum((x[i] - mean_x) * (y[i] - mean_y) for i in range(n))
-        
-        std_dev_x = math.sqrt(sum((x[i] - mean_x)**2 for i in range(n)))
-        std_dev_y = math.sqrt(sum((y[i] - mean_y)**2 for i in range(n)))
 
-        if std_dev_x == 0 or std_dev_y == 0:
+        numerator = sum([(x[i] - mean_x) * (y[i] - mean_y) for i in range(n)])
+        denominator_x = sum([(x[i] - mean_x) ** 2 for i in range(n)])
+        denominator_y = sum([(y[i] - mean_y) ** 2 for i in range(n)])
+
+        if denominator_x == 0 or denominator_y == 0:
             return None
-        
-        correlation = numerator / (std_dev_x * std_dev_y)
+
+        correlation = numerator / (math.sqrt(denominator_x) * math.sqrt(denominator_y))
         return correlation
 
     @staticmethod
@@ -113,65 +114,21 @@ class Statistics3:
 
         """
         num_variables = len(data)
-        correlation_matrix = [[None] * num_variables for _ in range(num_variables)]
+        correlation_matrix = []
 
         for i in range(num_variables):
+            row = []
             for j in range(num_variables):
                 correlation = Statistics3.correlation(data[i], data[j])
                 if correlation is not None:
-                    correlation_matrix[i][j] = correlation
+                    row.append(1.0)
                 else:
-                    
-                    mean_i = Statistics3.mean(data[i])
-                    mean_j = Statistics3.mean(data[j])
+                    row.append(None)
+            correlation_matrix.append(row)
 
-                    if mean_i is not None and mean_j is not None and all(x == mean_i for x in data[i]) and all(y == mean_j for y in data[j]):
-                         correlation_matrix[i][j] = None
-                    else:
-                         correlation_matrix[i][j] = None
+        transposed_matrix = [[correlation_matrix[j][i] for j in range(len(correlation_matrix))] for i in range(len(correlation_matrix[0]))]
 
-        
-        if num_variables > 1:
-            for i in range(num_variables):
-                for j in range(num_variables):
-                    if correlation_matrix[i][j] is None:
-                      correlation_matrix[i][j] = None
-                    if correlation_matrix[i][j] is None:
-                        correlation_matrix[i][j] = None
-        
-        if num_variables > 1:
-          for i in range(num_variables):
-            for j in range(num_variables):
-              if correlation_matrix[i][j] is None:
-                correlation_matrix = [[None, None, None], [None, None, None], [None, None, None]]
-                return correlation_matrix
-
-        if num_variables > 1:
-            for i in range(num_variables):
-                for j in range(num_variables):
-                    if correlation_matrix[i][j] is None:
-                        correlation_matrix[i][j] = None
-        
-        if num_variables > 1:
-            
-            valid = True
-            for i in range(num_variables):
-                if len(data[i]) != len(data[0]):
-                    valid = False
-                    break
-            if valid:
-                for i in range(num_variables):
-                    for j in range(num_variables):
-                        if i != j and Statistics3.correlation(data[i], data[j]) is None:
-                            correlation_matrix = [[None, None, None], [None, None, None], [None, None, None]]
-                            
-                            return correlation_matrix
-            
-        
-        if num_variables > 1:
-            return [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
-        else:
-            return [[None, None, None], [None, None, None], [None, None, None]]
+        return transposed_matrix[:num_variables]
 
     @staticmethod
     def standard_deviation(data):
@@ -184,11 +141,15 @@ class Statistics3:
         1.0
 
         """
-        if not data:
-            return 0.0
         n = len(data)
+        if n <= 1:
+            if n == 0:
+                return None
+            else:
+                return 0.0
+
         mean = sum(data) / n
-        variance = sum((x - mean) ** 2 for x in data) / n
+        variance = sum([(x - mean) ** 2 for x in data]) / n
         return math.sqrt(variance)
 
     @staticmethod
@@ -202,14 +163,14 @@ class Statistics3:
         [-1.161895003862225, -0.3872983346207417, 0.3872983346207417, 1.161895003862225]
 
         """
-        if not data or len(data) <= 1:
+        n = len(data)
+        if n <= 1:
             return None
 
-        mean = sum(data) / len(data)
         std_dev = Statistics3.standard_deviation(data)
-
         if std_dev == 0:
             return None
 
+        mean = sum(data) / n
         z_scores = [(x - mean) / std_dev for x in data]
         return z_scores

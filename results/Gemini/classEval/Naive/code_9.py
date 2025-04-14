@@ -21,35 +21,35 @@ class BigNumCalculator:
             num1 = '0'
         if not num2:
             num2 = '0'
-        
-        n1 = len(num1)
-        n2 = len(num2)
-        
-        if n1 < n2:
+
+        len1 = len(num1)
+        len2 = len(num2)
+        if len1 < len2:
             num1, num2 = num2, num1
-            n1, n2 = n2, n1
-        
-        result = []
+            len1, len2 = len2, len1
+
+        result = ""
         carry = 0
-        
-        for i in range(n2):
-            digit1 = int(num1[n1 - 1 - i])
-            digit2 = int(num2[n2 - 1 - i])
-            
-            sum_digits = digit1 + digit2 + carry
-            result.append(str(sum_digits % 10))
-            carry = sum_digits // 10
-        
-        for i in range(n2, n1):
-            digit1 = int(num1[n1 - 1 - i])
-            sum_digits = digit1 + carry
-            result.append(str(sum_digits % 10))
-            carry = sum_digits // 10
-        
+        i = len1 - 1
+        j = len2 - 1
+
+        while j >= 0:
+            digit_sum = int(num1[i]) + int(num2[j]) + carry
+            result = str(digit_sum % 10) + result
+            carry = digit_sum // 10
+            i -= 1
+            j -= 1
+
+        while i >= 0:
+            digit_sum = int(num1[i]) + carry
+            result = str(digit_sum % 10) + result
+            carry = digit_sum // 10
+            i -= 1
+
         if carry:
-            result.append(str(carry))
-        
-        return ''.join(result[::-1])
+            result = str(carry) + result
+
+        return result
 
     @staticmethod
     def subtract(num1, num2):
@@ -69,47 +69,54 @@ class BigNumCalculator:
             num1 = '0'
         if not num2:
             num2 = '0'
-            
-        if len(num1) < len(num2) or (len(num1) == len(num2) and num1 < num2):
+
+        if BigNumCalculator.is_smaller(num1, num2):
             num1, num2 = num2, num1
-            sign = '-'
+            sign = "-"
         else:
-            sign = ''
-        
-        n1 = len(num1)
-        n2 = len(num2)
-        
-        result = []
+            sign = ""
+
+        len1 = len(num1)
+        len2 = len(num2)
+
+        result = ""
         borrow = 0
-        
-        for i in range(n2):
-            digit1 = int(num1[n1 - 1 - i])
-            digit2 = int(num2[n2 - 1 - i])
-            
+        i = len1 - 1
+        j = len2 - 1
+
+        while j >= 0:
+            digit1 = int(num1[i])
+            digit2 = int(num2[j])
             diff = digit1 - digit2 - borrow
+
             if diff < 0:
                 diff += 10
                 borrow = 1
             else:
                 borrow = 0
-            
-            result.append(str(diff))
-        
-        for i in range(n2, n1):
-            digit1 = int(num1[n1 - 1 - i])
+
+            result = str(diff) + result
+            i -= 1
+            j -= 1
+
+        while i >= 0:
+            digit1 = int(num1[i])
             diff = digit1 - borrow
+
             if diff < 0:
                 diff += 10
                 borrow = 1
             else:
                 borrow = 0
-            
-            result.append(str(diff))
-        
-        res = ''.join(result[::-1]).lstrip('0')
-        if not res:
-            return '0'
-        return sign + res
+
+            result = str(diff) + result
+            i -= 1
+
+        result = result.lstrip('0')
+        if not result:
+            result = '0'
+
+        return sign + result
 
     @staticmethod
     def multiply(num1, num2):
@@ -125,22 +132,49 @@ class BigNumCalculator:
         """
         num1 = num1.lstrip('0')
         num2 = num2.lstrip('0')
-
         if not num1 or not num2:
-            return '0'
-        
-        n1 = len(num1)
-        n2 = len(num2)
-        
-        product = [0] * (n1 + n2)
-        
-        for i in range(n1 - 1, -1, -1):
-            carry = 0
-            for j in range(n2 - 1, -1, -1):
-                product[i + j + 1] += int(num1[i]) * int(num2[j]) + carry
-                carry = product[i + j + 1] // 10
-                product[i + j + 1] %= 10
-            product[i] += carry
-        
-        result = ''.join(map(str, product)).lstrip('0')
-        return result if result else '0'
+            return "0"
+
+        len1 = len(num1)
+        len2 = len(num2)
+        result = [0] * (len1 + len2)
+
+        for i in range(len1 - 1, -1, -1):
+            for j in range(len2 - 1, -1, -1):
+                digit1 = int(num1[i])
+                digit2 = int(num2[j])
+                product = digit1 * digit2
+
+                p1 = i + j + 1
+                p2 = i + j
+
+                sum_val = product + result[p1]
+
+                result[p1] = sum_val % 10
+                result[p2] += sum_val // 10
+
+        result_str = "".join(map(str, result)).lstrip('0')
+        return result_str if result_str else "0"
+
+    @staticmethod
+    def is_smaller(num1, num2):
+        """
+        Helper function to compare two big numbers.
+        :param num1: The first number to compare,str.
+        :param num2: The second number to compare,str.
+        :return: True if num1 < num2, False otherwise.
+        """
+        len1 = len(num1)
+        len2 = len(num2)
+
+        if len1 < len2:
+            return True
+        elif len1 > len2:
+            return False
+        else:
+            for i in range(len1):
+                if int(num1[i]) < int(num2[i]):
+                    return True
+                elif int(num1[i]) > int(num2[i]):
+                    return False
+            return False

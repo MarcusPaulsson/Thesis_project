@@ -43,15 +43,17 @@ class EncryptionUtils:
 
         """
         ciphertext = ""
-        key_len = len(self.key)
+        key = self.key
+        key_length = len(key)
         for i, char in enumerate(plaintext):
-            key_char = self.key[i % key_len]
-            key_shift = ord(key_char.lower()) - ord('a')
-
             if 'a' <= char <= 'z':
-                shifted_char = chr(((ord(char) - ord('a') + key_shift) % 26) + ord('a'))
+                key_char = key[i % key_length]
+                shift = ord(key_char) - ord('a')
+                shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
-                shifted_char = chr(((ord(char) - ord('A') + key_shift) % 26) + ord('A'))
+                key_char = key[i % key_length]
+                shift = ord(key_char.lower()) - ord('a')
+                shifted_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))
             else:
                 shifted_char = char
             ciphertext += shifted_char
@@ -67,17 +69,17 @@ class EncryptionUtils:
         'acb'
 
         """
-        if rails <= 1:
+        if rails <= 1 or not plain_text:
             return plain_text
 
-        rail = [['\n' for i in range(len(plain_text))]
+        rail = [["\n" for i in range(len(plain_text))]
                 for j in range(rails)]
 
         dir_down = False
         row, col = 0, 0
 
         for i in range(len(plain_text)):
-            if (row == 0) or (row == rails - 1):
+            if row == 0 or row == rails - 1:
                 dir_down = not dir_down
 
             rail[row][col] = plain_text[i]

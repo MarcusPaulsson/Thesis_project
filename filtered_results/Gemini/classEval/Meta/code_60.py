@@ -23,10 +23,10 @@ class MovieTicketDB:
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS tickets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                movie_name TEXT,
-                theater_name TEXT,
-                seat_number TEXT,
-                customer_name TEXT
+                movie_name TEXT NOT NULL,
+                theater_name TEXT NOT NULL,
+                seat_number TEXT NOT NULL,
+                customer_name TEXT NOT NULL
             )
         """)
         self.connection.commit()

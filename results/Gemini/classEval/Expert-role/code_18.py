@@ -19,8 +19,8 @@ class CamelCaseMap:
         >>> camelize_map.__getitem__('first_name')
         'John'
         """
-        camel_key = self._convert_key(key)
-        return self._data[camel_key]
+        key = self._convert_key(key)
+        return self._data[key]
 
 
     def __setitem__(self, key, value):
@@ -34,8 +34,8 @@ class CamelCaseMap:
         >>> camelize_map.__setitem__('first_name', 'new name')
         camelize_map['first_name'] = 'new name'
         """
-        camel_key = self._convert_key(key)
-        self._data[camel_key] = value
+        key = self._convert_key(key)
+        self._data[key] = value
 
 
     def __delitem__(self, key):
@@ -49,8 +49,8 @@ class CamelCaseMap:
         >>> flag = 'first_name' in camelize_map
         flag = False
         """
-        camel_key = self._convert_key(key)
-        del self._data[camel_key]
+        key = self._convert_key(key)
+        del self._data[key]
 
 
     def __iter__(self):

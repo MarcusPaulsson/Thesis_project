@@ -25,25 +25,31 @@ class MetricsCalculator2:
         0.75, [1.0, 0.5]
         """
         if not isinstance(data, list) and not isinstance(data, tuple):
-            raise Exception("input data must be list or tuple")
+            raise TypeError("Input data must be a list or tuple.")
 
         if isinstance(data, tuple):
             data = [data]
 
-        if len(data) == 0:
+        if not data:
             return 0.0, [0.0]
 
-        rr_list = []
+        reciprocal_ranks = []
         for item in data:
-            actual_result, ground_truth_num = item
+            if not isinstance(item, tuple) or len(item) != 2:
+                raise ValueError("Each item in the list must be a tuple of (results, ground_truth_num).")
+
+            results, ground_truth_num = item
+            if not isinstance(results, list):
+                raise TypeError("Results must be a list.")
+
             rr = 0.0
-            for i, result in enumerate(actual_result):
+            for i, result in enumerate(results):
                 if result == 1:
                     rr = 1.0 / (i + 1)
                     break
-            rr_list.append(rr if ground_truth_num > 0 else 0.0)
+            reciprocal_ranks.append(rr)
 
-        return np.mean(rr_list), rr_list
+        return np.mean(reciprocal_ranks), reciprocal_ranks
 
     @staticmethod
     def map(data):
@@ -61,24 +67,35 @@ class MetricsCalculator2:
         0.3333333333333333, [0.41666666666666663, 0.25]
         """
         if not isinstance(data, list) and not isinstance(data, tuple):
-            raise Exception("input data must be list or tuple")
+            raise TypeError("Input data must be a list or tuple.")
 
         if isinstance(data, tuple):
             data = [data]
 
-        if len(data) == 0:
+        if not data:
             return 0.0, [0.0]
 
-        ap_list = []
+        average_precisions = []
         for item in data:
-            actual_result, ground_truth_num = item
-            precision_sum = 0.0
+            if not isinstance(item, tuple) or len(item) != 2:
+                raise ValueError("Each item in the list must be a tuple of (results, ground_truth_num).")
+
+            results, ground_truth_num = item
+            if not isinstance(results, list):
+                raise TypeError("Results must be a list.")
+
+            ap = 0.0
             correct_count = 0
-            for i, result in enumerate(actual_result):
+            for i, result in enumerate(results):
                 if result == 1:
                     correct_count += 1
-                    precision_sum += correct_count / (i + 1)
-            ap = precision_sum / ground_truth_num if ground_truth_num > 0 else 0.0
-            ap_list.append(ap)
+                    ap += correct_count / (i + 1)
 
-        return np.mean(ap_list), ap_list
+            if ground_truth_num > 0:
+                ap /= ground_truth_num
+            else:
+                ap = 0.0
+
+            average_precisions.append(ap)
+
+        return np.mean(average_precisions), average_precisions

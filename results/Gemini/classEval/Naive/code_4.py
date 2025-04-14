@@ -15,9 +15,6 @@ class AssessmentSystem:
         :param name: str, student name
         :param grade: int, student grade
         :param major: str, student major
-        >>> system.add_student('student 1', 3, 'SE')
-        >>> system.students
-        {'student 1': {'name': 'student 1', 'grade': 3, 'major': 'SE', 'courses': {}}}
         """
         self.students[name] = {'name': name, 'grade': grade, 'major': major, 'courses': {}}
 
@@ -27,10 +24,6 @@ class AssessmentSystem:
         :param name: str, student name
         :param cource: str, cource name
         :param score: int, cource score
-        >>> system.add_student('student 1', 3, 'SE')
-        >>> system.add_course_score('student 1', 'math', 94)
-        >>> system.students
-        {'student 1': {'name': 'student 1', 'grade': 3, 'major': 'SE', 'courses': {'math': 94}}}
         """
         if name in self.students:
             self.students[name]['courses'][course] = score
@@ -41,12 +34,6 @@ class AssessmentSystem:
         :param name: str, student name
         :return: if name is in students and this students have courses grade, return average grade(float)
                     or None otherwise
-        >>> system.add_student('student 1', 3, 'SE')
-        >>> system.add_course_score('student 1', 'math', 94)
-        >>> system.add_course_score('student 1', 'Computer Network', 92)
-        >>> system.get_gpa('student 1')
-        93.0
-
         """
         if name in self.students and self.students[name]['courses']:
             scores = list(self.students[name]['courses'].values())
@@ -58,17 +45,14 @@ class AssessmentSystem:
         """
         Get all students who have any score blow 60
         :return: list of str ,student name
-        >>> system.add_course_score('student 1', 'Society', 59)
-        >>> system.get_all_students_with_fail_course()
-        ['student 1']
         """
-        failed_students = []
+        failing_students = []
         for name, student_data in self.students.items():
             for course, score in student_data['courses'].items():
                 if score < 60:
-                    failed_students.append(name)
-                    break
-        return failed_students
+                    failing_students.append(name)
+                    break  # Only add the student once if they have multiple failing courses
+        return failing_students
 
     def get_course_average(self, course):
         """
@@ -79,9 +63,7 @@ class AssessmentSystem:
         scores = []
         for student_data in self.students.values():
             if course in student_data['courses']:
-                score = student_data['courses'][course]
-                if score is not None:
-                    scores.append(score)
+                scores.append(student_data['courses'][course])
 
         if scores:
             return sum(scores) / len(scores)
@@ -92,21 +74,15 @@ class AssessmentSystem:
         """
         Calculate every student's gpa with get_gpa method, and find the student with highest gpa
         :return: str, name of student whose gpa is highest
-        >>> system.add_student('student 1', 3, 'SE')
-        >>> system.add_student('student 2', 2, 'SE')
-        >>> system.add_course_score('student 1', 'Computer Network', 92)
-        >>> system.add_course_score('student 2', 'Computer Network', 97)
-        >>> system.get_top_student()
-        'student 2'
         """
         top_student = None
-        max_gpa = None
+        highest_gpa = None
 
-        for name, student_data in self.students.items():
+        for name in self.students:
             gpa = self.get_gpa(name)
             if gpa is not None:
-                if top_student is None or gpa > max_gpa:
+                if highest_gpa is None or gpa > highest_gpa:
+                    highest_gpa = gpa
                     top_student = name
-                    max_gpa = gpa
 
         return top_student

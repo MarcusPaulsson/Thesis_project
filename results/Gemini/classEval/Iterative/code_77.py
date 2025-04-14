@@ -35,24 +35,26 @@ class Snake:
             self.length += 1
             self.score += 100
             self.positions.insert(0, new_head)
-            self.food_position = self.random_food_position()
+            self.random_food_position()
         elif new_head in self.positions[1:]:
             self.reset()
         else:
             self.positions.insert(0, new_head)
-            self.positions.pop()
+            self.positions = self.positions[:self.length]
+
 
     def random_food_position(self):
         """
         Randomly generate a new food position, but don't place it on the snake.
-        :return: tuple, the new food position
+        :return: None, Change the food position
         """
         while True:
             x = random.randint(0, self.SCREEN_WIDTH - 1)
             y = random.randint(0, self.SCREEN_HEIGHT - 1)
             food_position = (x, y)
             if food_position not in self.positions:
-                return food_position
+                self.food_position = food_position
+                break
 
 
     def reset(self):
@@ -63,7 +65,7 @@ class Snake:
         self.length = 1
         self.positions = [((self.SCREEN_WIDTH // 2), (self.SCREEN_HEIGHT // 2))]
         self.score = 0
-        self.food_position = self.random_food_position()
+        self.random_food_position()
 
 
     def eat_food(self):
@@ -74,4 +76,4 @@ class Snake:
         """
         self.length += 1
         self.score += 100
-        self.food_position = self.random_food_position()
+        self.random_food_position()

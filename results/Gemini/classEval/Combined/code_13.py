@@ -1,25 +1,19 @@
 class BookManagement:
     """
-    Manages a book inventory, allowing adding, removing, and viewing books.
+    This is a class as managing books system, which supports to add and remove books from the inventory dict, view the inventory, and check the quantity of a specific book.
     """
 
     def __init__(self):
         """
-        Initializes an empty book inventory.
+        Initialize the inventory of Book Manager.
         """
         self.inventory = {}
 
     def add_book(self, title, quantity=1):
         """
-        Adds a book to the inventory or increases its quantity if it already exists.
-
-        Args:
-            title (str): The title of the book.
-            quantity (int, optional): The number of books to add. Defaults to 1.
-
-        Raises:
-            TypeError: If title is not a string or quantity is not an integer.
-            ValueError: If quantity is not a positive integer.
+        Add one or several books to inventory which is sorted by book title.
+        :param title: str, the book title
+        :param quantity: int, default value is 1.
         """
         if not isinstance(title, str):
             raise TypeError("Title must be a string.")
@@ -28,20 +22,17 @@ class BookManagement:
         if quantity <= 0:
             raise ValueError("Quantity must be positive.")
 
-        self.inventory[title] = self.inventory.get(title, 0) + quantity
+        if title in self.inventory:
+            self.inventory[title] += quantity
+        else:
+            self.inventory[title] = quantity
 
     def remove_book(self, title, quantity):
         """
-        Removes a book from the inventory or decreases its quantity.
-
-        Args:
-            title (str): The title of the book to remove.
-            quantity (int): The number of books to remove.
-
-        Raises:
-            TypeError: If title is not a string or quantity is not an integer.
-            ValueError: If quantity is not a positive integer.
-            Exception: If the book is not in the inventory or there are not enough books to remove.
+        Remove one or several books from inventory which is sorted by book title.
+        Raise false while get invalid input.
+        :param title: str, the book title
+        :param quantity: int
         """
         if not isinstance(title, str):
             raise TypeError("Title must be a string.")
@@ -62,27 +53,21 @@ class BookManagement:
 
     def view_inventory(self):
         """
-        Returns the current book inventory.
-
-        Returns:
-            dict: A dictionary where keys are book titles and values are their quantities.
+        Get the inventory of the Book Management.
+        :return self.inventory: dictionary, {title(str): quantity(int), ...}
         """
         return self.inventory
 
     def view_book_quantity(self, title):
         """
-        Returns the quantity of a specific book in the inventory.
-
-        Args:
-            title (str): The title of the book.
-
-        Returns:
-            int: The quantity of the book, or 0 if the book is not in the inventory.
-
-        Raises:
-            TypeError: If title is not a string.
+        Get the quantity of a book.
+        :param title: str, the title of the book.
+        :return quantity: the quantity of this book title. return 0 when the title does not exist in self.invenroty
         """
         if not isinstance(title, str):
             raise TypeError("Title must be a string.")
 
-        return self.inventory.get(title, 0)
+        if title in self.inventory:
+            return self.inventory[title]
+        else:
+            return 0

@@ -22,9 +22,7 @@ class CSVProcessor:
             with open(file_name, 'r') as file:
                 reader = csv.reader(file)
                 title = next(reader)
-                data = []
-                for row in reader:
-                    data.append(row)
+                data = [row for row in reader]
                 return title, data
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
@@ -44,6 +42,7 @@ class CSVProcessor:
         """
         if not data or not file_name:
             return 0
+
         try:
             with open(file_name, 'w', newline='') as file:
                 writer = csv.writer(file)
@@ -84,8 +83,8 @@ class CSVProcessor:
                 writer.writerow(title)
                 for row in processed_data:
                     writer.writerow(row)
-
             return 1
+
         except Exception as e:
             print(f"An error occurred: {e}")
             return 0

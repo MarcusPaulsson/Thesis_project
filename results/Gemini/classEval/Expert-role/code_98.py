@@ -27,8 +27,13 @@ class XMLProcessor:
             tree = ET.parse(self.file_name)
             self.root = tree.getroot()
             return self.root
-        except Exception as e:
+        except FileNotFoundError:
             return None
+        except ET.ParseError:
+            return None
+        except:
+            return None
+
 
     def write_xml(self, file_name):
         """
@@ -41,12 +46,15 @@ class XMLProcessor:
         >>> print(success)
         True
         """
+        if self.root is None:
+            return False
         try:
             tree = ET.ElementTree(self.root)
             tree.write(file_name)
             return True
-        except Exception as e:
+        except:
             return False
+
 
     def process_xml_data(self, file_name):
         """
@@ -59,14 +67,19 @@ class XMLProcessor:
         >>> print(success)
         True
         """
+        if self.root is None:
+            return False
+
+        for element in self.root.findall('item'):
+            element.text = element.text.upper()
+
         try:
-            for element in self.root.findall('item'):
-                element.text = element.text.upper()
             tree = ET.ElementTree(self.root)
             tree.write(file_name)
             return True
-        except Exception as e:
+        except:
             return False
+
 
     def find_element(self, element_name):
         """
@@ -82,4 +95,7 @@ class XMLProcessor:
         banana
         orange
         """
+        if self.root is None:
+            return []
+
         return self.root.findall(element_name)

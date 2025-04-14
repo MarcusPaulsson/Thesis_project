@@ -27,22 +27,24 @@ class MinesweeperGame:
 
         """
         mine_map = [[0 for _ in range(self.n)] for _ in range(self.n)]
-        mines_positions = random.sample(range(self.n * self.n), self.k)
-        for mine_position in mines_positions:
-            row = mine_position // self.n
-            col = mine_position % self.n
-            mine_map[row][col] = 'X'
+        mines_placed = 0
+        while mines_placed < self.k:
+            x = random.randint(0, self.n - 1)
+            y = random.randint(0, self.n - 1)
+            if mine_map[x][y] == 0:
+                mine_map[x][y] = 'X'
+                mines_placed += 1
 
-        for row in range(self.n):
-            for col in range(self.n):
-                if mine_map[row][col] == 'X':
+        for i in range(self.n):
+            for j in range(self.n):
+                if mine_map[i][j] == 'X':
                     continue
                 count = 0
-                for i in range(max(0, row - 1), min(self.n, row + 2)):
-                    for j in range(max(0, col - 1), min(self.n, col + 2)):
-                        if mine_map[i][j] == 'X':
+                for row in range(max(0, i - 1), min(self.n, i + 2)):
+                    for col in range(max(0, j - 1), min(self.n, j + 2)):
+                        if mine_map[row][col] == 'X':
                             count += 1
-                mine_map[row][col] = count
+                mine_map[i][j] = count
         return mine_map
 
     def generate_playerMap(self):

@@ -7,8 +7,8 @@ class AccessGatewayFilter:
     """
 
     def __init__(self):
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
         self.logger = logging.getLogger(__name__)
-        # You can configure the logger here if needed
 
     def filter(self, request):
         """
@@ -16,7 +16,7 @@ class AccessGatewayFilter:
         :param request: dict, the incoming request details
         :return: bool, True if the request is allowed, False otherwise
         """
-        if self.is_start_with(request.get('path', '')):
+        if self.is_start_with(request.get('path')):
             return True
 
         auth_header = request.get('headers', {}).get('Authorization')
@@ -26,22 +26,25 @@ class AccessGatewayFilter:
             if user and jwt_token:
                 expected_jwt = user['name'] + str(datetime.date.today())
                 if jwt_token == expected_jwt:
-                    if user.get('level') and user['level'] > 3:
-                        self.set_current_user_info_and_log(user)
-                        return True
-                    elif user.get('level') and user['level'] == 1:
-                        return None
-                    else:
-                        self.set_current_user_info_and_log(user)
-                        return True
-                else:
-                    # Check if JWT is valid for a different user
-                    try:
-                        user_name = jwt_token[:jwt_token.index(str(datetime.date.today()))]
-                    except ValueError:
-                        return True
+                    self.set_current_user_info_and_log(user)
                     return True
-        return True
+                else:
+                    try:
+                        user_name = user['name']
+                        jwt_date_str = jwt_token.replace(user_name, '')
+                        jwt_date = datetime.datetime.strptime(jwt_date_str, '%Y-%m-%d').date()
+                        today = datetime.date.today()
+                        diff = today - jwt_date
+                        if diff.days > 365:
+                            return False
+                        else:
+                            return True
+                    except (ValueError, TypeError):
+                        return True
+            else:
+                return True
+        else:
+            return None
 
 
     def is_start_with(self, request_uri):
@@ -51,7 +54,9 @@ class AccessGatewayFilter:
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
         """
-        return request_uri.startswith('/api') or request_uri.startswith('/login')
+        if request_uri.startswith('/api') or request_uri.startswith('/login'):
+            return True
+        return False
 
     def get_jwt_user(self, request):
         """
@@ -66,10 +71,13 @@ class AccessGatewayFilter:
             if user and jwt_token:
                 expected_jwt = user['name'] + str(datetime.date.today())
                 if jwt_token == expected_jwt:
-                    return user
+                    return {'user': user}
                 else:
                     return None
-        return None
+            else:
+                return None
+        else:
+            return None
 
     def set_current_user_info_and_log(self, user):
         """
@@ -77,7 +85,7 @@ class AccessGatewayFilter:
         :param user: dict, the user information
         :return: None
         """
-        # In a real application, you would set the user information
-        # in a thread-local storage or similar mechanism.
-        # For this example, we'll just log the information.
-        self.logger.info(f"User accessed: {user}")
+        self.logger.info(f"Access granted for user: {user}")
+        # In a real application, you would likely store the user information
+        # in a thread-local variable or a similar mechanism for later use.
+        pass

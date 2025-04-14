@@ -22,13 +22,11 @@ class CSVProcessor:
             with open(file_name, 'r') as file:
                 reader = csv.reader(file)
                 title = next(reader)
-                data = [row for row in reader]
+                data = []
+                for row in reader:
+                    data.append(row)
                 return title, data
         except FileNotFoundError:
-            print(f"Error: File '{file_name}' not found.")
-            return [], []
-        except Exception as e:
-            print(f"An error occurred: {e}")
             return [], []
 
     def write_csv(self, data, file_name):
@@ -42,15 +40,13 @@ class CSVProcessor:
         """
         if not data:
             return 0
-
         try:
             with open(file_name, 'w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow(data[0])
                 writer.writerow(data[1])
             return 1
-        except Exception as e:
-            print(f"An error occurred: {e}")
+        except:
             return 0
 
     def process_csv_data(self, N, save_file_name):
@@ -71,22 +67,19 @@ class CSVProcessor:
         """
         try:
             title, data = self.read_csv(save_file_name)
-            if not title or not data:
-                return 0
+            new_data = []
+            for row in data:
+                try:
+                    new_data.append([row[N].upper()])
+                except IndexError:
+                    return 0
 
-            processed_data = [[row[N].upper()] for row in data]
             new_file_name = save_file_name.replace(".csv", "_process.csv")
-
             with open(new_file_name, 'w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow(title)
-                for row in processed_data:
+                for row in new_data:
                     writer.writerow(row)
-
             return 1
-        except IndexError:
-            print(f"Error: Column {N} does not exist.")
-            return 0
-        except Exception as e:
-            print(f"An error occurred: {e}")
+        except FileNotFoundError:
             return 0

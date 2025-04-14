@@ -6,6 +6,7 @@ class CSVProcessor:
     This is a class for processing CSV files, including readring and writing CSV data, as well as processing specific operations and saving as a new CSV file.
     """
 
+
     def __init__(self):
         pass
 
@@ -16,38 +17,37 @@ class CSVProcessor:
         :return title, data: (list, list), first row is title, the rest is data
         """
         try:
-            with open(file_name, 'r', newline='') as csvfile:
-                reader = csv.reader(csvfile)
+            with open(file_name, 'r', newline='') as file:
+                reader = csv.reader(file)
                 title = next(reader)
-                data = []
-                for row in reader:
-                    data.append(row)
+                data = [row for row in reader]
                 return title, data
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
             return [], []
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error reading CSV file: {e}")
             return [], []
 
     def write_csv(self, data, file_name):
         """
         Write data into a csv file.
         :param file_name: str, name of the csv file
+        :param data: list of lists, the data to write
         :return:int, if success return 1, or 0 otherwise
         """
-        if not data or not isinstance(data, list) or len(data) < 1:
+        if not data or not isinstance(data, list) or len(data) < 2:
             return 0
 
         try:
-            with open(file_name, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile)
+            with open(file_name, 'w', newline='') as file:
+                writer = csv.writer(file)
                 writer.writerow(data[0])
                 for row in data[1:]:
                     writer.writerow(row)
             return 1
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error writing CSV file: {e}")
             return 0
 
     def process_csv_data(self, N, save_file_name):
@@ -64,18 +64,20 @@ class CSVProcessor:
             if not title or not data:
                 return 0
 
-            new_data = []
-            for row in data:
-                try:
-                    new_data.append([row[N].upper()])
-                except IndexError:
-                    print(f"Index {N} out of range for row: {row}")
-                    return 0
+            processed_data = [[row[N].upper()] for row in data]
 
-            new_file_name = save_file_name.replace(".csv", "_process.csv")
+            base, ext = os.path.splitext(save_file_name)
+            new_file_name = base + "_process" + ext
             
-            processed_data = [title] + new_data
-            return self.write_csv(processed_data, new_file_name)
+            with open(new_file_name, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(title)
+                for row in processed_data:
+                    writer.writerow(row)
+            return 1
+        except IndexError:
+            print(f"Error: Column {N} does not exist in the CSV file.")
+            return 0
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error processing CSV data: {e}")
             return 0

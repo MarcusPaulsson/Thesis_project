@@ -49,8 +49,8 @@ class AssessmentSystem:
 
         """
         if name in self.students and self.students[name]['courses']:
-            scores = list(self.students[name]['courses'].values())
-            return sum(scores) / len(scores)
+            total_score = sum(self.students[name]['courses'].values())
+            return float(total_score) / len(self.students[name]['courses'])
         else:
             return None
 
@@ -63,11 +63,11 @@ class AssessmentSystem:
         ['student 1']
         """
         failed_students = []
-        for name, student_data in self.students.items():
-            for course, score in student_data['courses'].items():
+        for name, student_info in self.students.items():
+            for course, score in student_info['courses'].items():
                 if score < 60:
                     failed_students.append(name)
-                    break
+                    break  # Only add the student once if they have multiple failing courses
         return failed_students
 
     def get_course_average(self, course):
@@ -76,15 +76,17 @@ class AssessmentSystem:
         :param course: str, course name
         :return: float, average scores of this course if anyone have score of this course, or None if nobody have records.
         """
-        scores = []
-        for name, student_data in self.students.items():
-            if course in student_data['courses']:
-                score = student_data['courses'][course]
+        total_score = 0
+        student_count = 0
+        for name, student_info in self.students.items():
+            if course in student_info['courses']:
+                score = student_info['courses'][course]
                 if score is not None:
-                    scores.append(score)
+                    total_score += score
+                    student_count += 1
 
-        if scores:
-            return sum(scores) / len(scores)
+        if student_count > 0:
+            return float(total_score) / student_count
         else:
             return None
 
@@ -100,13 +102,13 @@ class AssessmentSystem:
         'student 2'
         """
         top_student = None
-        max_gpa = None
+        highest_gpa = None
 
-        for name, student_data in self.students.items():
+        for name, student_info in self.students.items():
             gpa = self.get_gpa(name)
             if gpa is not None:
-                if top_student is None or gpa > max_gpa:
+                if highest_gpa is None or gpa > highest_gpa:
+                    highest_gpa = gpa
                     top_student = name
-                    max_gpa = gpa
 
         return top_student

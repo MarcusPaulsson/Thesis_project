@@ -26,6 +26,7 @@ class PageUtil:
         """
         if page_number <= 0 or page_number > self.total_pages:
             return []
+
         start_index = (page_number - 1) * self.page_size
         end_index = min(start_index + self.page_size, self.total_items)
         return self.data[start_index:end_index]
@@ -50,11 +51,11 @@ class PageUtil:
         """
         if page_number <= 0 or page_number > self.total_pages:
             return {}
-        start_index = (page_number - 1) * self.page_size
-        end_index = min(start_index + self.page_size, self.total_items)
-        data = self.data[start_index:end_index]
+
+        page_data = self.get_page(page_number)
         has_previous = page_number > 1
         has_next = page_number < self.total_pages
+
         return {
             "current_page": page_number,
             "per_page": self.page_size,
@@ -62,7 +63,7 @@ class PageUtil:
             "total_items": self.total_items,
             "has_previous": has_previous,
             "has_next": has_next,
-            "data": data
+            "data": page_data
         }
 
     def search(self, keyword):
@@ -79,9 +80,10 @@ class PageUtil:
         >>>     "results": [1]
         >>> }
         """
-        results = [item for item in self.data if str(keyword) in str(item)]
+        results = [item for item in self.data if str(item).find(keyword) != -1]
         total_results = len(results)
-        total_pages = (total_results + self.page_size - 1) // self.page_size
+        total_pages = (total_results + self.page_size - 1) // self.page_size if total_results > 0 else 0
+
         return {
             "keyword": keyword,
             "total_results": total_results,

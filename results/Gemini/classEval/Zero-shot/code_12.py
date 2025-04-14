@@ -56,9 +56,11 @@ class BlackjackGame:
             elif rank == 'A':
                 value += 11
                 ace_count += 1
+
         while value > 21 and ace_count > 0:
             value -= 10
             ace_count -= 1
+
         return value
 
     def check_winner(self, player_hand, dealer_hand):
@@ -76,16 +78,15 @@ class BlackjackGame:
         player_value = self.calculate_hand_value(player_hand)
         dealer_value = self.calculate_hand_value(dealer_hand)
 
-        if player_value > 21:
-            if dealer_value > 21:
-                if player_value < dealer_value:
-                    return 'Player wins'
-                else:
-                    return 'Dealer wins'
+        if player_value > 21 and dealer_value <= 21:
+            return 'Dealer wins'
+        elif dealer_value > 21 and player_value <= 21:
+            return 'Player wins'
+        elif player_value > 21 and dealer_value > 21:
+            if player_value < dealer_value:
+                return 'Player wins'
             else:
                 return 'Dealer wins'
-        elif dealer_value > 21:
-            return 'Player wins'
         else:
             if player_value > dealer_value:
                 return 'Player wins'

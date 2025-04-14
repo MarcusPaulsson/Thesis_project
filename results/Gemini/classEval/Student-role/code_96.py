@@ -25,20 +25,19 @@ class WeatherSystem:
 
         """
         if self.city in weather_list:
-            city_data = weather_list[self.city]
-            temperature = city_data['temperature']
-            weather = city_data['weather']
-            temp_units = city_data['temperature units']
+            self.weather = weather_list[self.city]['weather']
+            self.temperature = weather_list[self.city]['temperature']
+            temp_units_in_list = weather_list[self.city]['temperature units']
 
-            if temp_units != tmp_units:
-                if tmp_units == 'celsius':
-                    if temp_units == 'fahrenheit':
-                        temperature = self.fahrenheit_to_celsius_helper(temperature)
-                elif tmp_units == 'fahrenheit':
-                    if temp_units == 'celsius':
-                        temperature = self.celsius_to_fahrenheit_helper(temperature)
+            if temp_units_in_list != tmp_units:
+                if tmp_units == 'fahrenheit':
+                    if temp_units_in_list == 'celsius':
+                        self.temperature = self.celsius_to_fahrenheit()
+                elif tmp_units == 'celsius':
+                    if temp_units_in_list == 'fahrenheit':
+                        self.temperature = self.fahrenheit_to_celsius()
 
-            return (temperature, weather)
+            return (self.temperature, self.weather)
         else:
             return False
 
@@ -65,7 +64,7 @@ class WeatherSystem:
         80.6
 
         """
-        return self.celsius_to_fahrenheit_helper(self.temperature)
+        return self.temperature * 9 / 5 + 32
 
     def fahrenheit_to_celsius(self):
         """
@@ -77,10 +76,4 @@ class WeatherSystem:
         26.999999999999996
 
         """
-        return self.fahrenheit_to_celsius_helper(self.temperature)
-
-    def celsius_to_fahrenheit_helper(self, celsius):
-        return celsius * 9 / 5 + 32
-
-    def fahrenheit_to_celsius_helper(self, fahrenheit):
-        return (fahrenheit - 32) * 5 / 9
+        return (self.temperature - 32) * 5 / 9

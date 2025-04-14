@@ -85,9 +85,9 @@ class CamelCaseMap:
         >>> camelize_map._convert_key('first_name')
         'firstName'
         """
-        if not isinstance(key, str):
-            return key
-        return self._to_camel_case(key)
+        if isinstance(key, str):
+            return self._to_camel_case(key)
+        return key
 
     @staticmethod
     def _to_camel_case(key):
@@ -101,3 +101,12 @@ class CamelCaseMap:
         """
         components = key.split('_')
         return components[0] + ''.join(x.title() for x in components[1:])
+
+    def __contains__(self, key):
+        """
+        Check if the key is in the map
+        :param key:str
+        :return:bool
+        """
+        key = self._convert_key(key)
+        return key in self._data

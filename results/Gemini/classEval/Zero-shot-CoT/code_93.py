@@ -3,7 +3,6 @@ from gensim import matutils
 from numpy import dot, array
 import math
 
-
 class VectorUtil:
     """
     The class provides vector operations, including calculating similarity, cosine similarities, average similarity, and IDF weights.
@@ -21,9 +20,9 @@ class VectorUtil:
         >>> VectorUtil.similarity(vector_1, vector_2)
         0.7071067811865475
         """
-        vector_1 = matutils.unitvec(vector_1)
-        vector_2 = matutils.unitvec(vector_2)
-        return np.dot(vector_1, vector_2)
+        if np.linalg.norm(vector_1) == 0 or np.linalg.norm(vector_2) == 0:
+            return 0.0
+        return dot(vector_1, vector_2) / (np.linalg.norm(vector_1) * np.linalg.norm(vector_2))
 
     @staticmethod
     def cosine_similarities(vector_1, vectors_all):
@@ -37,9 +36,10 @@ class VectorUtil:
         >>> VectorUtil.cosine_similarities(vector1, vectors_all)
         [0.97463185 0.95941195]
         """
-        vector_1 = matutils.unitvec(vector_1)
-        vectors_all = [matutils.unitvec(vector) for vector in vectors_all]
-        return np.array([np.dot(vector_1, vector) for vector in vectors_all])
+        similarities = []
+        for vector in vectors_all:
+            similarities.append(VectorUtil.similarity(vector_1, vector))
+        return similarities
 
     @staticmethod
     def n_similarity(vector_list_1, vector_list_2):
@@ -54,10 +54,13 @@ class VectorUtil:
         0.9897287473881233
         """
         if not vector_list_1 or not vector_list_2:
-            return 0.0
-        vector_list_1 = [matutils.unitvec(vector) for vector in vector_list_1]
-        vector_list_2 = [matutils.unitvec(vector) for vector in vector_list_2]
-        sum_sim = sum(np.dot(v1, v2) for v1 in vector_list_1 for v2 in vector_list_2)
+            return None
+
+        sum_sim = 0.0
+        for v1 in vector_list_1:
+            for v2 in vector_list_2:
+                sum_sim += VectorUtil.similarity(v1, v2)
+
         return sum_sim / (len(vector_list_1) * len(vector_list_2))
 
     @staticmethod
@@ -71,4 +74,7 @@ class VectorUtil:
         >>> VectorUtil.compute_idf_weight_dict(2, num_dict)
         {'key1': 1.0033021088637848, 'key2': 0.6931471805599453}
         """
-        return {key: math.log((total_num + 1) / (value + 1)) for key, value in number_dict.items()}
+        idf_weight_dict = {}
+        for key, count in number_dict.items():
+            idf_weight_dict[key] = math.log((total_num + 1) / (count + 1))
+        return idf_weight_dict

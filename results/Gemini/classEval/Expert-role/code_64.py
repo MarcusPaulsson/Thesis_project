@@ -80,10 +80,10 @@ class NumberConverter:
         >>> NumberConverter.decimal_to_hex(42423)
         'a5b7'
         """
-        hex_digits = "0123456789abcdef"
         if decimal_num == 0:
-            return "0"
-        hex_num = ""
+            return '0'
+        hex_num = ''
+        hex_digits = "0123456789abcdef"
         while decimal_num > 0:
             remainder = decimal_num % 16
             hex_num = hex_digits[remainder] + hex_num
@@ -101,12 +101,8 @@ class NumberConverter:
         """
         decimal_num = 0
         power = 0
+        hex_digits = "0123456789abcdef"
         for digit in reversed(hex_num):
-            if '0' <= digit <= '9':
-                decimal_num += int(digit) * (16 ** power)
-            elif 'a' <= digit <= 'f':
-                decimal_num += (ord(digit) - ord('a') + 10) * (16 ** power)
-            elif 'A' <= digit <= 'F':
-                decimal_num += (ord(digit) - ord('A') + 10) * (16 ** power)
+            decimal_num += hex_digits.index(digit) * (16 ** power)
             power += 1
         return decimal_num

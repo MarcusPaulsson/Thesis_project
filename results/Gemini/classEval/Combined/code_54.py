@@ -2,51 +2,44 @@ import random
 
 class MahjongConnect:
     """
-    MahjongConnect is a class representing a game board for Mahjong Connect.
+    MahjongConnect is a class representing a game board for Mahjong Connect with features like creating the board, checking valid moves, finding paths, removing icons, and checking if the game is over.
     """
 
-    def __init__(self, board_size, icons):
+    def __init__(self, BOARD_SIZE, ICONS):
         """
-        Initializes the game board with the given size and icons.
-
-        :param board_size: List of two integers, representing rows and columns.
-        :param icons: List of strings, representing the available icons.
+        initialize the board size and the icon list, create the game board
+        :param BOARD_SIZE: list of two integer numbers, representing the number of rows and columns of the game board
+        :param ICONS: list of string, representing the icons
         """
-        self.BOARD_SIZE = board_size
-        self.ICONS = icons
+        self.BOARD_SIZE = BOARD_SIZE
+        self.ICONS = ICONS
         self.board = self.create_board()
 
     def create_board(self):
         """
-        Creates a 2D list representing the game board, populated with icons.
-
-        :return: A 2D list (rows x cols) representing the game board.
+        create the game board with the given board size and icons
+        :return: 2-dimensional list, the game board
         """
         rows, cols = self.BOARD_SIZE
-        num_icons = len(self.ICONS)
         board = []
-        for _ in range(rows):
-            row = []
-            for _ in range(cols):
-                row.append(random.choice(self.ICONS))
-            board.append(row)
+        icons = self.ICONS * ((rows * cols) // len(self.ICONS))
+        if (rows * cols) % len(self.ICONS) != 0:
+            icons += self.ICONS[:(rows * cols) % len(self.ICONS)]
+        random.shuffle(icons)
+        
+        board_icons = icons[:rows * cols]
+        board = [board_icons[i * cols:(i + 1) * cols] for i in range(rows)]
+        
         return board
 
     def is_valid_move(self, pos1, pos2):
         """
-        Checks if a move between two positions is valid.
-
-        A move is valid if:
-        1. Both positions are within the board boundaries.
-        2. The positions are not the same.
-        3. The icons at both positions are the same.
-        4. There is a valid path between the two positions.
-
-        :param pos1: Tuple (row, col) of the first position.
-        :param pos2: Tuple (row, col) of the second position.
-        :return: True if the move is valid, False otherwise.
+        check if the move of two icons is valid (i.e. positions are within the game board range, the two positions are not the same, the two positions have the same icon, and there is a valid path between the two positions)
+        :param pos1: position tuple(x, y) of the first icon
+        :param pos2: position tuple(x, y) of the second icon
+        :return:True or False ,representing whether the move of two icons is valid
         """
-        if not self._is_within_bounds(pos1) or not self._is_within_bounds(pos2):
+        if not self.is_valid_position(pos1) or not self.is_valid_position(pos2):
             return False
 
         if pos1 == pos2:
@@ -55,75 +48,87 @@ class MahjongConnect:
         if self.board[pos1[0]][pos1[1]] != self.board[pos2[0]][pos2[1]]:
             return False
 
+        if self.board[pos1[0]][pos1[1]] == ' ':
+            return False
+
         return self.has_path(pos1, pos2)
 
-    def _is_within_bounds(self, pos):
+    def is_valid_position(self, pos):
         """
-        Checks if a given position is within the board boundaries.
-
-        :param pos: Tuple (row, col) representing the position.
-        :return: True if the position is within bounds, False otherwise.
+        check if the position is within the game board range
+        :param pos: position tuple(x, y) of the icon
+        :return: True or False, representing whether the position is valid
         """
-        row, col = pos
         rows, cols = self.BOARD_SIZE
-        return 0 <= row < rows and 0 <= col < cols
+        r, c = pos
+        return 0 <= r < rows and 0 <= c < cols
 
     def has_path(self, pos1, pos2):
         """
-        Checks if there is a clear path between two positions. This implementation only checks for direct horizontal or vertical paths.
-
-        :param pos1: Tuple (row, col) of the first position.
-        :param pos2: Tuple (row, col) of the second position.
-        :return: True if a path exists, False otherwise.
+        check if there is a path between two icons
+        :param pos1: position tuple(x, y) of the first icon
+        :param pos2: position tuple(x, y) of the second icon
+        :return: True or False ,representing whether there is a path between two icons
         """
         rows, cols = self.BOARD_SIZE
 
-        def is_valid(x, y):
-            return 0 <= x < rows and 0 <= y < cols
+        def find_path(p1, p2, turns):
+            if turns > 2:
+                return False
 
-        def can_connect(p1, p2, board_state):
             if p1 == p2:
                 return True
 
-            r1, c1 = p1
-            r2, c2 = p2
+            r, c = p1
+            
+            # Move horizontally
+            for nc in range(cols):
+                if nc == c:
+                    continue
+                
+                valid_horizontal = True
+                for k in range(min(c, nc) + 1, max(c, nc)):
+                    if self.board[r][k] != ' ':
+                        valid_horizontal = False
+                        break
+                
+                if valid_horizontal:
+                    if find_path((r, nc), p2, turns + (1 if nc != c else 0)):
+                        return True
 
-            if r1 == r2:
-                # Horizontal check
-                start = min(c1, c2) + 1
-                end = max(c1, c2)
-                path_clear = all(board_state[r1][y] == ' ' for y in range(start, end))
-                return path_clear
+            # Move vertically
+            for nr in range(rows):
+                if nr == r:
+                    continue
+                
+                valid_vertical = True
+                for k in range(min(r, nr) + 1, max(r, nr)):
+                    if self.board[k][c] != ' ':
+                        valid_vertical = False
+                        break
+                
+                if valid_vertical:
+                    if find_path((nr, c), p2, turns + (1 if nr != r else 0)):
+                        return True
 
-            elif c1 == c2:
-                # Vertical check
-                start = min(r1, r2) + 1
-                end = max(r1, r2)
-                path_clear = all(board_state[x][c1] == ' ' for x in range(start, end))
-                return path_clear
-            else:
-                return False
+            return False
 
-        # Create a copy of the board to avoid modifying the original
-        temp_board = [row[:] for row in self.board]
-
-        return can_connect(pos1, pos2, temp_board)
+        return find_path(pos1, pos2, 0)
 
     def remove_icons(self, pos1, pos2):
         """
-        Removes the icons at the given positions by setting them to ' '.
-
-        :param pos1: Tuple (row, col) of the first icon to remove.
-        :param pos2: Tuple (row, col) of the second icon to remove.
+        remove the connected icons on the game board
+        :param pos1: position tuple(x, y) of the first icon to be removed
+        :param pos2: position tuple(x, y) of the second icon to be removed
+        :return: None
         """
         self.board[pos1[0]][pos1[1]] = ' '
         self.board[pos2[0]][pos2[1]] = ' '
 
     def is_game_over(self):
         """
-        Checks if the game is over, meaning no more icons are left on the board.
-
-        :return: True if the game is over, False otherwise.
+        Check if the game is over (i.e., if there are no more icons on the game board)
+        :return: True or False ,representing whether the game is over
         """
         for row in self.board:
             for icon in row:

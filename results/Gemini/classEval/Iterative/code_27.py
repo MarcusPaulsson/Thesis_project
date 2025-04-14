@@ -40,14 +40,12 @@ class CurrencyConverter:
         converted_amount = usd_amount * self.rates[to_currency]
         return converted_amount
 
-
     def get_supported_currencies(self):
         """
         Returns a list of supported currency types
         :return:list, All supported currency types
         """
         return list(self.rates.keys())
-
 
     def add_currency_rate(self, currency, rate):
         """
@@ -57,7 +55,7 @@ class CurrencyConverter:
         :return:If successful, returns None; if unsuccessful, returns False
         """
         if not isinstance(currency, str):
-            raise TypeError("Currency must be a string.")
+            raise TypeError("Currency code must be a string.")
         if not isinstance(rate, (int, float)):
             raise TypeError("Rate must be a number.")
 
@@ -68,7 +66,6 @@ class CurrencyConverter:
         self.rates[currency] = rate
         return None
 
-
     def update_currency_rate(self, currency, new_rate):
         """
         Update the exchange rate for a certain currency
@@ -77,7 +74,7 @@ class CurrencyConverter:
         :return:If successful, returns None; if unsuccessful, returns False
         """
         if not isinstance(currency, str):
-            raise TypeError("Currency must be a string.")
+            raise TypeError("Currency code must be a string.")
         if not isinstance(new_rate, (int, float)):
             raise TypeError("New rate must be a number.")
 

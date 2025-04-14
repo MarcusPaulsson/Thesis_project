@@ -17,7 +17,7 @@ class IpUtil:
         try:
             ipaddress.IPv4Address(ip_address)
             return True
-        except ValueError:
+        except ipaddress.AddressValueError:
             return False
 
     @staticmethod
@@ -30,7 +30,7 @@ class IpUtil:
         try:
             ipaddress.IPv6Address(ip_address)
             return True
-        except ValueError:
+        except ipaddress.AddressValueError:
             return False
 
     @staticmethod
@@ -41,11 +41,11 @@ class IpUtil:
         :return: string, the hostname associated with the IP address, None if not found.
         """
         try:
-            hostname = socket.gethostbyaddr(ip_address)[0]
+            hostname, _, _ = socket.gethostbyaddr(ip_address)
             return hostname
         except socket.herror:
             return None
         except socket.gaierror:
             return None
-        except Exception:
-            return None
+        except OSError:
+            return socket.gethostname()

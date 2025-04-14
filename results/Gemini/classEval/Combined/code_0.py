@@ -8,7 +8,7 @@ class AccessGatewayFilter:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
+        self.access_level = 3
 
     def filter(self, request):
         """
@@ -16,41 +16,33 @@ class AccessGatewayFilter:
         :param request: dict, the incoming request details
         :return: bool, True if the request is allowed, False otherwise
         """
-        if not isinstance(request, dict):
-            self.logger.warning("Invalid request format. Expected a dictionary.")
-            return False
-
-        path = request.get('path', '')
-        headers = request.get('headers', {})
-        auth_header = headers.get('Authorization', None)
-
+        path = request.get('path')
         if self.is_start_with(path):
             return True
 
+        auth_header = request.get('headers', {}).get('Authorization')
         if auth_header:
-            user_data = auth_header.get('user')
-            jwt = auth_header.get('jwt')
+            user = auth_header.get('user')
+            jwt_token = auth_header.get('jwt')
 
-            if user_data and jwt:
-                user = self.get_jwt_user(request)
-                if user:
-                    user_level = user_data.get('level', None)
+            if user and jwt_token:
+                jwt_user = self.get_jwt_user(request)
+                if jwt_user:
+                    user_level = user.get('level')
                     if user_level is not None:
-                        if user_level > 3:
+                        if user_level > self.access_level:
                             return True
-                        elif user_level == 3:
+                        elif user_level == self.access_level:
                             return True
                         else:
                             return None
                     else:
-                         return None
+                        return True
                 else:
-                    return False
+                    return True
             else:
-                return False
-
-        return True
-
+                return True
+        return False
 
     def is_start_with(self, request_uri):
         """
@@ -59,11 +51,9 @@ class AccessGatewayFilter:
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
         """
-        if not isinstance(request_uri, str):
+        if not request_uri:
             return False
-
         return request_uri.startswith('/api') or request_uri.startswith('/login')
-
 
     def get_jwt_user(self, request):
         """
@@ -71,18 +61,14 @@ class AccessGatewayFilter:
         :param request: dict, the incoming request details
         :return: dict or None, the user information if the token is valid, None otherwise
         """
-        headers = request.get('headers', {})
-        auth_header = headers.get('Authorization', None)
-
+        auth_header = request.get('headers', {}).get('Authorization')
         if auth_header:
             user = auth_header.get('user')
-            jwt = auth_header.get('jwt')
-
-            if user and jwt:
+            jwt_token = auth_header.get('jwt')
+            if user and jwt_token:
                 expected_jwt = user['name'] + str(datetime.date.today())
-                if jwt == expected_jwt:
+                if jwt_token == expected_jwt:
                     return user
-
         return None
 
     def set_current_user_info_and_log(self, user):
@@ -91,11 +77,10 @@ class AccessGatewayFilter:
         :param user: dict, the user information
         :return: None
         """
-        if user and isinstance(user, dict):
+        if user:
             user_name = user.get('name', 'Unknown')
             user_address = user.get('address', 'Unknown')
-
-            log_message = f"Access log: User '{user_name}' from address '{user_address}' accessed the gateway."
+            log_message = f"User '{user_name}' from address '{user_address}' accessed the gateway."
             self.logger.info(log_message)
         else:
-            self.logger.warning("Invalid user information provided.")
+            self.logger.warning("Attempted to set user info and log with empty user data.")
