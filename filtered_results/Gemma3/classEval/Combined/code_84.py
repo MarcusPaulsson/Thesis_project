@@ -15,8 +15,8 @@ class TextFileProcessor:
     def read_file_as_json(self):
         """
         Read the self.file_path file as json format.
-        If the file content doesn't obey json format, attempt to parse as int or float, otherwise return as string.
-        :return: dict if the file is stored as json format, or str/int/float otherwise.
+        if the file content doesn't obey json format, the code will raise error.
+        :return data: dict if the file is stored as json format, or str/int/float.. according to the file content otherwise.
         """
         try:
             with open(self.file_path, 'r') as f:
@@ -35,16 +35,16 @@ class TextFileProcessor:
 
     def read_file(self):
         """
-        Read and return the content of self.file_path file.
-        :return: the content of the file as a string.
+        Read the return the content of self.file_path file.
+        :return: the same return as the read() method
         """
         with open(self.file_path, 'r') as f:
             return f.read()
 
     def write_file(self, content):
         """
-        Write content into the self.file_path file, overwriting if the file already exists.
-        :param content: any content to be written to the file.
+        Write content into the self.file_path file, and overwrite if the file has already existed.
+        :param content: any content
         """
         with open(self.file_path, 'w') as f:
             f.write(str(content))
@@ -52,8 +52,7 @@ class TextFileProcessor:
     def process_file(self):
         """
         Read the self.file_path file and filter out non-alphabetic characters from the content string.
-        Overwrite the processed data into the same self.file_path file.
-        :return: The processed string with only alphabetic characters.
+        Overwrite the after-processed data into the same self.file_path file.
         """
         content = self.read_file()
         processed_content = ''.join(char for char in content if char.isalpha())

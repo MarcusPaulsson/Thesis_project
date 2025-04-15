@@ -17,7 +17,6 @@ Gemini_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Gemini',
 Gemini_zero_shot_CoT_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Zero-shot-CoT'))
 Gemini_student_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Student-role'))
 Gemini_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Expert-role'))
-Gemini_meta_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Meta'))
 Gemini_naive_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Naive'))
 Gemini_iterative_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Iterative'))
 Gemini_combined_apps_folder = os.path.abspath(os.path.join('results', 'Gemini', 'APPS', 'Combined'))
@@ -27,7 +26,6 @@ chatGPT_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT
 chatGPT_zero_shot_CoT_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Zero-shot-CoT'))
 chatGPT_student_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Student-role'))
 chatGPT_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Expert-role'))
-chatGPT_meta_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Meta'))
 chatGPT_naive_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Naive'))
 chatGPT_iterative_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Iterative'))
 chatGPT_combined_apps_folder = os.path.abspath(os.path.join('results', 'ChatGPT', 'APPS', 'Combined'))
@@ -37,7 +35,6 @@ gemma_zero_shot_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 
 gemma_zero_shot_CoT_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Zero-shot-CoT'))
 gemma_student_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Student-role'))
 gemma_expert_role_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Expert-role'))
-gemma_meta_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Meta'))
 gemma_naive_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Naive'))
 gemma_iterative_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Iterative'))
 gemma_combined_apps_folder = os.path.abspath(os.path.join('results', 'Gemma3', 'APPS', 'Combined'))
@@ -49,7 +46,6 @@ folder_paths = {
      "Gemini Zero-shot-CoT": Gemini_zero_shot_CoT_apps_folder,
      "Gemini Student-role": Gemini_student_role_apps_folder,
      "Gemini Expert-role": Gemini_expert_role_apps_folder,
-     "Gemini Meta": Gemini_meta_apps_folder,
      "Gemini Naive": Gemini_naive_apps_folder,
      "Gemini Iterative": Gemini_iterative_apps_folder,
      "Gemini Combined": Gemini_combined_apps_folder,
@@ -58,7 +54,6 @@ folder_paths = {
      "ChatGPT Zero-shot-CoT": chatGPT_zero_shot_CoT_apps_folder,
      "ChatGPT Student-role": chatGPT_student_role_apps_folder,
      "ChatGPT Expert-role": chatGPT_expert_role_apps_folder,
-     "ChatGPT Meta": chatGPT_meta_apps_folder,
      "ChatGPT Naive": chatGPT_naive_apps_folder,
      "ChatGPT Iterative": chatGPT_iterative_apps_folder,
      "ChatGPT Combined": chatGPT_combined_apps_folder,
@@ -67,7 +62,6 @@ folder_paths = {
     "Gemma3 Zero-shot-CoT": gemma_zero_shot_CoT_apps_folder,
     "Gemma3 Student-role": gemma_student_role_apps_folder,
     "Gemma3 Expert-role": gemma_expert_role_apps_folder,
-    "Gemma3 Meta": gemma_meta_apps_folder,
     "Gemma3 Naive": gemma_naive_apps_folder,
     "Gemma3 Iterative": gemma_iterative_apps_folder,
     "Gemma3 Combined": gemma_combined_apps_folder,

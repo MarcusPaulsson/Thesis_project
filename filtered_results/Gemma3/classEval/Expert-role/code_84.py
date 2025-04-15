@@ -26,12 +26,9 @@ class TextFileProcessor:
             with open(self.file_path, 'r') as f:
                 content = f.read()
                 try:
-                    return int(content)
-                except ValueError:
-                    try:
-                        return float(content)
-                    except ValueError:
-                        return content
+                    return json.loads(content)
+                except json.JSONDecodeError:
+                    return content
 
     def read_file(self):
         """

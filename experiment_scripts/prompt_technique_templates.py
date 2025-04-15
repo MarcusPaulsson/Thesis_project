@@ -64,19 +64,6 @@ HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
 '''
 
-# Meta prompting
-'''
-PROMPT_TECHNIQUE_SETTING = "Meta" 
-
-SYSTEM_PROMPT="""- For the following coding task, solve it in the following steps:
-1. Define which variables needed.
-2. Find a suitable algorithm, structure and approach to solve the task.
-3. Refine the previous steps.
-4. Give a code solution that solves the task."""
-HEAD_PROMPT = ""
-TAIL_PROMPT="Give only the code, no test cases."
-'''
-
 # Naive Prompting
 '''
 PROMPT_TECHNIQUE_SETTING = "Naive" 

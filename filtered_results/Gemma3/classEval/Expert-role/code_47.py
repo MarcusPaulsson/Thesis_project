@@ -19,19 +19,19 @@ class IPAddress:
         >>> ipaddress.is_valid()
         True
         """
-        try:
-            octets = self.ip_address.split(".")
-            if len(octets) != 4:
+        octets = self.ip_address.split(".")
+        if len(octets) != 4:
+            return False
+        for octet in octets:
+            if not octet.isdigit():
                 return False
-            for octet in octets:
-                if not octet.isdigit():
-                    return False
+            try:
                 octet_int = int(octet)
                 if octet_int < 0 or octet_int > 255:
                     return False
-            return True
-        except:
-            return False
+            except ValueError:
+                return False
+        return True
 
 
     def get_octets(self):

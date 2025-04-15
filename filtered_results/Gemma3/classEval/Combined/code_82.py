@@ -25,11 +25,10 @@ class StockPortfolioTracker:
         """
         Remove a stock from the portfolio.
         :param stock: a dictionary with keys "name", "price", and "quantity"
-        :return: True if the stock was removed successfully, False if the stock was not found.
         """
-        for i, s in enumerate(self.portfolio):
-            if s["name"] == stock["name"] and s["price"] == stock["price"] and s["quantity"] == stock["quantity"]:
-                del self.portfolio[i]
+        for s in self.portfolio:
+            if s["name"] == stock["name"] and s["quantity"] == stock["quantity"]:
+                self.portfolio.remove(s)
                 return True
         return False
 
@@ -58,7 +57,7 @@ class StockPortfolioTracker:
                     self.cash_balance += stock["price"] * stock["quantity"]
                     s["quantity"] -= stock["quantity"]
                     if s["quantity"] == 0:
-                        self.remove_stock(s)
+                        self.portfolio.remove(s)
                     return True
                 else:
                     return False
