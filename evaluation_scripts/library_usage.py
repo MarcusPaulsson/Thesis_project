@@ -215,7 +215,7 @@ if __name__ == "__main__":
     upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #adjust if running locally.
 
     result_setting = "results" # "results"
-    result_setting = "filtered_results" # "results"
+    #result_setting = "filtered_results" # "results"
 
     # folder_paths_gemini_cli_games = {
     #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
@@ -231,6 +231,15 @@ if __name__ == "__main__":
     # }
 
     # ClassEval
+
+    folder_paths_ground_truth_classEval = {
+        "GroundTruth classEval": os.path.join(upper_dir, "ground_truth", "classEval")
+    }
+
+    folder_paths_ground_truth_APPS = {
+        "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
+    }
+
     folder_paths_gemini_classEval = {
         "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
         "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
@@ -293,6 +302,7 @@ if __name__ == "__main__":
     results_gemini = {}
     results_chatgpt = {}
     results_gemma = {}
+    ground_truth = {}
 
     results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_APPS))
     results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_classEval))
@@ -302,6 +312,9 @@ if __name__ == "__main__":
 
     results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_APPS))
     results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_classEval))
+
+    ground_truth.update(analyze_folders_and_count_calls(folder_paths_ground_truth_classEval))
+    ground_truth.update(analyze_folders_and_count_calls(folder_paths_ground_truth_APPS))
 
 
     print("\nTotal Standard and Public Library Calls per Folder:")
@@ -313,7 +326,9 @@ if __name__ == "__main__":
 
     for folder, total_calls in results_gemma.items():
         print(f"  {folder}: {total_calls}")
-
+        
+    for folder, total_calls in ground_truth.items():
+        print(f"  {folder}: {total_calls}")
 
 run_on_single_file = False
 if run_on_single_file:

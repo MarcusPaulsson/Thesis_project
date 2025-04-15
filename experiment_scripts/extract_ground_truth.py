@@ -35,30 +35,35 @@ def extract_apps_ground_truth():
 
 def save_ground_truth():
     classeval = extract_classeval_ground_truth()
-    apps = extract_classeval_ground_truth()
+    apps = extract_apps_ground_truth()
 
-    for i, item in enumerate(classeval):
-                file_name = f"code_{i}.py"
-                dir_name = os.path.abspath(os.path.join(upper_dir,'ground_truth', "classEval")) 
-                os.makedirs(dir_name, exist_ok=True)
-                file_path = os.path.join(dir_name, file_name)
-                try:
-                    with open(file_path, 'w', encoding='utf-8') as py_file:
-                        py_file.write(item)
-                    print(f"Saved code block from key '{i}' to '{file_path}'")
-                except Exception as e:
-                    print(f"Error saving code block from key '{i}': {e}")
-    for i, item in enumerate(apps):
-                file_name = f"code_{i}.py"
-                dir_name = os.path.abspath(os.path.join(upper_dir,'ground_truth', "APPS")) 
-                os.makedirs(dir_name, exist_ok=True)
-                file_path = os.path.join(dir_name, file_name)
-                try:
-                    with open(file_path, 'w', encoding='utf-8') as py_file:
-                        py_file.write(item)
-                    print(f"Saved code block from key '{i}' to '{file_path}'")
-                except Exception as e:
-                    print(f"Error saving code block from key '{i}': {e}")
+    if classeval:
+        for i, item in enumerate(classeval):
+            file_name = f"code_{i}.py"
+            dir_name = os.path.abspath(os.path.join(upper_dir,'ground_truth', "classEval"))
+            os.makedirs(dir_name, exist_ok=True)
+            file_path = os.path.join(dir_name, file_name)
+            try:
+                with open(file_path, 'w', encoding='utf-8') as py_file:
+                    py_file.write(item)
+                print(f"Saved code block from ClassEval index '{i}' to '{file_path}'")
+            except Exception as e:
+                print(f"Error saving ClassEval code block at index '{i}': {e}")
+
+    if apps:
+        for i, item in enumerate(apps):
+            file_name = f"code_{i}.py"
+            dir_name = os.path.abspath(os.path.join(upper_dir,'ground_truth', "APPS"))
+            os.makedirs(dir_name, exist_ok=True)
+            file_path = os.path.join(dir_name, file_name)
+            try:
+                with open(file_path, 'w', encoding='utf-8') as py_file:
+                    py_file.write(item['solutions'] if isinstance(item, dict) and 'solutions' in item and item['solutions'] else item) # Assuming you want the first solution
+                print(f"Saved code block from APPS index '{i}' to '{file_path}'")
+            except Exception as e:
+                print(f"Error saving APPS code block at index '{i}': {e}")
+
+save_ground_truth()
 
 save_ground_truth()
 
