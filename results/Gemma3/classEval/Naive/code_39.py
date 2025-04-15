@@ -45,6 +45,7 @@ class ExpressionCalculator:
         else:
             return "Invalid expression"
 
+
     def prepare(self, expression):
         """
         Prepare the infix expression for conversion to postfix notation
@@ -54,24 +55,24 @@ class ExpressionCalculator:
 
         expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
-        expression = self.transform(expression)
-        tokens = expression.split()
-        for token in tokens:
-            if token.isdigit() or (token.startswith('-') and token[1:].isdigit()):
-                self.postfix_stack.append(token)
-            elif token == '(':
-                self.postfix_stack.append(token)
-            elif token == ')':
-                while self.postfix_stack and self.postfix_stack[-1] != '(':
-                    self.postfix_stack.append(self.postfix_stack.pop())
-                if self.postfix_stack and self.postfix_stack[-1] == '(':
-                    self.postfix_stack.pop()
-            elif self.is_operator(token):
-                while self.postfix_stack and self.postfix_stack[-1] != '(' and self.compare(token, self.postfix_stack[-1]):
-                    self.postfix_stack.append(self.postfix_stack.pop())
-                self.postfix_stack.append(token)
-        while self.postfix_stack:
-            self.postfix_stack.append(self.postfix_stack.pop())
+        expression = expression.replace(" ", "")
+        operators = []
+        for char in expression:
+            if char.isdigit():
+                self.postfix_stack.append(char)
+            elif self.is_operator(char):
+                while operators and operators[-1] != '(' and self.compare(char, operators[-1]):
+                    self.postfix_stack.append(operators.pop())
+                operators.append(char)
+            elif char == '(':
+                operators.append(char)
+            elif char == ')':
+                while operators and operators[-1] != '(':
+                    self.postfix_stack.append(operators.pop())
+                operators.pop()  # Pop the '('
+        while operators:
+            self.postfix_stack.append(operators.pop())
+
 
     @staticmethod
     def is_operator(c):
@@ -84,7 +85,8 @@ class ExpressionCalculator:
         True
 
         """
-        return c in {'+', '-', '*', '/', '(', ')', '%'}
+        return c in "+-*/%()"
+
 
     def compare(self, cur, peek):
         """
@@ -101,6 +103,7 @@ class ExpressionCalculator:
         cur_priority = op_dict.get(cur, 0)
         peek_priority = op_dict.get(peek, 0)
         return cur_priority >= peek_priority
+
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -127,6 +130,7 @@ class ExpressionCalculator:
             return first_value % second_value
         else:
             raise ValueError("Invalid operator")
+
 
     @staticmethod
     def transform(expression):

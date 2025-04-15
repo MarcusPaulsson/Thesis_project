@@ -21,9 +21,6 @@ class DataStatistics4:
             return 0.0
 
         n = len(data1)
-        if n == 0:
-            return 0.0
-
         sum_x = sum(data1)
         sum_y = sum(data2)
         sum_x_squared = sum(x**2 for x in data1)
@@ -35,8 +32,8 @@ class DataStatistics4:
 
         if denominator == 0:
             return 0.0
-        else:
-            return numerator / denominator
+
+        return numerator / denominator
 
     @staticmethod
     def skewness(data):
@@ -53,7 +50,7 @@ class DataStatistics4:
             return 0.0
 
         mean = sum(data) / n
-        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / n)
+        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / (n - 1))
 
         if std_dev == 0:
             return 0.0
@@ -76,12 +73,12 @@ class DataStatistics4:
             return float('nan')
 
         mean = sum(data) / n
-        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / n)
+        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / (n - 1))
 
         if std_dev == 0:
             return float('nan')
 
-        kurtosis = sum(((x - mean) / std_dev)**4 for x in data) / n - 3
+        kurtosis = (sum(((x - mean) / std_dev)**4 for x in data) / n) - 3
         return kurtosis
 
     @staticmethod

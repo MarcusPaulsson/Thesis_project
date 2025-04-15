@@ -65,6 +65,7 @@ class Statistics3:
         """
         if len(x) != len(y) or len(x) == 0:
             return None
+
         n = len(x)
         sum_x = sum(x)
         sum_y = sum(y)
@@ -108,8 +109,10 @@ class Statistics3:
         """
         if not data or not data[0]:
             return []
+
         n = len(data)
         matrix = [[None] * n for _ in range(n)]
+
         for i in range(n):
             for j in range(n):
                 matrix[i][j] = Statistics3.correlation(data[i], data[j])
@@ -131,7 +134,7 @@ class Statistics3:
         mean = Statistics3.mean(data)
         if mean is None:
             return None
-        variance = sum((x - mean)**2 for x in data) / len(data)
+        variance = sum((x - mean) ** 2 for x in data) / len(data)
         return math.sqrt(variance)
 
     @staticmethod

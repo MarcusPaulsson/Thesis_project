@@ -38,9 +38,10 @@ class ShoppingCart:
         self.items = {"apple":{"price":1, "quantity":2}}
         """
         if item in self.items:
-            self.items[item]["quantity"] -= quantity
-            if self.items[item]["quantity"] <= 0:
-                del self.items[item]
+            if self.items[item]["quantity"] > quantity:
+                self.items[item]["quantity"] -= quantity
+            else:
+                self.items[item]["quantity"] = 0
 
 
     def view_items(self) -> dict:

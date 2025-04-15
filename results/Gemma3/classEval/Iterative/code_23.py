@@ -43,7 +43,7 @@ class CombinationCalculator:
         15
         """
         if n < 0:
-            return 0
+            return False
         if n == 0:
             return 0
         result = 0

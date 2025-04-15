@@ -44,7 +44,8 @@ class CookiesUtil:
             with open(self.cookies_file, 'w') as f:
                 json.dump(self.cookies, f)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error saving cookies: {e}")
             return False
 
     def set_cookies(self, request):
@@ -53,4 +54,4 @@ class CookiesUtil:
         :param request: The request to set cookies to, dict.
         """
         if self.cookies:
-            request['cookies'] = f"cookies={json.dumps(self.cookies)}"
+            request['cookies'] = f"cookies={self.cookies}"

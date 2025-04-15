@@ -25,17 +25,18 @@ class EmailClient:
         """
         if recv.capacity < size:
             return False
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        email = {
-            'sender': self.addr,
-            'receiver': recv.addr,
-            'content': content,
-            'size': size,
-            'time': timestamp,
-            'state': 'unread'
-        }
-        recv.inbox.append(email)
-        return True
+        else:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            email = {
+                'sender': self.addr,
+                'receiver': recv.addr,
+                'content': content,
+                'size': size,
+                'time': timestamp,
+                'state': 'unread'
+            }
+            recv.inbox.append(email)
+            return True
 
     def fetch(self):
         """
@@ -74,10 +75,10 @@ class EmailClient:
         """
         occupied_size = self.get_occupied_size()
         if occupied_size <= size:
+            self.inbox = []
             return
         
         self.inbox.sort(key=lambda x: x['time'])
-        
         while occupied_size > size and self.inbox:
             occupied_size -= self.inbox[0]['size']
             self.inbox.pop(0)

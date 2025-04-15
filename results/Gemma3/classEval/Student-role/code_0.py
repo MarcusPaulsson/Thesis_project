@@ -25,9 +25,14 @@ class AccessGatewayFilter:
         if 'headers' in request and 'Authorization' in request['headers']:
             user = self.get_jwt_user(request)
             if user:
-                self.set_current_user_info_and_log(user['user'])
-                return True
-        return False
+                if user['user'].get('level', 0) >= 3:
+                    self.set_current_user_info_and_log(user['user'])
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        return None
 
 
     def is_start_with(self, request_uri):
@@ -63,7 +68,12 @@ class AccessGatewayFilter:
                 user = auth_header['user']
                 if jwt == user['name'] + str(datetime.date.today()):
                     return {'user': user}
-        return None
+                else:
+                    return None
+            else:
+                return None
+        else:
+            return None
 
     def set_current_user_info_and_log(self, user):
         """

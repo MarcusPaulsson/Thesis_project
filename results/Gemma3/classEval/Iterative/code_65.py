@@ -13,6 +13,7 @@ class NumberWordFormatter:
                             "NINETEEN"]
         self.NUMBER_TEN = ["TEN", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"]
         self.NUMBER_MORE = ["", "THOUSAND", "MILLION", "BILLION"]
+        self.NUMBER_SUFFIX = ["k", "w", "", "m", "", "", "b", "", "", "t", "", "", "p", "", "", "e"]
 
     def format(self, x):
         """
@@ -97,27 +98,21 @@ class NumberWordFormatter:
         """
         return self.NUMBER_MORE[i]
 
-    def convert_number(self, num):
+    def convert_number(self, x):
         """
         Converts a number into words format
-        :param num: int, the number to be converted into words format
+        :param x: int, the number to be converted into words format
         :return: str, the number in words format
         """
-        num_str = str(num)
-        length = len(num_str)
-        result = ""
+        s = str(x)
+        n = len(s)
+        res = ""
         i = 0
-        while i < length:
-            if length - i >= 3:
-                group = num_str[i:i + 3]
-                if group != "000":
-                    result += self.trans_three(group) + " "
-                    if length - i > 3:
-                        result += self.parse_more(len(num_str) - i - 3) + " "
+        while i < n:
+            if n - i >= 3:
+                res += self.trans_three(s[i:i + 3]) + " "
                 i += 3
             else:
-                group = num_str[i:]
-                if group != "000":
-                    result += self.trans_two(group) + " "
-                i += len(group)
-        return result.strip()
+                res += self.trans_two(s[i:]) + " "
+                i = n
+        return res.strip()

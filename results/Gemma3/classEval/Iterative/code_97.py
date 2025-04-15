@@ -38,19 +38,19 @@ class Words2Numbers:
         >>> w2n.text2int("thirty-two")
         "32"
         """
-        words = textnum.replace('-', ' ').split()
+        words = textnum.lower().replace('-', ' ').split()
         total = 0
         scale = 0
-        for word in words:
+        for i, word in enumerate(words):
             if word in self.numwords:
                 num, power = self.numwords[word]
                 if num == 1:
                     scale += power
                 else:
                     total += num * (10 ** scale)
-            elif word.isdigit():
-                total += int(word) * (10 ** scale)
-        return str(total)
+            else:
+                return ""
+        return str(total + scale * (10 ** scale))
 
     def is_valid_input(self, textnum):
         """
@@ -61,9 +61,8 @@ class Words2Numbers:
         >>> w2n.is_valid_input("thirty-two")
         False
         """
-        words = textnum.replace('-', ' ').split()
-        valid_words = set(self.numwords.keys()) | set(self.units) | set(self.tens) | set(self.scales)
+        words = textnum.lower().replace('-', ' ').split()
         for word in words:
-            if word not in valid_words and not word.isdigit():
+            if word not in self.numwords and word not in self.ordinal_words:
                 return False
         return True

@@ -17,9 +17,6 @@ class EightPuzzle:
         Find the blank position of current state, which is the 0 element.
         :param state: a 3*3 size list of Integer, stores the current state.
         :return i, j: two Integers, represent the coordinate of the blank block.
-        >>> eightPuzzle = EightPuzzle([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
-        >>> eightPuzzle.find_blank([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
-        (2, 1)
         """
         for i in range(3):
             for j in range(3):
@@ -33,12 +30,9 @@ class EightPuzzle:
         :param state: a 3*3 size list of Integer, stores the state before moving.
         :param direction: str, only has 4 direction 'up', 'down', 'left', 'right'
         :return new_state: a 3*3 size list of Integer, stores the state after moving.
-        >>> eightPuzzle = EightPuzzle([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
-        >>> eightPuzzle.move([[2, 3, 4], [5, 8, 1], [6, 0, 7]], 'left')
-        [[2, 3, 4], [5, 8, 1], [0, 6, 7]]
         """
         i, j = self.find_blank(state)
-        if i is None or j is None:
+        if i is None:
             return state
 
         new_state = [row[:] for row in state]  # Create a deep copy
@@ -63,9 +57,6 @@ class EightPuzzle:
         According the current state, find all the possible moving directions. Only has 4 direction 'up', 'down', 'left', 'right'.
         :param state: a 3*3 size list of Integer, stores the current state.
         :return moves: a list of str, store all the possible moving directions according to the current state.
-        >>> eightPuzzle = EightPuzzle([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
-        >>> eightPuzzle.get_possible_moves([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
-        ['up', 'left', 'right']
         """
         i, j = self.find_blank(state)
         moves = []
@@ -87,9 +78,6 @@ class EightPuzzle:
         Traversal the possible_moves list and invoke move method to get several new states.Then append them.
         redo the above steps until the open_list is empty or the state has changed to the goal state.
         :return path: list of str, the solution to the goal state.
-        >>> eightPuzzle = EightPuzzle([[1, 2, 3], [4, 5, 6], [7, 0, 8]])
-        >>> eightPuzzle.solve()
-        ['right']
         """
         queue = [(self.initial_state, [])]
         visited = {tuple(map(tuple, self.initial_state))}
@@ -100,9 +88,7 @@ class EightPuzzle:
             if state == self.goal_state:
                 return path
 
-            possible_moves = self.get_possible_moves(state)
-
-            for move in possible_moves:
+            for move in self.get_possible_moves(state):
                 new_state = self.move(state, move)
                 new_state_tuple = tuple(map(tuple, new_state))
 

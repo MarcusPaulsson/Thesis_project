@@ -1,21 +1,19 @@
 class BookManagement:
     """
-    This is a class for managing books, supporting adding, removing, viewing inventory,
-    and checking the quantity of a specific book.
+    This is a class as managing books system, which supports to add and remove books from the inventory dict, view the inventory, and check the quantity of a specific book.
     """
 
     def __init__(self):
         """
-        Initializes the book inventory as an empty dictionary.
+        Initialize the inventory of Book Manager.
         """
         self.inventory = {}
 
     def add_book(self, title, quantity=1):
         """
-        Adds a book to the inventory or increases its quantity if it already exists.
-
-        :param title: The title of the book (string).
-        :param quantity: The quantity to add (integer, default is 1).
+        Add one or several books to inventory which is sorted by book title.
+        :param title: str, the book title
+        :param quantity: int, default value is 1.
         """
         if title in self.inventory:
             self.inventory[title] += quantity
@@ -24,12 +22,10 @@ class BookManagement:
 
     def remove_book(self, title, quantity):
         """
-        Removes books from the inventory.
-
-        :param title: The title of the book to remove (string).
-        :param quantity: The quantity to remove (integer).
-        :raises Exception: If the book is not found, the quantity is invalid,
-                          or the quantity to remove exceeds the available quantity.
+        Remove one or several books from inventory which is sorted by book title.
+        Raise false while get invalid input.
+        :param title: str, the book title
+        :param quantity: int
         """
         if title not in self.inventory:
             raise Exception("Book not found in inventory.")
@@ -44,18 +40,18 @@ class BookManagement:
 
     def view_inventory(self):
         """
-        Returns the current inventory.
-
-        :return: A dictionary representing the inventory, where keys are book titles
-                 and values are their quantities.
+        Get the inventory of the Book Management.
+        :return self.inventory: dictionary, {title(str): quantity(int), ...}
         """
         return self.inventory
 
     def view_book_quantity(self, title):
         """
-        Returns the quantity of a specific book in the inventory.
-
-        :param title: The title of the book (string).
-        :return: The quantity of the book (integer). Returns 0 if the book is not found.
+        Get the quantity of a book.
+        :param title: str, the title of the book.
+        :return quantity: the quantity of this book title. return 0 when the title does not exist in self.invenroty
         """
-        return self.inventory.get(title, 0)
+        if title in self.inventory:
+            return self.inventory[title]
+        else:
+            return 0

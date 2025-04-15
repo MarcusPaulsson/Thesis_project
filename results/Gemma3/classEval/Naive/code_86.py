@@ -16,11 +16,6 @@ class TicTacToe:
         :param row: int, the row index of the position
         :param col: int, the column index of the position
         :return: bool, indicating whether the move was successful or not
-        >>> ttt.current_player
-        'X'
-        >>> ttt.make_move(1, 1)
-        >>> ttt.current_player
-        'O'
         """
         if 0 <= row < 3 and 0 <= col < 3 and self.board[row][col] == ' ':
             self.board[row][col] = self.current_player
@@ -32,39 +27,24 @@ class TicTacToe:
         """
         Check if there is a winner on the board in rows, columns and diagonals three directions
         :return: str or None, the mark of the winner ('X' or 'O'), or None if there is no winner yet
-        >>> moves = [(1, 0), (2, 0), (1, 1), (2, 1), (1, 2)]
-        >>> for move in moves:
-        ...     ttt.make_move(move[0], move[1])
-        >>> ttt.check_winner()
-        'X'
         """
-        # Check rows
-        for row in self.board:
-            if row[0] == row[1] == row[2] != ' ':
-                return row[0]
-
-        # Check columns
-        for col in range(3):
-            if self.board[0][col] == self.board[1][col] == self.board[2][col] != ' ':
-                return self.board[0][col]
-
-        # Check diagonals
+        for i in range(3):
+            if self.board[i][0] == self.board[i][1] == self.board[i][2] != ' ':
+                return self.board[i][0]
+            if self.board[0][i] == self.board[1][i] == self.board[2][i] != ' ':
+                return self.board[0][i]
         if self.board[0][0] == self.board[1][1] == self.board[2][2] != ' ':
             return self.board[0][0]
         if self.board[0][2] == self.board[1][1] == self.board[2][0] != ' ':
             return self.board[0][2]
-
         return None
 
     def is_board_full(self):
         """
         Check if the game board is completely filled.
         :return: bool, indicating whether the game board is full or not
-        >>> ttt.is_board_full()
-        False
         """
         for row in self.board:
-            for cell in row:
-                if cell == ' ':
-                    return False
+            if ' ' in row:
+                return False
         return True

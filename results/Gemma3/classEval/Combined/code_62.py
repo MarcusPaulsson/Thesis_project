@@ -4,9 +4,6 @@ class NLPDataProcessor:
     """
 
     def __init__(self):
-        """
-        Initializes the NLPDataProcessor with a default stop word list.
-        """
         self.stop_word_list = self.construct_stop_word_list()
 
     def construct_stop_word_list(self):
@@ -23,13 +20,13 @@ class NLPDataProcessor:
         Remove all the stop words from the list of strings.
         :param string_list: a list of strings
         :return: a list of words without stop words
-        >>> NLPDataProcessor.remove_stop_words(['This is a test.'])
+        >>> NLPDataProcessor.process(['This is a test.'])
         [['This', 'is', 'test.']]
         """
         result = []
         for string in string_list:
             words = string.split()
-            filtered_words = [word for word in words if word.lower() not in self.stop_word_list]
+            filtered_words = [word for word in words if word not in self.stop_word_list]
             result.append(filtered_words)
         return result
 

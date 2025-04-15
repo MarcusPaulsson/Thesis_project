@@ -41,7 +41,7 @@ class CalendarUtil:
         :return: True if the calendar is available for the given time slot, False otherwise,bool.
         """
         for event in self.events:
-            if start_time < event['end_time'] and end_time > event['start_time']:
+            if (start_time < event['end_time'] and end_time > event['start_time']):
                 return False
         return True
 
@@ -51,16 +51,25 @@ class CalendarUtil:
         :param date: The date to get available time slots for,datetime.
         :return: A list of available time slots on the given date,list.
         """
-        events_on_date = [event for event in self.events if event['date'].date() == date.date()]
+        events_on_date = self.get_events(date)
         events_on_date.sort(key=lambda x: x['start_time'])
         available_slots = []
         start = datetime(date.year, date.month, date.day, 0, 0)
-        for event in events_on_date:
-            if event['start_time'] > start:
-                available_slots.append((start, event['start_time']))
-            start = event['end_time']
-        if start < datetime(date.year, date.month, date.day, 23, 59):
-            available_slots.append((start, datetime(date.year, date.month, date.day, 23, 59)))
+        end = datetime(date.year, date.month, date.day, 23, 59)
+
+        if not events_on_date:
+            available_slots.append((start, end))
+            return available_slots
+
+        if start < events_on_date[0]['start_time']:
+            available_slots.append((start, events_on_date[0]['start_time']))
+
+        for i in range(len(events_on_date) - 1):
+            available_slots.append((events_on_date[i]['end_time'], events_on_date[i + 1]['start_time']))
+
+        if events_on_date[-1]['end_time'] < end:
+            available_slots.append((events_on_date[-1]['end_time'], end))
+
         return available_slots
 
     def get_upcoming_events(self, date, num_events):
@@ -70,9 +79,6 @@ class CalendarUtil:
         :param n: The number of upcoming events to get,int.
         :return: A list of the next n upcoming events from the given date,list.
         """
-        upcoming_events = []
-        for event in self.events:
-            if event['date'] >= date:
-                upcoming_events.append(event)
-        upcoming_events.sort(key=lambda x: x['date'])
+        upcoming_events = [event for event in self.events if event['start_time'] > date]
+        upcoming_events.sort(key=lambda x: x['start_time'])
         return upcoming_events[:num_events]

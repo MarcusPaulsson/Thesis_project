@@ -24,11 +24,11 @@ class TextFileProcessor:
             return data
         except json.JSONDecodeError:
             with open(self.file_path, 'r') as f:
-                data = f.read()
+                content = f.read()
                 try:
-                    return json.loads(data)
+                    return json.loads(content)
                 except json.JSONDecodeError:
-                    return data
+                    return content
 
     def read_file(self):
         """

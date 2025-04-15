@@ -41,13 +41,10 @@ class ArgumentParser:
                 key = key_value[0]
                 value = key_value[1] if len(key_value) > 1 else True
                 self.arguments[key] = self._convert_type(key, value)
-                i += 1
             elif part.startswith("-"):
                 key = part[1:]
                 self.arguments[key] = True
-                i += 1
-            else:
-                i += 1
+            i += 1
 
         missing_args = self.required - set(self.arguments.keys())
         if missing_args:

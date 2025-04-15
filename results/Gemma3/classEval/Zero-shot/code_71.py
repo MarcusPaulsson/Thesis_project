@@ -134,10 +134,3 @@ class PushBoxGame:
                 self.player_col = new_col
 
         return self.check_win()
-
-    def print_map(self):
-        """
-        Print the current state of the map.
-        """
-        for row in self.map:
-            print(row)

@@ -11,7 +11,7 @@ class ExpressionCalculator:
         Initialize the expression calculator
         """
         self.postfix_stack = deque()
-        self.operat_priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
+        self.operat_priority = [0, 3, 2, 1, -1, 1, 0, 2]
 
     def calculate(self, expression):
         """
@@ -53,20 +53,27 @@ class ExpressionCalculator:
         """
         expression = self.transform(expression)
         tokens = expression.split()
+        op_stack = []
         for token in tokens:
             if token.isdigit() or (token.startswith('-') and token[1:].isdigit()):
                 self.postfix_stack.append(token)
+            elif token == '(':
+                op_stack.append(token)
+            elif token == ')':
+                while op_stack and op_stack[-1] != '(':
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.pop()  # Pop the '('
             elif self.is_operator(token):
-                while self.postfix_stack and self.is_operator(self.postfix_stack[-1]) and self.compare(token, self.postfix_stack[-1]):
-                    self.postfix_stack.append(self.postfix_stack.pop())
-                self.postfix_stack.append(token)
-            else:
-                return "Invalid expression"
+                while op_stack and op_stack[-1] != '(' and self.compare(token, op_stack[-1]):
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.append(token)
+        while op_stack:
+            self.postfix_stack.append(op_stack.pop())
 
     @staticmethod
     def is_operator(c):
         """
-        Check if a character is an operator in {'+', '-', '*', '/', '%'}
+        Check if a character is an operator in {'+', '-', '*', '/', '(', ')', '%'}
         :param c: string, the character to be checked
         :return: bool, True if the character is an operator, False otherwise
         >>> expression_calculator = ExpressionCalculator()
@@ -74,7 +81,7 @@ class ExpressionCalculator:
         True
 
         """
-        return c in {'+', '-', '*', '/', '%'}
+        return c in {'+', '-', '*', '/', '(', ')', '%'}
 
     def compare(self, cur, peek):
         """
@@ -87,9 +94,13 @@ class ExpressionCalculator:
         True
 
         """
-        cur_index = self.operat_priority.get(cur, 0)
-        peek_index = self.operat_priority.get(peek, 0)
+        cur_index = self.operat_priority[self.get_operator_index(cur)]
+        peek_index = self.operat_priority[self.get_operator_index(peek)]
         return cur_index >= peek_index
+
+    def get_operator_index(self, operator):
+        operators = ['+', '-', '*', '/', '%']
+        return operators.index(operator) if operator in operators else -1
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -115,7 +126,7 @@ class ExpressionCalculator:
         elif current_op == '%':
             return first_value % second_value
         else:
-            return "Invalid operator"
+            raise ValueError("Invalid operator")
 
     @staticmethod
     def transform(expression):
@@ -128,5 +139,15 @@ class ExpressionCalculator:
         "2+3*4"
 
         """
-        expression = expression.replace(" ", "")
-        return expression
+        expression = expression.replace('(', '~(')
+        expression = expression.replace(')', ')~')
+        expression = expression.replace('-', '~')
+        expression = expression.replace('~-', '~')
+        expression = expression.replace('~+', '+')
+        expression = expression.replace('~*', '*')
+        expression = expression.replace('~/', '/')
+        expression = expression.replace('~%', '%')
+        expression = expression.replace('~(', '(')
+        expression = expression.replace(')~', ')')
+        expression = expression.replace('~', '-')
+        return expression.replace(" ", "")

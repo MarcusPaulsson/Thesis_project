@@ -11,10 +11,6 @@ class Statistics3:
         calculates the median of the given list.
         :param data: the given list, list.
         :return: the median of the given list, float.
-        >>> statistics3 = Statistics3()
-        >>> statistics3.median([1, 2, 3, 4])
-        2.5
-
         """
         if not data:
             return None
@@ -31,10 +27,6 @@ class Statistics3:
         calculates the mode of the given list.
         :param data: the given list, list.
         :return: the mode of the given list, list.
-        >>> statistics3 = Statistics3()
-        >>> statistics3.mode([1, 2, 3, 3])
-        [3]
-
         """
         if not data:
             return []
@@ -58,13 +50,10 @@ class Statistics3:
         :param x: the given list, list.
         :param y: the given list, list.
         :return: the correlation of the given list, float.
-        >>> statistics3 = Statistics3()
-        >>> statistics3.correlation([1, 2, 3], [4, 5, 6])
-        1.0
-
         """
-        if len(x) != len(y) or len(x) <= 1:
+        if len(x) != len(y) or len(x) == 0:
             return None
+
         n = len(x)
         sum_x = sum(x)
         sum_y = sum(y)
@@ -86,10 +75,6 @@ class Statistics3:
         calculates the mean of the given list.
         :param data: the given list, list.
         :return: the mean of the given list, float.
-        >>> statistics3 = Statistics3()
-        >>> statistics3.mean([1, 2, 3])
-        2.0
-
         """
         if not data:
             return None
@@ -101,17 +86,16 @@ class Statistics3:
         calculates the correlation matrix of the given list.
         :param data: the given list, list.
         :return: the correlation matrix of the given list, list.
-        >>> statistics3 = Statistics3()
-        >>> statistics3.correlation_matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-        [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
-
         """
-        if not data or len(data) == 0:
+        if not data or len(data[0]) == 0:
             return []
+
         n = len(data)
-        matrix = [[None] * n for _ in range(n)]
+        m = len(data[0])
+        matrix = [[None] * m for _ in range(n)]
+
         for i in range(n):
-            for j in range(n):
+            for j in range(m):
                 if i == j:
                     matrix[i][j] = 1.0
                 else:
@@ -124,15 +108,13 @@ class Statistics3:
         calculates the standard deviation of the given list.
         :param data: the given list, list.
         :return: the standard deviation of the given list, float.
-        >>> statistics3 = Statistics3()
-        >>> statistics3.standard_deviation([1, 2, 3])
-        1.0
-
         """
-        if not data or len(data) < 2:
-            return 0.0
+        if not data:
+            return None
         mean = Statistics3.mean(data)
-        variance = sum((x - mean)**2 for x in data) / (len(data) - 1)
+        if mean is None:
+            return None
+        variance = sum((x - mean) ** 2 for x in data) / len(data)
         return math.sqrt(variance)
 
     @staticmethod
@@ -141,15 +123,16 @@ class Statistics3:
         calculates the z-score of the given list.
         :param data: the given list, list.
         :return: the z-score of the given list, list.
-        >>> statistics3 = Statistics3()
-        >>> statistics3.z_score([1, 2, 3, 4])
-        [-1.161895003862225, -0.3872983346207417, 0.3872983346207417, 1.161895003862225]
-
         """
-        if not data or len(data) <= 1:
-            return None
+        if not data:
+            return []
+
         mean = Statistics3.mean(data)
-        std_dev = Statistics3.standard_deviation(data)
-        if std_dev == 0:
+        if mean is None:
             return None
+
+        std_dev = Statistics3.standard_deviation(data)
+        if std_dev is None or std_dev == 0:
+            return None
+
         return [(x - mean) / std_dev for x in data]

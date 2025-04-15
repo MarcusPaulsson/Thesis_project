@@ -31,12 +31,12 @@ class MusicPlayer:
     def play(self):
         """
         Plays the current song in the playlist.
-        :return: The current song in the playlist, or None if there is no current song.
+        :return: The current song in the playlist, or False if there is no current song.
         """
         if self.current_song:
             return self.current_song
         else:
-            return None
+            return False
 
     def stop(self):
         """
@@ -83,8 +83,8 @@ class MusicPlayer:
         if self.current_song:
             try:
                 index = self.playlist.index(self.current_song)
-                prev_index = (index - 1) % len(self.playlist)
-                self.current_song = self.playlist[prev_index]
+                previous_index = (index - 1) % len(self.playlist)
+                self.current_song = self.playlist[previous_index]
                 return True
             except ValueError:
                 return False

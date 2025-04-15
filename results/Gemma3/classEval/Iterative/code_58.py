@@ -24,21 +24,23 @@ class MinesweeperGame:
         """
         mine_positions = random.sample(range(self.n * self.n), self.k)
         minesweeper_map = [['0' for _ in range(self.n)] for _ in range(self.n)]
+
         for pos in mine_positions:
             row = pos // self.n
             col = pos % self.n
             minesweeper_map[row][col] = 'X'
 
-        for i in range(self.n):
-            for j in range(self.n):
-                if minesweeper_map[i][j] == 'X':
+        for row in range(self.n):
+            for col in range(self.n):
+                if minesweeper_map[row][col] == 'X':
                     continue
                 count = 0
-                for x in range(max(0, i - 1), min(self.n, i + 2)):
-                    for y in range(max(0, j - 1), min(self.n, j + 2)):
-                        if minesweeper_map[x][y] == 'X':
+                for i in range(max(0, row - 1), min(self.n, row + 2)):
+                    for j in range(max(0, col - 1), min(self.n, col + 2)):
+                        if minesweeper_map[i][j] == 'X':
                             count += 1
-                minesweeper_map[i][j] = str(count)
+                minesweeper_map[row][col] = str(count)
+
         return minesweeper_map
 
     def generate_playerMap(self):
@@ -46,19 +48,18 @@ class MinesweeperGame:
         Generates a player map with the given size of the board, the given parameter n is the size of the board,the size of the board is n*n,the parameter k is the number of mines,'-' represents the unknown position.
         :return: The player map, list.
         """
-        player_map = [['-' for _ in range(self.n)] for _ in range(self.n)]
-        return player_map
+        return [['-' for _ in range(self.n)] for _ in range(self.n)]
 
     def check_won(self,map):
         """
         Checks whether the player has won the game,if there are just mines in the player map,return True,otherwise return False.
         :return: True if the player has won the game, False otherwise.
         """
-        for i in range(self.n):
-            for j in range(self.n):
-                if self.minesweeper_map[i][j] == 'X' and map[i][j] != 'X':
+        for row in range(self.n):
+            for col in range(self.n):
+                if self.minesweeper_map[row][col] == 'X' and map[row][col] == '-':
                     return False
-                if self.minesweeper_map[i][j] != 'X' and map[i][j] == '-':
+                if self.minesweeper_map[row][col] != 'X' and map[row][col] == '-':
                     return False
         return True
 
@@ -71,10 +72,11 @@ class MinesweeperGame:
         """
         if self.minesweeper_map[x][y] == 'X':
             return False
-        else:
-            self.player_map[x][y] = self.minesweeper_map[x][y]
-            self.score += 1
-            if self.check_won(self.player_map):
-                return True
-            else:
-                return self.player_map
+
+        self.player_map[x][y] = self.minesweeper_map[x][y]
+        self.score += 1
+
+        if self.check_won(self.player_map):
+            return True
+
+        return self.player_map

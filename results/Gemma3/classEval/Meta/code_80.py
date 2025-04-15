@@ -17,10 +17,8 @@ class SQLQueryBuilder:
         """
         query = f"SELECT {', '.join(columns)} FROM {table}"
         if where:
-            conditions = []
-            for key, value in where.items():
-                conditions.append(f"{key}='{value}'")
-            query += " WHERE " + " AND ".join(conditions)
+            where_clause = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {where_clause}"
         return query
 
     @staticmethod
@@ -50,10 +48,8 @@ class SQLQueryBuilder:
         """
         query = f"DELETE FROM {table}"
         if where:
-            conditions = []
-            for key, value in where.items():
-                conditions.append(f"{key}='{value}'")
-            query += " WHERE " + " AND ".join(conditions)
+            where_clause = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {where_clause}"
         return query
 
     @staticmethod
@@ -66,11 +62,9 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.update('table1', {'name': 'Test2', 'age': 15}, where = {'name':'Test'})
         "UPDATE table1 SET name='Test2', age='15' WHERE name='Test'"
         """
-        set_clause = ', '.join([f"{key}='{value}'" for key, value in data.items()])
+        set_clause = ", ".join([f"{key}='{value}'" for key, value in data.items()])
         query = f"UPDATE {table} SET {set_clause}"
         if where:
-            conditions = []
-            for key, value in where.items():
-                conditions.append(f"{key}='{value}'")
-            query += " WHERE " + " AND ".join(conditions)
+            where_clause = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {where_clause}"
         return query

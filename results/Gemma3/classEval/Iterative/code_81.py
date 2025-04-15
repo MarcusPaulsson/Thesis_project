@@ -115,7 +115,11 @@ class Statistics3:
                 if i == j:
                     matrix[i][j] = 1.0
                 else:
-                    matrix[i][j] = Statistics3.correlation(data[i], data[j])
+                    correlation = Statistics3.correlation(data[i], data[j])
+                    if correlation is not None:
+                        matrix[i][j] = correlation
+                    else:
+                        matrix[i][j] = None
         return matrix
 
     @staticmethod

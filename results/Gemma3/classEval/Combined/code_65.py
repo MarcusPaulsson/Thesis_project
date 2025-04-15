@@ -19,37 +19,23 @@ class NumberWordFormatter:
         Converts a number into words format
         :param x: int or float, the number to be converted into words format
         :return: str, the number in words format
-        >>> formatter = NumberWordFormatter()
-        >>> formatter.format(123456)
-        "ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY"
         """
         if x is None:
             return ""
         if isinstance(x, float):
             integer_part = int(x)
             decimal_part = int(round((x - integer_part) * 100))
-            return self.format(integer_part) + " AND CENTS " + self.trans_two(str(decimal_part).zfill(2)) + " ONLY"
-        if x == 0:
+            return self._format_integer(integer_part) + " AND CENTS " + self.trans_two(str(decimal_part).zfill(2)) + " ONLY"
+        elif x == 0:
             return "ZERO ONLY"
-
-        result = ""
-        i = 0
-        while x > 0:
-            remainder = x % 1000
-            if remainder > 0:
-                result = self.trans_three(str(remainder).zfill(3)) + " " + self.NUMBER_MORE[i] + " " + result
-            x //= 1000
-            i += 1
-        return result.strip() + " ONLY"
+        else:
+            return self._format_integer(x) + " ONLY"
 
     def format_string(self, x):
         """
         Converts a string representation of a number into words format
         :param x: str, the string representation of a number
         :return: str, the number in words format
-        >>> formatter = NumberWordFormatter()
-        >>> formatter.format_string("123456")
-        "ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY"
         """
         try:
             return self.format(float(x))
@@ -61,9 +47,6 @@ class NumberWordFormatter:
         Converts a two-digit number into words format
         :param s: str, the two-digit number
         :return: str, the number in words format
-        >>> formatter = NumberWordFormatter()
-        >>> formatter.trans_two("23")
-        "TWENTY THREE"
         """
         if len(s) == 1:
             return self.NUMBER[int(s)]
@@ -77,19 +60,52 @@ class NumberWordFormatter:
         Converts a three-digit number into words format
         :param s: str, the three-digit number
         :return: str, the number in words format
-        >>> formatter = NumberWordFormatter()
-        >>> formatter.trans_three("123")
-        "ONE HUNDRED AND TWENTY THREE"
         """
         if len(s) == 1:
             return self.NUMBER[int(s)]
         elif len(s) == 2:
             return self.trans_two(s)
         else:
-            if s[0] != '0':
-                result = self.NUMBER[int(s[0])] + " HUNDRED"
-                if int(s[1:]) > 0:
-                    result += " AND " + self.trans_two(s[1:])
-                return result
+            if s[1] == '0' and s[2] == '0':
+                return self.NUMBER[int(s[0])] + " HUNDRED"
+            elif s[1] == '0':
+                return self.NUMBER[int(s[0])] + " HUNDRED AND " + self.NUMBER[int(s[2])]
             else:
-                return self.trans_two(s[1:])
+                return self.NUMBER[int(s[0])] + " HUNDRED AND " + self.trans_two(s[1:])
+
+    def parse_more(self, i):
+        """
+        Parses the thousand/million/billion suffix based on the index
+        :param i: int, the index representing the magnitude (thousand, million, billion)
+        :return: str, the corresponding suffix for the magnitude
+        """
+        return self.NUMBER_MORE[i]
+
+    def _format_integer(self, x):
+        """
+        Helper function to format the integer part of the number.
+        """
+        s = str(x)
+        n = len(s)
+        result = []
+        for i in range(n):
+            digit = int(s[i])
+            if digit != 0:
+                result.append(self.NUMBER[digit])
+
+        if not result:
+            return ""
+
+        formatted_number = ""
+        group_count = 0
+        temp_list = []
+        for i in range(n - 1, -1, -1):
+            temp_list.insert(0, s[i])
+            group_count += 1
+            if group_count == 3 and i != 0:
+                formatted_number = self.parse_more((n - len(temp_list)) // 3) + " " + self.trans_three("".join(temp_list)) + " " + formatted_number
+                temp_list = []
+                group_count = 0
+
+        formatted_number = self.trans_three("".join(temp_list)) + " " + formatted_number
+        return formatted_number.strip()

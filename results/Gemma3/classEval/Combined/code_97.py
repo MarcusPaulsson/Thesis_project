@@ -3,6 +3,7 @@ class Words2Numbers:
     The class provides a text-to-number conversion utility, allowing conversion of written numbers (in words) to their numerical representation.
     """
 
+
     def __init__(self):
         """
         Initialize the word lists and dictionaries required for conversion
@@ -27,6 +28,7 @@ class Words2Numbers:
         self.ordinal_words = {'first': 1, 'second': 2, 'third': 3, 'fifth': 5, 'eighth': 8, 'ninth': 9, 'twelfth': 12}
         self.ordinal_endings = [('ieth', 'y'), ('th', '')]
 
+
     def text2int(self, textnum):
         """
         Convert the word string to the corresponding integer string
@@ -38,16 +40,16 @@ class Words2Numbers:
         """
         words = textnum.replace('-', ' ').split()
         total = 0
-        scale = 0
+        scale = 1
         for word in words:
             if word in self.numwords:
                 num, power = self.numwords[word]
                 if num == 1:
-                    scale += power
+                    scale *= power
                 else:
-                    total += num * (10 ** scale)
+                    total += num * scale
             elif word in self.ordinal_words:
-                total += self.ordinal_words[word] * (10 ** scale)
+                total += self.ordinal_words[word] * scale
             else:
                 pass
         return str(total)

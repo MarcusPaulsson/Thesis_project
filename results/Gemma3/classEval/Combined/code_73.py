@@ -6,7 +6,7 @@ class RPGCharacter:
     def __init__(self, name, hp, attack_power, defense, level=1):
         """
         Initialize an RPG character object.
-        :param name: str, the name of the character.
+        :param name: strm, the name of the character.
         :param hp: int, The health points of the character.
         :param attack_power: int, the attack power of the character.
         :param defense: int, the defense points of the character.
@@ -22,7 +22,7 @@ class RPGCharacter:
     def attack(self, other_character):
         """
         Attack another character. The damage caused needs to offset the defense value.
-        :param other_character: RPGCharacter, The character being attacked.
+        :param other_character: The character being attacked.
         """
         damage = max(0, self.attack_power - other_character.defense)
         other_character.hp -= damage
@@ -41,11 +41,12 @@ class RPGCharacter:
         The experience that overflows should be used to calculate the next leve up untill exhausts
         :param amount: int, the amount of experience points to gain.
         """
-        level_up_threshold = 100 * self.level
-        while amount >= level_up_threshold:
+        exp_needed = 100 * self.level
+        while amount >= exp_needed:
             self.level_up()
-            amount -= level_up_threshold
-        self.exp += amount
+            amount -= exp_needed
+            exp_needed = 100 * self.level
+        self.exp = amount
 
     def level_up(self):
         """

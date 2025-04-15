@@ -101,49 +101,37 @@ class PushBoxGame:
         else:
             return False
 
-        if not (0 <= new_row < len(self.map) and 0 <= new_col < len(self.map[0])):
-            return False
-
-        if self.map[new_row][new_col] == '#':
-            return False
-
-        # Check if there is a box in the new position
-        box_index = -1
-        for i, box in enumerate(self.boxes):
-            if box == (new_row, new_col):
-                box_index = i
-                break
-
-        if box_index != -1:
-            # Try to push the box
-            new_box_row = new_row
-            new_box_col = new_col
-
-            if direction == 'w':
-                new_box_row -= 1
-            elif direction == 's':
-                new_box_row += 1
-            elif direction == 'a':
-                new_box_col -= 1
-            elif direction == 'd':
-                new_box_col += 1
-
-            if not (0 <= new_box_row < len(self.map) and 0 <= new_box_col < len(self.map[0])):
-                return False
-
-            if self.map[new_box_row][new_box_col] == '#':
-                return False
-
-            # Check if there is another box in the new box position
+        if 0 <= new_row < len(self.map) and 0 <= new_col < len(self.map[0]) and self.map[new_row][new_col] != '#':
+            # Check if there is a box in the new position
+            box_index = -1
             for i, box in enumerate(self.boxes):
-                if i != box_index and box == (new_box_row, new_box_col):
-                    return False
+                if box == (new_row, new_col):
+                    box_index = i
+                    break
 
-            self.boxes[box_index] = (new_box_row, new_box_col)
-        else:
-            # Move the player
-            self.player_row = new_row
-            self.player_col = new_col
+            if box_index != -1:
+                # Try to push the box
+                new_box_row = new_row
+                new_box_col = new_col
+
+                if direction == 'w':
+                    new_box_row -= 1
+                elif direction == 's':
+                    new_box_row += 1
+                elif direction == 'a':
+                    new_box_col -= 1
+                elif direction == 'd':
+                    new_box_col += 1
+
+                if 0 <= new_box_row < len(self.map) and 0 <= new_box_col < len(self.map[0]) and self.map[new_box_row][new_box_col] != '#':
+                    self.boxes[box_index] = (new_box_row, new_box_col)
+                    self.player_row = new_row
+                    self.player_col = new_col
+                else:
+                    return False
+            else:
+                self.player_row = new_row
+                self.player_col = new_col
 
         return self.check_win()
 

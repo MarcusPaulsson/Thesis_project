@@ -53,9 +53,9 @@ class DataStatistics4:
         std_dev = math.sqrt(sum((x - mean)**2 for x in data) / (n - 1))
 
         if std_dev == 0:
-            return 0  # Handle the case where the standard deviation is zero
+            return 0  # Handle the case where standard deviation is zero
 
-        skewness = sum(((x - mean) / std_dev)**3 for x in data) / n
+        skewness = sum(((x - mean) / std_dev)**3 for x in data) / (n - 1)
         return skewness
 
     @staticmethod
@@ -76,9 +76,9 @@ class DataStatistics4:
         std_dev = math.sqrt(sum((x - mean)**2 for x in data) / (n - 1))
 
         if std_dev == 0:
-            return float('nan')  # Handle the case where the standard deviation is zero
+            return float('nan')  # Handle the case where standard deviation is zero
 
-        kurtosis = (sum(((x - mean) / std_dev)**4 for x in data) / n) - 3
+        kurtosis = (sum(((x - mean) / std_dev)**4 for x in data) / (n - 1)) - 3
         return kurtosis
 
     @staticmethod

@@ -1,4 +1,5 @@
-from PIL import Image, ImageEnhance, ImageChops
+from PIL import Image, ImageEnhance
+from PIL import ImageChops
 
 class ImageProcessor:
     """

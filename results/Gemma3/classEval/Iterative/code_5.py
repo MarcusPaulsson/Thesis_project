@@ -26,13 +26,14 @@ class AutomaticGuitarSimulator:
         for segment in segments:
             chord = ""
             tune = ""
-            for i, char in enumerate(segment):
-                if char.isdigit():
+            for i in range(len(segment)):
+                if segment[i].isdigit():
                     tune = segment[i:]
                     chord = segment[:i]
                     break
-                else:
-                    chord += char
+            else:
+                chord = segment
+                tune = ""
             play_list.append({'Chord': chord, 'Tune': tune})
             if display:
                 print(f"Normal Guitar Playing -- Chord: {chord}, Play Tune: {tune}")

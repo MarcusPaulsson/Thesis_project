@@ -5,7 +5,7 @@ class FitnessTracker:
 
     def __init__(self, height, weight, age, sex) -> None:
         """
-        Initialize the class with height, weight, age, and sex.
+        Initialize the class with height, weight, age, and sex, and calculate the BMI standard based on sex, and male is 20-25, female is 19-24.
         """
         self.height = height
         self.weight = weight
@@ -15,19 +15,16 @@ class FitnessTracker:
     def get_BMI(self):
         """
         Calculate the BMI based on the height and weight.
-        :return: BMI, which is the weight divided by the square of height, float.
+        :return: BMI,which is the weight divide by the square of height, float.
         """
-        if self.height <= 0:
-            return 0  # Avoid division by zero or negative height
         return self.weight / (self.height ** 2)
 
     def condition_judge(self):
         """
-        Judge the condition of the user based on the BMI.
+        Judge the condition of the user based on the BMI standard.
         :return: 1 if the user is too fat, -1 if the user is too thin, 0 if the user is normal, int.
         """
         bmi = self.get_BMI()
-
         if self.sex == "male":
             if bmi < 20:
                 return -1
@@ -35,7 +32,7 @@ class FitnessTracker:
                 return 1
             else:
                 return 0
-        else:  # Assuming female if not male
+        else:
             if bmi < 19:
                 return -1
             elif bmi > 24:
@@ -45,9 +42,7 @@ class FitnessTracker:
 
     def calculate_calorie_intake(self):
         """
-        Calculate the calorie intake based on the user's condition and BMR (Basal Metabolic Rate).
-        BMR is calculated based on the user's height, weight, age, and sex.
-        Calorie intake is calculated based on the BMR and the user's condition.
+        Calculate the calorie intake based on the user's condition and BMR (Basal Metabolic Rate),BMR is calculated based on the user's height, weight, age, and sex,male is10 * self.weight + 6.25 * self.height - 5 * self.age + 5,female is 10 * self.weight + 6.25 * self.height - 5 * self.age - 161, and the calorie intake is calculated based on the BMR and the user's condition,if the user is too fat, the calorie intake is BMR * 1.2, if the user is too thin, the calorie intake is BMR * 1.6, if the user is normal, the calorie intake is BMR * 1.4.
         :return: calorie intake, float.
         """
         if self.sex == "male":

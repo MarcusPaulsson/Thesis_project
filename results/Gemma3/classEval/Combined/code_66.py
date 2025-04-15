@@ -20,14 +20,19 @@ class NumericEntityUnescaper:
         i = 0
         while i < len(string):
             if string[i:i+2] == "&#":
-                j = i + 2
-                while j < len(string) and string[j].isdigit():
-                    j += 1
-                if j > i + 2:
+                if string[i+2:i+4].isdigit():
                     try:
-                        code = int(string[i+2:j])
+                        code = int(string[i+2:i+4])
                         result += chr(code)
-                        i = j
+                        i += 4
+                    except ValueError:
+                        result += string[i]
+                        i += 1
+                elif string[i+2:i+5].startswith("x") and all(c in "0123456789abcdefABCDEF" for c in string[i+3:i+5]):
+                    try:
+                        code = int(string[i+3:i+5], 16)
+                        result += chr(code)
+                        i += 5
                     except ValueError:
                         result += string[i]
                         i += 1

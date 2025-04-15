@@ -15,12 +15,8 @@ class BitStatusUtil:
         6
 
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("Inputs must be integers.")
-        if states < 0 or stat < 0:
-            raise ValueError("Inputs must be non-negative.")
-        if states % 2 != 0 or stat % 2 != 0:
-            raise ValueError("Inputs must be even.")
+        if states < 0 or stat < 0 or states % 2 != 0 or stat % 2 != 0:
+            raise ValueError("Parameters must be non-negative and even.")
         return states | stat
 
     @staticmethod
@@ -35,12 +31,8 @@ class BitStatusUtil:
         True
 
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("Inputs must be integers.")
-        if states < 0 or stat < 0:
-            raise ValueError("Inputs must be non-negative.")
-        if states % 2 != 0 or stat % 2 != 0:
-            raise ValueError("Inputs must be even.")
+        if states < 0 or stat < 0 or states % 2 != 0 or stat % 2 != 0:
+            raise ValueError("Parameters must be non-negative and even.")
         return (states & stat) == stat
 
     @staticmethod
@@ -55,12 +47,8 @@ class BitStatusUtil:
         4
 
         """
-        if not isinstance(states, int) or not isinstance(stat, int):
-            raise TypeError("Inputs must be integers.")
-        if states < 0 or stat < 0:
-            raise ValueError("Inputs must be non-negative.")
-        if states % 2 != 0 or stat % 2 != 0:
-            raise ValueError("Inputs must be even.")
+        if states < 0 or stat < 0 or states % 2 != 0 or stat % 2 != 0:
+            raise ValueError("Parameters must be non-negative and even.")
         return states & ~stat
 
     @staticmethod
@@ -76,9 +64,5 @@ class BitStatusUtil:
         ValueError: 3 not even
         """
         for arg in args:
-            if not isinstance(arg, int):
-                raise TypeError("Inputs must be integers.")
-            if arg < 0:
-                raise ValueError("Inputs must be non-negative.")
-            if arg % 2 != 0:
+            if arg < 0 or arg % 2 != 0:
                 raise ValueError(f"{arg} not even")

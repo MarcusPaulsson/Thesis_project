@@ -36,13 +36,13 @@ class Lemmatization:
         lemmatized_words = []
         for word, tag in tagged_words:
             if tag.startswith('J'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='a'))
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'a'))
             elif tag.startswith('V'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='v'))
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'v'))
             elif tag.startswith('N'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='n'))
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'n'))
             elif tag.startswith('R'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='r'))
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'r'))
             else:
                 lemmatized_words.append(word)
         return lemmatized_words

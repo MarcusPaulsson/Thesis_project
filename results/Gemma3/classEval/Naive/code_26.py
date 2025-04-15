@@ -14,9 +14,6 @@ class CSVProcessor:
         Read the csv file by file_name, get the title and data from it
         :param file_name: str, name of the csv file
         :return title, data: (list, list), first row is title, the rest is data
-        >>> csvProcessor = CSVProcessor()
-        >>> csvProcessor.read_csv('read_test.csv')
-        (['a', 'b', 'c', 'd'], [['hElLo', 'YoU', 'ME', 'LoW']])
         """
         try:
             with open(file_name, 'r') as file:
@@ -32,9 +29,6 @@ class CSVProcessor:
         Write data into a csv file.
         :param file_name: str, name of the csv file
         :return:int, if success return 1, or 0 otherwise
-        >>> csvProcessor = CSVProcessor()
-        >>> csvProcessor.write_csv([['a', 'b', 'c', 'd'], ['1', '2', '3', '4']], 'write_test.csv')
-        1
         """
         try:
             with open(file_name, 'w', newline='') as file:
@@ -52,18 +46,17 @@ class CSVProcessor:
         :param N: int, the N th column(from 0)
         :param save_file_name, the name of file that needs to be processed.
         :return:int, if success return 1, or 0 otherwise
-        >>> csvProcessor = CSVProcessor()
-        >>> csvProcessor.read_csv('read_test.csv')
-        (['a', 'b', 'c', 'd'], [['hElLo', 'YoU', 'ME', 'LoW']])
-        >>> csvProcessor.process_csv_data(0, 'read_test.csv')
-        1
-        >>> csvProcessor.read_csv('read_test_process.csv')
-        (['a', 'b', 'c', 'd'], [['HELLO']])
         """
         title, data = self.read_csv(save_file_name)
-        if not title or not data:
+        if not data:
             return 0
 
-        new_data = [[row[N].upper()] for row in data]
+        new_data = []
+        for row in data:
+            try:
+                new_data.append([row[N].upper()])
+            except IndexError:
+                return 0
+
         new_file_name = save_file_name.replace(".csv", "_process.csv")
         return self.write_csv([title] + new_data, new_file_name)

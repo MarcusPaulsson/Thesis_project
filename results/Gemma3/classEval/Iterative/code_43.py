@@ -66,6 +66,6 @@ class HRManagementSystem:
         List all employees' information in the HRManagementSystem.
         :return: A list of all employees' information,dict.
         """
-        for employee_id, employee_info in self.employees.items():
-            employee_info['employee_ID'] = employee_id
+        for employee_id in self.employees:
+            self.employees[employee_id]['employee_ID'] = employee_id
         return self.employees

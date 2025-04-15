@@ -29,7 +29,7 @@ class ChandrasekharSieve:
 
         for i in range(2, int(self.n**0.5) + 1):
             if sieve[i]:
-                for j in range(i * i, self.n + 1, i):
+                for j in range(i*i, self.n + 1, i):
                     sieve[j] = False
 
         for i in range(2, self.n + 1):

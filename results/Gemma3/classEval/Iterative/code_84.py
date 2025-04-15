@@ -26,37 +26,26 @@ class TextFileProcessor:
             try:
                 with open(self.file_path, 'r') as f:
                     content = f.read()
-                    try:
-                        return int(content)
-                    except ValueError:
-                        try:
-                            return float(content)
-                        except ValueError:
-                            return content
-            except FileNotFoundError:
-                return None
+                    return json.loads(content)
+            except (json.JSONDecodeError, TypeError):
+                with open(self.file_path, 'r') as f:
+                    return f.read()
 
     def read_file(self):
         """
         Read the return the content of self.file_path file.
         :return: the same return as the read() method
         """
-        try:
-            with open(self.file_path, 'r') as f:
-                return f.read()
-        except FileNotFoundError:
-            return None
+        with open(self.file_path, 'r') as f:
+            return f.read()
 
     def write_file(self, content):
         """
         Write content into the self.file_path file, and overwrite if the file has already existed.
         :param content: any content
         """
-        try:
-            with open(self.file_path, 'w') as f:
-                f.write(str(content))
-        except Exception as e:
-            print(f"Error writing to file: {e}")
+        with open(self.file_path, 'w') as f:
+            f.write(str(content))
 
     def process_file(self):
         """
@@ -64,8 +53,6 @@ class TextFileProcessor:
         Overwrite the after-processed data into the same self.file_path file.
         """
         content = self.read_file()
-        if content is None:
-            return None
         processed_content = ''.join(char for char in content if char.isalpha())
         self.write_file(processed_content)
         return processed_content

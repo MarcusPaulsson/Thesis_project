@@ -15,18 +15,15 @@ class ExcelProcessor:
         :param file_name: str, Excel file name to read
         :return: list of data, Data in Excel
         """
-        if not file_name:
-            return None
         try:
             workbook = openpyxl.load_workbook(file_name)
             sheet = workbook.active
             data = []
             for row in sheet.iter_rows(values_only=True):
                 data.append(tuple(row))
+            workbook.close()
             return data
         except FileNotFoundError:
-            return None
-        except Exception:
             return None
 
     def write_excel(self, data, file_name):
@@ -36,14 +33,13 @@ class ExcelProcessor:
         :param file_name: str, Excel file name to write to
         :return: 0 or 1, 1 represents successful writing, 0 represents failed writing
         """
-        if not file_name:
-            return 0
         try:
             workbook = openpyxl.Workbook()
             sheet = workbook.active
             for row in data:
                 sheet.append(row)
             workbook.save(file_name)
+            workbook.close()
             return 1
         except Exception:
             return 0
@@ -55,26 +51,26 @@ class ExcelProcessor:
         :param save_file_name: str, source file name
         :return:(int, str), The former is the return value of write_excel, while the latter is the saved file name of the processed data
         """
-        data = self.read_excel(save_file_name)
-        if data is None:
+        try:
+            data = self.read_excel(save_file_name)
+            if data is None:
+                return 0, ""
+
+            processed_data = []
+            header = list(data[0])
+            processed_data.append(tuple(header))
+
+            for row in data[1:]:
+                new_row = list(row)
+                if 0 <= N < len(new_row):
+                    if isinstance(new_row[N], str):
+                        new_row[N] = new_row[N].upper()
+                    elif isinstance(new_row[N], (int, float)):
+                        new_row[N] = str(new_row[N])
+                processed_data.append(tuple(new_row))
+
+            output_file_name = "processed_" + save_file_name
+            success = self.write_excel(processed_data, output_file_name)
+            return success, output_file_name
+        except Exception:
             return 0, ""
-
-        if N < 0 or N >= len(data[0]):
-            return 0, ""
-
-        processed_data = []
-        header = list(data[0])
-        header[N] = header[N].upper()
-        processed_data.append(tuple(header))
-
-        for row in data[1:]:
-            new_row = list(row)
-            if isinstance(new_row[N], str):
-                new_row[N] = str(new_row[N]).upper()
-            else:
-                new_row[N] = str(new_row[N])
-            processed_data.append(tuple(new_row))
-
-        output_file_name = "processed_" + save_file_name
-        success = self.write_excel(processed_data, output_file_name)
-        return success, output_file_name

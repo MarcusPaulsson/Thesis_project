@@ -23,7 +23,7 @@ class ExpressionCalculator:
         14.0
 
         """
-        expression = expression.replace(" ", "")
+        expression = self.transform(expression)
         tokens = expression.split()
         for token in tokens:
             if token.isdigit() or (token.startswith('-') and token[1:].isdigit()):
@@ -56,27 +56,22 @@ class ExpressionCalculator:
         expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
         expression = expression.replace(" ", "")
-        output = deque()
-        operators = deque()
-
+        operators = []
         for char in expression:
-            if char.isdigit() or (char.startswith('-') and char[1:].isdigit()):
-                output.append(char)
+            if char.isdigit():
+                self.postfix_stack.append(char)
             elif self.is_operator(char):
                 while operators and operators[-1] != '(' and self.compare(char, operators[-1]):
-                    output.append(operators.pop())
+                    self.postfix_stack.append(operators.pop())
                 operators.append(char)
             elif char == '(':
                 operators.append(char)
             elif char == ')':
                 while operators and operators[-1] != '(':
-                    output.append(operators.pop())
+                    self.postfix_stack.append(operators.pop())
                 operators.pop()  # Pop the '('
-
         while operators:
-            output.append(operators.pop())
-
-        self.postfix_stack = output
+            self.postfix_stack.append(operators.pop())
 
 
     @staticmethod
@@ -90,7 +85,7 @@ class ExpressionCalculator:
         True
 
         """
-        return c in "+-*/()%^"
+        return c in {'+', '-', '*', '/', '(', ')', '%'}
 
 
     def compare(self, cur, peek):
@@ -104,11 +99,16 @@ class ExpressionCalculator:
         True
 
         """
-        op_dict = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2, '^': 3}
-        cur_priority = op_dict.get(cur, 0)
-        peek_priority = op_dict.get(peek, 0)
-        return cur_priority >= peek_priority
+        index_cur = self.operat_priority[self.get_operator_index(cur)]
+        index_peek = self.operat_priority[self.get_operator_index(peek)]
+        return index_cur >= index_peek
 
+    def get_operator_index(self, operator):
+        operators = ['+', '-', '*', '/', '%']
+        try:
+            return operators.index(operator)
+        except ValueError:
+            return -1
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -149,5 +149,5 @@ class ExpressionCalculator:
 
         """
         expression = expression.replace(" ", "")
-        expression = expression.replace("~", "0-")
+        expression = expression.replace("~", "-")
         return expression

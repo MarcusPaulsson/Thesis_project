@@ -24,13 +24,13 @@ class DecryptionUtils:
         plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
-                start = ord('a')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                start = 'a'
             elif 'A' <= char <= 'Z':
-                start = ord('A')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                start = 'A'
             else:
-                shifted_char = char
+                plaintext += char
+                continue
+            shifted_char = chr((ord(char) - ord(start) - shift) % 26 + ord(start))
             plaintext += shifted_char
         return plaintext
 
@@ -45,19 +45,19 @@ class DecryptionUtils:
 
         """
         plaintext = ''
-        key_length = len(self.key)
+        key_len = len(self.key)
         for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
-                key_char = self.key[i % key_length]
-                key_shift = ord(key_char) - ord('a')
-                decrypted_char = chr((ord(char) - ord('a') - key_shift) % 26 + ord('a'))
+                start = 'a'
             elif 'A' <= char <= 'Z':
-                key_char = self.key[i % key_length]
-                key_shift = ord(key_char) - ord('a')
-                decrypted_char = chr((ord(char) - ord('A') - key_shift) % 26 + ord('A'))
+                start = 'A'
             else:
-                decrypted_char = char
-            plaintext += decrypted_char
+                plaintext += char
+                continue
+            key_char = self.key[i % key_len]
+            key_shift = ord(key_char) - ord('a') if 'a' <= key_char <= 'z' else ord(key_char) - ord('A')
+            shifted_char = chr((ord(char) - ord(start) - key_shift) % 26 + ord(start))
+            plaintext += shifted_char
         return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):

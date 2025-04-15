@@ -1,6 +1,6 @@
 class BoyerMooreSearch:
     """
-    This is a class that implements the Boyer-Moore algorithm for string searching, which is used to find occurrences of a pattern within a given text.
+    his is a class that implements the Boyer-Moore algorithm for string searching, which is used to find occurrences of a pattern within a given text.
     """
 
     def __init__(self, text, pattern):

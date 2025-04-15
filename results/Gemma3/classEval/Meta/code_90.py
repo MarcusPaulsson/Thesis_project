@@ -20,7 +20,7 @@ class URLHandler:
         try:
             scheme = self.url.split("://")[0]
             return scheme
-        except:
+        except IndexError:
             return None
 
     def get_host(self):
@@ -34,7 +34,7 @@ class URLHandler:
         try:
             host = self.url.split("://")[1].split("/")[0]
             return host
-        except:
+        except IndexError:
             return None
 
     def get_path(self):
@@ -48,7 +48,7 @@ class URLHandler:
         try:
             path = self.url.split("://")[1]
             return path
-        except:
+        except IndexError:
             return None
 
     def get_query_params(self):
@@ -67,7 +67,7 @@ class URLHandler:
                     key, value = pair.split("=")
                     params[key] = value
             return params
-        except:
+        except IndexError:
             return None
 
     def get_fragment(self):
@@ -81,5 +81,5 @@ class URLHandler:
         try:
             fragment = self.url.split("#")[1]
             return fragment
-        except:
+        except IndexError:
             return None

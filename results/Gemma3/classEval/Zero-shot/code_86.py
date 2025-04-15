@@ -16,11 +16,6 @@ class TicTacToe:
         :param row: int, the row index of the position
         :param col: int, the column index of the position
         :return: bool, indicating whether the move was successful or not
-        >>> ttt.current_player
-        'X'
-        >>> ttt.make_move(1, 1)
-        >>> ttt.current_player
-        'O'
         """
         if 0 <= row < 3 and 0 <= col < 3 and self.board[row][col] == ' ':
             self.board[row][col] = self.current_player
@@ -32,11 +27,6 @@ class TicTacToe:
         """
         Check if there is a winner on the board in rows, columns and diagonals three directions
         :return: str or None, the mark of the winner ('X' or 'O'), or None if there is no winner yet
-        >>> moves = [(1, 0), (2, 0), (1, 1), (2, 1), (1, 2)]
-        >>> for move in moves:
-        ...     ttt.make_move(move[0], move[1])
-        >>> ttt.check_winner()
-        'X'
         """
         # Check rows
         for row in self.board:
@@ -60,8 +50,6 @@ class TicTacToe:
         """
         Check if the game board is completely filled.
         :return: bool, indicating whether the game board is full or not
-        >>> ttt.is_board_full()
-        False
         """
         for row in self.board:
             for cell in row:

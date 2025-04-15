@@ -19,19 +19,18 @@ class AccessGatewayFilter:
         True
 
         """
-        if self.is_start_with(request.get('path', '')):
+        path = request.get('path', '')
+        method = request.get('method', '')
+        headers = request.get('headers', {})
+
+        if self.is_start_with(path):
             return True
 
-        if 'headers' in request and 'Authorization' in request['headers']:
+        if 'Authorization' in headers:
             user = self.get_jwt_user(request)
             if user:
-                if user['user'].get('level', 0) >= 3:
-                    self.set_current_user_info_and_log(user['user'])
-                    return True
-                else:
-                    return False
-            else:
-                return False
+                self.set_current_user_info_and_log(user['user'])
+                return True
         return None
 
 
@@ -46,9 +45,7 @@ class AccessGatewayFilter:
         True
 
         """
-        if request_uri.startswith('/api') or request_uri.startswith('/login'):
-            return True
-        return False
+        return request_uri.startswith('/api') or request_uri.startswith('/login')
 
 
     def get_jwt_user(self, request):
@@ -61,17 +58,20 @@ class AccessGatewayFilter:
         {'user': {'name': 'user1'}
 
         """
-        if 'headers' in request and 'Authorization' in request['headers']:
-            auth_header = request['headers']['Authorization']
-            if 'jwt' in auth_header and 'user' in auth_header:
-                jwt = auth_header['jwt']
-                user = auth_header['user']
-                if jwt == user['name'] + str(datetime.date.today()):
-                    return {'user': user}
-                else:
+        headers = request.get('headers', {})
+        if 'Authorization' in headers:
+            auth_data = headers['Authorization']
+            if 'user' in auth_data and 'jwt' in auth_data:
+                user = auth_data['user']
+                jwt = auth_data['jwt']
+                today = datetime.date.today()
+                try:
+                    if jwt.startswith(user['name']) and today == datetime.datetime.strptime(jwt[len(user['name']):], "%Y-%m-%d").date():
+                        return auth_data
+                    else:
+                        return None
+                except ValueError:
                     return None
-            else:
-                return None
         return None
 
     def set_current_user_info_and_log(self, user):

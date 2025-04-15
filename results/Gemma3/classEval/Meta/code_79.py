@@ -21,9 +21,9 @@ class SQLGenerator:
         'SELECT field1, field2 FROM table1 WHERE filed3 = value1;'
         """
         if fields:
-            fields_str = ', '.join(fields)
+            fields_str = ", ".join(fields)
         else:
-            fields_str = '*'
+            fields_str = "*"
         sql = f"SELECT {fields_str} FROM {self.table_name}"
         if condition:
             sql += f" WHERE {condition};"
@@ -39,8 +39,8 @@ class SQLGenerator:
         >>> sql.insert({'key1': 'value1', 'key2': 'value2'})
         "INSERT INTO table1 (key1, key2) VALUES ('value1', 'value2');"
         """
-        fields = ', '.join(data.keys())
-        values = ', '.join([f"'{value}'" for value in data.values()])
+        fields = ", ".join(data.keys())
+        values = ", ".join([f"'{value}'" for value in data.values()])
         sql = f"INSERT INTO {self.table_name} ({fields}) VALUES ({values});"
         return sql
 
@@ -53,7 +53,7 @@ class SQLGenerator:
         >>> sql.update({'field1': 'new_value1', 'field2': 'new_value2'}, "field3 = value1")
         "UPDATE table1 SET field1 = 'new_value1', field2 = 'new_value2' WHERE field3 = value1;"
         """
-        set_clause = ', '.join([f"{key} = '{value}'" for key, value in data.items()])
+        set_clause = ", ".join([f"{key} = '{value}'" for key, value in data.items()])
         sql = f"UPDATE {self.table_name} SET {set_clause} WHERE {condition};"
         return sql
 

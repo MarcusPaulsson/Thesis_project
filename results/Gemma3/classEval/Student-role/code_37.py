@@ -16,10 +16,6 @@ class EncryptionUtils:
         :param plaintext: The plaintext to encrypt, str.
         :param shift: The number of characters to shift each character in the plaintext, int.
         :return: The ciphertext, str.
-        >>> e = EncryptionUtils("key")
-        >>> e.caesar_cipher("abc", 1)
-        'bcd'
-
         """
         result = ''
         for char in plaintext:
@@ -39,10 +35,6 @@ class EncryptionUtils:
         Encrypts the plaintext using the Vigenere cipher.
         :param plaintext: The plaintext to encrypt, str.
         :return: The ciphertext, str.
-        >>> e = EncryptionUtils("key")
-        >>> e.vigenere_cipher("abc")
-        'kfa'
-
         """
         key = self.key
         result = ''
@@ -63,15 +55,11 @@ class EncryptionUtils:
             result += shifted_char
         return result
 
-    def rail_fence_cipher(self,plain_text, rails):
+    def rail_fence_cipher(self, plain_text, rails):
         """
         Encrypts the plaintext using the Rail Fence cipher.
         :param plaintext: The plaintext to encrypt, str.
         :return: The ciphertext, str.
-        >>> e = EncryptionUtils("key")
-        >>> e.rail_fence_cipher("abc", 2)
-        'acb'
-
         """
         if rails <= 1:
             return plain_text

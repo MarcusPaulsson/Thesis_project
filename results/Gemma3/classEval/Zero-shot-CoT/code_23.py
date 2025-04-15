@@ -46,12 +46,11 @@ class CombinationCalculator:
             return False
         if n == 0:
             return 0
+        if n > 63:
+            return float("inf")
         result = 0
         for i in range(n + 1):
-            temp = CombinationCalculator.count(n, i)
-            if temp == float('inf'):
-                return float('inf')
-            result += temp
+            result += CombinationCalculator.count(n, i)
         return result
 
     def select(self, m: int) -> List[List[str]]:

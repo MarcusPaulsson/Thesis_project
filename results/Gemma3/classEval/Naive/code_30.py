@@ -16,9 +16,6 @@ class DataStatistics2:
         """
         Calculate the sum of data
         :return:float
-        >>> ds2 = DataStatistics2([1, 2, 3, 4])
-        >>> ds2.get_sum()
-        10
         """
         return np.sum(self.data)
 
@@ -26,9 +23,6 @@ class DataStatistics2:
         """
         Calculate the minimum value in the data
         :return:float
-        >>> ds2 = DataStatistics2([1, 2, 3, 4])
-        >>> ds2.get_min()
-        1
         """
         return np.min(self.data)
 
@@ -36,9 +30,6 @@ class DataStatistics2:
         """
         Calculate the maximum value in the data
         :return:float
-        >>> ds2 = DataStatistics2([1, 2, 3, 4])
-        >>> ds2.get_max()
-        4
         """
         return np.max(self.data)
 
@@ -46,9 +37,6 @@ class DataStatistics2:
         """
         Calculate variance, accurate to two digits after the Decimal separator
         :return:float
-        >>> ds2 = DataStatistics2([1, 2, 3, 4])
-        >>> ds2.get_variance()
-        1.25
         """
         return round(np.var(self.data), 2)
 
@@ -56,9 +44,6 @@ class DataStatistics2:
         """
         Calculate standard deviation, accurate to two digits after the Decimal separator
         :return:float
-        >>> ds2 = DataStatistics2([1, 2, 3, 4])
-        >>> ds2.get_std_deviation()
-        1.12
         """
         return round(np.std(self.data), 2)
 
@@ -66,8 +51,5 @@ class DataStatistics2:
         """
         Calculate correlation
         :return:float
-        >>> ds2 = DataStatistics2([1, 2, 3, 4])
-        >>> ds2.get_correlation()
-        1.0
         """
         return np.corrcoef(self.data, self.data)[0, 1]

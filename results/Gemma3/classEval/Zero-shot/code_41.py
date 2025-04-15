@@ -20,34 +20,21 @@ class GomokuGame:
         :param row: int, the row index of this move
         :param col: int, the column index
         return: True if the move is valid, or False otherwise.
-        >>> gomokuGame = GomokuGame(10)
-        >>> gomokuGame.make_move(5, 5)
-        True
-        >>> gomokuGame.make_move(5, 5)
-        False
         """
-        if row < 0 or row >= self.board_size or col < 0 or col >= self.board_size or self.board[row][col] != ' ':
-            return False
-
-        self.board[row][col] = self.current_player
-
-        if self.current_player == 'X':
-            self.current_player = 'O'
+        if 0 <= row < self.board_size and 0 <= col < self.board_size and self.board[row][col] == ' ':
+            self.board[row][col] = self.current_player
+            if self.current_player == 'X':
+                self.current_player = 'O'
+            else:
+                self.current_player = 'X'
+            return True
         else:
-            self.current_player = 'X'
-
-        return True
+            return False
 
     def check_winner(self):
         """
         Checks if there is a winner by looking for five in a row in all directions (horizontal, vertical, diagonal).
         return: the symbol of the winning player (either 'X' or 'O') if there is a winner, or None otherwise.
-        >>> gomokuGame = GomokuGame(10)
-        >>> moves = [(5, 5), (0, 0), (5, 4), (0, 1), (5, 3), (0, 2), (5, 2), (0, 3), (5, 1)]
-        >>> for move in moves:
-        ...     gomokuGame.make_move(move[0], move[1])
-        >>> gomokuGame.check_winner()
-        'X'
         """
         for row in range(self.board_size):
             for col in range(self.board_size):
@@ -67,22 +54,15 @@ class GomokuGame:
         :param col: int, column of the given cell
         :param direction: tuple, (int, int), named as (dx, dy). Row and col will plus several dx and dy repectively.
         :return: True if there are five consecutive symbols of the same player, and False otherwise.
-        >>> gomokuGame = GomokuGame(10)
-        >>> moves = [(5, 5), (0, 0), (5, 4), (0, 1), (5, 3), (0, 2), (5, 2), (0, 3), (5, 1)]
-        >>> for move in moves:
-        ...     gomokuGame.make_move(move[0], move[1])
-        >>> gomokuGame._check_five_in_a_row(5, 1, (0, 1))
-        True
-        >>> gomokuGame._check_five_in_a_row(5, 1, (1, 1))
-        False
         """
         dx, dy = direction
         count = 1
+        player = self.board[row][col]
         for i in range(1, 5):
             new_row = row + i * dx
             new_col = col + i * dy
-            if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size and self.board[new_row][new_col] == self.board[row][col]:
+            if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size and self.board[new_row][new_col] == player:
                 count += 1
             else:
                 break
-        return count >= 5
+        return count == 5

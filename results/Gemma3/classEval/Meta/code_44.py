@@ -30,7 +30,7 @@ class HtmlUtil:
         :return:string, replaced text with single line break
         """
         if not text:
-            return ''
+            return ""
         return re.sub(r'\n+', '\n', text)
 
     def format_line_html_text(self, html_text):
@@ -56,15 +56,22 @@ class HtmlUtil:
         -CODE-
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        text = ''
-        for element in soup.body.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']):
-            text += element.get_text() + '\n'
-        for element in soup.body.find_all('pre'):
-            if element.find('code'):
-                text += self.CODE_MARK + '\n'
+        result = ""
+        for element in soup.body.children:
+            if element.name == 'pre':
+                code_element = element.find('code')
+                if code_element:
+                    result += self.CODE_MARK + '\n'
+                else:
+                    result += element.get_text() + '\n'
+            elif element.name == 'h1' or element.name == 'p':
+                result += element.get_text() + '\n'
+            elif element.name == 'ul':
+                for li in element.find_all('li'):
+                    result += '-[' + li.get_text() + ']\n'
             else:
-                text += element.get_text() + '\n'
-        return HtmlUtil.__format_line_feed(text).strip()
+                pass
+        return HtmlUtil.__format_line_feed(result).strip()
 
     def extract_code_from_html_text(self, html_text):
         """
@@ -86,9 +93,10 @@ class HtmlUtil:
         """
         soup = BeautifulSoup(html_text, 'html.parser')
         codes = []
-        for element in soup.body.find_all('pre'):
-            if element.find('code'):
-                codes.append(element.find('code').get_text())
+        for pre in soup.body.find_all('pre'):
+            code_element = pre.find('code')
+            if code_element:
+                codes.append(code_element.get_text())
             else:
-                codes.append(element.get_text())
+                codes.append(pre.get_text())
         return codes

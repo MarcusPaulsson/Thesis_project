@@ -35,5 +35,5 @@ class AvgPartition:
         """
         size, remainder = self.setNum()
         start = index * size + min(index, remainder)
-        end = start + size + (1 if index < remainder else 0)
+        end = (index + 1) * size + min(index + 1, remainder)
         return self.lst[start:end]

@@ -34,13 +34,11 @@ class LongestWord:
         if not self.word_list:
             return ''
 
-        sentence = sentence.translate(str.maketrans('', '', string.punctuation))
+        sentence = re.sub(r'[^\w\s]', '', sentence)
         words = sentence.split()
-
         longest_word = ''
         for word in words:
             if word in self.word_list:
                 if len(word) > len(longest_word):
                     longest_word = word
-
         return longest_word

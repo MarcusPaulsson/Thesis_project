@@ -65,6 +65,7 @@ class Statistics3:
         """
         if len(x) != len(y) or len(x) <= 1:
             return None
+
         n = len(x)
         sum_x = sum(x)
         sum_y = sum(y)
@@ -77,8 +78,8 @@ class Statistics3:
 
         if denominator == 0:
             return None
-        else:
-            return numerator / denominator
+
+        return numerator / denominator
 
     @staticmethod
     def mean(data):
@@ -108,11 +109,17 @@ class Statistics3:
         """
         if not data or len(data) == 0:
             return []
+
         n = len(data)
         matrix = [[None] * n for _ in range(n)]
+
         for i in range(n):
             for j in range(n):
-                matrix[i][j] = Statistics3.correlation(data[i], data[j])
+                if i == j:
+                    matrix[i][j] = 1.0
+                else:
+                    matrix[i][j] = Statistics3.correlation(data[i], data[j])
+
         return matrix
 
     @staticmethod
@@ -126,12 +133,11 @@ class Statistics3:
         1.0
 
         """
-        if not data:
-            return None
+        if not data or len(data) < 2:
+            return 0.0
+
         mean = Statistics3.mean(data)
-        if mean is None:
-            return None
-        variance = sum((x - mean)**2 for x in data) / len(data)
+        variance = sum((x - mean)**2 for x in data) / (len(data) - 1)
         return math.sqrt(variance)
 
     @staticmethod
@@ -145,12 +151,13 @@ class Statistics3:
         [-1.161895003862225, -0.3872983346207417, 0.3872983346207417, 1.161895003862225]
 
         """
-        if not data:
-            return []
-        mean = Statistics3.mean(data)
-        if mean is None:
+        if not data or len(data) <= 1:
             return None
+
+        mean = Statistics3.mean(data)
         std_dev = Statistics3.standard_deviation(data)
+
         if std_dev == 0:
             return None
+
         return [(x - mean) / std_dev for x in data]

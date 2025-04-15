@@ -30,11 +30,14 @@ class Order:
         >>> order.add_dish({"dish": "dish1", "price": 10, "count": 3})
         True
         """
+        dish_name = dish["dish"]
+        dish_count = dish["count"]
+
         for menu_dish in self.menu:
-            if menu_dish["dish"] == dish["dish"]:
-                if dish["count"] <= menu_dish["count"]:
-                    self.selected_dishes.append({"dish": dish["dish"], "count": dish["count"], "price": dish["price"]})
-                    menu_dish["count"] -= dish["count"]
+            if menu_dish["dish"] == dish_name:
+                if menu_dish["count"] >= dish_count:
+                    self.selected_dishes.append({"dish": dish_name, "count": dish_count, "price": dish["price"]})
+                    menu_dish["count"] -= dish_count
                     return True
                 else:
                     return False
@@ -53,11 +56,14 @@ class Order:
         32.0
         """
         total = 0
-        for dish in self.selected_dishes:
-            if dish["dish"] in self.sales:
-                total += dish["count"] * dish["price"] * self.sales[dish["dish"]]
+        for selected_dish in self.selected_dishes:
+            dish_name = selected_dish["dish"]
+            count = selected_dish["count"]
+            price = selected_dish["price"]
+            if dish_name in self.sales:
+                total += count * price * self.sales[dish_name]
             else:
-                total += dish["count"] * dish["price"]
+                total += count * price
         return total
 
     def checkout(self):

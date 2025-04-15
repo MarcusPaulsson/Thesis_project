@@ -1,6 +1,6 @@
 class ChandrasekharSieve:
     """
-    This is a class that uses the Sieve of Eratosthenes method to find all prime numbers within the range
+    This is a class that uses the Chandrasekhar's Sieve method to find all prime numbers within the range
     """
 
     def __init__(self, n):
@@ -13,7 +13,7 @@ class ChandrasekharSieve:
 
     def generate_primes(self):
         """
-        Generate prime numbers up to the specified limit using the Sieve of Eratosthenes algorithm.
+        Generate prime numbers up to the specified limit using the Chandrasekhar sieve algorithm.
         :return: list, a list of prime numbers
         """
         if self.n < 2:
@@ -23,7 +23,7 @@ class ChandrasekharSieve:
         is_prime = [True] * limit
         is_prime[0] = is_prime[1] = False
 
-        for i in range(2, int(limit**0.5) + 1):
+        for i in range(2, int(self.n**0.5) + 1):
             if is_prime[i]:
                 for j in range(i * i, limit, i):
                     is_prime[j] = False

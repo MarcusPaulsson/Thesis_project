@@ -52,13 +52,14 @@ class Server:
         >>> server.recv({"addr":88,"content":"abc"})
         abc
         """
-        if not isinstance(info, dict) or "addr" not in info or "content" not in info:
-            return -1
-        if info["addr"] in self.white_list:
-            self.receive_struct = info
-            return info["content"]
+        if "addr" in info and "content" in info:
+            if info["addr"] in self.white_list:
+                self.receive_struct = info
+                return info["content"]
+            else:
+                return False
         else:
-            return False
+            return -1
 
     def send(self, info):
         """
@@ -68,9 +69,10 @@ class Server:
         >>> server.send({"addr":66,"content":"ABC"})
         self.send_struct = {"addr":66,"content":"ABC"}
         """
-        if not isinstance(info, dict) or "addr" not in info or "content" not in info:
+        if "addr" in info and "content" in info:
+            self.send_struct = info
+        else:
             return "info structure is not correct"
-        self.send_struct = info
 
     def show(self, type):
         """

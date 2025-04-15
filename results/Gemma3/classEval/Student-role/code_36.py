@@ -23,7 +23,7 @@ class EmailClient:
         :param size: The size of the email, float.
         :return: True if the email is sent successfully, False if the receiver's email box is full.
         """
-        if recv.capacity < recv.get_occupied_size() + size:
+        if recv.capacity < size:
             return False
         else:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -55,7 +55,8 @@ class EmailClient:
         :param size: The size of the email, float.
         :return: True if the email box is full, False otherwise.
         """
-        return self.capacity < self.get_occupied_size() + size
+        occupied_size = self.get_occupied_size()
+        return occupied_size + size > self.capacity
 
     def get_occupied_size(self):
         """

@@ -40,16 +40,18 @@ class Words2Numbers:
         """
         words = textnum.replace('-', ' ').split()
         total = 0
-        scale = 0
+        scale = 1
         for word in words:
             if word in self.numwords:
-                num, power = self.numwords[word]
+                num, val = self.numwords[word]
                 if num == 1:
-                    scale += power
+                    if scale > 1:
+                        total += val
+                    else:
+                        total = val
                 else:
-                    total += num * (10 ** scale)
-            elif word in self.ordinal_words:
-                total += self.ordinal_words[word] * (10 ** scale)
+                    total *= num
+                    total += val
             else:
                 pass
         return str(total)

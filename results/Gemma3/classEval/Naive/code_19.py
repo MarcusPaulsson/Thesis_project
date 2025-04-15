@@ -15,36 +15,24 @@ class ChandrasekharSieve:
         """
         Generate prime numbers up to the specified limit using the Chandrasekhar sieve algorithm.
         :return: list, a list of prime numbers
-        >>> cs = ChandrasekharSieve(20)
-        >>> cs.generate_primes()
-        [2, 3, 5, 7, 11, 13, 17, 19]
-
         """
         if self.n < 2:
             return []
 
         sieve = [True] * (self.n + 1)
         sieve[0] = sieve[1] = False
-        primes = []
 
         for i in range(2, int(self.n**0.5) + 1):
             if sieve[i]:
-                for j in range(i*i, self.n + 1, i):
+                for j in range(i * i, self.n + 1, i):
                     sieve[j] = False
 
-        for i in range(2, self.n + 1):
-            if sieve[i]:
-                primes.append(i)
-
+        primes = [i for i in range(2, self.n + 1) if sieve[i]]
         return primes
 
     def get_primes(self):
         """
         Get the list of generated prime numbers.
         :return: list, a list of prime numbers
-        >>> cs = ChandrasekharSieve(20)
-        >>> cs.get_primes()
-        [2, 3, 5, 7, 11, 13, 17, 19]
-
         """
         return self.primes

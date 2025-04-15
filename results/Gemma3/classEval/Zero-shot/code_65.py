@@ -29,11 +29,14 @@ class NumberWordFormatter:
         if isinstance(x, float):
             integer_part = int(x)
             decimal_part = int(round((x - integer_part) * 100))
-            return self.format(integer_part) + " AND CENTS " + self.trans_two(str(decimal_part).zfill(2)) + " ONLY"
-        elif x == 0:
-            return "ZERO ONLY"
+            integer_string = self.format_integer(integer_part)
+            decimal_string = self.format_decimal(decimal_part)
+            if decimal_string:
+                return f"{integer_string} AND CENTS {decimal_string} ONLY"
+            else:
+                return f"{integer_string} ONLY"
         else:
-            return self.convert_number(x) + " ONLY"
+            return self.format_integer(x) + " ONLY"
 
     def format_string(self, x):
         """
@@ -50,6 +53,56 @@ class NumberWordFormatter:
         except ValueError:
             return ""
 
+    def format_integer(self, x):
+        """
+        Converts an integer into words format
+        :param x: int, the integer to be converted
+        :return: str, the integer in words format
+        """
+        if x == 0:
+            return "ZERO"
+        result = []
+        for i in range(len(self.NUMBER_MORE)):
+            if x % 1000 == 0 and x != 0:
+                if x // 1000 > 0:
+                    result.append(self.format_integer(x // 1000) + " " + self.NUMBER_MORE[i])
+                x //= 1000
+            else:
+                break
+        if x == 0:
+            return " ".join(result).strip()
+        else:
+            hundreds = x // 100
+            tens = (x % 100) // 10
+            units = x % 10
+            if hundreds > 0:
+                result.append(self.NUMBER[hundreds] + " HUNDRED")
+            if tens > 0 or units > 0:
+                if tens == 1:
+                    result.append(self.NUMBER_TEEN[units])
+                else:
+                    result.append(self.NUMBER_TEN[tens - 1])
+                    if units > 0:
+                        result.append(self.NUMBER[units])
+            return " AND ".join(result).strip()
+
+    def format_decimal(self, x):
+        """
+        Converts a decimal part into words format
+        :param x: int, the decimal part to be converted
+        :return: str, the decimal part in words format
+        """
+        if x == 0:
+            return ""
+        result = []
+        tens = x // 10
+        units = x % 10
+        if tens > 0:
+            result.append(self.NUMBER_TEN[tens - 1])
+        if units > 0:
+            result.append(self.NUMBER[units])
+        return " ".join(result).strip()
+
     def trans_two(self, s):
         """
         Converts a two-digit number into words format
@@ -59,12 +112,15 @@ class NumberWordFormatter:
         >>> formatter.trans_two("23")
         "TWENTY THREE"
         """
-        if len(s) == 1:
-            return self.NUMBER[int(s)]
-        elif s[0] == '1':
-            return self.NUMBER_TEEN[int(s[1])]
+        if len(s) == 2:
+            tens = int(s[0])
+            units = int(s[1])
+            if tens == 1:
+                return self.NUMBER_TEEN[units]
+            else:
+                return self.NUMBER_TEN[tens - 1] + " " + self.NUMBER[units]
         else:
-            return self.NUMBER_TEN[int(s[0]) - 1] + " " + self.NUMBER[int(s[1])]
+            return ""
 
     def trans_three(self, s):
         """
@@ -75,17 +131,23 @@ class NumberWordFormatter:
         >>> formatter.trans_three("123")
         "ONE HUNDRED AND TWENTY THREE"
         """
-        if len(s) == 1:
-            return self.NUMBER[int(s)]
-        elif len(s) == 2:
-            return self.trans_two(s)
+        if len(s) == 3:
+            hundreds = int(s[0])
+            tens = int(s[1])
+            units = int(s[2])
+            result = []
+            if hundreds > 0:
+                result.append(self.NUMBER[hundreds] + " HUNDRED")
+            if tens > 0 or units > 0:
+                if tens == 1:
+                    result.append(self.NUMBER_TEEN[units])
+                else:
+                    result.append(self.NUMBER_TEN[tens - 1])
+                    if units > 0:
+                        result.append(self.NUMBER[units])
+            return " AND ".join(result).strip()
         else:
-            if s[1] == '0' and s[2] == '0':
-                return self.NUMBER[int(s[0])] + " HUNDRED"
-            elif s[1] == '0':
-                return self.NUMBER[int(s[0])] + " HUNDRED AND " + self.NUMBER[int(s[2])]
-            else:
-                return self.NUMBER[int(s[0])] + " HUNDRED AND " + self.trans_two(s[1:])
+            return ""
 
     def parse_more(self, i):
         """
@@ -97,32 +159,3 @@ class NumberWordFormatter:
         "THOUSAND"
         """
         return self.NUMBER_MORE[i]
-
-    def convert_number(self, num):
-        """
-        Converts a number into words format
-        :param num: int, the number to be converted into words format
-        :return: str, the number in words format
-        """
-        num_str = str(num)
-        length = len(num_str)
-        result = []
-        for i in range(length):
-            digit = int(num_str[i])
-            if digit != 0:
-                result.append(self.NUMBER[digit])
-        if length == 1:
-            return " ".join(result)
-        elif length == 2:
-            return self.trans_two(num_str)
-        elif length == 3:
-            return self.trans_three(num_str)
-        else:
-            parts = []
-            for i in range(length - 1, -1, -3):
-                start = max(0, i - 2)
-                part = num_str[start:i + 1]
-                if part:
-                    parts.insert(0, self.trans_three(part))
-            result = " ".join(parts)
-            return result

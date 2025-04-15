@@ -60,21 +60,33 @@ class ExpressionCalculator:
         output = deque()
         operators = deque()
 
-        for char in expression:
-            if char.isdigit():
-                output.append(char)
-            elif char in precedence:
-                while operators and precedence.get(operators[-1], 0) >= precedence[char]:
+        i = 0
+        while i < len(expression):
+            if expression[i].isdigit():
+                j = i
+                while j < len(expression) and expression[j].isdigit():
+                    j += 1
+                output.append(expression[i:j])
+                i = j
+            elif expression[i] in precedence:
+                while operators and operators[-1] in precedence and precedence[expression[i]] <= precedence[operators[-1]]:
                     output.append(operators.pop())
-                operators.append(char)
-            elif char == '(':
-                operators.append(char)
-            elif char == ')':
+                operators.append(expression[i])
+                i += 1
+            elif expression[i] == '(':
+                operators.append(expression[i])
+                i += 1
+            elif expression[i] == ')':
                 while operators and operators[-1] != '(':
                     output.append(operators.pop())
                 operators.pop()  # Pop the '('
+                i += 1
+            else:
+                return "Invalid expression"
+
         while operators:
             output.append(operators.pop())
+
         self.postfix_stack = output
 
 
@@ -131,7 +143,7 @@ class ExpressionCalculator:
         elif current_op == '%':
             return first_value % second_value
         else:
-            raise ValueError("Invalid operator")
+            return "Invalid operator"
 
 
     @staticmethod
@@ -145,4 +157,5 @@ class ExpressionCalculator:
         "2+3*4"
 
         """
-        return expression.replace(" ", "")
+        expression = expression.replace(" ", "")
+        return expression

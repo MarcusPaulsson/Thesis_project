@@ -25,7 +25,6 @@ class TriCalculator:
         Calculate the factorial of a
         :param a: int
         :return: int
-        >>> tricalculator = TriCalculator()
         >>> tricalculator.factorial(5)
         120
         """
@@ -40,7 +39,6 @@ class TriCalculator:
         :param x: int
         :param n: int
         :return: float
-        >>> tricalculator = TriCalculator()
         >>> tricalculator.taylor(60, 50)
         0.5000000000000001
         """
@@ -55,7 +53,6 @@ class TriCalculator:
         Calculate the sin value of the x-degree angle
         :param x: float
         :return: float
-        >>> tricalculator = TriCalculator()
         >>> tricalculator.sin(30)
         0.5
         """
@@ -65,12 +62,12 @@ class TriCalculator:
             result += ((-1)**i) * (x**(2*i+1)) / self.factorial(2*i+1)
         return result
 
+
     def tan(self, x):
         """
         Calculate the tan value of the x-degree angle
         :param x: float
         :return: float
-        >>> tricalculator = TriCalculator()
         >>> tricalculator.tan(45)
         1.0
         """

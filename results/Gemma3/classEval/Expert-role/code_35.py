@@ -33,14 +33,10 @@ class EightPuzzle:
         :param state: a 3*3 size list of Integer, stores the state before moving.
         :param direction: str, only has 4 direction 'up', 'down', 'left', 'right'
         :return new_state: a 3*3 size list of Integer, stores the state after moving.
-        >>> eightPuzzle = EightPuzzle([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
         >>> eightPuzzle.move([[2, 3, 4], [5, 8, 1], [6, 0, 7]], 'left')
         [[2, 3, 4], [5, 8, 1], [0, 6, 7]]
         """
         i, j = self.find_blank(state)
-        if i is None or j is None:
-            return state
-
         new_state = [row[:] for row in state]  # Create a deep copy
 
         if direction == 'up':
@@ -63,7 +59,6 @@ class EightPuzzle:
         According the current state, find all the possible moving directions. Only has 4 direction 'up', 'down', 'left', 'right'.
         :param state: a 3*3 size list of Integer, stores the current state.
         :return moves: a list of str, store all the possible moving directions according to the current state.
-        >>> eightPuzzle = EightPuzzle([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
         >>> eightPuzzle.get_possible_moves([[2, 3, 4], [5, 8, 1], [6, 0, 7]])
         ['up', 'left', 'right']
         """
@@ -100,9 +95,7 @@ class EightPuzzle:
             if state == self.goal_state:
                 return path
 
-            possible_moves = self.get_possible_moves(state)
-
-            for move in possible_moves:
+            for move in self.get_possible_moves(state):
                 new_state = self.move(state, move)
                 if tuple(map(tuple, new_state)) not in visited:
                     visited.add(tuple(map(tuple, new_state)))

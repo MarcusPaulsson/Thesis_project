@@ -71,34 +71,33 @@ class DecryptionUtils:
         'Hello, World!'
 
         """
-        length = len(encrypted_text)
-        fence = [['' for _ in range(length)] for _ in range(rails)]
-        rail = 0
-        direction = 1  # 1 for down, -1 for up
+        n = len(encrypted_text)
+        fence = [['' for _ in range(n)] for _ in range(rails)]
+        row, direction = 0, 1
 
-        # Mark the positions where characters will be placed
-        for i in range(length):
-            fence[rail][i] = '*'
-            rail += direction
-            if rail == rails - 1 or rail == 0:
-                direction *= -1
+        for col in range(n):
+            fence[row][col] = '*'
+            if row == 0:
+                direction = 1
+            elif row == rails - 1:
+                direction = -1
+            row += direction
 
-        # Fill the fence with the encrypted text
         index = 0
         for i in range(rails):
-            for j in range(length):
-                if fence[i][j] == '*':
+            for j in range(n):
+                if fence[i][j] == '*' and index < n:
                     fence[i][j] = encrypted_text[index]
                     index += 1
 
-        # Read the fence in a zigzag manner to get the plaintext
-        plaintext = ''
-        rail = 0
-        direction = 1
-        for i in range(length):
-            plaintext += fence[rail][i]
-            rail += direction
-            if rail == rails - 1 or rail == 0:
-                direction *= -1
+        result = ''
+        row, direction = 0, 1
+        for col in range(n):
+            result += fence[row][col]
+            if row == 0:
+                direction = 1
+            elif row == rails - 1:
+                direction = -1
+            row += direction
 
-        return plaintext
+        return result

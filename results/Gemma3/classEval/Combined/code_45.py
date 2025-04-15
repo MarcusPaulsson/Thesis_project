@@ -14,16 +14,14 @@ class ImageProcessor:
     def load_image(self, image_path):
         """
         Use Image util in PIL to open a image
-        :param image_path: str, path of image that is to be loaded
+        :param image_path: str, path of image that is to be
         """
         try:
             self.image = Image.open(image_path)
         except FileNotFoundError:
             print(f"Error: Image file not found at {image_path}")
-            self.image = None
         except Exception as e:
             print(f"Error loading image: {e}")
-            self.image = None
 
     def save_image(self, save_path):
         """
@@ -35,10 +33,12 @@ class ImageProcessor:
                 self.image.save(save_path)
             except Exception as e:
                 print(f"Error saving image: {e}")
+        else:
+            print("Error: No image loaded to save.")
 
     def resize_image(self, width, height):
         """
-        Resize the image if image has opened.
+        Risize the image if image has opened.
         :param width: int, the target width of image
         :param height: int, the target height of image
         """
@@ -47,10 +47,12 @@ class ImageProcessor:
                 self.image = self.image.resize((width, height))
             except Exception as e:
                 print(f"Error resizing image: {e}")
+        else:
+            print("Error: No image loaded to resize.")
 
     def rotate_image(self, degrees):
         """
-        Rotate image if image has opened
+        rotate image if image has opened
         :param degrees: float, the degrees that the image will be rotated
         """
         if self.image:
@@ -58,6 +60,8 @@ class ImageProcessor:
                 self.image = self.image.rotate(degrees)
             except Exception as e:
                 print(f"Error rotating image: {e}")
+        else:
+            print("Error: No image loaded to rotate.")
 
     def adjust_brightness(self, factor):
         """
@@ -70,3 +74,5 @@ class ImageProcessor:
                 self.image = enhancer.enhance(factor)
             except Exception as e:
                 print(f"Error adjusting brightness: {e}")
+        else:
+            print("Error: No image loaded to adjust brightness.")

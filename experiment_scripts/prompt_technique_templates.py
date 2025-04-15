@@ -8,12 +8,22 @@
 # ChatGPT Format
 messages = [
     {"role": "system", "content": prompt.SYSTEM_PROMPT},
-    {"role": "user", "content": prompt.TAIL_PROMPT+task_prompt+prompt.TAIL_PROMPT}
+    {"role": "user", "content": task_prompt+prompt.TAIL_PROMPT}
 ],
 
 # Gemini Format
-system_prompt = prompt.SYSTEM_PROMPT #or some other system prompt.
-user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PROMPT
+messages = [
+        types.Content(
+            role="user", parts=[types.Part.from_text(text= prompt.SYSTEM_PROMPT+ task_prompt + prompt.TAIL_PROMPT)],
+        ),
+    ]
+
+# Gemma3 Format
+messages = [
+        types.Content(
+            role="user", parts=[types.Part.from_text(text= prompt.SYSTEM_PROMPT+ task_prompt + prompt.TAIL_PROMPT)],
+        ),
+    ]
 '''
 
 
@@ -55,7 +65,7 @@ TAIL_PROMPT="Give only the code, no test cases."
 '''
 
 # Meta prompting
-''''''
+'''
 PROMPT_TECHNIQUE_SETTING = "Meta" 
 
 SYSTEM_PROMPT="""- For the following coding task, solve it in the following steps:
@@ -65,7 +75,7 @@ SYSTEM_PROMPT="""- For the following coding task, solve it in the following step
 4. Give a code solution that solves the task."""
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
-
+'''
 
 # Naive Prompting
 '''
@@ -86,7 +96,7 @@ TAIL_PROMPT="Give only the code, no test cases."
 '''
 
 # Combined Heuristic
-'''
+''''''
 PROMPT_TECHNIQUE_SETTING = "Combined" 
 
 SYSTEM_PROMPT="""You are an expert software developer, skilled in producing clean and well-structured code. Generate code that is clean, easy to read with low complexity, and uphold high software quality standards.
@@ -98,5 +108,5 @@ For the following coding task, solve it in the following steps:
 ""","Read the task description again and refine the provided code to be better and fix potential problems. Generate code that is clean, easy to read and with low complexity, and uphold high software quality standards."
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
-'''
+
 

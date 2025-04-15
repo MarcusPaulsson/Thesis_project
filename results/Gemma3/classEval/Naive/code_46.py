@@ -14,10 +14,6 @@ class Interpolation:
         :param y: The y-coordinate of the data point, list.
         :param x_interp: The x-coordinate of the interpolation point, list.
         :return: The y-coordinate of the interpolation point, list.
-        >>> interpolation = Interpolation()
-        >>> interpolation.interpolate_1d([1, 2, 3], [1, 2, 3], [1.5, 2.5])
-        [1.5, 2.5]
-
         """
         y_interp = []
         for x_i in x_interp:
@@ -30,7 +26,7 @@ class Interpolation:
 
     @staticmethod
     def interpolate_2d(x, y, z, x_interp, y_interp):
-        ”“”
+        """
         Linear interpolation of two-dimensional data
         :param x: The x-coordinate of the data point, list.
         :param y: The y-coordinate of the data point, list.
@@ -38,21 +34,20 @@ class Interpolation:
         :param x_interp: The x-coordinate of the interpolation point, list.
         :param y_interp: The y-coordinate of the interpolation point, list.
         :return: The z-coordinate of the interpolation point, list.
-        >>> interpolation = Interpolation()
-        >>> interpolation.interpolate_2d([1, 2, 3], [1, 2, 3], [[1, 2, 3], [4, 5, 6], [7, 8, 9]], [1.5, 2.5], [1.5, 2.5])
-        [3.0, 7.0]
-
-        ”“”
+        """
         z_interp = []
-        for x_i, y_i in zip(x_interp, y_interp):
-            for i in range(len(x) - 1):
-                for j in range(len(y) - 1):
-                    if x[i] <= x_i <= x[i + 1] and y[j] <= y_i <= y[j + 1]:
-                        z_i = z[i][j] + (x_i - x[i]) * (z[i + 1][j] - z[i][j]) / (x[i + 1] - x[i]) + \
-                              (y_i - y[j]) * (z[i][j + 1] - z[i][j]) / (y[j + 1] - y[j])
-                        z_interp.append(z_i)
-                        break
-                else:
-                    continue
-                break
+        for x_i in x_interp:
+            for y_j in y_interp:
+                for i in range(len(x) - 1):
+                    for j in range(len(y) - 1):
+                        if x[i] <= x_i <= x[i + 1] and y[j] <= y_j <= y[j + 1]:
+                            z_ij = z[i][j] + (x_i - x[i]) * (z[i + 1][j] - z[i][j]) / (x[i + 1] - x[i]) + \
+                                   (y_j - y[j]) * (z[i][j + 1] - z[i][j]) / (y[j + 1] - y[j]) + \
+                                   (x_i - x[i]) * (y_j - y[j]) * (z[i + 1][j + 1] - z[i + 1][j] - z[i][j + 1] + z[i][j]) / \
+                                   ((x[i + 1] - x[i]) * (y[j + 1] - y[j]))
+                            z_interp.append(z_ij)
+                            break
+                    else:
+                        continue
+                    break
         return z_interp

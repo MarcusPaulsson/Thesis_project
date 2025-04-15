@@ -33,11 +33,8 @@ class ExpressionCalculator:
                     return "Invalid expression"
                 operand2 = self.postfix_stack.pop()
                 operand1 = self.postfix_stack.pop()
-                try:
-                    result = self._calculate(operand1, operand2, token)
-                    self.postfix_stack.append(result)
-                except ZeroDivisionError:
-                    return "Division by zero"
+                result = self._calculate(operand1, operand2, token)
+                self.postfix_stack.append(result)
             else:
                 return "Invalid expression"
         if len(self.postfix_stack) == 1:
@@ -56,29 +53,22 @@ class ExpressionCalculator:
         """
         expression = self.transform(expression)
         tokens = expression.split()
-        output = deque()
-        operators = deque()
-
+        op_stack = []
         for token in tokens:
             if token.isdigit() or (token.startswith('-') and token[1:].isdigit()):
-                output.append(token)
+                self.postfix_stack.append(token)
             elif token == '(':
-                operators.append(token)
+                op_stack.append(token)
             elif token == ')':
-                while operators and operators[-1] != '(':
-                    output.append(operators.pop())
-                if operators and operators[-1] == '(':
-                    operators.pop()
+                while op_stack and op_stack[-1] != '(':
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.pop()  # Pop the '('
             elif self.is_operator(token):
-                while operators and operators[-1] != '(' and self.compare(token, operators[-1]):
-                    output.append(operators.pop())
-                operators.append(token)
-
-        while operators:
-            output.append(operators.pop())
-
-        self.postfix_stack = output
-
+                while op_stack and op_stack[-1] != '(' and self.operat_priority[self.get_operator_index(token)] <= self.operat_priority[self.get_operator_index(op_stack[-1])]:
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.append(token)
+        while op_stack:
+            self.postfix_stack.append(op_stack.pop())
 
     @staticmethod
     def is_operator(c):
@@ -104,16 +94,7 @@ class ExpressionCalculator:
         True
 
         """
-        op1 = self.operat_priority[self.get_operator_index(cur)]
-        op2 = self.operat_priority[self.get_operator_index(peek)]
-        return op1 >= op2
-
-    def get_operator_index(self, operator):
-        operators = ['+', '-', '*', '/', '%']
-        try:
-            return operators.index(operator)
-        except ValueError:
-            return -1
+        return self.operat_priority[self.get_operator_index(cur)] >= self.operat_priority[self.get_operator_index(peek)]
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -135,11 +116,15 @@ class ExpressionCalculator:
         elif current_op == '*':
             return first_value * second_value
         elif current_op == '/':
+            if second_value == 0:
+                return "Division by zero"
             return first_value / second_value
         elif current_op == '%':
+            if second_value == 0:
+                return "Modulo by zero"
             return first_value % second_value
         else:
-            raise ValueError("Invalid operator")
+            return "Invalid operator"
 
     @staticmethod
     def transform(expression):
@@ -152,6 +137,25 @@ class ExpressionCalculator:
         "2+3*4"
 
         """
-        expression = expression.replace(" ", "")
-        expression = expression.replace("~", "-")
-        return expression
+        expression = expression.replace('(', '~(')
+        expression = expression.replace(')', ')~')
+        expression = expression.replace('-', '~')
+        return expression.replace(' ', '')
+
+    def get_operator_index(self, operator):
+        if operator == '+':
+            return 0
+        elif operator == '-':
+            return 1
+        elif operator == '*':
+            return 2
+        elif operator == '/':
+            return 3
+        elif operator == '%':
+            return 4
+        elif operator == '(':
+            return 5
+        elif operator == ')':
+            return 6
+        else:
+            return 7

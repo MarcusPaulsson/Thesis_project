@@ -43,7 +43,7 @@ class EncryptionUtils:
             if 'a' <= char <= 'z':
                 start = ord('a')
                 key_char = key[i % key_len]
-                key_shift = ord(key_char.lower()) - ord('a')
+                key_shift = ord(key_char) - ord('a')
                 shifted_char = chr((ord(char) - start + key_shift) % 26 + start)
             elif 'A' <= char <= 'Z':
                 start = ord('A')
@@ -58,7 +58,7 @@ class EncryptionUtils:
     def rail_fence_cipher(self, plain_text, rails):
         """
         Encrypts the plaintext using the Rail Fence cipher.
-        :param plain_text: The plaintext to encrypt, str.
+        :param plaintext: The plaintext to encrypt, str.
         :param rails: The number of rails to use, int.
         :return: The ciphertext, str.
         """

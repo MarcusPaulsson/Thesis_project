@@ -16,10 +16,10 @@ class JSONProcessor:
         if not os.path.exists(file_path):
             return 0
         try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-            return data
-        except:
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+                return data
+        except Exception as e:
             return -1
 
     def write_json(self, data, file_path):
@@ -31,10 +31,10 @@ class JSONProcessor:
         :return: 1 if the writing process is successful, or -1, if an error occurs during the writing process.
         """
         try:
-            with open(file_path, 'w') as f:
-                json.dump(data, f)
-            return 1
-        except:
+            with open(file_path, 'w') as file:
+                json.dump(data, file, indent=4)
+                return 1
+        except Exception as e:
             return -1
 
     def process_json(self, file_path, remove_key):
@@ -50,9 +50,9 @@ class JSONProcessor:
             return 0
 
         try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-        except:
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+        except Exception as e:
             return -1
 
         if remove_key not in data:
@@ -60,7 +60,9 @@ class JSONProcessor:
 
         del data[remove_key]
 
-        if self.write_json(data, file_path) == 1:
-            return 1
-        else:
+        try:
+            with open(file_path, 'w') as file:
+                json.dump(data, file, indent=4)
+                return 1
+        except Exception as e:
             return -1

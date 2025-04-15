@@ -15,8 +15,6 @@ class ExcelProcessor:
         :param file_name:str, Excel file name to read
         :return:list of data, Data in Excel
         """
-        if not file_name:
-            return None
         try:
             workbook = openpyxl.load_workbook(file_name)
             sheet = workbook.active
@@ -27,9 +25,6 @@ class ExcelProcessor:
             return data
         except FileNotFoundError:
             return None
-        except Exception as e:
-            print(f"Error reading Excel file: {e}")
-            return None
 
     def write_excel(self, data, file_name):
         """
@@ -37,18 +32,7 @@ class ExcelProcessor:
         :param data: list, Data to be written
         :param file_name: str, Excel file name to write to
         :return: 0 or 1, 1 represents successful writing, 0 represents failed writing
-        >>> processor = ExcelProcessor()
-        >>> new_data = [
-        >>>     ('Name', 'Age', 'Country'),
-        >>>     ('John', 25, 'USA'),
-        >>>     ('Alice', 30, 'Canada'),
-        >>>     ('Bob', 35, 'Australia'),
-        >>>     ('Julia', 28, 'Germany')
-        >>> ]
-        >>> data = processor.write_excel(new_data, 'test_data.xlsx')
         """
-        if not file_name:
-            return 0
         try:
             workbook = openpyxl.Workbook()
             sheet = workbook.active
@@ -58,7 +42,6 @@ class ExcelProcessor:
             workbook.close()
             return 1
         except Exception as e:
-            print(f"Error writing to Excel file: {e}")
             return 0
 
     def process_excel_data(self, N, save_file_name):
@@ -67,26 +50,26 @@ class ExcelProcessor:
         :param N: int, The serial number of the column that want to change
         :param save_file_name: str, source file name
         :return:(int, str), The former is the return value of write_excel, while the latter is the saved file name of the processed data
-        >>> processor = ExcelProcessor()
-        >>> success, output_file = processor.process_excel_data(1, 'test_data.xlsx')
         """
-        data = self.read_excel(save_file_name)
-        if data is None:
+        try:
+            data = self.read_excel(save_file_name)
+            if data is None:
+                return 0, ""
+
+            new_data = []
+            header = list(data[0])
+            if 0 <= N < len(header):
+                header[N] = header[N].upper()
+                new_data.append(tuple(header))
+                for row in data[1:]:
+                    new_row = list(row)
+                    new_row[N] = str(new_row[N]).upper()
+                    new_data.append(tuple(new_row))
+            else:
+                return 0, ""
+
+            output_file_name = "processed_" + save_file_name
+            success = self.write_excel(new_data, output_file_name)
+            return success, output_file_name
+        except Exception as e:
             return 0, ""
-
-        if N < 0 or N >= len(data[0]):
-            return 0, ""
-
-        processed_data = []
-        header = list(data[0])
-        header.append(header[N].upper())
-        processed_data.append(tuple(header))
-
-        for row in data[1:]:
-            new_row = list(row)
-            new_row[N] = str(new_row[N]).upper()
-            processed_data.append(tuple(new_row))
-
-        output_file_name = "processed_" + save_file_name
-        success = self.write_excel(processed_data, output_file_name)
-        return success, output_file_name

@@ -22,11 +22,11 @@ class Manacher:
         2
 
         """
-        length = 0
-        while center - diff >= 0 and center + diff < len(string) and string[center - diff] == string[center + diff]:
-            length += 1
-            diff += 1
-        return length
+        if center - diff < 0 or center + diff >= len(string):
+            return 0
+        if string[center - diff] != string[center + diff]:
+            return 0
+        return self.palindromic_length(center, diff + 1, string)
 
     def palindromic_string(self):
         """
@@ -37,13 +37,14 @@ class Manacher:
         'ababa'
 
         """
-        processed_string = '|'.join(list(self.input_string)) + '|'
-        max_length = 0
+        new_string = '|'.join(list(self.input_string))
+        new_string = new_string + '|'
+        max_len = 0
         center_index = 0
-        for i in range(len(processed_string)):
-            length = self.palindromic_length(i, 0, processed_string)
-            if length > max_length:
-                max_length = length
+        for i in range(len(new_string)):
+            length = self.palindromic_length(i, 0, new_string)
+            if length > max_len:
+                max_len = length
                 center_index = i
-        start = (center_index - max_length) // 2
-        return self.input_string[start:start + max_length]
+        start = (center_index - max_len) // 2
+        return self.input_string[start:start + max_len]

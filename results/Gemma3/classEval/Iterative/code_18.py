@@ -14,10 +14,6 @@ class CamelCaseMap:
         Return the value corresponding to the key
         :param key:str
         :return:str,the value corresponding to the key
-        >>> camelize_map = CamelCaseMap()
-        >>> camelize_map['first_name'] = 'John'
-        >>> camelize_map.__getitem__('first_name')
-        'John'
         """
         camel_key = self._convert_key(key)
         return self._data[camel_key]
@@ -28,10 +24,6 @@ class CamelCaseMap:
         :param key:str
         :param value:str, the specified value
         :return:None
-        >>> camelize_map = CamelCaseMap()
-        >>> camelize_map['first_name'] = 'John'
-        >>> camelize_map.__setitem__('first_name', 'new name')
-        camelize_map['first_name'] = 'new name'
         """
         camel_key = self._convert_key(key)
         self._data[camel_key] = value
@@ -41,11 +33,6 @@ class CamelCaseMap:
         Delete the value corresponding to the key
         :param key:str
         :return:None
-        >>> camelize_map = CamelCaseMap()
-        >>> camelize_map['first_name'] = 'John'
-        >>> camelize_map.__delitem__('first_name')
-        >>> flag = 'first_name' in camelize_map
-        flag = False
         """
         camel_key = self._convert_key(key)
         del self._data[camel_key]
@@ -54,12 +41,6 @@ class CamelCaseMap:
         """
         Returning Iterateable Objects with Own Data
         :return:Iterator
-        >>> camelize_map = CamelCaseMap()
-        >>> camelize_map['first_name'] = 'John'
-        >>> camelize_map['last_name'] = 'Doe'
-        >>> camelize_map['age'] = 30
-        >>> camelize_map.__iter__()
-        <dict_keyiterator object at 0x0000026739977C20>
         """
         return iter(self._data)
 
@@ -67,12 +48,6 @@ class CamelCaseMap:
         """
         Returns the length of the own data
         :return:int, length of data
-        >>> camelize_map = CamelCaseMap()
-        >>> camelize_map['first_name'] = 'John'
-        >>> camelize_map['last_name'] = 'Doe'
-        >>> camelize_map['age'] = 30
-        >>> camelize_map.__len__()
-        3
         """
         return len(self._data)
 
@@ -81,9 +56,6 @@ class CamelCaseMap:
         convert key string into camel case
         :param key:str
         :return:str, converted key string
-        >>> camelize_map = CamelCaseMap()
-        >>> camelize_map._convert_key('first_name')
-        'firstName'
         """
         return self._to_camel_case(key)
 
@@ -93,9 +65,6 @@ class CamelCaseMap:
         convert key string into camel case
         :param key:str
         :return:str, converted key string
-        >>> camelize_map = CamelCaseMap()
-        >>> camelize_map._to_camel_case('first_name')
-        'firstName'
         """
         components = key.split('_')
         return components[0] + ''.join(x.title() for x in components[1:])

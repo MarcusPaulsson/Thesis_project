@@ -12,7 +12,14 @@ class NumberConverter:
         >>> NumberConverter.decimal_to_binary(42423)
         '1010010110110111'
         """
-        return bin(decimal_num)[2:]
+        if decimal_num == 0:
+            return "0"
+        binary = ""
+        while decimal_num > 0:
+            remainder = decimal_num % 2
+            binary = str(remainder) + binary
+            decimal_num //= 2
+        return binary
 
     @staticmethod
     def binary_to_decimal(binary_num):
@@ -23,7 +30,13 @@ class NumberConverter:
         >>> NumberConverter.binary_to_decimal('1010010110110111')
         42423
         """
-        return int(binary_num, 2)
+        decimal = 0
+        power = 0
+        for digit in reversed(binary_num):
+            if digit == '1':
+                decimal += 2**power
+            power += 1
+        return decimal
 
     @staticmethod
     def decimal_to_octal(decimal_num):
@@ -34,7 +47,14 @@ class NumberConverter:
         >>> NumberConverter.decimal_to_octal(42423)
         '122667'
         """
-        return oct(decimal_num)[2:]
+        if decimal_num == 0:
+            return "0"
+        octal = ""
+        while decimal_num > 0:
+            remainder = decimal_num % 8
+            octal = str(remainder) + octal
+            decimal_num //= 8
+        return octal
 
     @staticmethod
     def octal_to_decimal(octal_num):
@@ -45,18 +65,31 @@ class NumberConverter:
         >>> NumberConverter.octal_to_decimal('122667')
         42423
         """
-        return int(octal_num, 8)
+        decimal = 0
+        power = 0
+        for digit in reversed(octal_num):
+            decimal += int(digit) * (8**power)
+            power += 1
+        return decimal
 
     @staticmethod
     def decimal_to_hex(decimal_num):
         """
         Convert a number from decimal format to hex format.
         :param decimal_num: int, decimal number
-        :return: str, the hex representation of an integer.
+        :return hex_num: str, the hex representation of an integer.
         >>> NumberConverter.decimal_to_hex(42423)
         'a5b7'
         """
-        return hex(decimal_num)[2:]
+        if decimal_num == 0:
+            return "0"
+        hex_digits = "0123456789abcdef"
+        hex_num = ""
+        while decimal_num > 0:
+            remainder = decimal_num % 16
+            hex_num = hex_digits[remainder] + hex_num
+            decimal_num //= 16
+        return hex_num
 
     @staticmethod
     def hex_to_decimal(hex_num):
@@ -67,4 +100,10 @@ class NumberConverter:
         >>> NumberConverter.hex_to_decimal('a5b7')
         42423
         """
-        return int(hex_num, 16)
+        decimal = 0
+        power = 0
+        hex_digits = "0123456789abcdef"
+        for digit in reversed(hex_num):
+            decimal += hex_digits.index(digit) * (16**power)
+            power += 1
+        return decimal

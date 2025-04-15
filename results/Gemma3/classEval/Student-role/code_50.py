@@ -19,6 +19,8 @@ class JSONProcessor:
             with open(file_path, 'r') as file:
                 data = json.load(file)
                 return data
+        except json.JSONDecodeError:
+            return -1
         except Exception as e:
             return -1
 
@@ -52,8 +54,10 @@ class JSONProcessor:
         try:
             with open(file_path, 'r') as file:
                 data = json.load(file)
+        except json.JSONDecodeError:
+            return 0
         except Exception as e:
-            return -1
+            return 0
 
         if remove_key not in data:
             return 0
@@ -65,4 +69,4 @@ class JSONProcessor:
                 json.dump(data, file, indent=4)
             return 1
         except Exception as e:
-            return -1
+            return 0

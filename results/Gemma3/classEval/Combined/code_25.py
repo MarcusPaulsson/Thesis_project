@@ -48,11 +48,3 @@ class CookiesUtil:
             return True
         except Exception:
             return False
-
-    def set_cookies(self, request):
-        """
-        Sets the cookies to the request.
-        :param request: The request to set cookies to, dict.
-        """
-        if self.cookies:
-            request['cookies'] = json.dumps(self.cookies)

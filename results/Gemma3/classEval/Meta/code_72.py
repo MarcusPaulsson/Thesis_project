@@ -108,8 +108,7 @@ class RegexUtils:
         True
         """
         pattern = r'\b\d{3}-\d{3}-\d{4}\b'
-        match = re.match(pattern, phone_number)
-        return bool(match)
+        return bool(re.match(pattern, phone_number))
 
     def extract_email(self, text):
         """

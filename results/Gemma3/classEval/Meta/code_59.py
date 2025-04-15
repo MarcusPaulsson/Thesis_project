@@ -35,14 +35,13 @@ class MovieBookingSystem:
         start_time = datetime.strptime(start_time, '%H:%M')
         end_time = datetime.strptime(end_time, '%H:%M')
         seats = np.zeros((n, n))
-        movie = {
+        self.movies.append({
             'name': name,
             'price': price,
             'start_time': start_time,
             'end_time': end_time,
             'seats': seats
-        }
-        self.movies.append(movie)
+        })
 
     def book_ticket(self, name, seats_to_book):
         """

@@ -37,17 +37,22 @@ class ArgumentParser:
         while i < len(parts):
             part = parts[i]
             if part.startswith("--"):
-                key_value = part[2:].split("=", 1)
-                key = key_value[0]
-                value = key_value[1] if len(key_value) > 1 else True
-                self.arguments[key] = self._convert_type(key, value)
-                i += 1
+                if "=" in part:
+                    key, value = part.split("=", 1)
+                    self.arguments[key] = self._convert_type(key, value)
+                else:
+                    key = part[2:]
+                    self.arguments[key] = True
             elif part.startswith("-"):
-                key = part[1:]
-                self.arguments[key] = True
-                i += 1
-            else:
-                i += 1
+                if i + 1 < len(parts):
+                    key = part[1:]
+                    value = parts[i + 1]
+                    self.arguments[key] = self._convert_type(key, value)
+                    i += 1
+                else:
+                    key = part[1:]
+                    self.arguments[key] = True
+            i += 1
 
         missing_args = self.required - set(self.arguments.keys())
         if missing_args:

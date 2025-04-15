@@ -29,7 +29,7 @@ class Snake:
         :return: None
         """
         head_x, head_y = self.positions[0]
-        new_head = (head_x + direction[0] * self.BLOCK_SIZE, head_y + direction[1] * self.BLOCK_SIZE)
+        new_head = (head_x + direction[0], head_y + direction[1])
 
         if new_head == self.food_position:
             self.eat_food()
@@ -46,10 +46,10 @@ class Snake:
         :return: None, Change the food position
         """
         while True:
-            x = random.randint(0, (self.SCREEN_WIDTH // self.BLOCK_SIZE) - 1) * self.BLOCK_SIZE
-            y = random.randint(0, (self.SCREEN_HEIGHT // self.BLOCK_SIZE) - 1) * self.BLOCK_SIZE
-            if (x, y) not in self.positions:
-                self.food_position = (x, y)
+            x = random.randint(0, self.SCREEN_WIDTH // self.BLOCK_SIZE - 1)
+            y = random.randint(0, self.SCREEN_HEIGHT // self.BLOCK_SIZE - 1)
+            if (x * self.BLOCK_SIZE, y * self.BLOCK_SIZE) not in self.positions:
+                self.food_position = (x * self.BLOCK_SIZE, y * self.BLOCK_SIZE)
                 break
 
 
@@ -59,7 +59,7 @@ class Snake:
         :return: None
         """
         self.length = 1
-        self.positions = [(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2)]
+        self.positions = [((self.SCREEN_WIDTH / 2), (self.SCREEN_HEIGHT / 2))]
         self.score = 0
         self.random_food_position()
 
@@ -72,5 +72,4 @@ class Snake:
         """
         self.length += 1
         self.score += 100
-        self.positions.insert(0, self.food_position)
         self.random_food_position()

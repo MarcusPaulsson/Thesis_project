@@ -18,9 +18,13 @@ class URLHandler:
         "https"
         """
         try:
-            scheme = self.url.split("://")[0]
-            return scheme
-        except IndexError:
+            from urllib.parse import urlparse
+            parsed_url = urlparse(self.url)
+            if parsed_url.scheme:
+                return parsed_url.scheme
+            else:
+                return None
+        except:
             return None
 
     def get_host(self):
@@ -32,9 +36,13 @@ class URLHandler:
         "www.baidu.com"
         """
         try:
-            host = self.url.split("://")[1].split("/")[0]
-            return host
-        except IndexError:
+            from urllib.parse import urlparse
+            parsed_url = urlparse(self.url)
+            if parsed_url.netloc:
+                return parsed_url.netloc
+            else:
+                return None
+        except:
             return None
 
     def get_path(self):
@@ -46,9 +54,13 @@ class URLHandler:
         "/s?wd=aaa&rsv_spt=1#page"
         """
         try:
-            path = self.url.split("://")[1]
-            return path
-        except IndexError:
+            from urllib.parse import urlparse
+            parsed_url = urlparse(self.url)
+            if parsed_url.path:
+                return parsed_url.path
+            else:
+                return None
+        except:
             return None
 
     def get_query_params(self):
@@ -60,14 +72,13 @@ class URLHandler:
         {"wd": "aaa", "rsv_spt": "1"}
         """
         try:
-            query_string = self.url.split("?")[1].split("#")[0]
-            params = {}
-            for pair in query_string.split("&"):
-                if "=" in pair:
-                    key, value = pair.split("=")
-                    params[key] = value
-            return params
-        except IndexError:
+            from urllib.parse import urlparse, parse_qs
+            parsed_url = urlparse(self.url)
+            if parsed_url.query:
+                return parse_qs(parsed_url.query)
+            else:
+                return None
+        except:
             return None
 
     def get_fragment(self):
@@ -79,7 +90,11 @@ class URLHandler:
         "page"
         """
         try:
-            fragment = self.url.split("#")[1]
-            return fragment
-        except IndexError:
+            from urllib.parse import urlparse
+            parsed_url = urlparse(self.url)
+            if parsed_url.fragment:
+                return parsed_url.fragment
+            else:
+                return None
+        except:
             return None

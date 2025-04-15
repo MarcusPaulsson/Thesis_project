@@ -29,12 +29,29 @@ class NumberWordFormatter:
         if isinstance(x, float):
             integer_part = int(x)
             decimal_part = int(round((x - integer_part) * 100))
-            return self.format(integer_part) + " AND CENTS " + self.trans_two(str(decimal_part).zfill(2)) + " ONLY"
+            integer_string = self.format(integer_part)
+            decimal_string = self.trans_two(str(decimal_part).zfill(2))
+            if integer_string and decimal_string:
+                return integer_string + " AND CENTS " + decimal_string + " ONLY"
+            elif integer_string:
+                return integer_string + " ONLY"
+            elif decimal_string:
+                return "CENTS " + decimal_string + " ONLY"
+            else:
+                return "ZERO ONLY"
         elif isinstance(x, int):
             if x == 0:
                 return "ZERO ONLY"
             else:
-                return self.trans_three(str(x)) + " ONLY"
+                result = ""
+                i = 0
+                while x > 0:
+                    remainder = x % 1000
+                    if remainder != 0:
+                        result = self.trans_three(str(remainder).zfill(3)) + " " + self.NUMBER_MORE[i] + " " + result
+                    x //= 1000
+                    i += 1
+                return result.strip() + " ONLY"
         else:
             return ""
 
@@ -48,8 +65,7 @@ class NumberWordFormatter:
         "ONE HUNDRED AND TWENTY THREE THOUSAND FOUR HUNDRED AND FIFTY SIX ONLY"
         """
         try:
-            num = float(x)
-            return self.format(num)
+            return self.format(float(x))
         except ValueError:
             return ""
 
@@ -89,13 +105,13 @@ class NumberWordFormatter:
             first_digit = int(s[0])
             second_digit = int(s[1])
             third_digit = int(s[2])
-            if first_digit == 0:
-                return self.trans_two(s[1:])
-            else:
+            if first_digit != 0:
                 result = self.NUMBER[first_digit] + " HUNDRED"
                 if second_digit != 0 or third_digit != 0:
                     result += " AND " + self.trans_two(s[1:])
                 return result
+            else:
+                return self.trans_two(s[1:])
         elif len(s) == 2:
             return self.trans_two(s)
         elif len(s) == 1:

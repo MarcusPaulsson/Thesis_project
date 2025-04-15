@@ -30,7 +30,7 @@ class Interpolation:
 
     @staticmethod
     def interpolate_2d(x, y, z, x_interp, y_interp):
-        """
+        ”“”
         Linear interpolation of two-dimensional data
         :param x: The x-coordinate of the data point, list.
         :param y: The y-coordinate of the data point, list.
@@ -42,7 +42,7 @@ class Interpolation:
         >>> interpolation.interpolate_2d([1, 2, 3], [1, 2, 3], [[1, 2, 3], [4, 5, 6], [7, 8, 9]], [1.5, 2.5], [1.5, 2.5])
         [3.0, 7.0]
 
-        """
+        ”“”
         z_interp = []
         for x_i, y_i in zip(x_interp, y_interp):
             for i in range(len(x) - 1):

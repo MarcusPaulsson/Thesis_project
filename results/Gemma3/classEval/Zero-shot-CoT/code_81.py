@@ -63,7 +63,7 @@ class Statistics3:
         1.0
 
         """
-        if len(x) != len(y) or len(x) <= 1:
+        if len(x) != len(y) or len(x) == 0:
             return None
         n = len(x)
         sum_x = sum(x)
@@ -106,16 +106,13 @@ class Statistics3:
         [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]
 
         """
-        if not data or len(data) == 0:
+        if not data or len(data[0]) == 0:
             return []
         n = len(data)
-        matrix = [[None] * n for _ in range(n)]
+        matrix = [[0.0] * n for _ in range(n)]
         for i in range(n):
             for j in range(n):
-                if i == j:
-                    matrix[i][j] = 1.0
-                else:
-                    matrix[i][j] = Statistics3.correlation(data[i], data[j])
+                matrix[i][j] = Statistics3.correlation(data[i], data[j])
         return matrix
 
     @staticmethod
@@ -129,10 +126,10 @@ class Statistics3:
         1.0
 
         """
-        if not data or len(data) < 2:
-            return 0.0
+        if not data:
+            return None
         mean = Statistics3.mean(data)
-        variance = sum((x - mean)**2 for x in data) / (len(data) - 1)
+        variance = sum((x - mean)**2 for x in data) / len(data)
         return math.sqrt(variance)
 
     @staticmethod
@@ -146,8 +143,8 @@ class Statistics3:
         [-1.161895003862225, -0.3872983346207417, 0.3872983346207417, 1.161895003862225]
 
         """
-        if not data or len(data) <= 1:
-            return None
+        if not data:
+            return []
         mean = Statistics3.mean(data)
         std_dev = Statistics3.standard_deviation(data)
         if std_dev == 0:

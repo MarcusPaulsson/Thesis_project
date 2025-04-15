@@ -33,11 +33,8 @@ class ExpressionCalculator:
                     return "Invalid expression"
                 operand2 = self.postfix_stack.pop()
                 operand1 = self.postfix_stack.pop()
-                try:
-                    result = self._calculate(operand1, operand2, token)
-                    self.postfix_stack.append(result)
-                except ZeroDivisionError:
-                    return "Division by zero"
+                result = self._calculate(operand1, operand2, token)
+                self.postfix_stack.append(result)
             else:
                 return "Invalid expression"
         if len(self.postfix_stack) == 1:
@@ -56,22 +53,22 @@ class ExpressionCalculator:
         """
         expression = self.transform(expression)
         tokens = expression.split()
+        op_stack = []
         for token in tokens:
             if token.isdigit() or (token.startswith('-') and token[1:].isdigit()):
                 self.postfix_stack.append(token)
             elif token == '(':
-                self.postfix_stack.append(token)
+                op_stack.append(token)
             elif token == ')':
-                while self.postfix_stack and self.postfix_stack[-1] != '(':
-                    self.postfix_stack.append(self.postfix_stack.pop())
-                if self.postfix_stack and self.postfix_stack[-1] == '(':
-                    self.postfix_stack.pop()
+                while op_stack and op_stack[-1] != '(':
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.pop()  # Pop the '('
             elif self.is_operator(token):
-                while self.postfix_stack and self.postfix_stack[-1] != '(' and self.compare(token, self.postfix_stack[-1]):
-                    self.postfix_stack.append(self.postfix_stack.pop())
-                self.postfix_stack.append(token)
-        while self.postfix_stack:
-            self.postfix_stack.append(self.postfix_stack.pop())
+                while op_stack and op_stack[-1] != '(' and self.compare(token, op_stack[-1]):
+                    self.postfix_stack.append(op_stack.pop())
+                op_stack.append(token)
+        while op_stack:
+            self.postfix_stack.append(op_stack.pop())
 
     @staticmethod
     def is_operator(c):
@@ -97,16 +94,10 @@ class ExpressionCalculator:
         True
 
         """
-        op1 = self.operat_priority[self.get_operator_index(cur)]
-        op2 = self.operat_priority[self.get_operator_index(peek)]
-        return op1 >= op2
-
-    def get_operator_index(self, operator):
-        operators = ['+', '-', '*', '/', '%']
-        try:
-            return operators.index(operator)
-        except ValueError:
-            return -1
+        op_priority = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
+        cur_priority = op_priority.get(cur, 0)
+        peek_priority = op_priority.get(peek, 0)
+        return cur_priority >= peek_priority
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -128,8 +119,12 @@ class ExpressionCalculator:
         elif current_op == '*':
             return first_value * second_value
         elif current_op == '/':
+            if second_value == 0:
+                raise ZeroDivisionError("Division by zero")
             return first_value / second_value
         elif current_op == '%':
+            if second_value == 0:
+                raise ZeroDivisionError("Modulo by zero")
             return first_value % second_value
         else:
             raise ValueError("Invalid operator")

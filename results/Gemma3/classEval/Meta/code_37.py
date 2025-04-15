@@ -76,20 +76,18 @@ class EncryptionUtils:
         if rails <= 1:
             return plain_text
 
-        fence = [['' for _ in range(len(plain_text))] for _ in range(rails)]
-        rail = 0
-        direction = 1  # 1 for down, -1 for up
+        rail_matrix = [['' for _ in range(len(plain_text))] for _ in range(rails)]
+        row, direction = 0, 1
 
         for i, char in enumerate(plain_text):
-            fence[rail][i] = char
+            rail_matrix[row][i] = char
 
-            rail += direction
+            if row == 0:
+                direction = 1
+            elif row == rails - 1:
+                direction = -1
 
-            if rail == rails - 1 or rail == 0:
-                direction *= -1
+            row += direction
 
-        result = ''
-        for rail in fence:
-            result += ''.join(rail)
-
-        return result
+        ciphertext = ''.join([''.join(row) for row in rail_matrix])
+        return ciphertext

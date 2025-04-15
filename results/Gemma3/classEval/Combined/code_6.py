@@ -5,34 +5,30 @@ class AvgPartition:
 
     def __init__(self, lst, limit):
         """
-        Initialize the class with the given list and the number of partitions.
-        Raises ValueError if the number of partitions is not positive.
+        Initialize the class with the given list and the number of partitions, and check if the number of partitions is greater than 0.
         """
-        if limit <= 0:
-            raise ValueError("Number of partitions must be positive.")
         self.lst = lst
         self.limit = limit
 
     def setNum(self):
         """
         Calculate the size of each block and the remainder of the division.
-        :return: A tuple containing the base size of each block and the remainder.
+        :return: the size of each block and the remainder of the division, tuple.
         """
-        base_size = len(self.lst) // self.limit
+        if self.limit <= 0:
+            raise ValueError("Limit must be greater than 0")
+        size = len(self.lst) // self.limit
         remainder = len(self.lst) % self.limit
-        return (base_size, remainder)
+        return (size, remainder)
+
 
     def get(self, index):
         """
-        Retrieve a partition (block) from the list.
-        :param index: The index of the partition to retrieve.
-        :return: A list representing the partition.
-        Raises IndexError if the index is out of bounds.
+        calculate the size of each block and the remainder of the division, and calculate the corresponding start and end positions based on the index of the partition.
+        :param index: the index of the partition,int.
+        :return: the corresponding block, list.
         """
-        if not 0 <= index < self.limit:
-            raise IndexError("Index out of bounds.")
-
-        base_size, remainder = self.setNum()
-        start = index * base_size + min(index, remainder)
-        end = (index + 1) * base_size + min(index + 1, remainder)
+        size, remainder = self.setNum()
+        start = index * size + min(index, remainder)
+        end = (index + 1) * size + min(index + 1, remainder)
         return self.lst[start:end]

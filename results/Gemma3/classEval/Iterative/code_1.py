@@ -32,7 +32,7 @@ class AreaCalculator:
         :param height: height of cylinder, float
         :return: area of cylinder, float
         """
-        return 2 * math.pi * self.radius * (self.radius + height)
+        return 2 * math.pi * self.radius * height + 2 * math.pi * self.radius**2
 
     def calculate_sector_area(self, angle):
         """

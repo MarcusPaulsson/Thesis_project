@@ -1,3 +1,5 @@
+from urllib.parse import urlparse, parse_qs
+
 class URLHandler:
     """
     The class supports to handle URLs, including extracting the scheme, host, path, query parameters, and fragment.
@@ -13,73 +15,54 @@ class URLHandler:
         """
         get the scheme of the URL
         :return: string, If successful, return the scheme of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_scheme()
-        "https"
         """
         try:
-            scheme = self.url.split("://")[0]
-            return scheme
-        except IndexError:
+            result = urlparse(self.url)
+            return result.scheme
+        except:
             return None
 
     def get_host(self):
         """
         Get the second part of the URL, which is the host domain name
         :return: string, If successful, return the host domain name of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_host()
-        "www.baidu.com"
         """
         try:
-            host = self.url.split("://")[1].split("/")[0]
-            return host
-        except IndexError:
+            result = urlparse(self.url)
+            return result.netloc
+        except:
             return None
 
     def get_path(self):
         """
         Get the third part of the URL, which is the address of the resource
         :return: string, If successful, return the address of the resource of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_path()
-        "/s?wd=aaa&rsv_spt=1#page"
         """
         try:
-            path = self.url.split("://")[1]
-            return path
-        except IndexError:
+            result = urlparse(self.url)
+            return result.path
+        except:
             return None
 
     def get_query_params(self):
         """
         Get the request parameters for the URL
         :return: dict, If successful, return the request parameters of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_query_params()
-        {"wd": "aaa", "rsv_spt": "1"}
         """
         try:
-            query_string = self.url.split("?")[1].split("#")[0]
-            params = {}
-            for pair in query_string.split("&"):
-                if "=" in pair:
-                    key, value = pair.split("=")
-                    params[key] = value
-            return params
-        except IndexError:
+            result = urlparse(self.url)
+            query_params = parse_qs(result.query)
+            return {k: v[0] for k, v in query_params.items()}
+        except:
             return None
 
     def get_fragment(self):
         """
         Get the fragment after '#' in the URL
         :return: string, If successful, return the fragment after '#' of the URL
-        >>> urlhandler = URLHandler("https://www.baidu.com/s?wd=aaa&rsv_spt=1#page")
-        >>> urlhandler.get_fragment()
-        "page"
         """
         try:
-            fragment = self.url.split("#")[1]
-            return fragment
-        except IndexError:
+            result = urlparse(self.url)
+            return result.fragment
+        except:
             return None

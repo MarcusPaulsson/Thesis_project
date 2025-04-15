@@ -47,11 +47,3 @@ class CookiesUtil:
         except Exception as e:
             print(f"Error saving cookies: {e}")
             return False
-
-    def set_cookies(self, request):
-        """
-        Sets the cookies to the request.
-        :param request: The request to set cookies to, dict.
-        """
-        if self.cookies:
-            request['cookies'] = f"cookies={json.dumps(self.cookies)}"

@@ -7,7 +7,6 @@ class BitStatusUtil:
     def add(states, stat):
         """
         Add a status to the current status.
-
         :param states: Current status, int.
         :param stat: Status to be added, int.
         :return: The status after adding the status, int.
@@ -26,7 +25,6 @@ class BitStatusUtil:
     def has(states, stat):
         """
         Check if the current status contains the specified status.
-
         :param states: Current status, int.
         :param stat: Specified status, int.
         :return: True if the current status contains the specified status, otherwise False.
@@ -45,7 +43,6 @@ class BitStatusUtil:
     def remove(states, stat):
         """
         Remove the specified status from the current status.
-
         :param states: Current status, int.
         :param stat: Specified status, int.
         :return: The status after removing the specified status, int.
@@ -64,10 +61,10 @@ class BitStatusUtil:
     def check(args):
         """
         Check if the parameters are legal.
-
         :param args: Parameters to be checked, list.
-        :raises TypeError: if any input is not an integer.
-        :raises ValueError: if any input is negative or odd.
+        :return: None.
+        :raises TypeError: if inputs are not integers.
+        :raises ValueError: if inputs are negative or odd.
         """
         for arg in args:
             if not isinstance(arg, int):

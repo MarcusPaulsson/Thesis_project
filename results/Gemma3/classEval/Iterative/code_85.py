@@ -63,11 +63,11 @@ class Thermostat:
         If there is a conflict, the operating mode will be adjusted automatically.
         :return: True if mode isn't conflict with the relationship between the current temperature and the target temperature, or False otherwise.
         """
-        if self.mode == 'cool' and self.current_temperature < self.target_temperature:
-            self.mode = 'heat'
-            return False
-        elif self.mode == 'heat' and self.current_temperature > self.target_temperature:
+        if self.mode == 'heat' and self.current_temperature >= self.target_temperature:
             self.mode = 'cool'
+            return False
+        elif self.mode == 'cool' and self.current_temperature < self.target_temperature:
+            self.mode = 'heat'
             return False
         else:
             return True
@@ -82,9 +82,9 @@ class Thermostat:
         start_time = time.time()
         while abs(self.current_temperature - self.target_temperature) > 0.1:
             if self.mode == 'heat':
-                self.current_temperature += 0.5
+                self.current_temperature += 0.1
             else:
-                self.current_temperature -= 0.5
+                self.current_temperature -= 0.1
             time.sleep(0.1)
         end_time = time.time()
         return int(end_time - start_time)

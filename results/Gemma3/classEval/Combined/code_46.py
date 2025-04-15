@@ -15,21 +15,13 @@ class Interpolation:
         :param x_interp: The x-coordinate of the interpolation point, list.
         :return: The y-coordinate of the interpolation point, list.
         """
-        if not x or not y or len(x) != len(y):
-            return []
-
         y_interp = []
-        for x_val in x_interp:
-            if x_val < x[0]:
-                y_interp.append(y[0])
-            elif x_val > x[-1]:
-                y_interp.append(y[-1])
-            else:
-                for i in range(len(x) - 1):
-                    if x[i] <= x_val <= x[i + 1]:
-                        y_val = y[i] + (x_val - x[i]) * (y[i + 1] - y[i]) / (x[i + 1] - x[i])
-                        y_interp.append(y_val)
-                        break
+        for x_i in x_interp:
+            for i in range(len(x) - 1):
+                if x[i] <= x_i <= x[i + 1]:
+                    y_i = y[i] + (x_i - x[i]) * (y[i + 1] - y[i]) / (x[i + 1] - x[i])
+                    y_interp.append(y_i)
+                    break
         return y_interp
 
     @staticmethod
@@ -43,24 +35,17 @@ class Interpolation:
         :param y_interp: The y-coordinate of the interpolation point, list.
         :return: The z-coordinate of the interpolation point, list.
         """
-        if not x or not y or not z or len(x) != len(y) or len(x) != len(z) or len(y) != len(z[0]):
-            return []
-
         z_interp = []
-        for x_val, y_val in zip(x_interp, y_interp):
-            if x_val < x[0] or y_val < y[0]:
-                z_interp.append(z[0][0])
-            elif x_val > x[-1] or y_val > y[-1]:
-                z_interp.append(z[-1][-1])
-            else:
-                for i in range(len(x) - 1):
-                    for j in range(len(y) - 1):
-                        if x[i] <= x_val <= x[i + 1] and y[j] <= y_val <= y[j + 1]:
-                            z_val = z[i][j] + (x_val - x[i]) * (z[i + 1][j] - z[i][j]) / (x[i + 1] - x[i]) + \
-                                    (y_val - y[j]) * (z[i][j + 1] - z[i][j]) / (y[j + 1] - y[j])
-                            z_interp.append(z_val)
-                            break
-                    else:
-                        continue
-                    break
+        for x_i, y_i in zip(x_interp, y_interp):
+            z_i = 0.0
+            for i in range(len(x) - 1):
+                for j in range(len(y) - 1):
+                    if x[i] <= x_i <= x[i + 1] and y[j] <= y_i <= y[j + 1]:
+                        z_i = z[i][j] + (x_i - x[i]) * (z[i + 1][j] - z[i][j]) / (x[i + 1] - x[i]) + \
+                              (y_i - y[j]) * (z[i][j + 1] - z[i][j]) / (y[j + 1] - y[j])
+                        break
+                else:
+                    continue
+                break
+            z_interp.append(z_i)
         return z_interp

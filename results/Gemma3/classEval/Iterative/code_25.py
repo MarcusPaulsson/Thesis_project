@@ -13,18 +13,17 @@ class CookiesUtil:
         self.cookies_file = cookies_file
         self.cookies = None
 
-    def get_cookies(self, response):
+    def get_cookies(self, reponse):
         """
-        Gets the cookies from the specified response and saves them to the cookies_file.
-        :param response: The response to get cookies from, dict.
+        Gets the cookies from the specified response,and save it to cookies_file.
+        :param reponse: The response to get cookies from, dict.
         """
-        if 'cookies' in response:
-            self.cookies = response['cookies']
-            self._save_cookies()
+        if 'cookies' in reponse:
+            self.cookies = reponse['cookies']
 
     def load_cookies(self):
         """
-        Loads the cookies from the cookies_file.
+        Loads the cookies from the cookies_file to the cookies data.
         :return: The cookies data, dict.
         """
         try:
@@ -33,12 +32,10 @@ class CookiesUtil:
             return self.cookies
         except FileNotFoundError:
             return {}
-        except json.JSONDecodeError:
-            return {}
 
     def _save_cookies(self):
         """
-        Saves the cookies to the cookies_file.
+        Saves the cookies to the cookies_file, and returns True if successful, False otherwise.
         :return: True if successful, False otherwise.
         """
         if not self.cookies_file:
@@ -47,13 +44,14 @@ class CookiesUtil:
             with open(self.cookies_file, 'w') as f:
                 json.dump(self.cookies, f)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error saving cookies: {e}")
             return False
 
     def set_cookies(self, request):
         """
-        Sets the cookies to the request.
-        :param request: The request to set cookies to, dict.
+        Sets the cookies in the request.
+        :param request: The request to set cookies in, dict.
         """
         if self.cookies:
-            request['cookies'] = json.dumps(self.cookies)
+            request['cookies'] = f"cookies={json.dumps(self.cookies)}"

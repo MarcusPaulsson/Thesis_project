@@ -64,15 +64,17 @@ class AccessGatewayFilter:
         if 'headers' in request and 'Authorization' in request['headers']:
             auth_header = request['headers']['Authorization']
             if 'jwt' in auth_header and 'user' in auth_header:
-                jwt = auth_header['jwt']
-                user = auth_header['user']
-                if jwt == user['name'] + str(datetime.date.today()):
-                    return {'user': user}
+                jwt_token = auth_header['jwt']
+                user_info = auth_header['user']
+                today = datetime.date.today()
+                if jwt_token == user_info['name'] + str(today):
+                    return auth_header
                 else:
                     return None
             else:
                 return None
-        return None
+        else:
+            return None
 
     def set_current_user_info_and_log(self, user):
         """
@@ -84,4 +86,4 @@ class AccessGatewayFilter:
         >>> filter.set_current_user_info_and_log(user)
 
         """
-        logging.info(f"User {user.get('name', 'unknown')} accessed the resource.")
+        logging.info(f"User {user.get('name', 'unknown')} accessed the gateway.")

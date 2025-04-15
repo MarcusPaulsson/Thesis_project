@@ -12,6 +12,7 @@ class MetricsCalculator:
         self.false_negatives = 0
         self.true_negatives = 0
 
+
     def update(self, predicted_labels, true_labels):
         """
         Update the number of all four samples(true_positives, false_positives, false_negatives, true_negatives)
@@ -29,6 +30,7 @@ class MetricsCalculator:
             else:
                 self.true_negatives += 1
 
+
     def precision(self, predicted_labels, true_labels):
         """
         Calculate precision
@@ -40,6 +42,7 @@ class MetricsCalculator:
         if self.true_positives + self.false_positives == 0:
             return 0.0
         return self.true_positives / (self.true_positives + self.false_positives)
+
 
     def recall(self, predicted_labels, true_labels):
         """
@@ -53,6 +56,7 @@ class MetricsCalculator:
             return 0.0
         return self.true_positives / (self.true_positives + self.false_negatives)
 
+
     def f1_score(self, predicted_labels, true_labels):
         """
         Calculate f1 score, which is the harmonic mean of precision and recall
@@ -65,6 +69,7 @@ class MetricsCalculator:
         if prec + rec == 0:
             return 0.0
         return 2 * (prec * rec) / (prec + rec)
+
 
     def accuracy(self, predicted_labels, true_labels):
         """

@@ -2,11 +2,18 @@ import random
 
 class TwentyFourPointGame:
     """
-    This is a game of twenty-four points, which provides to generate four numbers and check whether player's expression is equal to 24.
+    This ia a game of twenty-four points, which provides to generate four numbers and check whether player's expression is equal to 24.
     """
 
     def __init__(self) -> None:
         self.nums = []
+
+
+    def _generate_cards(self):
+        """
+        Generate random numbers between 1 and 9 for the cards.
+        """
+        self.nums = random.sample(range(1, 10), 4)
 
 
     def get_my_cards(self):
@@ -16,13 +23,6 @@ class TwentyFourPointGame:
         """
         self._generate_cards()
         return self.nums
-
-
-    def _generate_cards(self):
-        """
-        Generate random numbers between 1 and 9 for the cards.
-        """
-        self.nums = random.sample(range(1, 10), 4)
 
 
     def answer(self, expression):

@@ -24,13 +24,13 @@ class DecryptionUtils:
         plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
-                start = ord('a')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                start = 'a'
             elif 'A' <= char <= 'Z':
-                start = ord('A')
-                shifted_char = chr((ord(char) - start - shift) % 26 + start)
+                start = 'A'
             else:
-                shifted_char = char
+                plaintext += char
+                continue
+            shifted_char = chr((ord(char) - ord(start) - shift) % 26 + ord(start))
             plaintext += shifted_char
         return plaintext
 
@@ -48,16 +48,16 @@ class DecryptionUtils:
         key_len = len(self.key)
         for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
-                key_char = self.key[i % key_len]
-                key_shift = ord(key_char) - ord('a')
-                decrypted_char = chr((ord(char) - ord('a') - key_shift) % 26 + ord('a'))
+                start = 'a'
             elif 'A' <= char <= 'Z':
-                key_char = self.key[i % key_len]
-                key_shift = ord(key_char) - ord('a')
-                decrypted_char = chr((ord(char) - ord('A') - key_shift) % 26 + ord('A'))
+                start = 'A'
             else:
-                decrypted_char = char
-            plaintext += decrypted_char
+                plaintext += char
+                continue
+            key_char = self.key[i % key_len]
+            key_shift = ord(key_char) - ord('a') if 'a' <= key_char <= 'z' else ord(key_char) - ord('A')
+            shifted_char = chr((ord(char) - ord(start) - key_shift) % 26 + ord(start))
+            plaintext += shifted_char
         return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):
@@ -71,34 +71,39 @@ class DecryptionUtils:
         'Hello, World!'
 
         """
-        length = len(encrypted_text)
-        fence = [['' for _ in range(length)] for _ in range(rails)]
-        rail = 0
-        direction = 1  # 1 for down, -1 for up
+        n = len(encrypted_text)
+        fence = [['' for i in range(n)] for j in range(rails)]
+        row, col, direction = 0, 0, 1
 
-        # Mark the positions where characters will be placed
-        for i in range(length):
-            fence[rail][i] = '*'
-            rail += direction
-            if rail == rails - 1 or rail == 0:
-                direction *= -1
+        for i in range(n):
+            fence[row][col] = '*'
+            col += 1
 
-        # Fill the fence with the encrypted text
+            if row == 0:
+                direction = 1
+            elif row == rails - 1:
+                direction = -1
+
+            row += direction
+
         index = 0
         for i in range(rails):
-            for j in range(length):
-                if fence[i][j] == '*':
+            for j in range(n):
+                if fence[i][j] == '*' and index < n:
                     fence[i][j] = encrypted_text[index]
                     index += 1
 
-        # Read the fence in a zigzag manner to get the plaintext
-        plaintext = ''
-        rail = 0
-        direction = 1
-        for i in range(length):
-            plaintext += fence[rail][i]
-            rail += direction
-            if rail == rails - 1 or rail == 0:
-                direction *= -1
+        result = ''
+        row, col, direction = 0, 0, 1
+        for i in range(n):
+            result += fence[row][col]
+            col += 1
 
-        return plaintext
+            if row == 0:
+                direction = 1
+            elif row == rails - 1:
+                direction = -1
+
+            row += direction
+
+        return result

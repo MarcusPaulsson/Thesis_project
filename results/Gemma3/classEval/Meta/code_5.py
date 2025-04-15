@@ -24,11 +24,14 @@ class AutomaticGuitarSimulator:
         play_list = []
         segments = self.play_text.split()
         for segment in segments:
-            chord = segment[:segment.isdigit()]
-            tune = segment[len(chord):]
+            chord = ""
+            tune = ""
+            for i in range(len(segment)):
+                if segment[i].isalpha():
+                    chord += segment[i]
+                else:
+                    tune += segment[i]
             play_list.append({'Chord': chord, 'Tune': tune})
-            if display:
-                print(f"Normal Guitar Playing -- Chord: {chord}, Play Tune: {tune}")
         return play_list
 
     def display(self, key, value):
@@ -42,4 +45,4 @@ class AutomaticGuitarSimulator:
         Normal Guitar Playing -- Chord: C, Play Tune: 53231323
 
         """
-        return f"Normal Guitar Playing -- Chord: {key}, Play Tune: {value}"
+        return "Normal Guitar Playing -- Chord: " + key + ", Play Tune: " + value

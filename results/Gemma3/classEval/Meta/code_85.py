@@ -107,4 +107,4 @@ class Thermostat:
                 self.current_temperature -= 0.5
             time.sleep(0.1)
         end_time = time.time()
-        return int(end_time - start_time)
+        return int((end_time - start_time) * 10)

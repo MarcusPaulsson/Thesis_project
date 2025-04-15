@@ -18,9 +18,8 @@ class URLHandler:
         "https"
         """
         try:
-            scheme = self.url.split("://")[0]
-            return scheme
-        except IndexError:
+            return self.url.split("://")[0]
+        except:
             return None
 
     def get_host(self):
@@ -34,7 +33,7 @@ class URLHandler:
         try:
             host = self.url.split("://")[1].split("/")[0]
             return host
-        except IndexError:
+        except:
             return None
 
     def get_path(self):
@@ -46,9 +45,8 @@ class URLHandler:
         "/s?wd=aaa&rsv_spt=1#page"
         """
         try:
-            path = self.url.split("://")[1]
-            return path
-        except IndexError:
+            return self.url.split("://")[1]
+        except:
             return None
 
     def get_query_params(self):
@@ -67,7 +65,7 @@ class URLHandler:
                     key, value = pair.split("=")
                     params[key] = value
             return params
-        except IndexError:
+        except:
             return None
 
     def get_fragment(self):
@@ -79,7 +77,6 @@ class URLHandler:
         "page"
         """
         try:
-            fragment = self.url.split("#")[1]
-            return fragment
-        except IndexError:
+            return self.url.split("#")[1]
+        except:
             return None

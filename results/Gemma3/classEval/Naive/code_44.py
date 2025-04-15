@@ -30,7 +30,7 @@ class HtmlUtil:
         :return:string, replaced text with single line break
         """
         if not text:
-            return ''
+            return ""
         return re.sub(r'\n+', '\n', text)
 
     def format_line_html_text(self, html_text):
@@ -38,57 +38,24 @@ class HtmlUtil:
         get the html text without the code, and add the code tag -CODE- where the code is
         :param html_text:string
         :return:string
-        >>>htmlutil = HtmlUtil()
-        >>>htmlutil.format_line_html_text(<html>
-        >>> <body>
-        >>>    <h1>Title</h1>
-        >>>    <p>This is a paragraph.</p>
-        >>>    <pre>print('Hello, world!')</pre>
-        >>>    <p>Another paragraph.</p>
-        >>>    <pre><code>for i in range(5):
-        >>>    print(i)</code></pre>
-        >>>    </body>
-        >>>    </html>)
-        Title
-        This is a paragraph.
-        -CODE-
-        Another paragraph.
-        -CODE-
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        text = ''
-        for element in soup.body.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']):
-            text += element.get_text() + '\n'
-        for element in soup.body.find_all('pre'):
-            if element.find('code'):
-                text += self.CODE_MARK + '\n'
-            else:
-                text += element.get_text() + '\n'
-        return HtmlUtil.__format_line_feed(text).strip()
+        text = soup.get_text(separator='\n')
+        text = self.__format_line_feed(text)
+        return text
 
     def extract_code_from_html_text(self, html_text):
         """
         extract codes from the html body
         :param html_text: string, html text
         :return: the list of code
-        >>>htmlutil = HtmlUtil()
-        >>>htmlutil.extract_code_from_html_text(<html>
-        >>> <body>
-        >>>    <h1>Title</h1>
-        >>>    <p>This is a paragraph.</p>
-        >>>    <pre>print('Hello, world!')</pre>
-        >>>    <p>Another paragraph.</p>
-        >>>    <pre><code>for i in range(5):
-        >>>    print(i)</code></pre>
-        >>>    </body>
-        >>>    </html>)
-        ["print('Hello, world!')", 'for i in range(5):\n                print(i)']
         """
         soup = BeautifulSoup(html_text, 'html.parser')
         codes = []
-        for element in soup.body.find_all('pre'):
-            if element.find('code'):
-                codes.append(element.find('code').get_text())
+        for pre in soup.find_all('pre'):
+            code_tag = pre.find('code')
+            if code_tag:
+                codes.append(code_tag.get_text())
             else:
-                codes.append(element.get_text())
+                codes.append(pre.get_text())
         return codes
