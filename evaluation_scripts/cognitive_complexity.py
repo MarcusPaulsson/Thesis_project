@@ -22,6 +22,19 @@ result_setting = "filtered_results" # "results"
 
 
 # ClassEval
+
+# ClassEval
+folder_paths_ground_truth_classEval = {
+    "GroundTruth classEval": os.path.join(upper_dir, "ground_truth", "classEval")
+}
+
+folder_paths_ground_truth_APPS = {
+    "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
+}
+
+
+
+
 folder_paths_gemini_classEval = {
     "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
     "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
@@ -86,9 +99,24 @@ folder_paths_gemma_APPS = {
 results_chatgpt = {}  # Store average and std dev for each folder
 results_gemini = {}
 results_gemma = {}
+ground_truth ={}  
+
+
+
+def analyze_folders_ground_truth(folder_paths, results):
+    for folder_name, folder_path in folder_paths.items():
+        complexities = []
+        all_file_names = []
+
+        for filename in os.listdir(folder_path):
+            if filename.endswith(".py"):
+                all_file_names.append(filename)
+        
+
 
 def analyze_folders(folder_paths, results):
     for folder_name, folder_path in folder_paths.items():
+        
         if not os.path.exists(folder_path):
             print(f"Error: Folder not found: {folder_path}")
             continue
@@ -140,6 +168,12 @@ analyze_folders(folder_paths_gemini_APPS, results_gemini)
 analyze_folders(folder_paths_gemma_APPS, results_gemma)
 analyze_folders(folder_paths_gemma_classEval, results_gemma)
 
+# Ground truth
+analyze_folders_ground_truth(folder_paths_ground_truth_APPS, ground_truth)
+analyze_folders_ground_truth(folder_paths_ground_truth_classEval, ground_truth)
+
+
+
 print_std_dev = False  # Changed to True to print standard deviation
 
 print("\nAverage Cognitive Complexity per prompt technique:")
@@ -157,6 +191,12 @@ for folder, (avg_complexity, std_dev) in results_chatgpt.items():
         print(f"  {folder}: Average = {avg_complexity}")
 
 for folder, (avg_complexity, std_dev) in results_gemma.items():
+    if print_std_dev:
+        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
+    else:
+        print(f"  {folder}: Average = {avg_complexity}")
+
+for folder, (avg_complexity, std_dev) in ground_truth.items():
     if print_std_dev:
         print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
     else:
