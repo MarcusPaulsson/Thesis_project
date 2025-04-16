@@ -21,11 +21,7 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
     """
     Runs a single iteration of a task using the Gemini API.
     """
-<<<<<<< HEAD
-    time.sleep(20)
-=======
     time.sleep(30)
->>>>>>> 7497e9224c14265ea555142f846dde042913d463
     client = genai.Client(api_key=config.GEMINI_API_KEY)
     model = "gemma-3-27b-it"
     user_prompt = system_prompt + " Use python to code. Give only the code.\n" + task_prompt + prompt.TAIL_PROMPT
