@@ -39,7 +39,7 @@ class BoyerMooreSearch:
         """
         for i in range(self.patLen):
             if currentPos + i >= self.textLen or self.text[currentPos + i] != self.pattern[i]:
-                return i
+                return currentPos + i
         return -1
 
     def bad_character_heuristic(self):
@@ -56,4 +56,6 @@ class BoyerMooreSearch:
             mismatch_pos = self.mismatch_in_text(i)
             if mismatch_pos == -1:
                 occurrences.append(i)
+            else:
+                pass
         return occurrences

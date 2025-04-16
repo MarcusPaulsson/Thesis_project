@@ -35,14 +35,14 @@ class Lemmatization:
         tagged_words = pos_tag(words)
         lemmatized_words = []
         for word, tag in tagged_words:
-            if tag.startswith('J'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'a'))
-            elif tag.startswith('V'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'v'))
-            elif tag.startswith('N'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'n'))
-            elif tag.startswith('R'):
-                lemmatized_words.append(self.lemmatizer.lemmatize(word, 'r'))
+            if tag.startswith('NN'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='n'))
+            elif tag.startswith('VB'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='v'))
+            elif tag.startswith('JJ'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='a'))
+            elif tag.startswith('RB'):
+                lemmatized_words.append(self.lemmatizer.lemmatize(word, pos='r'))
             else:
                 lemmatized_words.append(word)
         return lemmatized_words
@@ -73,4 +73,4 @@ class Lemmatization:
         'I am running in a race'
 
         """
-        return ''.join([char for char in sentence if char not in string.punctuation])
+        return sentence.translate(str.maketrans('', '', string.punctuation))

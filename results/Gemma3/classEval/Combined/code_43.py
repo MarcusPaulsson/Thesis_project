@@ -5,7 +5,7 @@ class HRManagementSystem:
 
     def __init__(self):
         """
-        Initialize the HRManagementSystem with an attribute employees, which is an empty dictionary.
+        Initialize the HRManagementSystem withan attribute employees, which is an empty dictionary.
         """
         self.employees = {}
 
@@ -21,13 +21,9 @@ class HRManagementSystem:
         """
         if employee_id in self.employees:
             return False
-        self.employees[employee_id] = {
-            'name': name,
-            'position': position,
-            'department': department,
-            'salary': salary
-        }
-        return True
+        else:
+            self.employees[employee_id] = {'name': name, 'position': position, 'department': department, 'salary': salary}
+            return True
 
     def remove_employee(self, employee_id):
         """
@@ -38,7 +34,8 @@ class HRManagementSystem:
         if employee_id in self.employees:
             del self.employees[employee_id]
             return True
-        return False
+        else:
+            return False
 
     def update_employee(self, employee_id: int, employee_info: dict):
         """
@@ -50,7 +47,8 @@ class HRManagementSystem:
         if employee_id in self.employees:
             self.employees[employee_id].update(employee_info)
             return True
-        return False
+        else:
+            return False
 
     def get_employee(self, employee_id):
         """
@@ -60,12 +58,13 @@ class HRManagementSystem:
         """
         if employee_id in self.employees:
             return self.employees[employee_id]
-        return False
+        else:
+            return False
 
     def list_employees(self):
         """
         List all employees' information in the HRManagementSystem.
-        :return: A list of all employees' information, dict.
+        :return: A list of all employees' information,dict.
         """
         for employee_id in self.employees:
             self.employees[employee_id]['employee_ID'] = employee_id

@@ -57,13 +57,16 @@ class HtmlUtil:
         """
         soup = BeautifulSoup(html_text, 'html.parser')
         text = ""
-        for element in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']):
-            text += element.get_text() + "\n"
-        for element in soup.find_all('pre'):
-            if element.find('code'):
-                text += self.CODE_MARK + "\n"
+        for element in soup.body.find_all(recursive=True):
+            if element.name == 'pre':
+                if element.find('code'):
+                    text += self.CODE_MARK + '\n'
+                else:
+                    text += element.text + '\n'
+            elif element.name == 'h1' or element.name == 'p':
+                text += element.text + '\n'
             else:
-                text += element.get_text() + "\n"
+                pass
         return HtmlUtil.__format_line_feed(text).strip()
 
     def extract_code_from_html_text(self, html_text):
@@ -86,9 +89,10 @@ class HtmlUtil:
         """
         soup = BeautifulSoup(html_text, 'html.parser')
         codes = []
-        for element in soup.find_all('pre'):
-            if element.find('code'):
-                codes.append(element.find('code').get_text())
+        for pre in soup.body.find_all('pre'):
+            code_tag = pre.find('code')
+            if code_tag:
+                codes.append(code_tag.text)
             else:
-                codes.append(element.get_text())
+                codes.append(pre.text)
         return codes

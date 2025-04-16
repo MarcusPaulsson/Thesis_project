@@ -38,7 +38,10 @@ class VectorUtil:
         >>> VectorUtil.cosine_similarities(vector1, vectors_all)
         [0.97463185 0.95941195]
         """
-        return np.array([VectorUtil.similarity(vector_1, vector_2) for vector_2 in vectors_all])
+        similarities = []
+        for vector_2 in vectors_all:
+            similarities.append(VectorUtil.similarity(vector_1, vector_2))
+        return np.array(similarities)
 
 
     @staticmethod

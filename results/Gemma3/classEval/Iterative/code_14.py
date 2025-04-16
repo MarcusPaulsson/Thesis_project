@@ -25,7 +25,7 @@ class BookManagementDB:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 author TEXT NOT NULL,
-                available INTEGER NOT NULL
+                available INTEGER DEFAULT 1
             )
         """)
         self.connection.commit()
@@ -37,7 +37,7 @@ class BookManagementDB:
         :param title: str, book title
         :param author: str, author name
         """
-        self.cursor.execute("INSERT INTO books (title, author, available) VALUES (?, ?, ?)", (title, author, 1))
+        self.cursor.execute("INSERT INTO books (title, author) VALUES (?, ?)", (title, author))
         self.connection.commit()
 
     def remove_book(self, book_id):

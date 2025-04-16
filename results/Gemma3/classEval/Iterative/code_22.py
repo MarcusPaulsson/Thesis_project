@@ -51,19 +51,19 @@ class ClassRegistrationSystem:
         >>> registration_system.get_students_by_major("Computer Science")
         ["John"]
         """
-        student_names = []
+        students_in_major = []
         for student in self.students:
             if student["major"] == major:
-                student_names.append(student["name"])
-        return student_names
+                students_in_major.append(student["name"])
+        return students_in_major
 
     def get_all_major(self):
         """
         get all majors in the system
         :return a list of majors
         >>> registration_system = ClassRegistrationSystem()
-        >>> registration_system.students = [{"name": "John", "major": "Computer Science"}]
-        >>> registration_system.get_all_major()
+        >>> registration_system.students = [{"name": "John", "major": "Computer Science"}],
+        >>> registration_system.get_all_major(student1)
         ["Computer Science"]
         """
         majors = []

@@ -18,7 +18,7 @@ class TriCalculator:
         >>> tricalculator.cos(60)
         0.5
         """
-        return self.taylor(x, 50)
+        return self.taylor(x, 10)
 
     def factorial(self, a):
         """
@@ -58,7 +58,7 @@ class TriCalculator:
         """
         x = x / 180 * pi
         result = 0
-        for i in range(50):
+        for i in range(10):
             result += ((-1)**i) * (x**(2*i+1)) / self.factorial(2*i+1)
         return result
 

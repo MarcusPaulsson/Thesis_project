@@ -215,7 +215,7 @@ if __name__ == "__main__":
     upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #adjust if running locally.
 
     result_setting = "results" # "results"
-    result_setting = "filtered_results" # "results"
+    #result_setting = "filtered_results" # "results"
 
     # folder_paths_gemini_cli_games = {
     #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
@@ -231,12 +231,20 @@ if __name__ == "__main__":
     # }
 
     # ClassEval
+
+    folder_paths_ground_truth_classEval = {
+        "GroundTruth classEval": os.path.join(upper_dir, "ground_truth", "classEval")
+    }
+
+    folder_paths_ground_truth_APPS = {
+        "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
+    }
+
     folder_paths_gemini_classEval = {
         "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
         "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
         "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
         "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
-        "Gemini classEval Meta": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Meta"),
         "Gemini classEval Naive": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Naive"),
         "Gemini classEval Iterative": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Iterative"),
         "Gemini classEval Combined": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Combined"),
@@ -246,7 +254,6 @@ if __name__ == "__main__":
         "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
         "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
         "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
-        "ChatGPT classEval Meta": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Meta'),
         "ChatGPT classEval Naive": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Naive'),
         "ChatGPT classEval Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Iterative'),
         "ChatGPT classEval Combined": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Combined'),
@@ -256,7 +263,6 @@ if __name__ == "__main__":
         "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
         "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
         "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),
-        "Gemma3 classEval Meta": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Meta"),
         "Gemma3 classEval Naive": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Naive"),
         "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
         "Gemma3 classEval Combined": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Combined"),
@@ -269,7 +275,6 @@ if __name__ == "__main__":
         "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot-CoT"),
         "ChatGPT APPS Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Expert-role"),
         "ChatGPT APPS Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Student-role"),
-        "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
         "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
         "ChatGPT APPS Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Iterative"),
         "ChatGPT APPS Combined": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Combined"),
@@ -279,7 +284,6 @@ if __name__ == "__main__":
         "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
         "Gemini APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Expert-role"),
         "Gemini APPS Student-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Student-role"),
-        "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
         "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
         "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
         "Gemini APPS Combined": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Combined"),
@@ -289,7 +293,6 @@ if __name__ == "__main__":
         "Gemma3 APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot-CoT"),
         "Gemma3 APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Expert-role"),
         "Gemma3 APPS Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Student-role"),
-        "Gemma3 APPS Meta": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Meta"),
         "Gemma3 APPS Naive": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Naive"),
         "Gemma3 APPS Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Iterative"),
         "Gemma3 APPS Combined": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Combined"),
@@ -299,6 +302,7 @@ if __name__ == "__main__":
     results_gemini = {}
     results_chatgpt = {}
     results_gemma = {}
+    ground_truth = {}
 
     results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_APPS))
     results_gemini.update(analyze_folders_and_count_calls(folder_paths_gemini_classEval))
@@ -309,107 +313,8 @@ if __name__ == "__main__":
     results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_APPS))
     results_chatgpt.update(analyze_folders_and_count_calls(folder_paths_chatgpt_classEval))
 
-    # print("\nTotal Standard and Public Library Call Counts per prompt technique:")
-    # gemini_calls = {  # Split call count calculation by technique
-    #     "Zero-shot": 0,
-    #     "Zero-shot-CoT": 0,
-    #     "Expert-role": 0,
-    #     "Student-role": 0,
-    #     "Meta": 0,
-    #     "Naive": 0,
-    #     "Iterative": 0,
-    #     "Combined": 0,
-    # }
-
-    # chatgpt_calls = {
-    #     "Zero-shot": 0,
-    #     "Zero-shot-CoT": 0,
-    #     "Expert-role": 0,
-    #     "Student-role": 0,
-    #     "Meta": 0,
-    #     "Naive": 0,
-    #     "Iterative": 0,
-    #     "Combined": 0,
-    # }
-
-    # gemma_calls = {
-    #     "Zero-shot": 0,
-    #     "Zero-shot-CoT": 0,
-    #     "Expert-role": 0,
-    #     "Student-role": 0,
-    #     "Meta": 0,
-    #     "Naive": 0,
-    #     "Iterative": 0,
-    #     "Combined": 0,
-    # }
-
-    # for folder, total_calls in results_gemini.items():
-    #     if "Zero-shot" in folder and "CoT" not in folder:
-    #         gemini_calls["Zero-shot"] += total_calls
-    #     elif "Zero-shot-CoT" in folder:
-    #         gemini_calls["Zero-shot-CoT"] += total_calls
-    #     elif "Expert-role" in folder:
-    #         gemini_calls["Expert-role"] += total_calls
-    #     elif "Student-role" in folder:
-    #         gemini_calls["Student-role"] += total_calls
-    #     elif "Meta" in folder:
-    #         gemini_calls["Meta"] += total_calls
-    #     elif "Naive" in folder:
-    #         gemini_calls["Naive"] += total_calls
-    #     elif "Combined" in folder:
-    #         gemini_calls["Combined"] += total_calls
-    #     elif "Iterative" in folder:
-    #         gemini_calls["Iterative"] += total_calls
-        
-
-    # for folder, total_calls in results_chatgpt.items():
-    #     if "Zero-shot" in folder and "CoT" not in folder:
-    #         chatgpt_calls["Zero-shot"] += total_calls
-    #     elif "Zero-shot-CoT" in folder:
-    #         chatgpt_calls["Zero-shot-CoT"] += total_calls
-    #     elif "Expert-role" in folder:
-    #         chatgpt_calls["Expert-role"] += total_calls
-    #     elif "Student-role" in folder:
-    #         chatgpt_calls["Student-role"] += total_calls
-    #     elif "Meta" in folder:
-    #         chatgpt_calls["Meta"] += total_calls
-    #     elif "Naive" in folder:
-    #         chatgpt_calls["Naive"] += total_calls
-    #     elif "Iterative" in folder:
-    #         chatgpt_calls["Iterative"] += total_calls
-    #     elif "Combined" in folder:
-    #         gemini_calls["Combined"] += total_calls
-
-    # for folder, total_calls in results_gemma.items():
-    #     if "Zero-shot" in folder and "CoT" not in folder:
-    #         gemma_calls["Zero-shot"] += total_calls
-    #     elif "Zero-shot-CoT" in folder:
-    #         gemma_calls["Zero-shot-CoT"] += total_calls
-    #     elif "Expert-role" in folder:
-    #         gemma_calls["Expert-role"] += total_calls
-    #     elif "Student-role" in folder:
-    #         gemma_calls["Student-role"] += total_calls
-    #     elif "Meta" in folder:
-    #         gemma_calls["Meta"] += total_calls
-    #     elif "Naive" in folder:
-    #         gemma_calls["Naive"] += total_calls
-    #     elif "Iterative" in folder:
-    #         gemma_calls["Iterative"] += total_calls
-    #     elif "Combined" in folder:
-    #         print("here")
-    #         gemini_calls["Combined"] += total_calls
-
-    # print("Gemini Total Standard and Public Library Calls:")
-    # for technique, count in gemini_calls.items():
-    #     print(f"  {technique}: {count}")
-
-    # print("\nChatGPT Total Standard and Public Library Calls:")
-    # for technique, count in chatgpt_calls.items():
-    #     print(f"  {technique}: {count}")
-
-    # print("\nGemma3 Total Standard and Public Library Calls:")
-    # for technique, count in gemma_calls.items():
-    #     print(f"  {technique}: {count}")
+    ground_truth.update(analyze_folders_and_count_calls(folder_paths_ground_truth_classEval))
+    ground_truth.update(analyze_folders_and_count_calls(folder_paths_ground_truth_APPS))
 
 
     print("\nTotal Standard and Public Library Calls per Folder:")
@@ -421,7 +326,9 @@ if __name__ == "__main__":
 
     for folder, total_calls in results_gemma.items():
         print(f"  {folder}: {total_calls}")
-
+        
+    for folder, total_calls in ground_truth.items():
+        print(f"  {folder}: {total_calls}")
 
 run_on_single_file = False
 if run_on_single_file:

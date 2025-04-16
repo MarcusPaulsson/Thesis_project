@@ -23,17 +23,17 @@ class DataStatistics4:
 
         sum_x = sum(data1)
         sum_y = sum(data2)
-        sum_x_squared = sum(x**2 for x in data1)
-        sum_y_squared = sum(y**2 for y in data2)
+        sum_x2 = sum(x**2 for x in data1)
+        sum_y2 = sum(y**2 for y in data2)
         sum_xy = sum(x * y for x, y in zip(data1, data2))
 
         numerator = n * sum_xy - sum_x * sum_y
-        denominator = math.sqrt((n * sum_x_squared - sum_x**2) * (n * sum_y_squared - sum_y**2))
+        denominator = math.sqrt((n * sum_x2 - sum_x**2) * (n * sum_y2 - sum_y**2))
 
         if denominator == 0:
             return 0  # Handle the case where the denominator is zero to avoid division by zero
-
-        return numerator / denominator
+        else:
+            return numerator / denominator
 
     @staticmethod
     def skewness(data):

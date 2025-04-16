@@ -37,15 +37,6 @@ class ExcelProcessor:
         :param data: list, Data to be written
         :param file_name: str, Excel file name to write to
         :return: 0 or 1, 1 represents successful writing, 0 represents failed writing
-        >>> processor = ExcelProcessor()
-        >>> new_data = [
-        >>>     ('Name', 'Age', 'Country'),
-        >>>     ('John', 25, 'USA'),
-        >>>     ('Alice', 30, 'Canada'),
-        >>>     ('Bob', 35, 'Australia'),
-        >>>     ('Julia', 28, 'Germany')
-        >>> ]
-        >>> data = processor.write_excel(new_data, 'test_data.xlsx')
         """
         if not file_name:
             return 0
@@ -67,8 +58,6 @@ class ExcelProcessor:
         :param N: int, The serial number of the column that want to change
         :param save_file_name: str, source file name
         :return:(int, str), The former is the return value of write_excel, while the latter is the saved file name of the processed data
-        >>> processor = ExcelProcessor()
-        >>> success, output_file = processor.process_excel_data(1, 'test_data.xlsx')
         """
         data = self.read_excel(save_file_name)
         if data is None:

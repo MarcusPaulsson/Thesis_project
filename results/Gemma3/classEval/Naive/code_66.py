@@ -54,7 +54,6 @@ class NumericEntityUnescaper:
                 i += 1
         return result
 
-
     @staticmethod
     def is_hex_char(char):
         """

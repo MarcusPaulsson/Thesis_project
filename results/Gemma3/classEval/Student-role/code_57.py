@@ -80,7 +80,7 @@ class MetricsCalculator2:
             if ground_truth_num == 0:
                 return 0.0, [0.0]
             else:
-                return ap / ground_truth_num, [ap / ground_truth_num]
+                return ap / min(ground_truth_num, correct_count), [ap / min(ground_truth_num, correct_count)]
         elif isinstance(data, list):
             if not data:
                 return 0.0, [0.0]
@@ -96,7 +96,7 @@ class MetricsCalculator2:
                 if ground_truth_num == 0:
                     ap_list.append(0.0)
                 else:
-                    ap_list.append(ap / ground_truth_num)
+                    ap_list.append(ap / min(ground_truth_num, correct_count))
             return np.mean(ap_list), ap_list
         else:
             return 0.0, [0.0]

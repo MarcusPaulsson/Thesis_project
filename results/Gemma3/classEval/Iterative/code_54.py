@@ -46,7 +46,10 @@ class MahjongConnect:
         if self.board[x1][y1] != self.board[x2][y2]:
             return False
 
-        return self.has_path(pos1, pos2)
+        if not self.has_path(pos1, pos2):
+            return False
+
+        return True
 
     def has_path(self, pos1, pos2):
         """
@@ -57,14 +60,14 @@ class MahjongConnect:
         """
         x1, y1 = pos1
         x2, y2 = pos2
-        rows, cols = self.BOARD_SIZE
+        rows = self.BOARD_SIZE[0]
+        cols = self.BOARD_SIZE[1]
+        visited = [[False for _ in range(cols)] for _ in range(rows)]
+        queue = [(x1, y1)]
+        visited[x1][y1] = True
 
-        q = [(x1, y1, 0)]  # (row, col, distance)
-        visited = set()
-        visited.add((x1, y1))
-
-        while q:
-            x, y, dist = q.pop(0)
+        while queue:
+            x, y = queue.pop(0)
 
             if (x, y) == (x2, y2):
                 return True
@@ -76,10 +79,9 @@ class MahjongConnect:
                 nx, ny = x + dx, y + dy
 
                 if (0 <= nx < rows and 0 <= ny < cols and
-                        self.board[nx][ny] == self.board[x1][y1] and
-                        (nx, ny) not in visited):
-                    q.append((nx, ny, dist + 1))
-                    visited.add((nx, ny))
+                        not visited[nx][ny] and self.board[nx][ny] == self.board[x1][y1]):
+                    queue.append((nx, ny))
+                    visited[nx][ny] = True
 
         return False
 

@@ -8,12 +8,22 @@
 # ChatGPT Format
 messages = [
     {"role": "system", "content": prompt.SYSTEM_PROMPT},
-    {"role": "user", "content": prompt.TAIL_PROMPT+task_prompt+prompt.TAIL_PROMPT}
+    {"role": "user", "content": task_prompt+prompt.TAIL_PROMPT}
 ],
 
 # Gemini Format
-system_prompt = prompt.SYSTEM_PROMPT #or some other system prompt.
-user_prompt = system_prompt + prompt.HEAD_PROMPT + task_prompt + prompt.TAIL_PROMPT
+messages = [
+        types.Content(
+            role="user", parts=[types.Part.from_text(text= prompt.SYSTEM_PROMPT+ task_prompt + prompt.TAIL_PROMPT)],
+        ),
+    ]
+
+# Gemma3 Format
+messages = [
+        types.Content(
+            role="user", parts=[types.Part.from_text(text= prompt.SYSTEM_PROMPT+ task_prompt + prompt.TAIL_PROMPT)],
+        ),
+    ]
 '''
 
 
@@ -54,6 +64,7 @@ HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
 '''
 
+<<<<<<< HEAD
 # Meta prompting
 '''
 PROMPT_TECHNIQUE_SETTING = "Meta" 
@@ -67,6 +78,8 @@ HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
 '''
 
+=======
+>>>>>>> 7497e9224c14265ea555142f846dde042913d463
 # Naive Prompting
 '''
 PROMPT_TECHNIQUE_SETTING = "Naive" 

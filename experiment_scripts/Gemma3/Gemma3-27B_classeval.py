@@ -21,7 +21,11 @@ def run_task_with_gemini_iter(task_prompt, system_prompt):
     """
     Runs a single iteration of a task using the Gemini API.
     """
+<<<<<<< HEAD
     time.sleep(20)
+=======
+    time.sleep(30)
+>>>>>>> 7497e9224c14265ea555142f846dde042913d463
     client = genai.Client(api_key=config.GEMINI_API_KEY)
     model = "gemma-3-27b-it"
     user_prompt = system_prompt + " Use python to code. Give only the code.\n" + task_prompt + prompt.TAIL_PROMPT
@@ -122,7 +126,7 @@ if __name__ == "__main__":
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "Gemma3_test", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "Gemma3", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
 

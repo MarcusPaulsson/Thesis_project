@@ -26,31 +26,24 @@ class MetricsCalculator2:
         """
         if isinstance(data, tuple):
             result, ground_truth_num = data
-            rank = 0
-            for i, r in enumerate(result):
-                if r == 1:
-                    rank = i + 1
-                    break
-            if rank == 0:
-                return 0.0, [0.0]
+            rank = np.where(np.array(result) == 1)[0]
+            if rank.size > 0:
+                return 1.0 / (rank[0] + 1), [1.0 / (rank[0] + 1)]
             else:
-                return 1.0 / rank, [1.0 / rank]
-        elif isinstance(data, list):
-            if not data:
                 return 0.0, [0.0]
+        elif isinstance(data, list):
             rr_list = []
-            for d in data:
-                result, ground_truth_num = d
-                rank = 0
-                for i, r in enumerate(result):
-                    if r == 1:
-                        rank = i + 1
-                        break
-                if rank == 0:
-                    rr_list.append(0.0)
+            precision_list = []
+            for item in data:
+                result, ground_truth_num = item
+                rank = np.where(np.array(result) == 1)[0]
+                if rank.size > 0:
+                    rr_list.append(1.0 / (rank[0] + 1))
+                    precision_list.append(1.0 / (rank[0] + 1))
                 else:
-                    rr_list.append(1.0 / rank)
-            return np.mean(rr_list), rr_list
+                    rr_list.append(0.0)
+                    precision_list.append(0.0)
+            return np.mean(rr_list), precision_list
         else:
             return 0.0, [0.0]
 
@@ -72,31 +65,29 @@ class MetricsCalculator2:
         if isinstance(data, tuple):
             result, ground_truth_num = data
             ap = 0.0
-            correct_count = 0
-            for i, r in enumerate(result):
-                if r == 1:
-                    correct_count += 1
-                    ap += correct_count / (i + 1)
-            if ground_truth_num == 0:
-                return 0.0, [0.0]
-            else:
+            relevant_count = 0
+            for i, item in enumerate(result):
+                if item == 1:
+                    relevant_count += 1
+                    ap += relevant_count / (i + 1)
+            if ground_truth_num > 0:
                 return ap / ground_truth_num, [ap / ground_truth_num]
-        elif isinstance(data, list):
-            if not data:
+            else:
                 return 0.0, [0.0]
+        elif isinstance(data, list):
             ap_list = []
-            for d in data:
-                result, ground_truth_num = d
+            for item in data:
+                result, ground_truth_num = item
                 ap = 0.0
-                correct_count = 0
-                for i, r in enumerate(result):
-                    if r == 1:
-                        correct_count += 1
-                        ap += correct_count / (i + 1)
-                if ground_truth_num == 0:
-                    ap_list.append(0.0)
-                else:
+                relevant_count = 0
+                for i, res in enumerate(result):
+                    if res == 1:
+                        relevant_count += 1
+                        ap += relevant_count / (i + 1)
+                if ground_truth_num > 0:
                     ap_list.append(ap / ground_truth_num)
+                else:
+                    ap_list.append(0.0)
             return np.mean(ap_list), ap_list
         else:
             return 0.0, [0.0]

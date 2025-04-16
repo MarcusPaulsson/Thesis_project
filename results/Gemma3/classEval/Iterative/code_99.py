@@ -1,4 +1,5 @@
 import zipfile
+import os
 
 
 class ZipFileProcessor:
@@ -36,13 +37,17 @@ class ZipFileProcessor:
         :return: True or False, representing whether the extraction operation was successful
         """
         try:
-            zip_file = self.read_zip_file()
-            if zip_file:
-                zip_file.extractall(output_path)
+            if self.file_name:
+                with zipfile.ZipFile(self.file_name, 'r') as zip_ref:
+                    zip_ref.extractall(output_path)
                 return True
             else:
                 return False
-        except Exception:
+        except FileNotFoundError:
+            return False
+        except zipfile.BadZipFile:
+            return False
+        except Exception as e:
             return False
 
     def extract_file(self, file_name, output_path):
@@ -53,13 +58,19 @@ class ZipFileProcessor:
         :return: True or False, representing whether the extraction operation was successful
         """
         try:
-            zip_file = self.read_zip_file()
-            if zip_file:
-                zip_file.extract(file_name, output_path)
+            if self.file_name:
+                with zipfile.ZipFile(self.file_name, 'r') as zip_ref:
+                    zip_ref.extract(file_name, output_path)
                 return True
             else:
                 return False
-        except Exception:
+        except FileNotFoundError:
+            return False
+        except zipfile.BadZipFile:
+            return False
+        except KeyError:
+            return False
+        except Exception as e:
             return False
 
     def create_zip_file(self, files, output_file_name):
@@ -70,9 +81,14 @@ class ZipFileProcessor:
         :return:True or False, representing whether the compression operation was successful
         """
         try:
-            with zipfile.ZipFile(output_file_name, 'w') as zip_file:
-                for file in files:
-                    zip_file.write(file)
-            return True
-        except Exception:
+            if files and output_file_name:
+                with zipfile.ZipFile(output_file_name, 'w') as zip_ref:
+                    for file in files:
+                        zip_ref.write(file, os.path.basename(file))
+                return True
+            else:
+                return False
+        except FileNotFoundError:
+            return False
+        except Exception as e:
             return False

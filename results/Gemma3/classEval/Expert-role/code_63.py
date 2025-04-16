@@ -32,8 +32,8 @@ class NLPDataProcessor2:
         {'this': 2, 'is': 2, 'test': 2, 'a': 1, 'another': 1}
         """
         word_counts = Counter()
-        for words in words_list:
-            word_counts.update(words)
+        for word_list in words_list:
+            word_counts.update(word_list)
         return dict(word_counts)
 
     def process(self, string_list):

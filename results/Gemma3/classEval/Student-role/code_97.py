@@ -40,16 +40,18 @@ class Words2Numbers:
         """
         words = textnum.replace('-', ' ').split()
         total = 0
-        scale = 0
+        scale = 1
         for word in words:
             if word in self.numwords:
                 num, power = self.numwords[word]
                 if num == 1:
-                    scale += power
+                    scale *= power
                 else:
-                    total += num * (10 ** scale)
-            elif word.isdigit():
-                total += int(word) * (10 ** scale)
+                    total += num * scale
+            elif word in self.ordinal_words:
+                total += self.ordinal_words[word] * scale
+            else:
+                pass
         return str(total)
 
     def is_valid_input(self, textnum):
@@ -63,6 +65,6 @@ class Words2Numbers:
         """
         words = textnum.replace('-', ' ').split()
         for word in words:
-            if word not in self.numwords and not word.isdigit():
+            if word not in self.numwords and word not in self.ordinal_words:
                 return False
         return True

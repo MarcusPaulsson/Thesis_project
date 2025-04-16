@@ -30,10 +30,13 @@ class NumberWordFormatter:
             integer_part = int(x)
             decimal_part = int(round((x - integer_part) * 100))
             return self.format(integer_part) + " AND CENTS " + self.trans_two(str(decimal_part).zfill(2)) + " ONLY"
-        elif x == 0:
-            return "ZERO ONLY"
+        elif isinstance(x, int):
+            if x == 0:
+                return "ZERO ONLY"
+            else:
+                return self._format_int(x) + " ONLY"
         else:
-            return self.convert_number(x) + " ONLY"
+            return ""
 
     def format_string(self, x):
         """
@@ -98,27 +101,19 @@ class NumberWordFormatter:
         """
         return self.NUMBER_MORE[i]
 
-    def convert_number(self, num):
+    def _format_int(self, x):
         """
-        Converts a number into words format
-        :param num: int, the number to be converted into words format
-        :return: str, the number in words format
+        Helper function to format integers
         """
-        num_str = str(num)
-        length = len(num_str)
-        result = ""
-        i = 0
-        while i < length:
-            if length - i >= 3:
-                group = num_str[i:i + 3]
-                if group != "000":
-                    result += self.trans_three(group) + " "
-                    if length - i > 3:
-                        result += self.parse_more(length - i - 3) + " "
-                i += 3
-            else:
-                group = num_str[i:]
-                if group != "000":
-                    result += self.trans_two(group) + " "
-                i += len(group)
-        return result.strip()
+        s = str(x)
+        n = len(s)
+        result = []
+        for i in range(n - 1, -1, -3):
+            chunk = s[max(0, i - 2):i + 1]
+            if chunk:
+                if len(result) > 0:
+                    result.append("AND")
+                result.append(self.trans_three(chunk))
+                if i > 2:
+                    result.append(self.parse_more((n - i - 1) // 3))
+        return " ".join(result[::-1])

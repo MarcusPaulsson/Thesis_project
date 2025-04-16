@@ -30,8 +30,6 @@ class Warehouse:
     def update_product_quantity(self, product_id, quantity):
         """
         According to product_id, add the quantity to the corresponding product in inventory.
-        :param product_id: int
-        :param quantity: int
         """
         if product_id in self.inventory:
             self.inventory[product_id]['quantity'] += quantity
@@ -39,7 +37,7 @@ class Warehouse:
     def get_product_quantity(self, product_id):
         """
         Get the quantity of specific product by product_id.
-        :param product_id: int
+        :param product_id, int
         :return: if the product_id is in inventory then return the corresponding quantity,
                 or False otherwise.
         """
@@ -56,7 +54,7 @@ class Warehouse:
         :param order_id: int
         :param product_id: int
         :param quantity: the quantity of product that be selected.
-        :return: True if order created successfully, False otherwise
+        :return False: only if product_id is not in inventory or the quantity is not adequate
         """
         if product_id not in self.inventory or self.inventory[product_id]['quantity'] < quantity:
             return False
@@ -69,7 +67,7 @@ class Warehouse:
         Change the status of order if the input order_id is in self.orders.
         :param order_id: int
         :param status: str, the state that is going to change to
-        :return: True if status changed successfully, False otherwise
+        :return False: only if the order_id is not in self.orders
         """
         if order_id in self.orders:
             self.orders[order_id]['status'] = status
@@ -81,7 +79,7 @@ class Warehouse:
         """
         Get the status of specific order.
         :param order_id: int
-        :return: the status of the order if found, False otherwise
+        :return False: only if the order_id is not in self.orders.
         """
         if order_id in self.orders:
             return self.orders[order_id]['status']

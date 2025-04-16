@@ -1,11 +1,12 @@
 import socket
-import ipaddress
+import netifaces
 
 
 class IpUtil:
     """
     This is a class as tool for ip that can be used to obtain the local IP address, validate its validity, and also provides the functionality to retrieve the corresponding hostname.
     """
+
 
     @staticmethod
     def is_valid_ipv4(ip_address):
@@ -20,9 +21,9 @@ class IpUtil:
 
         """
         try:
-            ipaddress.IPv4Address(ip_address)
+            socket.inet_aton(ip_address)
             return True
-        except ipaddress.AddressValueError:
+        except socket.error:
             return False
 
     @staticmethod
@@ -38,10 +39,11 @@ class IpUtil:
 
         """
         try:
-            ipaddress.IPv6Address(ip_address)
+            socket.inet_pton(socket.AF_INET6, ip_address)
             return True
-        except ipaddress.AddressValueError:
+        except socket.error:
             return False
+
 
     @staticmethod
     def get_hostname(ip_address):
@@ -52,11 +54,12 @@ class IpUtil:
         >>> IpUtil.get_hostname('110.242.68.3')
         'www.baidu.com'
         >>> IpUtil.get_hostname('10.0.0.1')
-        None
 
         """
         try:
             hostname = socket.gethostbyaddr(ip_address)[0]
             return hostname
         except socket.herror:
+            return None
+        except socket.gaierror:
             return None

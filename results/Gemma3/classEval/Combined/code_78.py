@@ -15,7 +15,8 @@ class SplitSentence:
         >>> ss.split_sentences("aaa aaaa. bb bbbb bbb? cccc cccc. dd ddd?")
         ['aaa aaaa.', 'bb bbbb bbb?', 'cccc cccc.', 'dd ddd?']
         """
-        return re.split(r'(?<=[.?!])\s+', sentences_string)
+        sentences = re.split(r'(?<=[.?!])\s+', sentences_string)
+        return sentences
 
     def count_words(self, sentence):
         """
@@ -26,7 +27,11 @@ class SplitSentence:
         2
         """
         words = sentence.split()
-        return sum(1 for word in words if re.match(r'^[a-zA-Z]+$', word))
+        count = 0
+        for word in words:
+            if re.match(r'^[a-zA-Z]+$', word):
+                count += 1
+        return count
 
     def process_text_file(self, sentences_string):
         """
@@ -40,5 +45,6 @@ class SplitSentence:
         max_words = 0
         for sentence in sentences:
             word_count = self.count_words(sentence)
-            max_words = max(max_words, word_count)
+            if word_count > max_words:
+                max_words = word_count
         return max_words

@@ -33,7 +33,7 @@ class JSONProcessor:
         try:
             with open(file_path, 'w') as file:
                 json.dump(data, file, indent=4)
-            return 1
+                return 1
         except Exception as e:
             return -1
 
@@ -63,6 +63,6 @@ class JSONProcessor:
         try:
             with open(file_path, 'w') as file:
                 json.dump(data, file, indent=4)
-            return 1
+                return 1
         except Exception as e:
             return -1

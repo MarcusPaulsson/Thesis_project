@@ -46,10 +46,10 @@ class Snake:
         :return: None, Change the food position
         """
         while True:
-            new_food = (random.randint(0, self.SCREEN_WIDTH // self.BLOCK_SIZE - 1),
-                        random.randint(0, self.SCREEN_HEIGHT // self.BLOCK_SIZE - 1))
-            if new_food not in self.positions:
-                self.food_position = new_food
+            x = random.randint(0, self.SCREEN_WIDTH - 1)
+            y = random.randint(0, self.SCREEN_HEIGHT - 1)
+            if (x, y) not in self.positions:
+                self.food_position = (x, y)
                 break
 
 

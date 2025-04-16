@@ -30,7 +30,7 @@ class HtmlUtil:
         :return:string, replaced text with single line break
         """
         if not text:
-            return ""
+            return ''
         return re.sub(r'\n+', '\n', text)
 
     def format_line_html_text(self, html_text):
@@ -56,15 +56,15 @@ class HtmlUtil:
         -CODE-
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        text = ""
+        text = ''
         for element in soup.body.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']):
-            text += element.get_text() + "\n"
+            text += element.get_text() + '\n'
         for element in soup.body.find_all('pre'):
             if element.find('code'):
-                text += self.CODE_MARK + "\n"
+                text += self.CODE_MARK + '\n'
             else:
-                text += element.get_text() + "\n"
-        return HtmlUtil.__format_line_feed(text).strip()
+                text += element.get_text() + '\n'
+        return self.__format_line_feed(text).strip()
 
     def extract_code_from_html_text(self, html_text):
         """

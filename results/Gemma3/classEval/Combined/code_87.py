@@ -6,6 +6,7 @@ class TimeUtils:
     This is a time util class, including getting the current time and date, adding seconds to a datetime, converting between strings and datetime objects, calculating the time difference in minutes, and formatting a datetime object.
     """
 
+
     def __init__(self):
         """
         Get the current datetime
@@ -42,25 +43,23 @@ class TimeUtils:
         """
         return datetime.datetime.strptime(string, "%Y-%m-%d %H:%M:%S")
 
-    def datetime_to_string(self, datetime_obj):
+    def datetime_to_string(self, datetime):
         """
         Convert a datetime instance to a string
-        :param datetime_obj: the datetime instance to convert
+        :param datetime: the datetime instance to convert
         :return: string, converted time string
         """
-        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.strftime("%Y-%m-%d %H:%M:%S")
 
     def get_minutes(self, string_time1, string_time2):
         """
         Calculate how many minutes have passed between two times, and round the results to the nearest
-        :param string_time1: string, the first time string
-        :param string_time2: string, the second time string
         :return: int, the number of minutes between two times, rounded off
         """
         datetime1 = self.string_to_datetime(string_time1)
         datetime2 = self.string_to_datetime(string_time2)
         time_difference = datetime2 - datetime1
-        return int(round(time_difference.total_seconds() / 60))
+        return round(time_difference.total_seconds() / 60)
 
     def get_format_time(self, year, month, day, hour, minute, second):
         """
@@ -73,4 +72,4 @@ class TimeUtils:
         :param second: int
         :return: formatted time string
         """
-        return datetime.datetime(year, month, day, hour, minute, second).strftime("%Y-%m-%d %H:%M:%S")
+        return f"{year}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}"

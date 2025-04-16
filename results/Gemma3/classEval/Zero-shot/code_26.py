@@ -18,14 +18,11 @@ class CSVProcessor:
         >>> csvProcessor.read_csv('read_test.csv')
         (['a', 'b', 'c', 'd'], [['hElLo', 'YoU', 'ME', 'LoW']])
         """
-        try:
-            with open(file_name, 'r') as file:
-                reader = csv.reader(file)
-                title = next(reader)
-                data = list(reader)
-                return title, data
-        except FileNotFoundError:
-            return [], []
+        with open(file_name, 'r') as file:
+            reader = csv.reader(file)
+            title = next(reader)
+            data = list(reader)
+        return title, data
 
     def write_csv(self, data, file_name):
         """
@@ -41,7 +38,7 @@ class CSVProcessor:
                 writer = csv.writer(file)
                 writer.writerows(data)
             return 1
-        except Exception:
+        except:
             return 0
 
     def process_csv_data(self, N, save_file_name):
@@ -60,10 +57,13 @@ class CSVProcessor:
         >>> csvProcessor.read_csv('read_test_process.csv')
         (['a', 'b', 'c', 'd'], [['HELLO']])
         """
-        title, data = self.read_csv(save_file_name)
-        if not data:
+        try:
+            title, data = self.read_csv(save_file_name)
+            new_data = []
+            for row in data:
+                new_data.append([row[N].upper()])
+            new_file_name = save_file_name.replace(".csv", "_process.csv")
+            self.write_csv([title] + new_data, new_file_name)
+            return 1
+        except:
             return 0
-
-        new_data = [[row[N].upper()] for row in data]
-        new_file_name = save_file_name.replace(".csv", "_process.csv")
-        return self.write_csv([title] + new_data, new_file_name)

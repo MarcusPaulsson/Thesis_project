@@ -20,12 +20,6 @@ class BlackjackGame:
         """
         Create a deck of 52 cards, which stores 52 rondom order poker with the Jokers removed.
         :return: a list of 52 rondom order poker with the Jokers removed, format is ['AS', '2S', ...].
-        >>> black_jack_game = BlackjackGame()
-        >>> black_jack_game.create_deck()
-        ['QD', '9D', 'JC', 'QH', '2S', 'JH', '7D', '6H', '9S', '5C', '7H', 'QS', '5H',
-        '6C', '7C', '3D', '10C', 'AD', '4C', '5D', 'AH', '2D', 'QC', 'KH', '9C', '9H',
-        '4H', 'JS', '6S', '8H', '8C', '4S', '3H', '10H', '7S', '6D', '3C', 'KC', '3S',
-        '2H', '10D', 'KS', '4D', 'AC', '10S', '2C', 'KD', '5S', 'JD', '8S', 'AS', '8D']
         """
         suits = ['S', 'C', 'D', 'H']
         ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
@@ -42,9 +36,6 @@ class BlackjackGame:
         until the hand value is less than or equal to 21, or all Aces have been counted as value of 1.
         :param hand: list
         :return: the value of the poker cards stored in hand list, a number.
-        >>> black_jack_game = BlackjackGame()
-        >>> black_jack_game.calculate_hand_value(['QD', '9D', 'JC', 'QH', 'AS'])
-        40
         """
         value = 0
         ace_count = 0
@@ -55,8 +46,8 @@ class BlackjackGame:
             elif rank in ['J', 'Q', 'K']:
                 value += 10
             elif rank == 'A':
-                value += 11
                 ace_count += 1
+                value += 11
 
         while value > 21 and ace_count > 0:
             value -= 10
@@ -73,9 +64,6 @@ class BlackjackGame:
         :param player_hand: list
         :param dealer_hand: list
         :return: the result of the game, only two certain str: 'Dealer wins' or 'Player wins'
-        >>> black_jack_game = BlackjackGame()
-        >>> black_jack_game.check_winner(['QD', '9D', 'JC', 'QH', 'AS'], ['QD', '9D', 'JC', 'QH', '2S'])
-        'Player wins'
         """
         player_value = self.calculate_hand_value(player_hand)
         dealer_value = self.calculate_hand_value(dealer_hand)

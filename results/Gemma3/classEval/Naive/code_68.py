@@ -19,13 +19,10 @@ class PageUtil:
         Retrieve a specific page of data.
         :param page_number: int, the page number to fetch
         :return: list, the data on the specified page
-        >>> page_util = PageUtil([1, 2, 3, 4], 1)
-        >>> page_util.get_page(1)
-        [1]
-
         """
         if page_number <= 0 or page_number > self.total_pages:
             return []
+
         start_index = (page_number - 1) * self.page_size
         end_index = start_index + self.page_size
         return self.data[start_index:end_index]
@@ -35,25 +32,13 @@ class PageUtil:
         Retrieve information about a specific page.
         :param page_number: int, the page number to fetch information about
         :return: dict, containing page information such as current page number, total pages, etc.
-        >>> page_util = PageUtil([1, 2, 3, 4], 1)
-        >>> page_util.get_page_info(1)
-        >>> {
-        >>>     "current_page": 1,
-        >>>     "per_page": 1,
-        >>>     "total_pages": 4,
-        >>>     "total_items": 4,
-        >>>     "has_previous": False,
-        >>>     "has_next": True,
-        >>>     "data": [1]
-        >>> }
-
         """
         if page_number <= 0 or page_number > self.total_pages:
             return {}
 
         start_index = (page_number - 1) * self.page_size
         end_index = start_index + self.page_size
-        data = self.data[start_index:end_index]
+        page_data = self.data[start_index:end_index]
 
         return {
             "current_page": page_number,
@@ -62,7 +47,7 @@ class PageUtil:
             "total_items": self.total_items,
             "has_previous": page_number > 1,
             "has_next": page_number < self.total_pages,
-            "data": data
+            "data": page_data
         }
 
     def search(self, keyword):
@@ -70,14 +55,6 @@ class PageUtil:
         Search for items in the data that contain the given keyword.
         :param keyword: str, the keyword to search for
         :return: dict, containing search information such as total results and matching items
-        >>> page_util = PageUtil([1, 2, 3, 4], 1)
-        >>> page_util.search("1")
-        >>> search_info = {
-        >>>     "keyword": "1",
-        >>>     "total_results": 1,
-        >>>     "total_pages": 1,
-        >>>     "results": [1]
-        >>> }
         """
         results = [item for item in self.data if str(item).find(keyword) != -1]
         total_results = len(results)

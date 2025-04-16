@@ -7,7 +7,7 @@ class Thermostat:
 
     def __init__(self, current_temperature, target_temperature, mode):
         """
-        Initialize instances of the Thermostat class, including the current temperature, target temperature, and operating mode.
+        initialize instances of the Thermostat class, including the current temperature, target temperature, and operating mode.
         :param current_temperature: float
         :param target_temperature: float
         :param mode: str, the work mode
@@ -18,30 +18,30 @@ class Thermostat:
 
     def get_target_temperature(self):
         """
-        Get the target temperature.
-        :return: float
+        Get the target temperature of an instance of the Thermostat class.
+        :return self.current_temperature: int
         """
         return self.target_temperature
 
     def set_target_temperature(self, temperature):
         """
-        Set the target temperature.
-        :param temperature: float
+        Set the target temperature
+        :param temperature: float, the target temperature
         """
         self.target_temperature = temperature
 
     def get_mode(self):
         """
-        Get the current work mode.
-        :return: str
+        Get the current work mode
+        :return mode: str, working mode. only ['heat', 'cool']
         """
         return self.mode
 
     def set_mode(self, mode):
         """
-        Set the work mode.
+        Set the current work mode
         :param mode: str, working mode. only ['heat', 'cool']
-        :return: bool
+        :return: True if mode is valid, False otherwise
         """
         if mode in ['heat', 'cool']:
             self.mode = mode
@@ -51,7 +51,7 @@ class Thermostat:
 
     def auto_set_mode(self):
         """
-        Automatically set the operating mode based on current and target temperatures.
+        Automatically set the operating mode by comparing with the current temperature and target temperature. If the current temperature is lower than the target temperature, the operating mode is set to 'heat', otherwise it is set to 'cool'.
         """
         if self.current_temperature < self.target_temperature:
             self.mode = 'heat'
@@ -60,9 +60,9 @@ class Thermostat:
 
     def auto_check_conflict(self):
         """
-        Check for conflicts between the operating mode and temperature relationship.
-        Adjust the mode if a conflict exists.
-        :return: bool
+        Check if there is a conflict between the operating mode and the relationship between the current temperature and the target temperature.
+        If there is a conflict, the operating mode will be adjusted automatically.
+        :return: True if mode isn't conflict with the relationship between the current temperature and the target temperature, or False otherwise.
         """
         if self.mode == 'heat' and self.current_temperature >= self.target_temperature:
             self.mode = 'cool'
@@ -75,16 +75,17 @@ class Thermostat:
 
     def simulate_operation(self):
         """
-        Simulate thermostat operation until the target temperature is reached.
-        :return: int, the time taken for the simulation in hundredths of a second.
+        simulate the operation of Thermostat. It will automatically start the auto_set_mode method to set the operating mode,
+        and then automatically adjust the current temperature according to the operating mode until the target temperature is reached.
+        :return time: int, the time it took to complete the simulation.
         """
         self.auto_set_mode()
         start_time = time.time()
         while abs(self.current_temperature - self.target_temperature) > 0.1:
             if self.mode == 'heat':
-                self.current_temperature += 0.5
+                self.current_temperature += 0.1
             else:
-                self.current_temperature -= 0.5
-            time.sleep(0.01)
+                self.current_temperature -= 0.1
+            time.sleep(0.1)
         end_time = time.time()
-        return int((end_time - start_time) * 100)
+        return int((end_time - start_time) * 10)

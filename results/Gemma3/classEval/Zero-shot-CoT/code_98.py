@@ -36,7 +36,8 @@ class XMLProcessor:
             tree = ET.ElementTree(self.root)
             tree.write(file_name)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error writing XML: {e}")
             return False
 
     def process_xml_data(self, file_name):
@@ -49,7 +50,8 @@ class XMLProcessor:
             return False
 
         for element in self.root.findall('item'):
-            element.text = element.text.upper()
+            if element.text:
+                element.text = element.text.upper()
 
         return self.write_xml(file_name)
 

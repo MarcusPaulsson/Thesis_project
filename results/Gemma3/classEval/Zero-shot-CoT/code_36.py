@@ -73,7 +73,5 @@ class EmailClient:
         Clears the email box by deleting the oldest emails until the email box has enough space to accommodate the given size.
         :param size: The size of the email, float.
         """
-        occupied_size = self.get_occupied_size()
-        while occupied_size > size and self.inbox:
-            occupied_size -= self.inbox.pop(0)['size']
-        return None
+        while self.get_occupied_size() > size and self.inbox:
+            self.inbox.pop(0)

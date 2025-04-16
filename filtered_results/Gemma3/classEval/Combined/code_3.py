@@ -13,18 +13,6 @@ class ArrangementCalculator:
         self.datas = datas
 
     @staticmethod
-    def factorial(n):
-        """
-        Calculates the factorial of a given number.
-        :param n: int, the number to calculate the factorial.
-        :return: int, the factorial of the given number.
-        """
-        if n == 0:
-            return 1
-        else:
-            return n * ArrangementCalculator.factorial(n - 1)
-
-    @staticmethod
     def count(n, m=None):
         """
         Counts the number of arrangements by choosing m items from n items (permutations).
@@ -63,7 +51,10 @@ class ArrangementCalculator:
         if m > len(self.datas):
             return []
 
-        return [list(permutation) for permutation in itertools.permutations(self.datas, m)]
+        arrangements = []
+        for perm in itertools.permutations(self.datas, m):
+            arrangements.append(list(perm))
+        return arrangements
 
     def select_all(self):
         """
@@ -74,3 +65,15 @@ class ArrangementCalculator:
         for i in range(1, len(self.datas) + 1):
             all_arrangements.extend(self.select(i))
         return all_arrangements
+
+    @staticmethod
+    def factorial(n):
+        """
+        Calculates the factorial of a given number.
+        :param n: int, the number to calculate the factorial.
+        :return: int, the factorial of the given number.
+        """
+        if n == 0:
+            return 1
+        else:
+            return n * ArrangementCalculator.factorial(n - 1)

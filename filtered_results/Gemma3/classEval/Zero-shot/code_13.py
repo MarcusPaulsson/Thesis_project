@@ -28,11 +28,12 @@ class BookManagement:
         :param quantity: int
         """
         if title not in self.inventory:
-            raise Exception("Book not found")
+            raise Exception("Book not found in inventory.")
         if quantity <= 0:
-            raise Exception("Invalid quantity")
+            raise Exception("Quantity must be positive.")
         if quantity > self.inventory[title]:
-            raise Exception("Quantity to remove exceeds available quantity")
+            raise Exception("Quantity to remove exceeds available quantity.")
+
         self.inventory[title] -= quantity
         if self.inventory[title] == 0:
             del self.inventory[title]

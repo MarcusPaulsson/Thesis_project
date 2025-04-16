@@ -25,18 +25,18 @@ class EmailClient:
         """
         if recv.capacity < recv.get_occupied_size() + size:
             return False
-
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        email = {
-            'sender': self.addr,
-            'receiver': recv.addr,
-            'content': content,
-            'size': size,
-            'time': timestamp,
-            'state': 'unread'
-        }
-        recv.inbox.append(email)
-        return True
+        else:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            email = {
+                'sender': self.addr,
+                'receiver': recv.addr,
+                'content': content,
+                'size': size,
+                'time': timestamp,
+                'state': 'unread'
+            }
+            recv.inbox.append(email)
+            return True
 
     def fetch(self):
         """
@@ -62,7 +62,9 @@ class EmailClient:
         Gets the total size of the emails in the email box.
         :return: The total size of the emails in the email box, float.
         """
-        total_size = sum(email['size'] for email in self.inbox)
+        total_size = 0
+        for email in self.inbox:
+            total_size += email['size']
         return total_size
 
     def clear_inbox(self, size):

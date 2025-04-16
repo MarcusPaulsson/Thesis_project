@@ -24,18 +24,21 @@ class MetricsCalculator2:
             return 0.0, [0.0]
 
         if isinstance(data, tuple):
-            results, num_relevant = data
-            for i, res in enumerate(results):
-                if res == 1:
-                    return 1.0 / (i + 1), [1.0 / (i + 1)]
-            return 0.0, [0.0]
+            result, num_relevant = data
+            ranks = np.where(np.array(result) == 1)[0]
+            if len(ranks) > 0:
+                rr = 1.0 / (ranks[0] + 1)
+                return rr, [rr]
+            else:
+                return 0.0, [0.0]
         else:
             rr_list = []
-            for results, num_relevant in data:
-                for i, res in enumerate(results):
-                    if res == 1:
-                        rr_list.append(1.0 / (i + 1))
-                        break
+            for item in data:
+                result, num_relevant = item
+                ranks = np.where(np.array(result) == 1)[0]
+                if len(ranks) > 0:
+                    rr = 1.0 / (ranks[0] + 1)
+                    rr_list.append(rr)
                 else:
                     rr_list.append(0.0)
             return np.mean(rr_list), rr_list
@@ -55,28 +58,27 @@ class MetricsCalculator2:
             return 0.0, [0.0]
 
         if isinstance(data, tuple):
-            results, num_relevant = data
+            result, num_relevant = data
             ap = 0.0
             relevant_count = 0
-            for i, res in enumerate(results):
-                if res == 1:
+            for i, val in enumerate(result):
+                if val == 1:
                     relevant_count += 1
                     ap += relevant_count / (i + 1)
-            if num_relevant == 0:
-                return 0.0, [0.0]
-            else:
-                return ap / num_relevant, [ap / num_relevant]
+            if num_relevant > 0:
+                ap /= num_relevant
+            return ap, [ap]
         else:
             ap_list = []
-            for results, num_relevant in data:
+            for item in data:
+                result, num_relevant = item
                 ap = 0.0
                 relevant_count = 0
-                for i, res in enumerate(results):
-                    if res == 1:
+                for i, val in enumerate(result):
+                    if val == 1:
                         relevant_count += 1
                         ap += relevant_count / (i + 1)
-                if num_relevant == 0:
-                    ap_list.append(0.0)
-                else:
-                    ap_list.append(ap / num_relevant)
+                if num_relevant > 0:
+                    ap /= num_relevant
+                ap_list.append(ap)
             return np.mean(ap_list), ap_list

@@ -90,10 +90,10 @@ class BigNumCalculator:
                 product.insert(0, str(product_digit))
             if carry:
                 product.insert(0, str(carry))
-            products.append("".join(product) + "0" * (len(num2) - 1 - i))
+            products.append("".join(product).ljust(len(num1) + (len(num2) - 1 - i), '0'))
 
         result = "0"
         for product in products:
             result = BigNumCalculator.add(result, product)
 
-        return result
+        return result.lstrip('0') or "0"

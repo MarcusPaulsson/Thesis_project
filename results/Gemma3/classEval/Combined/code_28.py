@@ -21,21 +21,19 @@ class DatabaseProcessor:
         :param table_name: str, the name of the table to create.
         :param key1: str, the name of the first column in the table.
         :param key2: str, the name of the second column in the table.
+        >>> db.create_table('user', 'name', 'age')
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            cursor.execute(f'''
-                CREATE TABLE IF NOT EXISTS {table_name} (
-                    id INTEGER PRIMARY KEY,
-                    {key1} TEXT,
-                    {key2} INTEGER
-                )
-            ''')
-            conn.commit()
-        finally:
-            if conn:
-                conn.close()
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        cursor.execute(f'''
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                id INTEGER PRIMARY KEY,
+                {key1} TEXT,
+                {key2} INTEGER
+            )
+        ''')
+        conn.commit()
+        conn.close()
 
 
     def insert_into_database(self, table_name, data):
@@ -43,19 +41,20 @@ class DatabaseProcessor:
         Insert data into the specified table in the database.
         :param table_name: str, the name of the table to insert data into.
         :param data: list, a list of dictionaries where each dictionary represents a row of data.
+        >>> db.insert_into_database('user', [
+                {'name': 'John', 'age': 25},
+                {'name': 'Alice', 'age': 30}
+            ])
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            for row in data:
-                cursor.execute(f'''
-                    INSERT INTO {table_name} ({list(row.keys())[0]}, {list(row.keys())[1]})
-                    VALUES (?, ?)
-                ''', (row[list(row.keys())[0]], row[list(row.keys())[1]]))
-            conn.commit()
-        finally:
-            if conn:
-                conn.close()
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        for row in data:
+            cursor.execute(f'''
+                INSERT INTO {table_name} ({list(row.keys())[0]}, {list(row.keys())[1]})
+                VALUES (?, ?)
+            ''', (row[list(row.keys())[0]], row[list(row.keys())[1]]))
+        conn.commit()
+        conn.close()
 
 
     def search_database(self, table_name, name):
@@ -65,18 +64,20 @@ class DatabaseProcessor:
         :param name: str, the name to search for.
         :return: list, a list of tuples representing the rows with matching name, if any;
                     otherwise, returns None.
+        >>> db.search_database('user', 'John')
+        [(1, 'John', 25)]
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            cursor.execute(f'''
-                SELECT * FROM {table_name} WHERE name = ?
-            ''', (name,))
-            result = cursor.fetchall()
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        cursor.execute(f'''
+            SELECT * FROM {table_name} WHERE name = ?
+        ''', (name,))
+        result = cursor.fetchall()
+        conn.close()
+        if result:
             return result
-        finally:
-            if conn:
-                conn.close()
+        else:
+            return None
 
 
     def delete_from_database(self, table_name, name):
@@ -84,14 +85,12 @@ class DatabaseProcessor:
         Delete rows from the specified table in the database with a matching name.
         :param table_name: str, the name of the table to delete rows from.
         :param name: str, the name to match for deletion.
+        >>> db.delete_from_database('user', 'John')
         """
-        try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            cursor.execute(f'''
-                DELETE FROM {table_name} WHERE name = ?
-            ''', (name,))
-            conn.commit()
-        finally:
-            if conn:
-                conn.close()
+        conn = sqlite3.connect(self.database_name)
+        cursor = conn.cursor()
+        cursor.execute(f'''
+            DELETE FROM {table_name} WHERE name = ?
+        ''', (name,))
+        conn.commit()
+        conn.close()

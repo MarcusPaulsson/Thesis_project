@@ -16,21 +16,18 @@ class DecryptionUtils:
         :param ciphertext: The ciphertext to decipher,str.
         :param shift: The shift to use for decryption,int.
         :return: The deciphered plaintext,str.
-        >>> d = DecryptionUtils('key')
-        >>> d.caesar_decipher('ifmmp', 1)
-        'hello'
-
         """
         plaintext = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
-                start = ord('a')
-                plaintext += chr((ord(char) - start - shift) % 26 + start)
+                start = 'a'
             elif 'A' <= char <= 'Z':
-                start = ord('A')
-                plaintext += chr((ord(char) - start - shift) % 26 + start)
+                start = 'A'
             else:
                 plaintext += char
+                continue
+            shifted_char = chr((ord(char) - ord(start) - shift) % 26 + ord(start))
+            plaintext += shifted_char
         return plaintext
 
     def vigenere_decipher(self, ciphertext):
@@ -38,24 +35,21 @@ class DecryptionUtils:
         Deciphers the given ciphertext using the Vigenere cipher
         :param ciphertext: The ciphertext to decipher,str.
         :return: The deciphered plaintext,str.
-        >>> d = DecryptionUtils('key')
-        >>> d.vigenere_decipher('ifmmp')
-        'ybocl'
-
         """
         plaintext = ''
         key_len = len(self.key)
         for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
-                key_char = self.key[i % key_len]
-                key_shift = ord(key_char) - ord('a')
-                plaintext += chr((ord(char) - ord('a') - key_shift) % 26 + ord('a'))
+                start = 'a'
             elif 'A' <= char <= 'Z':
-                key_char = self.key[i % key_len]
-                key_shift = ord(key_char) - ord('a')
-                plaintext += chr((ord(char) - ord('A') - key_shift) % 26 + ord('A'))
+                start = 'A'
             else:
                 plaintext += char
+                continue
+            key_char = self.key[i % key_len]
+            key_shift = ord(key_char) - ord('a') if 'a' <= key_char <= 'z' else ord(key_char) - ord('A')
+            shifted_char = chr((ord(char) - ord(start) - key_shift) % 26 + ord(start))
+            plaintext += shifted_char
         return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):
@@ -64,10 +58,6 @@ class DecryptionUtils:
         :param encrypted_text: The ciphertext to decipher,str.
         :param rails: The number of rails to use for decryption,int.
         :return: The deciphered plaintext,str.
-        >>> d = DecryptionUtils('key')
-        >>> d.rail_fence_decipher('Hoo!el,Wrdl l', 3)
-        'Hello, World!'
-
         """
         text_len = len(encrypted_text)
         fence = [['' for _ in range(text_len)] for _ in range(rails)]

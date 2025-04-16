@@ -20,7 +20,7 @@ class TriCalculator:
         """
         x = x / 180 * pi
         result = 0
-        for i in range(50):
+        for i in range(15):
             result += ((-1)**i) * (x**(2*i)) / self.factorial(2*i)
         return result
 
@@ -62,7 +62,7 @@ class TriCalculator:
         """
         x = x / 180 * pi
         result = 0
-        for i in range(50):
+        for i in range(10):
             result += ((-1)**i) * (x**(2*i+1)) / self.factorial(2*i+1)
         return result
 

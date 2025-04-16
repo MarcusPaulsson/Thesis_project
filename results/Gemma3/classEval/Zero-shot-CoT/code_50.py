@@ -18,7 +18,7 @@ class JSONProcessor:
         try:
             with open(file_path, 'r') as file:
                 data = json.load(file)
-                return data
+            return data
         except Exception as e:
             return -1
 

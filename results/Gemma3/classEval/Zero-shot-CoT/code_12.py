@@ -42,7 +42,6 @@ class BlackjackGame:
         until the hand value is less than or equal to 21, or all Aces have been counted as value of 1.
         :param hand: list
         :return: the value of the poker cards stored in hand list, a number.
-        >>> black_jack_game = BlackjackGame()
         >>> black_jack_game.calculate_hand_value(['QD', '9D', 'JC', 'QH', 'AS'])
         40
         """
@@ -73,18 +72,25 @@ class BlackjackGame:
         :param player_hand: list
         :param dealer_hand: list
         :return: the result of the game, only two certain str: 'Dealer wins' or 'Player wins'
-        >>> black_jack_game = BlackjackGame()
         >>> black_jack_game.check_winner(['QD', '9D', 'JC', 'QH', 'AS'], ['QD', '9D', 'JC', 'QH', '2S'])
         'Player wins'
         """
         player_value = self.calculate_hand_value(player_hand)
         dealer_value = self.calculate_hand_value(dealer_hand)
 
-        if player_value > 21:
+        if player_value > 21 and dealer_value > 21:
+            if player_value < dealer_value:
+                return 'Player wins'
+            else:
+                return 'Dealer wins'
+        elif player_value > 21:
             return 'Dealer wins'
         elif dealer_value > 21:
             return 'Player wins'
-        elif player_value > dealer_value:
-            return 'Player wins'
         else:
-            return 'Dealer wins'
+            if player_value > dealer_value:
+                return 'Player wins'
+            elif dealer_value > player_value:
+                return 'Dealer wins'
+            else:
+                return 'Dealer wins'

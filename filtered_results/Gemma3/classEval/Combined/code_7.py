@@ -33,6 +33,9 @@ class BalancedBrackets:
             if char in self.left_brackets:
                 self.stack.append(char)
             elif char in self.right_brackets:
-                if not self.stack or self.stack.pop() != bracket_map[char]:
+                if not self.stack:
+                    return False
+                top = self.stack.pop()
+                if bracket_map[char] != top:
                     return False
         return not self.stack

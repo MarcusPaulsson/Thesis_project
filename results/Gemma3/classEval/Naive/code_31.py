@@ -17,10 +17,10 @@ class DataStatistics4:
         0.9999999999999998
 
         """
-        n = len(data1)
-        if n != len(data2):
-            raise ValueError("Data sets must have the same length")
+        if len(data1) != len(data2):
+            return 0  # Or raise an exception
 
+        n = len(data1)
         sum_x = sum(data1)
         sum_y = sum(data2)
         sum_x_squared = sum(x**2 for x in data1)
@@ -31,9 +31,9 @@ class DataStatistics4:
         denominator = math.sqrt((n * sum_x_squared - sum_x**2) * (n * sum_y_squared - sum_y**2))
 
         if denominator == 0:
-            return 0  # Handle the case where the denominator is zero to avoid division by zero
-
-        return numerator / denominator
+            return 0  # Handle the case where the denominator is zero
+        else:
+            return numerator / denominator
 
     @staticmethod
     def skewness(data):
@@ -50,7 +50,7 @@ class DataStatistics4:
             return 0  # Skewness is not meaningful for less than 3 data points
 
         mean = sum(data) / n
-        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / (n - 1))
+        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / n)
 
         if std_dev == 0:
             return 0  # Handle the case where standard deviation is zero
@@ -73,12 +73,12 @@ class DataStatistics4:
             return float('nan')  # Kurtosis is not meaningful for less than 4 data points
 
         mean = sum(data) / n
-        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / (n - 1))
+        std_dev = math.sqrt(sum((x - mean)**2 for x in data) / n)
 
         if std_dev == 0:
             return float('nan')  # Handle the case where standard deviation is zero
 
-        kurtosis = (sum(((x - mean) / std_dev)**4 for x in data) / n) - 3
+        kurtosis = sum(((x - mean) / std_dev)**4 for x in data) / n - 3
         return kurtosis
 
     @staticmethod
@@ -93,9 +93,11 @@ class DataStatistics4:
         [0.3989422804014327, 0.24197072451914337, 0.05399096651318806]
 
         """
+        if sigma == 0:
+            return [0.0] * len(data)  # Handle the case where standard deviation is zero
+
         pdf_values = []
         for x in data:
-            exponent = -((x - mu)**2) / (2 * sigma**2)
-            pdf = (1 / (sigma * math.sqrt(2 * math.pi))) * math.exp(exponent)
+            pdf = (1 / (sigma * math.sqrt(2 * math.pi))) * math.exp(-0.5 * ((x - mu) / sigma)**2)
             pdf_values.append(pdf)
         return pdf_values

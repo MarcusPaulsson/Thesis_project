@@ -21,14 +21,11 @@ class GomokuGame:
         :param col: int, the column index
         return: True if the move is valid, or False otherwise.
         """
-        if not (0 <= row < self.board_size and 0 <= col < self.board_size):
-            return False
-        if self.board[row][col] != ' ':
-            return False
-
-        self.board[row][col] = self.current_player
-        self.current_player = 'O' if self.current_player == 'X' else 'X'
-        return True
+        if 0 <= row < self.board_size and 0 <= col < self.board_size and self.board[row][col] == ' ':
+            self.board[row][col] = self.current_player
+            self.current_player = 'O' if self.current_player == 'X' else 'X'
+            return True
+        return False
 
     def check_winner(self):
         """
@@ -38,9 +35,11 @@ class GomokuGame:
         for row in range(self.board_size):
             for col in range(self.board_size):
                 if self.board[row][col] != ' ':
-                    for direction in [(0, 1), (1, 0), (1, 1), (1, -1)]:
-                        if self._check_five_in_a_row(row, col, direction):
-                            return self.board[row][col]
+                    if self._check_five_in_a_row(row, col, (0, 1)) or \
+                       self._check_five_in_a_row(row, col, (1, 0)) or \
+                       self._check_five_in_a_row(row, col, (1, 1)) or \
+                       self._check_five_in_a_row(row, col, (1, -1)):
+                        return self.board[row][col]
         return None
 
     def _check_five_in_a_row(self, row, col, direction):

@@ -2,7 +2,7 @@ import csv
 
 class CSVProcessor:
     """
-    This is a class for processing CSV files, including reading and writing CSV data, as well as processing specific operations and saving as a new CSV file.
+    This is a class for processing CSV files, including readring and writing CSV data, as well as processing specific operations and saving as a new CSV file.
     """
 
 
@@ -15,15 +15,12 @@ class CSVProcessor:
         :param file_name: str, name of the csv file
         :return title, data: (list, list), first row is title, the rest is data
         """
-        title = []
-        data = []
         try:
-            with open(file_name, 'r', newline='') as file:
+            with open(file_name, 'r') as file:
                 reader = csv.reader(file)
                 title = next(reader)
-                for row in reader:
-                    data.append(row)
-            return title, data
+                data = list(reader)
+                return title, data
         except FileNotFoundError:
             return [], []
 
@@ -51,7 +48,7 @@ class CSVProcessor:
         :return:int, if success return 1, or 0 otherwise
         """
         title, data = self.read_csv(save_file_name)
-        if not data:
+        if not title or not data:
             return 0
 
         new_data = []

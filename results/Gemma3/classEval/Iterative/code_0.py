@@ -33,7 +33,9 @@ class AccessGatewayFilter:
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
         """
-        return request_uri.startswith('/api') or request_uri.startswith('/login')
+        if request_uri.startswith('/api') or request_uri.startswith('/login'):
+            return True
+        return False
 
 
     def get_jwt_user(self, request):

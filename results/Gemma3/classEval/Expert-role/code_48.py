@@ -1,6 +1,5 @@
 import socket
 import netifaces
-import ipaddress
 
 
 class IpUtil:
@@ -22,9 +21,9 @@ class IpUtil:
 
         """
         try:
-            ipaddress.IPv4Address(ip_address)
+            socket.inet_aton(ip_address)
             return True
-        except ipaddress.AddressValueError:
+        except socket.error:
             return False
 
     @staticmethod
@@ -40,9 +39,9 @@ class IpUtil:
 
         """
         try:
-            ipaddress.IPv6Address(ip_address)
+            socket.inet_pton(socket.AF_INET6, ip_address)
             return True
-        except ipaddress.AddressValueError:
+        except socket.error:
             return False
 
 

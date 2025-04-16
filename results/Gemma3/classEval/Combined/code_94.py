@@ -30,18 +30,18 @@ class VendingMachine:
         :return: The balance of the vending machine after the coins are inserted, float.
         """
         self.balance += amount
-        return round(self.balance, 2)
+        return self.balance
 
     def purchase_item(self, item_name):
         """
-        Purchases a product from the vending machine and returns the balance after the purchase.
+        Purchases a product from the vending machine and returns the balance after the purchase and display purchase unsuccessful if the product is out of stock.
         :param item_name: The name of the product to be purchased, str.
-        :return: If successful, returns the balance of the vending machine after the product is purchased, float. Otherwise, returns False.
+        :return: If successful, returns the balance of the vending machine after the product is purchased, float,otherwise,returns False.
         """
         if item_name in self.inventory and self.inventory[item_name]['quantity'] > 0 and self.balance >= self.inventory[item_name]['price']:
             self.balance -= self.inventory[item_name]['price']
             self.inventory[item_name]['quantity'] -= 1
-            return round(self.balance, 2)
+            return self.balance
         else:
             return False
 
@@ -50,7 +50,7 @@ class VendingMachine:
         Replenishes the inventory of a product already in the vending machine.
         :param item_name: The name of the product to be replenished, str.
         :param quantity: The quantity of the product to be replenished, int.
-        :return: If the product is already in the vending machine, returns True. Otherwise, returns False.
+        :return: If the product is already in the vending machine, returns True, otherwise, returns False.
         """
         if item_name in self.inventory:
             self.inventory[item_name]['quantity'] += quantity
@@ -61,7 +61,7 @@ class VendingMachine:
     def display_items(self):
         """
         Displays the products in the vending machine.
-        :return: If the vending machine is empty, returns False. Otherwise, returns a string of the products in the vending machine.
+        :return: If the vending machine is empty, returns False, otherwise, returns a list of the products in the vending machine, str.
         """
         if not self.inventory:
             return False

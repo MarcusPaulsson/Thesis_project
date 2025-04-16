@@ -15,7 +15,11 @@ class JobMarketplace:
         :param requirements: The requirements of the position,list.
         :return: None
         """
-        job = {'job_title': job_title, 'company': company, 'requirements': requirements}
+        job = {
+            'job_title': job_title,
+            'company': company,
+            'requirements': requirements
+        }
         self.job_listings.append(job)
 
     def remove_job(self, job):
@@ -35,7 +39,11 @@ class JobMarketplace:
         :param experience: The experience of the resume,str.
         :return: None
         """
-        resume = {'name': name, 'skills': skills, 'experience': experience}
+        resume = {
+            'name': name,
+            'skills': skills,
+            'experience': experience
+        }
         self.resumes.append(resume)
 
     def withdraw_resume(self, resume):
@@ -55,7 +63,7 @@ class JobMarketplace:
         """
         results = []
         for job in self.job_listings:
-            if criteria in job['requirements']:
+            if criteria in str(job['requirements']):
                 results.append(job)
         return results
 
@@ -65,18 +73,18 @@ class JobMarketplace:
         :param job: The position information,dict.
         :return: The candidate information that meets the requirements,list.
         """
-        results = []
+        applicants = []
         for resume in self.resumes:
             if self.matches_requirements(resume, job['requirements']):
-                results.append(resume)
-        return results
+                applicants.append(resume)
+        return applicants
 
     def matches_requirements(self, resume, requirements):
         """
-        This function is used to check if the resume meets the requirements of the job.
+        This function is used to check if the candidate meets the requirements.
         :param resume: The resume information,dict.
-        :param requirements: The requirements of the job,list.
-        :return: True if the resume meets the requirements,False otherwise.
+        :param requirements: The requirements of the position,list.
+        :return: True if the candidate meets the requirements,False otherwise.
         """
         for requirement in requirements:
             if requirement not in resume['skills']:

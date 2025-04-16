@@ -7,8 +7,6 @@ class AvgPartition:
         """
         Initialize the class with the given list and the number of partitions, and check if the number of partitions is greater than 0.
         """
-        if limit <= 0:
-            raise ValueError("Number of partitions must be greater than 0.")
         self.lst = lst
         self.limit = limit
 

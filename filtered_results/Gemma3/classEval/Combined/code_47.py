@@ -10,6 +10,7 @@ class IPAddress:
         """
         self.ip_address = ip_address
 
+
     def is_valid(self):
         """
         Judge whether the IP address is valid, that is, whether the IP address is composed of four Decimal digits separated by '.'. Each digit is greater than or equal to 0 and less than or equal to 255
@@ -29,6 +30,7 @@ class IPAddress:
         except:
             return False
 
+
     def get_octets(self):
         """
         If the IP address is valid, the list of four decimal numbers separated by "." constituting the IP address is returned; otherwise, an empty list is returned
@@ -38,6 +40,7 @@ class IPAddress:
             return self.ip_address.split(".")
         else:
             return []
+
 
     def get_binary(self):
         """

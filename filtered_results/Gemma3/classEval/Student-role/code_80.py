@@ -1,7 +1,8 @@
 class SQLQueryBuilder:
     """
-    This class provides to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements.
+    This class provides to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements. 
     """
+
 
     @staticmethod
     def select(table, columns='*', where=None):
@@ -16,8 +17,8 @@ class SQLQueryBuilder:
         """
         query = f"SELECT {', '.join(columns)} FROM {table}"
         if where:
-            conditions = [f"{key}='{value}'" for key, value in where.items()]
-            query += f" WHERE {' AND '.join(conditions)}"
+            where_clause = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {where_clause}"
         return query
 
     @staticmethod
@@ -30,8 +31,8 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.insert('table1', {'name': 'Test', 'age': 14})
         "INSERT INTO table1 (name, age) VALUES ('Test', '14')"
         """
-        columns = ', '.join(data.keys())
-        values = ', '.join([f"'{value}'" for value in data.values()])
+        columns = ", ".join(data.keys())
+        values = ", ".join([f"'{value}'" for value in data.values()])
         query = f"INSERT INTO {table} ({columns}) VALUES ({values})"
         return query
 
@@ -47,8 +48,8 @@ class SQLQueryBuilder:
         """
         query = f"DELETE FROM {table}"
         if where:
-            conditions = [f"{key}='{value}'" for key, value in where.items()]
-            query += f" WHERE {' AND '.join(conditions)}"
+            where_clause = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {where_clause}"
         return query
 
     @staticmethod
@@ -61,9 +62,9 @@ class SQLQueryBuilder:
         >>> SQLQueryBuilder.update('table1', {'name': 'Test2', 'age': 15}, where = {'name':'Test'})
         "UPDATE table1 SET name='Test2', age='15' WHERE name='Test'"
         """
-        set_clause = ', '.join([f"{key}='{value}'" for key, value in data.items()])
+        set_clause = ", ".join([f"{key}='{value}'" for key, value in data.items()])
         query = f"UPDATE {table} SET {set_clause}"
         if where:
-            conditions = [f"{key}='{value}'" for key, value in where.items()]
-            query += f" WHERE {' AND '.join(conditions)}"
+            where_clause = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
+            query += f" WHERE {where_clause}"
         return query

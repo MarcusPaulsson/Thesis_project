@@ -1,6 +1,3 @@
-from urllib.parse import urlparse, parse_qs
-
-
 class URLHandler:
     """
     The class supports to handle URLs, including extracting the scheme, host, path, query parameters, and fragment.
@@ -18,9 +15,9 @@ class URLHandler:
         :return: string, If successful, return the scheme of the URL
         """
         try:
-            result = urlparse(self.url)
-            return result.scheme if result.scheme else None
-        except:
+            scheme = self.url.split("://")[0]
+            return scheme
+        except IndexError:
             return None
 
     def get_host(self):
@@ -29,9 +26,9 @@ class URLHandler:
         :return: string, If successful, return the host domain name of the URL
         """
         try:
-            result = urlparse(self.url)
-            return result.netloc if result.netloc else None
-        except:
+            host = self.url.split("://")[1].split("/")[0]
+            return host
+        except IndexError:
             return None
 
     def get_path(self):
@@ -40,9 +37,9 @@ class URLHandler:
         :return: string, If successful, return the address of the resource of the URL
         """
         try:
-            result = urlparse(self.url)
-            return result.path if result.path else None
-        except:
+            path = self.url.split("://")[1]
+            return path
+        except IndexError:
             return None
 
     def get_query_params(self):
@@ -51,9 +48,14 @@ class URLHandler:
         :return: dict, If successful, return the request parameters of the URL
         """
         try:
-            result = urlparse(self.url)
-            return parse_qs(result.query) if result.query else None
-        except:
+            query_string = self.url.split("?")[1].split("#")[0]
+            params = {}
+            for pair in query_string.split("&"):
+                if "=" in pair:
+                    key, value = pair.split("=")
+                    params[key] = value
+            return params
+        except IndexError:
             return None
 
     def get_fragment(self):
@@ -62,7 +64,7 @@ class URLHandler:
         :return: string, If successful, return the fragment after '#' of the URL
         """
         try:
-            result = urlparse(self.url)
-            return result.fragment if result.fragment else None
-        except:
+            fragment = self.url.split("#")[1]
+            return fragment
+        except IndexError:
             return None

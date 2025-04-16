@@ -9,7 +9,7 @@ class XMLProcessor:
     def __init__(self, file_name):
         """
         Initialize the XMLProcessor object with the given file name.
-        :param file_name: string, the name of the XML file to be processed.
+        :param file_name:string, the name of the XML file to be processed.
         """
         self.file_name = file_name
         self.root = None
@@ -32,8 +32,6 @@ class XMLProcessor:
         :param file_name: string, the name of the file to write the XML data.
         :return: bool, True if the write operation is successful, False otherwise.
         """
-        if self.root is None:
-            return False
         try:
             tree = ET.ElementTree(self.root)
             tree.write(file_name)
@@ -49,13 +47,12 @@ class XMLProcessor:
         """
         if self.root is None:
             return False
-        try:
-            for item in self.root.findall('item'):
-                if item.text:
-                    item.text = item.text.upper()
-            return self.write_xml(file_name)
-        except Exception:
-            return False
+
+        for element in self.root.findall('item'):
+            if element.text:
+                element.text = element.text.upper()
+
+        return self.write_xml(file_name)
 
     def find_element(self, element_name):
         """
@@ -65,4 +62,5 @@ class XMLProcessor:
         """
         if self.root is None:
             return []
+
         return self.root.findall(element_name)

@@ -19,33 +19,28 @@ class TriCalculator:
         0.5
         """
         x_rad = x / 180 * pi
-        return self.taylor(x_rad, 15)
+        return self.taylor_cos(x_rad, 15)
 
     def factorial(self, a):
         """
         Calculate the factorial of a
         :param a: int
         :return: int
-        >>> tricalculator = TriCalculator()
         >>> tricalculator.factorial(5)
         120
         """
         if a == 0:
             return 1
         else:
-            result = 1
-            for i in range(1, a + 1):
-                result *= i
-            return result
+            return a * self.factorial(a-1)
 
-    def taylor(self, x, n):
+    def taylor_cos(self, x, n):
         """
         Finding the n-order Taylor expansion value of cos (x)
         :param x: float
         :param n: int
         :return: float
-        >>> tricalculator = TriCalculator()
-        >>> tricalculator.taylor(pi/3, 50)
+        >>> tricalculator.taylor_cos(60, 50)
         0.5000000000000001
         """
         result = 0
@@ -59,7 +54,6 @@ class TriCalculator:
         Calculate the sin value of the x-degree angle
         :param x: float
         :return: float
-        >>> tricalculator = TriCalculator()
         >>> tricalculator.sin(30)
         0.5
         """
@@ -76,11 +70,10 @@ class TriCalculator:
         Calculate the tan value of the x-degree angle
         :param x: float
         :return: float
-        >>> tricalculator = TriCalculator()
         >>> tricalculator.tan(45)
         1.0
         """
-        if x % 90 == 0:
+        if x == 90:
             return False
-        else:
-            return self.sin(x) / self.cos(x)
+        x_rad = x / 180 * pi
+        return self.sin(x) / self.cos(x)

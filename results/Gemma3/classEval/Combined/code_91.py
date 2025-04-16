@@ -31,7 +31,7 @@ class UrlPath:
             self.with_end_tag = True
         else:
             self.segments = []
-            self.with_end_tag = True
+            self.with_end_tag = False
 
     @staticmethod
     def fix_path(path):

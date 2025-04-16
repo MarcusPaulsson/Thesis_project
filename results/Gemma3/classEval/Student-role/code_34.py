@@ -26,8 +26,7 @@ class DocFileHandler:
             for paragraph in doc.paragraphs:
                 full_text.append(paragraph.text)
             return '\n'.join(full_text)
-        except Exception as e:
-            print(f"Error reading text: {e}")
+        except FileNotFoundError:
             return ""
 
     def write_text(self, content, font_size=12, alignment='left'):
@@ -47,7 +46,7 @@ class DocFileHandler:
             doc.save(self.file_path)
             return True
         except Exception as e:
-            print(f"Error writing text: {e}")
+            print(f"Error writing to file: {e}")
             return False
 
     def add_heading(self, heading, level=1):

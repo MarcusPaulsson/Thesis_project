@@ -29,7 +29,7 @@ class SplitSentence:
         words = sentence.split()
         count = 0
         for word in words:
-            if not re.search(r'[0-9]', word) and not re.search(r'[^\w\s]', word):
+            if not re.search(r'[0-9]', word):
                 count += 1
         return count
 

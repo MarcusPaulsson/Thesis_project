@@ -43,7 +43,8 @@ class MusicPlayer:
         if self.current_song:
             self.current_song = None
             return True
-        return False
+        else:
+            return False
 
     def switch_song(self):
         """
@@ -62,8 +63,11 @@ class MusicPlayer:
             except ValueError:
                 return False
         else:
-            self.current_song = self.playlist[0]
-            return True
+            if self.playlist:
+                self.current_song = self.playlist[0]
+                return True
+            else:
+                return False
 
     def previous_song(self):
         """
@@ -97,7 +101,8 @@ class MusicPlayer:
         if 0 <= volume <= 100:
             self.volume = volume
             return True
-        return False
+        else:
+            return False
 
     def shuffle(self):
         """
@@ -107,4 +112,5 @@ class MusicPlayer:
         if self.playlist:
             random.shuffle(self.playlist)
             return True
-        return False
+        else:
+            return False

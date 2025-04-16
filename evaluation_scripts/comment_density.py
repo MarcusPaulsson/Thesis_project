@@ -97,7 +97,6 @@ folder_paths_gemini_classEval = {
     "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
     "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
     "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
-    "Gemini classEval Meta": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Meta"),
     "Gemini classEval Naive": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Naive"),
     "Gemini classEval Iterative": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Iterative"),
     "Gemini classEval Combined": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Combined"),
@@ -108,7 +107,6 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
     "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
     "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
-    "ChatGPT classEval Meta": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Meta'),
     "ChatGPT classEval Naive": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Naive'),
     "ChatGPT classEval Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Iterative'),
     "ChatGPT classEval Combined": os.path.join(upper_dir,result_setting, 'ChatGPT', 'classEval', 'Combined'),
@@ -118,7 +116,6 @@ folder_paths_gemma_classEval = {
     "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
     "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
     "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),
-    "Gemma3 classEval Meta": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Meta"),
     "Gemma3 classEval Naive": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Naive"),
     "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
     "Gemma3 classEval Combined": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Combined"),
@@ -131,7 +128,6 @@ folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot-CoT"),
     "ChatGPT APPS Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Expert-role"),
     "ChatGPT APPS Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Student-role"),
-    "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
     "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
     "ChatGPT APPS Iterative": os.path.join(upper_dir,result_setting, 'ChatGPT', 'APPS', 'Iterative'),
     "ChatGPT APPS Combined": os.path.join(upper_dir,result_setting, 'ChatGPT', 'APPS', 'Combined'),
@@ -141,7 +137,6 @@ folder_paths_gemini_APPS = {
     "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
     "Gemini APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Expert-role"),
     "Gemini APPS Student-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Student-role"),
-    "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
     "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
     "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
     "Gemini APPS Combined": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Combined"),
@@ -151,7 +146,6 @@ folder_paths_gemma_APPS = {
     "Gemma3 APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot-CoT"),
     "Gemma3 APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Expert-role"),
     "Gemma3 APPS Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Student-role"),
-    "Gemma3 APPS Meta": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Meta"),
     "Gemma3 APPS Naive": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Naive"),
     "Gemma3 APPS Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Iterative"),
     "Gemma3 APPS Combined": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Combined"),
@@ -189,7 +183,7 @@ gemini_densities = {
     "Zero-shot-CoT": [],
     "Expert-role": [],
     "Student-role": [],
-    "Meta": [],
+   
     "Naive": [],
     "Iterative" :[],
     "Combined" :[],
@@ -201,7 +195,7 @@ chatgpt_densities = {
     "Zero-shot-CoT": [],
     "Expert-role": [],
     "Student-role": [],
-    "Meta": [],
+   
     "Naive": [],
     "Iterative":[], 
     "Combined" :[],
@@ -213,7 +207,7 @@ gemma_densities = {
     "Zero-shot-CoT": [],
     "Expert-role": [],
     "Student-role": [],
-    "Meta": [],
+  
     "Naive": [],
     "Iterative":[], 
     "Combined" :[],
@@ -228,8 +222,6 @@ for folder, (avg_density, _) in results_gemini.items(): #ignore standard deviati
         gemini_densities["Expert-role"].append(avg_density)
     elif "Student-role" in folder:
         gemini_densities["Student-role"].append(avg_density)
-    elif "Meta" in folder:
-        gemini_densities["Meta"].append(avg_density)
     elif "Naive" in folder:
         gemini_densities["Naive"].append(avg_density)
     elif "Iterative" in folder:
@@ -247,8 +239,6 @@ for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviat
         chatgpt_densities["Expert-role"].append(avg_density)
     elif "Student-role" in folder:
         chatgpt_densities["Student-role"].append(avg_density)
-    elif "Meta" in folder:
-        chatgpt_densities["Meta"].append(avg_density)
     elif "Naive" in folder:
         chatgpt_densities["Naive"].append(avg_density)
     elif "Iterative" in folder:
@@ -265,8 +255,6 @@ for folder, (avg_density, _) in results_gemma.items(): #ignore standard deviatio
         gemma_densities["Expert-role"].append(avg_density)
     elif "Student-role" in folder:
         gemma_densities["Student-role"].append(avg_density)
-    elif "Meta" in folder:
-        gemma_densities["Meta"].append(avg_density)
     elif "Naive" in folder:
         gemma_densities["Naive"].append(avg_density)
     elif "Iterative" in folder:

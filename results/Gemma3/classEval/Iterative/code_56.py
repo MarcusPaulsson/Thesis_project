@@ -64,11 +64,12 @@ class MetricsCalculator:
         :param true_labels: list, true labels
         :return: float
         """
-        pre = self.precision(predicted_labels, true_labels)
-        rec = self.recall(predicted_labels, true_labels)
-        if pre + rec == 0:
+        self.update(predicted_labels, true_labels)
+        precision = self.precision(predicted_labels, true_labels)
+        recall = self.recall(predicted_labels, true_labels)
+        if precision + recall == 0:
             return 0.0
-        return 2 * pre * rec / (pre + rec)
+        return 2 * (precision * recall) / (precision + recall)
 
 
     def accuracy(self, predicted_labels, true_labels):
@@ -79,6 +80,7 @@ class MetricsCalculator:
         :return: float
         """
         self.update(predicted_labels, true_labels)
-        if len(predicted_labels) == 0:
+        total = self.true_positives + self.false_positives + self.false_negatives + self.true_negatives
+        if total == 0:
             return 0.0
-        return (self.true_positives + self.true_negatives) / len(predicted_labels)
+        return (self.true_positives + self.true_negatives) / total

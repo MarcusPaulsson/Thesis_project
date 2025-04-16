@@ -21,7 +21,11 @@ class MahjongConnect:
         :return: 2-dimensional list, the game board
         """
         rows, cols = self.BOARD_SIZE
-        return [[random.choice(self.ICONS) for _ in range(cols)] for _ in range(rows)]
+        board = []
+        for _ in range(rows):
+            row = random.choices(self.ICONS, k=cols)
+            board.append(row)
+        return board
 
     def is_valid_move(self, pos1, pos2):
         """
@@ -32,6 +36,7 @@ class MahjongConnect:
         """
         x1, y1 = pos1
         x2, y2 = pos2
+
         rows, cols = self.BOARD_SIZE
 
         if not (0 <= x1 < rows and 0 <= y1 < cols and 0 <= x2 < rows and 0 <= y2 < cols):
@@ -43,7 +48,10 @@ class MahjongConnect:
         if self.board[x1][y1] != self.board[x2][y2]:
             return False
 
-        return self.has_path(pos1, pos2)
+        if not self.has_path(pos1, pos2):
+            return False
+
+        return True
 
     def has_path(self, pos1, pos2):
         """
@@ -52,31 +60,32 @@ class MahjongConnect:
         :param pos2: position tuple(x, y) of the second icon
         :return: True or False ,representing whether there is a path between two icons
         """
-        rows, cols = self.BOARD_SIZE
         x1, y1 = pos1
         x2, y2 = pos2
 
-        q = [(x1, y1)]
+        rows, cols = self.BOARD_SIZE
         visited = set()
-        visited.add((x1, y1))
 
-        while q:
-            x, y = q.pop(0)
-
-            if (x, y) == (x2, y2):
+        def dfs(x, y):
+            if (x, y) == pos2:
                 return True
+
+            visited.add((x, y))
 
             # Possible moves: up, down, left, right
             moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
             for dx, dy in moves:
                 nx, ny = x + dx, y + dy
+                if (0 <= nx < rows and 0 <= ny < cols and
+                        self.board[nx][ny] == self.board[x1][y1] and
+                        (nx, ny) not in visited):
+                    if dfs(nx, ny):
+                        return True
 
-                if 0 <= nx < rows and 0 <= ny < cols and (nx, ny) not in visited and self.board[nx][ny] == self.board[x1][y1]:
-                    q.append((nx, ny))
-                    visited.add((nx, ny))
+            return False
 
-        return False
+        return dfs(x1, y1)
 
     def remove_icons(self, pos1, pos2):
         """
@@ -97,6 +106,7 @@ class MahjongConnect:
         :return: True or False ,representing whether the game is over
         """
         for row in self.board:
-            if any(icon != ' ' for icon in row):
-                return False
+            for icon in row:
+                if icon != ' ':
+                    return False
         return True

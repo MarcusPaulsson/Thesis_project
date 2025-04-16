@@ -31,45 +31,29 @@ class Classroom:
 
     def is_free_at(self, check_time):
         """
-        Check if the classroom is free at a given time.
-        :param check_time: str, the time to check in 'HH:MM' format.
-        :return: True if the classroom is free, False otherwise.
+        change the time format as '%H:%M' and check the time is free or not in the classroom.
+        :param check_time: str, the time need to be checked
+        :return: True if the check_time does not conflict with every course time, or False otherwise.
         """
-        try:
-            check_time_dt = datetime.strptime(check_time, '%H:%M').time()
-        except ValueError:
-            return False  # Invalid time format
-
+        check_time_dt = datetime.strptime(check_time, '%H:%M').time()
         for course in self.courses:
-            try:
-                start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
-                end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
-            except (ValueError, KeyError):
-                continue  # Skip courses with invalid time format or missing keys
-
+            start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
+            end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
             if start_time_dt <= check_time_dt < end_time_dt:
                 return False
         return True
 
     def check_course_conflict(self, new_course):
         """
-        Check if a new course conflicts with existing courses.
-        :param new_course: dict, information of the new course, including 'start_time', 'end_time' and 'name'.
-        :return: True if there is no conflict, False otherwise.
+        Before adding a new course, check if the new course time conflicts with any other course.
+        :param new_course: dict, information of the course, including 'start_time', 'end_time' and 'name'
+        :return: False if the new course time conflicts(including two courses have the same boundary time) with other courses, or True otherwise.
         """
-        try:
-            new_start_time_dt = datetime.strptime(new_course['start_time'], '%H:%M').time()
-            new_end_time_dt = datetime.strptime(new_course['end_time'], '%H:%M').time()
-        except (ValueError, KeyError):
-            return False  # Invalid time format or missing keys
-
+        new_start_time_dt = datetime.strptime(new_course['start_time'], '%H:%M').time()
+        new_end_time_dt = datetime.strptime(new_course['end_time'], '%H:%M').time()
         for course in self.courses:
-            try:
-                start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
-                end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
-            except (ValueError, KeyError):
-                continue  # Skip courses with invalid time format or missing keys
-
+            start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
+            end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
             if (new_start_time_dt < end_time_dt and new_end_time_dt > start_time_dt):
                 return False
         return True

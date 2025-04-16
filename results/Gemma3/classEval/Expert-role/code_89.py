@@ -20,9 +20,6 @@ class TwentyFourPointGame:
         """
         Get a list of four random numbers between 1 and 9 representing the player's cards.
         :return: list of integers, representing the player's cards
-        >>> game = TwentyFourPointGame()
-        >>> game.get_my_cards()
-
         """
         self._generate_cards()
         return self.nums
@@ -33,11 +30,6 @@ class TwentyFourPointGame:
         Check if a given mathematical expression using the cards can evaluate to 24.
         :param expression: string, mathematical expression using the cards
         :return: bool, True if the expression evaluates to 24, False otherwise
-        >>> game = TwentyFourPointGame()
-        >>> game.nums = [4, 3, 6, 6]
-        >>> ans = "4*3+6+6"
-        >>> ret = game.answer(ans)
-        True
         """
         try:
             if self.evaluate_expression(expression):
@@ -53,11 +45,6 @@ class TwentyFourPointGame:
         Evaluate a mathematical expression and check if the result is 24.
         :param expression: string, mathematical expression
         :return: bool, True if the expression evaluates to 24, False otherwise
-        >>> game = TwentyFourPointGame()
-        >>> nums = [4, 3, 6, 6]
-        >>> ans = "4*3+6+6"
-        >>> ret = game.evaluate_expression(ans)
-        True
         """
         try:
             result = eval(expression)

@@ -23,13 +23,11 @@ class BinaryDataProcessor:
         bit_length = len(self.binary_string)
         if bit_length == 0:
             return {'Bit length': 0, 'Ones': 0, 'Zeroes': 0}
-
         zeroes = self.binary_string.count('0')
         ones = self.binary_string.count('1')
-        zeroes_percentage = zeroes / bit_length
-        ones_percentage = ones / bit_length
-
-        return {'Zeroes': zeroes_percentage, 'Ones': ones_percentage, 'Bit length': bit_length}
+        zero_percentage = zeroes / bit_length
+        one_percentage = ones / bit_length
+        return {'Zeroes': zero_percentage, 'Ones': one_percentage, 'Bit length': bit_length}
 
     def convert_to_ascii(self):
         """
@@ -39,12 +37,8 @@ class BinaryDataProcessor:
         for i in range(0, len(self.binary_string), 8):
             byte = self.binary_string[i:i+8]
             if len(byte) == 8:
-                try:
-                    decimal_value = int(byte, 2)
-                    ascii_string += chr(decimal_value)
-                except ValueError:
-                    # Handle cases where the byte is not a valid binary representation
-                    pass
+                decimal_value = int(byte, 2)
+                ascii_string += chr(decimal_value)
         return ascii_string
 
     def convert_to_utf8(self):

@@ -49,7 +49,8 @@ class XMLProcessor:
             return False
 
         for element in self.root.findall('item'):
-            element.text = element.text.upper()
+            if element.text:
+                element.text = element.text.upper()
 
         return self.write_xml(file_name)
 

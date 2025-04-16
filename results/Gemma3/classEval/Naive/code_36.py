@@ -54,8 +54,7 @@ class EmailClient:
         :param size: The size of the email, float.
         :return: True if the email box is full, False otherwise.
         """
-        occupied_size = self.get_occupied_size()
-        return occupied_size + size > self.capacity
+        return self.get_occupied_size() + size > self.capacity
 
     def get_occupied_size(self):
         """
@@ -72,12 +71,5 @@ class EmailClient:
         Clears the email box by deleting the oldest emails until the email box has enough space to accommodate the given size.
         :param size: The size of the email, float.
         """
-        occupied_size = self.get_occupied_size()
-        if occupied_size <= size:
-            return
-        
-        self.inbox.sort(key=lambda x: x['time'])
-        
-        while occupied_size > size and self.inbox:
-            occupied_size -= self.inbox[0]['size']
+        while self.get_occupied_size() > size and self.inbox:
             self.inbox.pop(0)

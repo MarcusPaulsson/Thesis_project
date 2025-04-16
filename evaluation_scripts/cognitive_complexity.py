@@ -22,13 +22,24 @@ result_setting = "filtered_results" # "results"
 
 
 # ClassEval
+
+# ClassEval
+folder_paths_ground_truth_classEval = {
+    "GroundTruth classEval": os.path.join(upper_dir, "ground_truth", "classEval")
+}
+
+folder_paths_ground_truth_APPS = {
+    "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
+}
+
+
+
+
 folder_paths_gemini_classEval = {
     "Gemini classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot"),
-    
     "Gemini classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Zero-shot-CoT"),
     "Gemini classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Expert-role"),
     "Gemini classEval Student-role": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
-    "Gemini classEval Meta": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Meta"),
     "Gemini classEval Naive": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Student-role"),
     "Gemini classEval Iterative": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Iterative"),
     "Gemini classEval Combined": os.path.join(upper_dir, result_setting, "Gemini", "classEval", "Combined"),
@@ -38,21 +49,15 @@ folder_paths_chatgpt_classEval = {
     "ChatGPT classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Zero-shot-CoT"),
     "ChatGPT classEval Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Expert-role"),
     "ChatGPT classEval Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Student-role"),
-    "ChatGPT classEval Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Meta"),
     "ChatGPT classEval Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Naive"),
     "ChatGPT classEval Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Iterative"),
     "ChatGPT classEval Combined": os.path.join(upper_dir, result_setting, "ChatGPT", "classEval", "Combined"),
-
-
-    "ChatGPT classEval YYYYYYYY": os.path.join(upper_dir, result_setting, "ChatGPT", "xlcost", "Zero-shot"),
 }
 folder_paths_gemma_classEval = {
     "Gemma3 classEval Zero-shot": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot"),
-  
     "Gemma3 classEval Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Zero-shot-CoT"),
     "Gemma3 classEval Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Expert-role"),
     "Gemma3 classEval Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Student-role"),
-    "Gemma3 classEval Meta": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Meta"),
     "Gemma3 classEval Naive": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Naive"),
     "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
     "Gemma3 classEval Combined": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Combined"),
@@ -65,7 +70,6 @@ folder_paths_chatgpt_APPS = {
     "ChatGPT APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Zero-shot-CoT"),
     "ChatGPT APPS Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Expert-role"),
     "ChatGPT APPS Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Student-role"),
-    "ChatGPT APPS Meta": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Meta"),
     "ChatGPT APPS Naive": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Naive"),
     "ChatGPT APPS Iterative": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Iterative"),
     "ChatGPT APPS Combined": os.path.join(upper_dir, result_setting, "ChatGPT", "APPS", "Combined"),
@@ -75,7 +79,6 @@ folder_paths_gemini_APPS = {
     "Gemini APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Zero-shot-CoT"),
     "Gemini APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Expert-role"),
     "Gemini APPS Student-role": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Student-role"),
-    "Gemini APPS Meta": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Meta"),
     "Gemini APPS Naive": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Naive"),
     "Gemini APPS Iterative": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Iterative"),
     "Gemini APPS Combined": os.path.join(upper_dir, result_setting, "Gemini", "APPS", "Combined"),
@@ -85,7 +88,6 @@ folder_paths_gemma_APPS = {
     "Gemma3 APPS Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Zero-shot-CoT"),
     "Gemma3 APPS Expert-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Expert-role"),
     "Gemma3 APPS Student-role": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Student-role"),
-    "Gemma3 APPS Meta": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Meta"),
     "Gemma3 APPS Naive": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Naive"),
     "Gemma3 APPS Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Iterative"),
     "Gemma3 APPS Combined": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Combined"),
@@ -97,9 +99,24 @@ folder_paths_gemma_APPS = {
 results_chatgpt = {}  # Store average and std dev for each folder
 results_gemini = {}
 results_gemma = {}
+ground_truth ={}  
+
+
+
+def analyze_folders_ground_truth(folder_paths, results):
+    for folder_name, folder_path in folder_paths.items():
+        complexities = []
+        all_file_names = []
+
+        for filename in os.listdir(folder_path):
+            if filename.endswith(".py"):
+                all_file_names.append(filename)
+        
+
 
 def analyze_folders(folder_paths, results):
     for folder_name, folder_path in folder_paths.items():
+        
         if not os.path.exists(folder_path):
             print(f"Error: Folder not found: {folder_path}")
             continue
@@ -151,6 +168,12 @@ analyze_folders(folder_paths_gemini_APPS, results_gemini)
 analyze_folders(folder_paths_gemma_APPS, results_gemma)
 analyze_folders(folder_paths_gemma_classEval, results_gemma)
 
+# Ground truth
+analyze_folders_ground_truth(folder_paths_ground_truth_APPS, ground_truth)
+analyze_folders_ground_truth(folder_paths_ground_truth_classEval, ground_truth)
+
+
+
 print_std_dev = False  # Changed to True to print standard deviation
 
 print("\nAverage Cognitive Complexity per prompt technique:")
@@ -168,6 +191,12 @@ for folder, (avg_complexity, std_dev) in results_chatgpt.items():
         print(f"  {folder}: Average = {avg_complexity}")
 
 for folder, (avg_complexity, std_dev) in results_gemma.items():
+    if print_std_dev:
+        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
+    else:
+        print(f"  {folder}: Average = {avg_complexity}")
+
+for folder, (avg_complexity, std_dev) in ground_truth.items():
     if print_std_dev:
         print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
     else:

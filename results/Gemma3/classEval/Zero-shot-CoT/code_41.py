@@ -26,17 +26,12 @@ class GomokuGame:
         >>> gomokuGame.make_move(5, 5)
         False
         """
-        if row < 0 or row >= self.board_size or col < 0 or col >= self.board_size or self.board[row][col] != ' ':
-            return False
-
-        self.board[row][col] = self.current_player
-
-        if self.current_player == 'X':
-            self.current_player = 'O'
+        if 0 <= row < self.board_size and 0 <= col < self.board_size and self.board[row][col] == ' ':
+            self.board[row][col] = self.current_player
+            self.current_player = 'O' if self.current_player == 'X' else 'X'
+            return True
         else:
-            self.current_player = 'X'
-
-        return True
+            return False
 
     def check_winner(self):
         """
@@ -81,7 +76,8 @@ class GomokuGame:
         for i in range(1, 5):
             new_row = row + i * dx
             new_col = col + i * dy
-            if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size and self.board[new_row][new_col] == self.board[row][col]:
+            if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size and \
+               self.board[new_row][new_col] == self.board[row][col]:
                 count += 1
             else:
                 break

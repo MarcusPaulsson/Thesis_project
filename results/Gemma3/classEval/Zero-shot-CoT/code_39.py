@@ -1,7 +1,6 @@
 from collections import deque
 from decimal import Decimal
 
-
 class ExpressionCalculator:
     """
     This is a class in Python that can perform calculations with basic arithmetic operations, including addition, subtraction, multiplication, division, and modulo.
@@ -24,45 +23,22 @@ class ExpressionCalculator:
         14.0
 
         """
-        expression = expression.replace(" ", "")
-        tokens = expression.split('+')
-        if len(tokens) == 1:
-            tokens = expression.split('-')
-        if len(tokens) == 1:
-            tokens = expression.split('*')
-        if len(tokens) == 1:
-            tokens = expression.split('/')
-        if len(tokens) == 1:
-            tokens = expression.split('%')
-
-        stack = []
+        expression = self.transform(expression)
+        tokens = expression.split()
         for token in tokens:
             if token.isdigit() or (token.startswith('-') and token[1:].isdigit()):
-                stack.append(Decimal(token))
-            else:
-                if len(stack) < 2:
+                self.postfix_stack.append(Decimal(token))
+            elif self.is_operator(token):
+                if len(self.postfix_stack) < 2:
                     return "Invalid expression"
-                operand2 = stack.pop()
-                operand1 = stack.pop()
-                if token == '+':
-                    stack.append(operand1 + operand2)
-                elif token == '-':
-                    stack.append(operand1 - operand2)
-                elif token == '*':
-                    stack.append(operand1 * operand2)
-                elif token == '/':
-                    if operand2 == 0:
-                        return "Division by zero"
-                    stack.append(operand1 / operand2)
-                elif token == '%':
-                    if operand2 == 0:
-                        return "Modulo by zero"
-                    stack.append(operand1 % operand2)
-                else:
-                    return "Invalid operator"
-
-        if len(stack) == 1:
-            return float(stack[0])
+                operand2 = self.postfix_stack.pop()
+                operand1 = self.postfix_stack.pop()
+                result = self._calculate(operand1, operand2, token)
+                self.postfix_stack.append(result)
+            else:
+                return "Invalid expression"
+        if len(self.postfix_stack) == 1:
+            return float(self.postfix_stack.pop())
         else:
             return "Invalid expression"
 
@@ -75,19 +51,21 @@ class ExpressionCalculator:
 
         expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
-        expression = expression.replace(" ", "")
-        self.postfix_stack = deque()
-        op_stack = []
-
-        for char in expression:
-            if char.isdigit():
-                self.postfix_stack.append(char)
-            elif char in "+-*/%":
-                while op_stack and self.compare(char, op_stack[-1]):
-                    self.postfix_stack.append(op_stack.pop())
-                op_stack.append(char)
-        while op_stack:
-            self.postfix_stack.append(op_stack.pop())
+        expression = self.transform(expression)
+        tokens = expression.split()
+        for token in tokens:
+            if token.isdigit() or (token.startswith('-') and token[1:].isdigit()):
+                self.postfix_stack.append(token)
+            elif token == '(':
+                self.postfix_stack.append(token)
+            elif token == ')':
+                while self.postfix_stack and self.postfix_stack[-1] != '(':
+                    self.postfix_stack.append(self.postfix_stack.pop())
+                self.postfix_stack.pop()  # Remove the '('
+            elif self.is_operator(token):
+                while self.postfix_stack and self.postfix_stack[-1] != '(' and self.compare(token, self.postfix_stack[-1]):
+                    self.postfix_stack.append(self.postfix_stack.pop())
+                self.postfix_stack.append(token)
 
     @staticmethod
     def is_operator(c):
@@ -100,7 +78,7 @@ class ExpressionCalculator:
         True
 
         """
-        return c in "+-*/%"
+        return c in {'+', '-', '*', '/', '(', ')', '%'}
 
     def compare(self, cur, peek):
         """
@@ -113,14 +91,13 @@ class ExpressionCalculator:
         True
 
         """
-        priority = {
-            '+': 1,
-            '-': 1,
-            '*': 2,
-            '/': 2,
-            '%': 2
-        }
-        return priority.get(cur, 0) >= priority.get(peek, 0)
+        cur_index = self.operat_priority[self.get_operator_index(cur)]
+        peek_index = self.operat_priority[self.get_operator_index(peek)]
+        return cur_index >= peek_index
+
+    def get_operator_index(self, operator):
+        operators = ['+', '-', '*', '/', '%']
+        return operators.index(operator) if operator in operators else -1
 
     @staticmethod
     def _calculate(first_value, second_value, current_op):
@@ -135,22 +112,20 @@ class ExpressionCalculator:
         5.0
 
         """
-        first = Decimal(first_value)
-        second = Decimal(second_value)
         if current_op == '+':
-            return first + second
+            return first_value + second_value
         elif current_op == '-':
-            return first - second
+            return first_value - second_value
         elif current_op == '*':
-            return first * second
+            return first_value * second_value
         elif current_op == '/':
-            if second == 0:
+            if second_value == 0:
                 return "Division by zero"
-            return first / second
+            return first_value / second_value
         elif current_op == '%':
-            if second == 0:
+            if second_value == 0:
                 return "Modulo by zero"
-            return first % second
+            return first_value % second_value
         else:
             return "Invalid operator"
 
@@ -165,4 +140,6 @@ class ExpressionCalculator:
         "2+3*4"
 
         """
-        return expression.replace(" ", "")
+        expression = expression.replace(" ", "")
+        expression = expression.replace("~", "-")
+        return expression

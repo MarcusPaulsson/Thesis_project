@@ -14,10 +14,6 @@ class AccessGatewayFilter:
         Filter the incoming request based on certain rules and conditions.
         :param request: dict, the incoming request details
         :return: bool, True if the request is allowed, False otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.filter({'path': '/login', 'method': 'POST'})
-        True
-
         """
         if self.is_start_with(request.get('path', '')):
             return True
@@ -25,14 +21,9 @@ class AccessGatewayFilter:
         if 'headers' in request and 'Authorization' in request['headers']:
             user = self.get_jwt_user(request)
             if user:
-                if user['user'].get('level', 0) >= 3:
-                    self.set_current_user_info_and_log(user['user'])
-                    return True
-                else:
-                    return False
-            else:
-                return False
-        return None
+                self.set_current_user_info_and_log(user['user'])
+                return True
+        return False
 
 
     def is_start_with(self, request_uri):
@@ -41,14 +32,8 @@ class AccessGatewayFilter:
         Currently, the prefixes being checked are "/api" and "/login".
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.is_start_with('/api/data')
-        True
-
         """
-        if request_uri.startswith('/api') or request_uri.startswith('/login'):
-            return True
-        return False
+        return request_uri.startswith('/api') or request_uri.startswith('/login')
 
 
     def get_jwt_user(self, request):
@@ -56,22 +41,21 @@ class AccessGatewayFilter:
         Get the user information from the JWT token in the request.
         :param request: dict, the incoming request details
         :return: dict or None, the user information if the token is valid, None otherwise
-        >>> filter = AccessGatewayFilter()
-        >>> filter.get_jwt_user({'headers': {'Authorization': {'user': {'name': 'user1'}, 'jwt': 'user1'+str(datetime.date.today())}}})
-        {'user': {'name': 'user1'}
-
         """
         if 'headers' in request and 'Authorization' in request['headers']:
             auth_header = request['headers']['Authorization']
             if 'jwt' in auth_header and 'user' in auth_header:
-                jwt = auth_header['jwt']
-                user = auth_header['user']
-                if jwt == user['name'] + str(datetime.date.today()):
-                    return {'user': user}
-                else:
+                jwt_token = auth_header['jwt']
+                user_info = auth_header['user']
+                today = datetime.date.today()
+                try:
+                    user_name = user_info['name']
+                    if jwt_token == f"{user_name}{str(today)}":
+                        return auth_header
+                    else:
+                        return None
+                except (KeyError, TypeError):
                     return None
-            else:
-                return None
         return None
 
     def set_current_user_info_and_log(self, user):
@@ -79,9 +63,5 @@ class AccessGatewayFilter:
         Set the current user information and log the access.
         :param user: dict, the user information
         :return: None
-        >>> filter = AccessGatewayFilter()
-        >>> user = {'name': 'user1', 'address': '127.0.0.1'}
-        >>> filter.set_current_user_info_and_log(user)
-
         """
-        logging.info(f"User {user.get('name', 'unknown')} accessed the resource.")
+        logging.info(f"User accessed: {user}")

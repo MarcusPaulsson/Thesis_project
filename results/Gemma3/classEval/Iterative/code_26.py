@@ -20,8 +20,11 @@ class CSVProcessor:
                 reader = csv.reader(file)
                 title = next(reader)
                 data = list(reader)
-                return title, data
+            return title, data
         except FileNotFoundError:
+            return [], []
+        except Exception as e:
+            print(f"Error reading CSV file: {e}")
             return [], []
 
     def write_csv(self, data, file_name):
@@ -35,7 +38,8 @@ class CSVProcessor:
                 writer = csv.writer(file)
                 writer.writerows(data)
             return 1
-        except Exception:
+        except Exception as e:
+            print(f"Error writing CSV file: {e}")
             return 0
 
     def process_csv_data(self, N, save_file_name):
@@ -47,16 +51,16 @@ class CSVProcessor:
         :param save_file_name, the name of file that needs to be processed.
         :return:int, if success return 1, or 0 otherwise
         """
-        title, data = self.read_csv(save_file_name)
-        if not title or not data:
-            return 0
-
-        new_data = []
-        for row in data:
-            if len(row) > N:
-                new_data.append([row[N].upper()])
-            else:
+        try:
+            title, data = self.read_csv(save_file_name)
+            if not data:
                 return 0
-
-        new_file_name = save_file_name.replace(".csv", "_process.csv")
-        return self.write_csv([title] + new_data, new_file_name)
+            new_data = [[row[N].upper()] for row in data]
+            self.write_csv([title] + new_data, save_file_name.replace('.', '_process.'))
+            return 1
+        except IndexError:
+            print("Column index out of range.")
+            return 0
+        except Exception as e:
+            print(f"Error processing CSV data: {e}")
+            return 0

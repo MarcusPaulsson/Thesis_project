@@ -59,8 +59,8 @@ class MusicPlayer:
 
         if self.current_song:
             try:
-                index = self.playlist.index(self.current_song)
-                next_index = (index + 1) % len(self.playlist)
+                current_index = self.playlist.index(self.current_song)
+                next_index = (current_index + 1) % len(self.playlist)
                 self.current_song = self.playlist[next_index]
                 return True
             except ValueError:
@@ -82,9 +82,9 @@ class MusicPlayer:
 
         if self.current_song:
             try:
-                index = self.playlist.index(self.current_song)
-                prev_index = (index - 1) % len(self.playlist)
-                self.current_song = self.playlist[prev_index]
+                current_index = self.playlist.index(self.current_song)
+                previous_index = (current_index - 1) % len(self.playlist)
+                self.current_song = self.playlist[previous_index]
                 return True
             except ValueError:
                 return False

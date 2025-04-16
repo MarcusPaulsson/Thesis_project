@@ -23,19 +23,17 @@ class ChandrasekharSieve:
         if self.n < 2:
             return []
 
-        sieve = [True] * (self.n + 1)
+        limit = self.n + 1
+        sieve = [True] * limit
         sieve[0] = sieve[1] = False
-        primes = []
 
-        for i in range(2, int(self.n**0.5) + 1):
+        for i in range(2, int(limit**0.5) + 1):
             if sieve[i]:
-                for j in range(i * i, self.n + 1, i):
+                for j in range(i * i, limit, i):
                     sieve[j] = False
 
-        for i in range(2, self.n + 1):
-            if sieve[i]:
-                primes.append(i)
-
+        primes = [i for i in range(2, limit) if sieve[i]]
+        self.primes = primes
         return primes
 
     def get_primes(self):

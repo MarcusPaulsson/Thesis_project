@@ -15,11 +15,14 @@ class StockPortfolioTracker:
         Add a stock to the portfolio.
         :param stock: a dictionary with keys "name", "price", and "quantity"
         """
+        found = False
         for s in self.portfolio:
-            if s["name"] == stock["name"]:
+            if s["name"] == stock["name"] and s["price"] == stock["price"]:
                 s["quantity"] += stock["quantity"]
-                return
-        self.portfolio.append(stock)
+                found = True
+                break
+        if not found:
+            self.portfolio.append(stock)
 
     def remove_stock(self, stock):
         """

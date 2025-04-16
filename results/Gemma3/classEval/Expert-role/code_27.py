@@ -30,7 +30,7 @@ class CurrencyConverter:
         """
         if from_currency not in self.rates or to_currency not in self.rates:
             return False
-        return round(amount / self.rates[from_currency] * self.rates[to_currency], 2)
+        return amount * (self.rates[to_currency] / self.rates[from_currency])
 
     def get_supported_currencies(self):
         """

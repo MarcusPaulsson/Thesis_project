@@ -31,7 +31,7 @@ class MusicPlayer:
     def play(self):
         """
         Plays the current song in the playlist.
-        :return: The current song in the playlist, or None if there is no current song.
+        :return: The current song in the playlist, or False if there is no current song.
         """
         return self.current_song
 

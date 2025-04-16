@@ -1,7 +1,8 @@
 class SQLQueryBuilder:
     """
-    This class provides to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements.
+    This class provides to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements. 
     """
+
 
     @staticmethod
     def select(table, columns='*', where=None):

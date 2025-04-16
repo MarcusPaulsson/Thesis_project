@@ -38,7 +38,8 @@ class AssessmentSystem:
         if name in self.students:
             courses = self.students[name]['courses']
             if courses:
-                return sum(courses.values()) / len(courses)
+                total_score = sum(courses.values())
+                return total_score / len(courses)
         return None
 
     def get_all_students_with_fail_course(self):
@@ -68,7 +69,8 @@ class AssessmentSystem:
                 count += 1
         if count > 0:
             return total_score / count
-        return None
+        else:
+            return None
 
     def get_top_student(self):
         """

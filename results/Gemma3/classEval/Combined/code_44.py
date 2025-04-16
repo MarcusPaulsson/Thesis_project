@@ -42,18 +42,13 @@ class HtmlUtil:
         soup = BeautifulSoup(html_text, 'html.parser')
         text = soup.get_text(separator='\n')
         text = self.__format_line_feed(text)
-        code_blocks = soup.find_all('pre')
-        result = ""
-        last_index = 0
-        for block in code_blocks:
-            code = block.get_text()
-            start_index = text.find(code, last_index)
-            if start_index != -1:
-                result += text[last_index:start_index]
-                result += self.CODE_MARK + '\n'
-                last_index = start_index + len(code)
-        result += text[last_index:]
-        return result.strip()
+        
+        for pre in soup.find_all('pre'):
+            if pre.find('code'):
+                text = text.replace(pre.get_text(), self.CODE_MARK)
+            else:
+                text = text.replace(pre.get_text(), self.CODE_MARK)
+        return text
 
     def extract_code_from_html_text(self, html_text):
         """
@@ -62,8 +57,11 @@ class HtmlUtil:
         :return: the list of code
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        code_blocks = soup.find_all('pre')
         codes = []
-        for block in code_blocks:
-            codes.append(block.get_text())
+        for pre in soup.find_all('pre'):
+            code_block = pre.find('code')
+            if code_block:
+                codes.append(code_block.get_text())
+            else:
+                codes.append(pre.get_text())
         return codes

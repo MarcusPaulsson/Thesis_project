@@ -38,18 +38,27 @@ class SignInSystem:
         :param username: str, the username to be checked.
         :return: bool, True if the user is signed in, False if the user does not exist or is not signed in.
         """
-        return self.users.get(username, False)
+        if username in self.users:
+            return self.users[username]
+        return False
 
     def all_signed_in(self):
         """
         Check if all users are signed in.
         :return: bool, True if all users are signed in, False otherwise.
         """
-        return all(self.users.values())
+        for signed_in in self.users.values():
+            if not signed_in:
+                return False
+        return True
 
     def all_not_signed_in(self):
         """
         Get a list of usernames that are not signed in.
         :return: list[str], a list of usernames that are not signed in.
         """
-        return [user for user, signed_in in self.users.items() if not signed_in]
+        not_signed_in_users = []
+        for user, signed_in in self.users.items():
+            if not signed_in:
+                not_signed_in_users.append(user)
+        return not_signed_in_users

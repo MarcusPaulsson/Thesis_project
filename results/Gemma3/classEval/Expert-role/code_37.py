@@ -44,24 +44,14 @@ class EncryptionUtils:
         'kfa'
 
         """
-        key = self.key
-        result = ''
-        key_len = len(key)
-        for i, char in enumerate(plaintext):
-            if 'a' <= char <= 'z':
-                start = ord('a')
-                key_char = key[i % key_len]
-                key_shift = ord(key_char) - ord('a')
-                shifted_char = chr((ord(char) - start + key_shift) % 26 + start)
-            elif 'A' <= char <= 'Z':
-                start = ord('A')
-                key_char = key[i % key_len]
-                key_shift = ord(key_char.lower()) - ord('a')
-                shifted_char = chr((ord(char) - start + key_shift) % 26 + start)
-            else:
-                shifted_char = char
-            result += shifted_char
-        return result
+        key_len = len(self.key)
+        key_as_int = [ord(i) for i in self.key]
+        plaintext_as_int = [ord(i) for i in plaintext]
+        ciphertext = ''
+        for i in range(len(plaintext_as_int)):
+            value = (plaintext_as_int[i] + key_as_int[i % key_len]) % 26
+            ciphertext += chr(value + ord('a'))
+        return ciphertext
 
     def rail_fence_cipher(self,plain_text, rails):
         """
@@ -73,12 +63,9 @@ class EncryptionUtils:
         'acb'
 
         """
-        if rails <= 1:
-            return plain_text
-
         fence = [['' for _ in range(len(plain_text))] for _ in range(rails)]
         rail = 0
-        direction = 1  # 1 for down, -1 for up
+        direction = 1
 
         for i, char in enumerate(plain_text):
             fence[rail][i] = char
@@ -88,8 +75,5 @@ class EncryptionUtils:
             if rail == rails - 1 or rail == 0:
                 direction *= -1
 
-        result = ''
-        for rail in fence:
-            result += ''.join(rail)
-
-        return result
+        ciphertext = ''.join([''.join(row) for row in fence])
+        return ciphertext

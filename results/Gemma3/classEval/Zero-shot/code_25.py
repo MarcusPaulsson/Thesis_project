@@ -50,8 +50,8 @@ class CookiesUtil:
 
     def set_cookies(self, request):
         """
-        Sets the cookies to the request.
-        :param request: The request to set cookies to, dict.
+        Sets the cookies in the request.
+        :param request: The request to set cookies in, dict.
         """
         if self.cookies:
-            request['cookies'] = f"cookies={json.dumps(self.cookies)}"
+            request['cookies'] = f"cookies={self.cookies}"

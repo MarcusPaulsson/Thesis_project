@@ -40,7 +40,7 @@ class UserLoginDB:
         """
         Searches for users in the "users" table by username.
         :param username: str, the username of the user to search for.
-        :return: list of tuples, the rows from the "users" table that match the search criteria.
+        :return:list of tuples, the rows from the "users" table that match the search criteria.
         """
         self.cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
         return self.cursor.fetchall()
@@ -57,9 +57,9 @@ class UserLoginDB:
     def validate_user_login(self, username, password):
         """
         Determine whether the user can log in, that is, the user is in the database and the password is correct
-        :param username: str, the username of the user to validate.
-        :param password: str, the password of the user to validate.
-        :return: bool, representing whether the user can log in correctly
+        :param username:str, the username of the user to validate.
+        :param password:str, the password of the user to validate.
+        :return:bool, representing whether the user can log in correctly
         """
         self.cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
         result = self.cursor.fetchall()

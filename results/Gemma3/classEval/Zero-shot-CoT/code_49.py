@@ -35,8 +35,7 @@ class JobMarketplace:
         []
 
         """
-        if job in self.job_listings:
-            self.job_listings.remove(job)
+        self.job_listings.remove(job)
 
     def submit_resume(self, name, skills, experience):
         """
@@ -66,8 +65,7 @@ class JobMarketplace:
         []
 
         """
-        if resume in self.resumes:
-            self.resumes.remove(resume)
+        self.resumes.remove(resume)
 
     def search_jobs(self, criteria):
         """

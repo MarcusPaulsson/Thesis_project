@@ -10,21 +10,19 @@ class Manacher:
         """
         self.input_string = input_string
 
-    def palindromic_length(self, center, processed_string):
+    def palindromic_length(self, center, diff, string):
         """
-        Calculates the length of the palindromic substring centered at 'center' in 'processed_string'.
+        Calculates the length of the palindromic substring based on a given center and difference.
         :param center: The center of the palindromic substring, int.
-        :param processed_string: The processed string with delimiters, str.
+        :param diff: The difference from the center, int.
+        :param string: The string to be searched, str.
         :return: The length of the palindromic substring, int.
         """
-        length = 0
-        left = center - 1
-        right = center + 1
-        while left >= 0 and right < len(processed_string) and processed_string[left] == processed_string[right]:
-            length += 1
-            left -= 1
-            right += 1
-        return length
+        if center - diff < 0 or center + diff >= len(string):
+            return diff
+        if string[center - diff] != string[center + diff]:
+            return diff
+        return self.palindromic_length(center, diff + 1, string)
 
     def palindromic_string(self):
         """
@@ -35,10 +33,9 @@ class Manacher:
         max_length = 0
         center_index = 0
         for i in range(len(processed_string)):
-            current_length = self.palindromic_length(i, processed_string)
-            if current_length > max_length:
-                max_length = current_length
+            length = self.palindromic_length(i, 0, processed_string)
+            if length > max_length:
+                max_length = length
                 center_index = i
-
         start = (center_index - max_length) // 2
         return self.input_string[start:start + max_length]

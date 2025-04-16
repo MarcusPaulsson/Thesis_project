@@ -17,15 +17,12 @@ class ZipFileProcessor:
         """
         Get open file object
         :return:If successful, returns the open file object; otherwise, returns None
-        >>> zfp = ZipFileProcessor("aaa.zip")
-        >>> file = zfp.read_zip_file()
         """
         try:
-            if self.file_name:
-                zip_file = zipfile.ZipFile(self.file_name, 'r')
-                return zip_file
-            else:
+            if not self.file_name:
                 return None
+            zip_file = zipfile.ZipFile(self.file_name, 'r')
+            return zip_file
         except FileNotFoundError:
             return None
         except zipfile.BadZipFile:
@@ -36,13 +33,12 @@ class ZipFileProcessor:
         Extract all zip files and place them in the specified path
         :param output_path: string, The location of the extracted file
         :return: True or False, representing whether the extraction operation was successful
-        >>> zfp = ZipFileProcessor("aaa.zip")
-        >>> zfp.extract_all("result/aaa")
         """
         try:
             zip_file = self.read_zip_file()
             if zip_file:
                 zip_file.extractall(output_path)
+                zip_file.close()
                 return True
             else:
                 return False
@@ -55,16 +51,17 @@ class ZipFileProcessor:
         :param file_name:string, The name of the file to be uncompressed
         :param output_path:string, The location of the extracted file
         :return: True or False, representing whether the extraction operation was successful
-        >>> zfp = ZipFileProcessor("aaa.zip")
-        >>> zfp.extract_file("bbb.txt", "result/aaa")
         """
         try:
             zip_file = self.read_zip_file()
             if zip_file:
                 zip_file.extract(file_name, output_path)
+                zip_file.close()
                 return True
             else:
                 return False
+        except KeyError:
+            return False
         except Exception:
             return False
 
@@ -74,13 +71,12 @@ class ZipFileProcessor:
         :param files:list of string, List of files to compress
         :param output_file_name: string, Specified output path
         :return:True or False, representing whether the compression operation was successful
-        >>> zfp = ZipFileProcessor("aaa.zip")
-        >>> zfp.create_zip_file(["bbb.txt", "ccc,txt", "ddd.txt"], "output/bcd")
         """
         try:
             with zipfile.ZipFile(output_file_name, 'w') as zip_file:
                 for file in files:
-                    zip_file.write(file)
+                    zip_file.write(file, os.path.basename(file))
             return True
         except Exception:
             return False
+import os

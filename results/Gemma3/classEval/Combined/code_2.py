@@ -1,5 +1,3 @@
-
-
 class ArgumentParser:
     """
     This is a class for parsing command line arguments to a dictionary.
@@ -29,19 +27,33 @@ class ArgumentParser:
         :param command_string: str, command line argument string, formatted like "python script.py --arg1=value1 -arg2 value2 --option1 -option2"
         :return tuple: (True, None) if parsing is successful, (False, missing_args) if parsing fails,
             where missing_args is a set of the missing argument names which are str.
+        >>> parser.parse_arguments("python script.py --arg1=value1 -arg2 value2 --option1 -option2")
+        (True, None)
+        >>> parser.arguments
+        {'arg1': 'value1', 'arg2': 'value2', 'option1': True, 'option2': True}
         """
         parts = command_string.split()
-        for i in range(len(parts)):
+        i = 0
+        while i < len(parts):
             part = parts[i]
             if part.startswith("--"):
-                key_value = part[2:].split("=", 1)
-                key = key_value[0]
-                value = key_value[1] if len(key_value) > 1 else True
-                self.arguments[key] = self._convert_type(key, value)
+                if "=" in part:
+                    key, value = part.split("=", 1)
+                    self.arguments[key] = self._convert_type(key, value)
+                else:
+                    key = part[2:]
+                    self.arguments[key] = True
             elif part.startswith("-"):
-                key = part[1:]
-                self.arguments[key] = True
-            
+                if i + 1 < len(parts):
+                    key = part[1:]
+                    value = parts[i + 1]
+                    self.arguments[key] = self._convert_type(key, value)
+                    i += 1
+                else:
+                    key = part[1:]
+                    self.arguments[key] = True
+            i += 1
+
         missing_args = self.required - set(self.arguments.keys())
         if missing_args:
             return False, missing_args
@@ -53,6 +65,10 @@ class ArgumentParser:
         Retrieves the value of the specified argument from the arguments dictionary and returns it.
         :param key: str, argument name
         :return: The value of the argument, or None if the argument does not exist.
+        >>> parser.arguments
+        {'arg1': 'value1', 'arg2': 'value2', 'option1': True, 'option2': True}
+        >>> parser.get_argument('arg2')
+        'value2'
         """
         return self.arguments.get(key)
 
@@ -65,6 +81,11 @@ class ArgumentParser:
         :param arg: str, argument name
         :param required: bool, whether the argument is required, default is False
         :param arg_type:str, Argument type, default is str
+        >>> parser.add_argument('arg1', True, 'int')
+        >>> parser.required
+        {'arg1'}
+        >>> parser.types
+        {'arg1': 'int'}
         """
         self.types[arg] = arg_type
         if required:
@@ -75,6 +96,10 @@ class ArgumentParser:
         Try to convert the type of input value by searching in self.types.
         :param value: str, the input value in command line
         :return: return corresponding value in self.types if convert successfully, or the input value oherwise
+        >>> parser.types
+        {'arg1': int}
+        >>> parser._convert_type('arg1', '21')
+        21
         """
         arg_type = self.types.get(arg)
         if arg_type == int:
@@ -83,11 +108,9 @@ class ArgumentParser:
             except ValueError:
                 return value
         elif arg_type == bool:
-            if isinstance(value, bool):
-                return value
-            if str(value).lower() == "true":
+            if value.lower() == "true":
                 return True
-            elif str(value).lower() == "false":
+            elif value.lower() == "false":
                 return False
             else:
                 return bool(value)

@@ -47,15 +47,10 @@ class Calculator:
             elif expression[i] == ')':
                 while operator_stack and operator_stack[-1] != '(':
                     self.apply_operator(operand_stack, operator_stack)
-                if operator_stack and operator_stack[-1] == '(':
-                    operator_stack.pop()  # Pop the '('
-                else:
-                    return None  # Unmatched parenthesis
+                operator_stack.pop()  # Pop the '('
             i += 1
 
         while operator_stack:
-            if operator_stack[-1] == '(':
-                return None  # Unmatched parenthesis
             self.apply_operator(operand_stack, operator_stack)
 
         if len(operand_stack) == 1:

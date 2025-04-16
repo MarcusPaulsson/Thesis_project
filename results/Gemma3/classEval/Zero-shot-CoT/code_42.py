@@ -59,7 +59,7 @@ class Hotel:
             else:
                 self.booked_rooms[room_type][name] += room_number
             return 'Success!'
-
+    
     def check_in(self, room_type, room_number, name):
         """
         Check if the room of the specified type and number is booked by the person named name.
@@ -82,13 +82,13 @@ class Hotel:
 
         if room_number > self.booked_rooms[room_type][name]:
             return False
-
-        self.booked_rooms[room_type][name] -= room_number
-        if self.booked_rooms[room_type][name] == 0:
-            del self.booked_rooms[room_type][name]
+        else:
+            self.booked_rooms[room_type][name] -= room_number
+            if self.booked_rooms[room_type][name] == 0:
+                del self.booked_rooms[room_type][name]
             if not self.booked_rooms[room_type]:
                 del self.booked_rooms[room_type]
-        return True
+            return True
 
     def check_out(self, room_type, room_number):
         """
