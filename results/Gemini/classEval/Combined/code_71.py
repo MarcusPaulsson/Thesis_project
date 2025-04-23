@@ -20,9 +20,9 @@ class PushBoxGame:
         self.boxes = []
         self.target_count = 0
         self.is_game_over = False
-        self._init_game()
+        self.init_game()
 
-    def _init_game(self):
+    def init_game(self):
         """
         Initialize the game by setting the positions of the player, targets, and boxes based on the map.
         """
@@ -43,15 +43,12 @@ class PushBoxGame:
         Check if the game is won. The game is won when all the boxes are placed on target positions.
         :return: True if all the boxes are placed on target positions, or False otherwise.
         """
-        if not self.boxes:
-            return False  # No boxes, can't win
-
         for box in self.boxes:
             if box not in self.targets:
+                self.is_game_over = False
                 return False
         self.is_game_over = True
         return True
-
 
     def move(self, direction):
         """
@@ -61,61 +58,72 @@ class PushBoxGame:
 
         :return: True if the game is won, False otherwise.
         """
-        dr, dc = 0, 0
+        delta_row, delta_col = 0, 0
         if direction == 'w':
-            dr, dc = -1, 0
+            delta_row = -1
         elif direction == 's':
-            dr, dc = 1, 0
+            delta_row = 1
         elif direction == 'a':
-            dr, dc = 0, -1
+            delta_col = -1
         elif direction == 'd':
-            dr, dc = 0, 1
+            delta_col = 1
         else:
-            return self.is_game_over
-
-        new_row = self.player_row + dr
-        new_col = self.player_col + dc
-
-        if not (0 <= new_row < len(self.map) and 0 <= new_col < len(self.map[0])):
-            return self.is_game_over
-
-        if self.map[new_row][new_col] == '#':
-            return self.is_game_over
-
-        box_index = self._find_box_index(new_row, new_col)
-
-        if box_index != -1:
-            new_box_row = new_row + dr
-            new_box_col = new_col + dc
-
-            if not (0 <= new_box_row < len(self.map) and 0 <= new_box_col < len(self.map[0])):
-                return self.is_game_over
-
-            if self.map[new_box_row][new_box_col] == '#':
-                return self.is_game_over
-
-            if self._is_occupied_by_another_box(new_box_row, new_box_col):
-                return self.is_game_over
-
-            self.boxes[box_index] = (new_box_row, new_box_col)
-            self.player_row = new_row
-            self.player_col = new_col
             return self.check_win()
 
-        self.player_row = new_row
-        self.player_col = new_col
-        return self.is_game_over
+        new_player_row = self.player_row + delta_row
+        new_player_col = self.player_col + delta_col
+
+        if self.map[new_player_row][new_player_col] == '#':
+            return self.check_win()
+
+        box_index = self._find_box_index(new_player_row, new_player_col)
+
+        if box_index != -1:
+            new_box_row = self.boxes[box_index][0] + delta_row
+            new_box_col = self.boxes[box_index][1] + delta_col
+
+            if self.map[new_box_row][new_box_col] == '#':
+                return self.check_win()
+
+            if self._is_obstacle(new_box_row, new_box_col):
+                return self.check_win()
+
+            self.boxes[box_index] = (new_box_row, new_box_col)
+            self.player_row = new_player_row
+            self.player_col = new_player_col
+        else:
+            self.player_row = new_player_row
+            self.player_col = new_player_col
+
+        return self.check_win()
 
     def _find_box_index(self, row, col):
-        """Helper function to find the index of a box at a given position."""
+        """
+        Helper function to find the index of a box at a given position.
+        :param row: The row of the box.
+        :param col: The column of the box.
+        :return: The index of the box in the boxes list, or -1 if no box is found.
+        """
         for i, box in enumerate(self.boxes):
             if box[0] == row and box[1] == col:
                 return i
         return -1
 
-    def _is_occupied_by_another_box(self, row, col):
-        """Helper function to check if a position is occupied by another box."""
+    def _is_obstacle(self, row, col):
+        """
+        Helper function to check if a given position is an obstacle (another box).
+        :param row: The row to check.
+        :param col: The column to check.
+        :return: True if the position is an obstacle, False otherwise.
+        """
         for other_box in self.boxes:
             if other_box[0] == row and other_box[1] == col:
                 return True
         return False
+
+    def print_map(self):
+        """
+        Print the current map of the game.
+        """
+        for row in self.map:
+            print(' '.join(row))

@@ -17,7 +17,7 @@ class Snake:
         self.SCREEN_WIDTH = SCREEN_WIDTH
         self.SCREEN_HEIGHT = SCREEN_HEIGHT
         self.BLOCK_SIZE = BLOCK_SIZE
-        self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
+        self.positions = [((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2))]
         self.score = 0
         self.food_position = food_position
 
@@ -59,7 +59,7 @@ class Snake:
         :return: None
         """
         self.length = 1
-        self.positions = [((self.SCREEN_WIDTH // 2), (self.SCREEN_HEIGHT // 2))]
+        self.positions = [(self.SCREEN_WIDTH / 2, self.SCREEN_HEIGHT / 2)]
         self.score = 0
         self.random_food_position()
 

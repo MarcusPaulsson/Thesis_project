@@ -2,6 +2,9 @@ def solve():
     n, m, k = map(int, input().split())
 
     def count_less_equal(x):
+        """
+        Counts the number of elements in the n x m multiplication table that are less than or equal to x.
+        """
         count = 0
         for i in range(1, n + 1):
             count += min(m, x // i)

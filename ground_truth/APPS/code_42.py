@@ -1,1 +1,41 @@
-["n=int(input())\ns=[c=='1' for c in input()]\nm=len(s)\nz=[[0,0]]\nfor c in s:\n ind = z[-1][c]\n z[-1][c] = len(z)\n z.append(z[ind][:])\nassert(len(z) == m+1)\nz[m][0] = z[m][1] = m # make it sticky\n\n# how many things match directly\ndp = [0 for _ in range(m+1)]\ndp[0] = 1\nfor i in range(n):\n ndp = [0 for _ in range(m+1)]\n for i in range(m+1):\n  ndp[z[i][0]] += dp[i]\n  ndp[z[i][1]] += dp[i]\n dp = ndp\nres = dp[m]\n\nfor k in range(1, m):\n s0 = 0\n for c in s[-k:]:\n  s0 = z[s0][c]\n dp = [0 for _ in range(m+1)]\n dp[s0] = 1\n for i in range(n - k):\n  ndp = [0 for _ in range(m+1)]\n  for i in range(m+1):\n   ndp[z[i][0]] += dp[i]\n   ndp[z[i][1]] += dp[i]\n  dp = ndp\n for s1 in range(m): # skip m\n  v = dp[s1]\n  for c in s[-k:]:\n   if s1 == m: v = 0\n   s1 = z[s1][c]\n  if s1 == m: res += v\nprint(res)"]
+n=int(input())
+s=[c=='1' for c in input()]
+m=len(s)
+z=[[0,0]]
+for c in s:
+ ind = z[-1][c]
+ z[-1][c] = len(z)
+ z.append(z[ind][:])
+assert(len(z) == m+1)
+z[m][0] = z[m][1] = m # make it sticky
+
+# how many things match directly
+dp = [0 for _ in range(m+1)]
+dp[0] = 1
+for i in range(n):
+ ndp = [0 for _ in range(m+1)]
+ for i in range(m+1):
+  ndp[z[i][0]] += dp[i]
+  ndp[z[i][1]] += dp[i]
+ dp = ndp
+res = dp[m]
+
+for k in range(1, m):
+ s0 = 0
+ for c in s[-k:]:
+  s0 = z[s0][c]
+ dp = [0 for _ in range(m+1)]
+ dp[s0] = 1
+ for i in range(n - k):
+  ndp = [0 for _ in range(m+1)]
+  for i in range(m+1):
+   ndp[z[i][0]] += dp[i]
+   ndp[z[i][1]] += dp[i]
+  dp = ndp
+ for s1 in range(m): # skip m
+  v = dp[s1]
+  for c in s[-k:]:
+   if s1 == m: v = 0
+   s1 = z[s1][c]
+  if s1 == m: res += v
+print(res)

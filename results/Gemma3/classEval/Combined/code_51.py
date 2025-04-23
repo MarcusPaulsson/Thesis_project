@@ -20,12 +20,12 @@ class KappaCalculator:
         sum_p = 0
         for i in range(n):
             sum_p += np.trace(testData[i])
-        Pe = (sum_p / (n * k)) ** 2
-        sum_Pe = 0
+        p = sum_p / (n * k)
+        sum_pe = 0
         for i in range(n):
-            sum_Pe += np.trace(testData[i]) ** 2
-        Pe_sum = sum_Pe / (n * k)
-        kappa = (Pe_sum - Pe) / (1 - Pe)
+            sum_pe += np.sum(np.multiply(testData[i], testData[i].T))
+        pe = sum_pe / (n * k * k)
+        kappa = (p - pe) / (1 - pe)
         return kappa
 
     @staticmethod
@@ -50,11 +50,9 @@ class KappaCalculator:
         0.20993070442195522
         """
         p_j = np.sum(testData, axis=0) / (N * n)
-        P = np.sum(p_j ** 2)
-        P_e = 0
-        for i in range(N):
-            p_i = np.sum(testData[i], axis=0) / n
-            P_e += np.sum(p_i ** 2)
-        P_e = P_e / N
-        kappa = (P - P_e) / (1 - P_e)
+        P = np.sum(np.square(p_j))
+        P_i = (np.sum(np.square(np.sum(testData, axis=1)), axis=0) - n) / (n * (n - 1))
+        P_bar = np.mean(P_i)
+        Pe = P
+        kappa = (P_bar - Pe) / (1 - Pe)
         return kappa

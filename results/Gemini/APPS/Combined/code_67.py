@@ -1,19 +1,23 @@
 def solve():
     n = int(input())
     a = list(map(int, input().split()))
-    
+
     nice_indices = []
     for i in range(n):
-        temp_arr = a[:i] + a[i+1:]
-        arr_sum = sum(temp_arr)
+        temp_a = a[:i] + a[i+1:]
+        total_sum = sum(temp_a)
         
-        for j in range(len(temp_arr)):
-            if temp_arr[j] == arr_sum - temp_arr[j]:
-                nice_indices.append(i + 1)
+        is_good = False
+        for j in range(len(temp_a)):
+            if temp_a[j] == total_sum - temp_a[j]:
+                is_good = True
                 break
-    
-    nice_indices = sorted(list(set(nice_indices)))
+        
+        if is_good:
+            nice_indices.append(i + 1)
+
     print(len(nice_indices))
-    print(*nice_indices)
+    if nice_indices:
+        print(*nice_indices)
 
 solve()

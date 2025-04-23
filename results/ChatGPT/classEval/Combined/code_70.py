@@ -3,7 +3,7 @@ class PersonRequest:
     This class validates input personal information data and sets invalid fields to None based on specific rules.
     """
 
-    VALID_SEX_OPTIONS = {"Man", "Woman", "UGM"}
+    VALID_SEXES = {"Man", "Woman", "UGM"}
 
     def __init__(self, name: str, sex: str, phone_number: str):
         """
@@ -22,9 +22,7 @@ class PersonRequest:
         :param name: str, the name to validate
         :return: str, the validated name or None if invalid
         """
-        if name and len(name) <= 33:
-            return name
-        return None
+        return name if name and len(name) <= 33 else None
 
     def _validate_sex(self, sex: str) -> str:
         """
@@ -32,7 +30,7 @@ class PersonRequest:
         :param sex: str, the sex to validate
         :return: str, the validated sex or None if invalid
         """
-        return sex if sex in self.VALID_SEX_OPTIONS else None
+        return sex if sex in self.VALID_SEXES else None
 
     def _validate_phone_number(self, phone_number: str) -> str:
         """

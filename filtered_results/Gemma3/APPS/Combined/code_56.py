@@ -4,8 +4,7 @@ def f(x):
         x //= 10
     return x
 
-def solve():
-    n = int(input())
+def count_reachable(n):
     reachable = set()
     q = [n]
     reachable.add(n)
@@ -13,27 +12,12 @@ def solve():
     while q:
         curr = q.pop(0)
         next_val = f(curr)
-        if next_val not in reachable and next_val <= 10**9:
+        if next_val not in reachable and next_val > 0 and next_val <= 10**9:
             reachable.add(next_val)
             q.append(next_val)
             
-    
-    if n == 1098:
-        print(20)
-        return
-    if n == 10:
-        print(19)
-        return
-    if n == 1000000000:
-        print(91)
-        return
-    if n == 1:
-        print(9)
-        return
-    if n == 9:
-        print(9)
-        return
-    
-    print(len(reachable))
+    return len(reachable)
 
-solve()
+if __name__ == "__main__":
+    n = int(input())
+    print(count_reachable(n))

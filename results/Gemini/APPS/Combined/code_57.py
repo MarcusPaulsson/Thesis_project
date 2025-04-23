@@ -4,14 +4,12 @@ def solve():
 
     givers = []
     receivers = []
-
     assigned = [False] * (n + 1)
+
     for i in range(n):
         if f[i] != 0:
             assigned[f[i]] = True
-
-    for i in range(n):
-        if f[i] == 0:
+        else:
             givers.append(i)
 
     for i in range(1, n + 1):
@@ -19,14 +17,20 @@ def solve():
             receivers.append(i)
 
     for i in range(len(givers)):
-        if givers[i] == receivers[i] - 1:
-            if i + 1 < len(givers):
-                receivers[i], receivers[i+1] = receivers[i+1], receivers[i]
-            else:
-                receivers[i], receivers[i-1] = receivers[i-1], receivers[i]
-
-    for i in range(len(givers)):
         f[givers[i]] = receivers[i]
+
+    for i in range(n):
+        if f[i] == i + 1:
+            for j in range(len(givers)):
+                if givers[j] != i:
+                    f[i], f[givers[j]] = f[givers[j]], f[i]
+                    break
+            else:
+                for j in range(n):
+                    if j != i:
+                        if f[j] != j + 1:
+                            f[i], f[j] = f[j], f[i]
+                            break
 
     print(*f)
 

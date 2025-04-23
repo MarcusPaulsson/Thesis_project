@@ -1,38 +1,38 @@
 def can_reach_end(n, m, d, c):
-    river = [0] * n  # Initialize the river array
+    total_length = sum(c)
 
-    # If the maximum jump distance allows reaching the end directly
+    # If the maximum jump distance is greater than or equal to the width of the river
     if d >= n + 1:
-        position = 0
-        for i in range(m):
-            for j in range(c[i]):
-                river[position] = i + 1
-                position += 1
-        return "YES", river
+        print("YES")
+        print("0 " + "0 " * (n - 1) + str(m))
+        return
 
-    position = 0  # Start placing platforms
+    # Calculate the minimum required gap between platforms
+    min_required_gap = (m - 1) * d
+
+    # If the total length of platforms plus the minimum required gaps exceeds n, it's impossible
+    if total_length + min_required_gap > n:
+        print("NO")
+        return
+
+    # Initialize the result array with zeros
+    result = [0] * n
+    position = 0
+
     for i in range(m):
         # Place the platform at the current position
         for j in range(c[i]):
-            if position < n:
-                river[position] = i + 1
-                position += 1
-        
-        # Move to the next available position after placing the current platform
-        position += d  # Jump to the next possible position
+            result[position] = i + 1
+            position += 1
+        # Move the position to the right by d for the next platform
+        position += d
 
-    # Check if we have filled the river correctly
-    if position <= n:
-        return "YES", river
-    else:
-        return "NO", []
+    print("YES")
+    print(" ".join(map(str, result)))
 
-# Input reading
+# Read input
 n, m, d = map(int, input().split())
 c = list(map(int, input().split()))
 
-# Function call and output
-result, river = can_reach_end(n, m, d, c)
-print(result)
-if result == "YES":
-    print(" ".join(map(str, river)))
+# Call the function
+can_reach_end(n, m, d, c)

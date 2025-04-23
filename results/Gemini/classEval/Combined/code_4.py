@@ -36,10 +36,12 @@ class AssessmentSystem:
                     or None otherwise
         """
         student_data = self.students.get(name)
-        if student_data and student_data['courses']:
-            total_score = sum(student_data['courses'].values())
-            return float(total_score) / len(student_data['courses'])
-        return None
+        if not student_data or not student_data['courses']:
+            return None
+
+        courses = student_data['courses']
+        total_score = sum(courses.values())
+        return float(total_score) / len(courses)
 
     def get_all_students_with_fail_course(self):
         """
@@ -51,7 +53,7 @@ class AssessmentSystem:
             for score in student_data['courses'].values():
                 if score < 60:
                     failed_students.append(name)
-                    break  # Only add the student once if they have multiple failing grades
+                    break  # Only add the student once if they have multiple failing courses
         return failed_students
 
     def get_course_average(self, course):
@@ -83,8 +85,8 @@ class AssessmentSystem:
         for name in self.students:
             gpa = self.get_gpa(name)
             if gpa is not None:
-                if highest_gpa is None or gpa > highest_gpa:
-                    highest_gpa = gpa
+                if top_student is None or gpa > highest_gpa:
                     top_student = name
+                    highest_gpa = gpa
 
         return top_student

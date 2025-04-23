@@ -1,31 +1,41 @@
 def solve():
     tiles = input().split()
-
-    def is_mentsu(hand):
+    
+    def check_mentsu(hand):
         # Check for koutsu
-        for tile in set(hand):
-            if hand.count(tile) >= 3:
+        counts = {}
+        for tile in hand:
+            counts[tile] = counts.get(tile, 0) + 1
+        for tile in counts:
+            if counts[tile] >= 3:
                 return True
-
+        
         # Check for shuntsu
-        suits = set(tile[1] for tile in hand)
+        suits = ['m', 'p', 's']
         for suit in suits:
-            nums = sorted([int(tile[0]) for tile in hand if tile[1] == suit])
+            nums = []
+            for tile in hand:
+                if tile[1] == suit:
+                    nums.append(int(tile[0]))
+            nums.sort()
+            
             if len(nums) >= 3:
                 for i in range(len(nums) - 2):
                     if nums[i+1] == nums[i] + 1 and nums[i+2] == nums[i] + 2:
                         return True
+        
         return False
 
-    if is_mentsu(tiles):
+    if check_mentsu(tiles):
         print(0)
         return
 
-    # Check for one tile draw
+    # Try drawing one tile
     for i in range(1, 10):
         for suit in ['m', 'p', 's']:
-            new_tiles = tiles + [str(i) + suit]
-            if is_mentsu(new_tiles):
+            new_tile = str(i) + suit
+            new_hand = tiles + [new_tile]
+            if check_mentsu(new_hand):
                 print(1)
                 return
 

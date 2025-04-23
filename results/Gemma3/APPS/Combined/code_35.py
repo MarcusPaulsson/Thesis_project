@@ -1,6 +1,6 @@
 def solve():
     n, m = map(int, input().split())
-    grid = [list(input()) for _ in range(n)]
+    field = [input() for _ in range(n)]
     
     if n % 3 != 0:
         print("NO")
@@ -11,25 +11,25 @@ def solve():
     colors = set()
     
     for i in range(stripe_height):
-        color = grid[i][0]
+        color = field[i][0]
         for j in range(m):
-            if grid[i][j] != color:
+            if field[i][j] != color:
                 print("NO")
                 return
         colors.add(color)
         
     for i in range(stripe_height, 2 * stripe_height):
-        color = grid[i][0]
+        color = field[i][0]
         for j in range(m):
-            if grid[i][j] != color:
+            if field[i][j] != color:
                 print("NO")
                 return
         colors.add(color)
         
     for i in range(2 * stripe_height, n):
-        color = grid[i][0]
+        color = field[i][0]
         for j in range(m):
-            if grid[i][j] != color:
+            if field[i][j] != color:
                 print("NO")
                 return
         colors.add(color)

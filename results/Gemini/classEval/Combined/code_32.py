@@ -17,18 +17,18 @@ class DecryptionUtils:
         :param shift: The shift to use for decryption,int.
         :return: The deciphered plaintext,str.
         """
-        plaintext = ""
+        result = ''
         for char in ciphertext:
             if 'a' <= char <= 'z':
-                start = 'a'
-                decrypted_char = chr((ord(char) - ord(start) - shift) % 26 + ord(start))
+                start = ord('a')
+                shifted_char = chr((ord(char) - start - shift) % 26 + start)
             elif 'A' <= char <= 'Z':
-                start = 'A'
-                decrypted_char = chr((ord(char) - ord(start) - shift) % 26 + ord(start))
+                start = ord('A')
+                shifted_char = chr((ord(char) - start - shift) % 26 + start)
             else:
-                decrypted_char = char
-            plaintext += decrypted_char
-        return plaintext
+                shifted_char = char
+            result += shifted_char
+        return result
 
     def vigenere_decipher(self, ciphertext):
         """
@@ -36,23 +36,24 @@ class DecryptionUtils:
         :param ciphertext: The ciphertext to decipher,str.
         :return: The deciphered plaintext,str.
         """
-        plaintext = ""
-        key_length = len(self.key)
+        key = self.key
+        result = ''
+        key_length = len(key)
         for i, char in enumerate(ciphertext):
             if 'a' <= char <= 'z':
-                start = 'a'
-                key_char = self.key[i % key_length]
+                start = ord('a')
+                key_char = key[i % key_length]
                 key_shift = ord(key_char) - ord('a')
-                decrypted_char = chr((ord(char) - ord(start) - key_shift) % 26 + ord(start))
+                shifted_char = chr((ord(char) - start - key_shift) % 26 + start)
             elif 'A' <= char <= 'Z':
-                start = 'A'
-                key_char = self.key[i % key_length]
+                start = ord('A')
+                key_char = key[i % key_length]
                 key_shift = ord(key_char.lower()) - ord('a')
-                decrypted_char = chr((ord(char) - ord(start) - key_shift) % 26 + ord(start))
+                shifted_char = chr((ord(char) - start - key_shift) % 26 + start)
             else:
-                decrypted_char = char
-            plaintext += decrypted_char
-        return plaintext
+                shifted_char = char
+            result += shifted_char
+        return result
 
     def rail_fence_decipher(self, encrypted_text, rails):
         """
@@ -62,43 +63,47 @@ class DecryptionUtils:
         :return: The deciphered plaintext,str.
         """
         text_length = len(encrypted_text)
-        rail_matrix = [['' for _ in range(text_length)] for _ in range(rails)]
-        direction_down = False
+        rail = [['' for _ in range(text_length)] for _ in range(rails)]
+
+        # Mark the positions where characters will be placed
         row, col = 0, 0
+        direction = 1  # 1 for down, -1 for up
 
         for i in range(text_length):
-            if row == 0 or row == rails - 1:
-                direction_down = not direction_down
-
-            rail_matrix[row][col] = '*'
+            rail[row][col] = '*'
             col += 1
 
-            if direction_down:
-                row += 1
-            else:
-                row -= 1
+            row += direction
+            if row == rails:
+                row = rails - 2
+                direction = -1
+            elif row == -1:
+                row = 1
+                direction = 1
 
+        # Fill the marked positions with the encrypted text
         index = 0
         for i in range(rails):
             for j in range(text_length):
-                if rail_matrix[i][j] == '*':
-                    rail_matrix[i][j] = encrypted_text[index]
+                if rail[i][j] == '*' and index < text_length:
+                    rail[i][j] = encrypted_text[index]
                     index += 1
 
+        # Read the text in a zig-zag manner to decrypt
         result = ""
         row, col = 0, 0
-        direction_down = False
+        direction = 1
 
         for i in range(text_length):
-            if row == 0 or row == rails - 1:
-                direction_down = not direction_down
-
-            result += rail_matrix[row][col]
+            result += rail[row][col]
             col += 1
 
-            if direction_down:
-                row += 1
-            else:
-                row -= 1
+            row += direction
+            if row == rails:
+                row = rails - 2
+                direction = -1
+            elif row == -1:
+                row = 1
+                direction = 1
 
         return result

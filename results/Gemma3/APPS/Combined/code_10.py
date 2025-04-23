@@ -11,18 +11,9 @@ def solve():
     elif remaining_days >= 3:
         max_days_off += 1
     
-    if n == 1:
+    if n < 7:
         min_days_off = 0
-        max_days_off = 1
-    elif n == 2:
-        min_days_off = 0
-        max_days_off = 2
-    elif n == 3:
-        min_days_off = 0
-        max_days_off = 2
-    elif n == 4:
-        min_days_off = 0
-        max_days_off = 2
+        max_days_off = min(n, 2)
     
     print(min_days_off, max_days_off)
 

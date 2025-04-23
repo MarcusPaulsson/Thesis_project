@@ -1,15 +1,15 @@
 import re
 from bs4 import BeautifulSoup
 
-
 class HtmlUtil:
     """
-    A utility class for processing HTML, providing methods for formatting text and extracting code snippets.
+    A utility class for formatting and extracting code from HTML text,
+    including cleaning up the text and converting certain elements into specific markers.
     """
 
     def __init__(self):
         """
-        Initialize a series of markers for various types of content.
+        Initialize a series of labels.
         """
         self.CODE_MARK = '-CODE-'
 
@@ -17,43 +17,38 @@ class HtmlUtil:
     def _format_line_feed(text):
         """
         Replace consecutive line breaks with a single line break.
-
-        :param text: String potentially containing consecutive line breaks.
-        :return: String with consecutive line breaks replaced by a single line break.
+        :param text: string with consecutive line breaks
+        :return: string, replaced text with single line break
         """
         return re.sub(r'\n+', '\n', text).strip()
 
     def format_line_html_text(self, html_text):
         """
-        Extracts formatted text from HTML, replacing code blocks with a specific marker.
-
-        :param html_text: String containing HTML content.
-        :return: String formatted with extracted text and code markers.
+        Get the HTML text without the code, and add the code tag -CODE- where the code is.
+        :param html_text: string
+        :return: string
         """
         soup = BeautifulSoup(html_text, 'html.parser')
         text_parts = []
 
-        # Extract text from relevant HTML tags
-        for element in soup.find_all(['h1', 'p', 'div']):
-            text = self._format_line_feed(element.get_text(strip=True))
-            if text:
-                text_parts.append(text)
+        for element in soup.body.find_all(['h1', 'p', 'pre']):
+            if element.name in ['h1', 'p']:
+                text_parts.append(element.get_text(strip=True))
+            elif element.name == 'pre':
+                text_parts.append(self.CODE_MARK)
 
-        # Add CODE_MARK for each <pre> or <code> block
-        for code_element in soup.find_all(['pre', 'code']):
-            text_parts.append(self.CODE_MARK)
-
-        return '\n'.join(text_parts)
+        return self._format_line_feed('\n'.join(text_parts))
 
     def extract_code_from_html_text(self, html_text):
         """
-        Extracts code snippets from HTML content.
-
-        :param html_text: String containing HTML content.
-        :return: List of extracted code snippets.
+        Extract codes from the HTML body.
+        :param html_text: string, HTML text
+        :return: list of code
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        return [code_element.get_text(strip=True) for code_element in soup.find_all(['pre', 'code'])]
+        code_snippets = []
 
+        for code in soup.find_all(['pre', 'code']):
+            code_snippets.append(code.get_text(strip=True))
 
-# Unit tests will be defined outside this class.
+        return code_snippets

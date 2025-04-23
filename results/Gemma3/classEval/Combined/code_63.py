@@ -27,8 +27,8 @@ class NLPDataProcessor2:
         :return: top 5 word frequency dictionary, a dictionary of word frequency, key is word, value is frequency
         """
         word_counts = Counter()
-        for words in words_list:
-            word_counts.update(words)
+        for word_list in words_list:
+            word_counts.update(word_list)
         return dict(word_counts)
 
     def process(self, string_list):

@@ -1,29 +1,47 @@
 def min_cost_to_obtain_set(n, k, s):
-    from collections import Counter
+    from collections import defaultdict
+    from math import comb
 
-    # Count the frequency of each character in the string
-    freq = Counter(s)
-    
-    total_cost = 0
+    # Count frequency of each character
+    freq = defaultdict(int)
+    for char in s:
+        freq[char] += 1
+
+    # Calculate the total number of unique subsequences
     unique_subsequences = 0
+    subsequence_costs = []
 
-    # Iterate over possible lengths of subsequences
+    # Generate all possible subsequences and their costs
     for length in range(1, n + 1):
-        current_length_subsequences = sum(1 for count in freq.values() if count >= length)
+        for count in freq.values():
+            if count >= length:
+                # Calculate the number of subsequences of this length
+                num_subsequences = comb(count, length)
+                unique_subsequences += num_subsequences
+                subsequence_costs.append((length, num_subsequences))
 
-        if current_length_subsequences == 0:
+    # If we cannot form at least k unique subsequences
+    if unique_subsequences < k:
+        return -1
+
+    # Sort costs by length (cost increases with length)
+    subsequence_costs.sort()
+
+    # Calculate the minimum cost to obtain k unique subsequences
+    total_cost = 0
+    remaining_k = k
+
+    for length, num in subsequence_costs:
+        if remaining_k <= 0:
             break
-        
-        # Each subsequence of this length has a cost of (n - length)
-        total_cost += current_length_subsequences * (n - length)
-        unique_subsequences += current_length_subsequences
-        
-        # Check if we have reached the required size k
-        if unique_subsequences >= k:
-            return total_cost
-    
-    # If we exit the loop and haven't reached k unique subsequences, it's impossible
-    return -1
+        if num <= remaining_k:
+            total_cost += num * (n - length)
+            remaining_k -= num
+        else:
+            total_cost += remaining_k * (n - length)
+            remaining_k = 0
+
+    return total_cost
 
 # Input reading
 n, k = map(int, input().split())

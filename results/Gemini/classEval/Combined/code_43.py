@@ -21,7 +21,12 @@ class HRManagementSystem:
         """
         if employee_id in self.employees:
             return False
-        self.employees[employee_id] = {'name': name, 'position': position, 'department': department, 'salary': salary}
+        self.employees[employee_id] = {
+            'name': name,
+            'position': position,
+            'department': department,
+            'salary': salary
+        }
         return True
 
     def remove_employee(self, employee_id):
@@ -45,12 +50,17 @@ class HRManagementSystem:
         if employee_id not in self.employees:
             return False
 
-        for key in employee_info:
-            if key not in ['name', 'position', 'department', 'salary']:
+        employee = self.employees[employee_id]
+        update_successful = False
+
+        for key, value in employee_info.items():
+            if key in employee:
+                employee[key] = value
+                update_successful = True
+            else:
                 return False
 
-        self.employees[employee_id].update(employee_info)
-        return True
+        return update_successful
 
     def get_employee(self, employee_id):
         """

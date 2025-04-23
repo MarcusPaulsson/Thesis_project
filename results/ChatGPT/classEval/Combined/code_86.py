@@ -1,13 +1,13 @@
 class TicTacToe:
     """
-    The class represents a game of Tic-Tac-Toe and its functions include making a move on the board, 
+    The class represents a game of Tic-Tac-Toe and its functions include making a move on the board,
     checking for a winner, and determining if the board is full.
     """
 
     def __init__(self, size=3):
         """
-        Initialize a game board with all empty spaces and set the current player to 'X'.
-        :param size: int, the size of the game board (default is 3 for a standard Tic-Tac-Toe)
+        Initialize a game board with specified size and set the current player to 'X'.
+        :param size: int, the size of the board (default is 3 for a 3x3 board)
         """
         self.size = size
         self.board = [[' ' for _ in range(size)] for _ in range(size)]
@@ -15,7 +15,7 @@ class TicTacToe:
 
     def make_move(self, row, col):
         """
-        Place the current player's mark at the specified position on the board and switch players.
+        Place the current player's mark at the specified position on the board and switch the player.
         :param row: int, the row index of the position
         :param col: int, the column index of the position
         :return: bool, indicating whether the move was successful or not
@@ -28,7 +28,7 @@ class TicTacToe:
 
     def is_valid_move(self, row, col):
         """
-        Validate if a move is within bounds and the position is empty.
+        Check if the move is valid (i.e., within bounds and on an empty cell).
         :param row: int, the row index of the position
         :param col: int, the column index of the position
         :return: bool, indicating whether the move is valid
@@ -40,14 +40,13 @@ class TicTacToe:
         Check if there is a winner on the board in rows, columns, and diagonals.
         :return: str or None, the mark of the winner ('X' or 'O'), or None if there is no winner yet
         """
-        lines = self.board + list(zip(*self.board))  # Rows + Columns
-        lines.append([self.board[i][i] for i in range(self.size)])  # Main diagonal
-        lines.append([self.board[i][self.size - 1 - i] for i in range(self.size)])  # Secondary diagonal
+        lines = self.board + list(map(list, zip(*self.board)))  # rows + columns
+        lines.append([self.board[i][i] for i in range(self.size)])  # main diagonal
+        lines.append([self.board[i][self.size - 1 - i] for i in range(self.size)])  # secondary diagonal
 
         for line in lines:
             if line[0] != ' ' and all(cell == line[0] for cell in line):
                 return line[0]
-
         return None
 
     def is_board_full(self):

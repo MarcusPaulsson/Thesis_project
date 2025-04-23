@@ -59,9 +59,9 @@ class HtmlUtil:
         soup = BeautifulSoup(html_text, 'html.parser')
         codes = []
         for pre in soup.find_all('pre'):
-            code_block = pre.find('code')
-            if code_block:
-                codes.append(code_block.get_text())
+            code_tag = pre.find('code')
+            if code_tag:
+                codes.append(code_tag.get_text())
             else:
                 codes.append(pre.get_text())
         return codes

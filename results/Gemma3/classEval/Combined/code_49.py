@@ -63,7 +63,7 @@ class JobMarketplace:
         """
         results = []
         for job in self.job_listings:
-            if criteria in job['requirements']:
+            if criteria in str(job['requirements']):
                 results.append(job)
         return results
 
@@ -86,4 +86,7 @@ class JobMarketplace:
         :param requirements: The requirements of the position,list.
         :return: True if the candidate meets the requirements,False otherwise.
         """
-        return all(requirement in resume['skills'] for requirement in requirements)
+        for requirement in requirements:
+            if requirement not in resume['skills']:
+                return False
+        return True

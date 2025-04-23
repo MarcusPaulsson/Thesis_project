@@ -15,7 +15,7 @@ sys.path.append(upper_dir)
 from extract_code_python import extract_and_save_python_code, save_results_to_json
 import prompt_technique_templates as prompt
 
-def load_ctransformers_model(model_repo, model_file, model_type="llama", gpu_layers=30, context_length=3400):
+def load_ctransformers_model(model_repo, model_file, model_type="llama", gpu_layers=24, context_length=6000):
     """Loads a model using ctransformers."""
     llm = AutoModelForCausalLM.from_pretrained(
         model_repo,
@@ -26,12 +26,12 @@ def load_ctransformers_model(model_repo, model_file, model_type="llama", gpu_lay
     )
     return llm
 
-def run_task_with_ctransformers(llm, task_prompt, temp=0.7):
+def run_task_with_ctransformers(llm, task_prompt, temp=0.2):
     """Run a single task using ctransformers."""
     output = llm(
         task_prompt,
         temperature=temp,
-        max_new_tokens=4096,  # Adjust as needed
+        max_new_tokens=5000,  # Adjust as needed
         stream=True,
     )
 
@@ -74,8 +74,8 @@ if __name__ == "__main__":
     if tasks is None:
         sys.exit(1)
 
-    start_index = 0
-    end_index = 1
+    start_index = 2
+    end_index = 3
 
     results = {}
 

@@ -32,7 +32,7 @@ class TwentyFourPointGame:
         :return: bool, True if the expression evaluates to 24, False otherwise
         """
         try:
-            return self.evaluate_expression(expression)
+            return abs(eval(expression) - 24) < 1e-6
         except:
             return False
 
@@ -45,6 +45,6 @@ class TwentyFourPointGame:
         """
         try:
             result = eval(expression)
-            return abs(result - 24) < 1e-6  # Use a small tolerance for floating-point comparisons
+            return abs(result - 24) < 1e-6
         except:
             return False

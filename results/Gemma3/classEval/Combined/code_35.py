@@ -32,7 +32,7 @@ class EightPuzzle:
         :return new_state: a 3*3 size list of Integer, stores the state after moving.
         """
         i, j = self.find_blank(state)
-        if i is None or j is None:
+        if i is None:
             return state
 
         new_state = [row[:] for row in state]  # Create a deep copy
@@ -88,10 +88,14 @@ class EightPuzzle:
             if state == self.goal_state:
                 return path
 
-            for move in self.get_possible_moves(state):
+            possible_moves = self.get_possible_moves(state)
+
+            for move in possible_moves:
                 new_state = self.move(state, move)
-                if tuple(map(tuple, new_state)) not in visited:
-                    visited.add(tuple(map(tuple, new_state)))
+                new_state_tuple = tuple(map(tuple, new_state))
+
+                if new_state_tuple not in visited:
+                    visited.add(new_state_tuple)
                     queue.append((new_state, path + [move]))
 
         return None

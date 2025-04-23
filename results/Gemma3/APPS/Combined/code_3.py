@@ -6,7 +6,6 @@ def solve():
         painters.append((l, r))
 
     max_painted = 0
-
     for i in range(1 << q):
         if bin(i).count('1') != q - 2:
             continue
@@ -18,8 +17,8 @@ def solve():
 
         painted_sections = set()
         for l, r in selected_painters:
-            for k in range(l, r + 1):
-                painted_sections.add(k)
+            for x in range(l, r + 1):
+                painted_sections.add(x)
 
         max_painted = max(max_painted, len(painted_sections))
 

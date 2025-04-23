@@ -18,10 +18,6 @@ class ExpressionCalculator:
         Calculate the result of the given postfix expression
         :param expression: string, the postfix expression to be calculated
         :return: float, the calculated result
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.calculate("2 + 3 * 4")
-        14.0
-
         """
         expression = self.transform(expression)
         tokens = expression.split()
@@ -46,29 +42,22 @@ class ExpressionCalculator:
         """
         Prepare the infix expression for conversion to postfix notation
         :param expression: string, the infix expression to be prepared
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.prepare("2+3*4")
-
-        expression_calculator.postfix_stack = ['2', '3', '4', '*', '+']
         """
         expression = self.transform(expression)
         tokens = expression.split()
-        op_stack = []
         for token in tokens:
             if token.isdigit() or (token.startswith('-') and token[1:].isdigit()):
                 self.postfix_stack.append(token)
             elif token == '(':
-                op_stack.append(token)
+                self.postfix_stack.append(token)
             elif token == ')':
-                while op_stack and op_stack[-1] != '(':
-                    self.postfix_stack.append(op_stack.pop())
-                op_stack.pop()  # Pop the '('
+                while self.postfix_stack and self.postfix_stack[-1] != '(':
+                    self.postfix_stack.append(self.postfix_stack.pop())
+                self.postfix_stack.pop()  # Remove the '('
             elif self.is_operator(token):
-                while op_stack and op_stack[-1] != '(' and self.compare(token, op_stack[-1]):
-                    self.postfix_stack.append(op_stack.pop())
-                op_stack.append(token)
-        while op_stack:
-            self.postfix_stack.append(op_stack.pop())
+                while self.postfix_stack and self.postfix_stack[-1] != '(' and self.compare(token, self.postfix_stack[-1]):
+                    self.postfix_stack.append(self.postfix_stack.pop())
+                self.postfix_stack.append(token)
 
     @staticmethod
     def is_operator(c):
@@ -76,10 +65,6 @@ class ExpressionCalculator:
         Check if a character is an operator in {'+', '-', '*', '/', '(', ')', '%'}
         :param c: string, the character to be checked
         :return: bool, True if the character is an operator, False otherwise
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.is_operator("+")
-        True
-
         """
         return c in {'+', '-', '*', '/', '(', ')', '%'}
 
@@ -89,10 +74,6 @@ class ExpressionCalculator:
         :param cur: string, the current operator
         :param peek: string, the operator at the top of the operator stack
         :return: bool, True if the current operator has higher or equal precedence, False otherwise
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.compare("+", "-")
-        True
-
         """
         cur_index = self.operat_priority[self.get_operator_index(cur)]
         peek_index = self.operat_priority[self.get_operator_index(peek)]
@@ -110,10 +91,6 @@ class ExpressionCalculator:
         :param second_value: string, the second operand
         :param current_op: string, the operator
         :return: decimal.Decimal, the calculated result
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator._calculate("2", "3", "+")
-        5.0
-
         """
         if current_op == '+':
             return first_value + second_value
@@ -134,20 +111,8 @@ class ExpressionCalculator:
         Transform the infix expression to a format suitable for conversion
         :param expression: string, the infix expression to be transformed
         :return: string, the transformed expression
-        >>> expression_calculator = ExpressionCalculator()
-        >>> expression_calculator.transform("2 + 3 * 4")
-        "2+3*4"
-
         """
         expression = expression.replace('(', '~(')
         expression = expression.replace(')', ')~')
-        expression = expression.replace('-', '~')
-        expression = expression.replace('~-', '~')
-        expression = expression.replace('~+', '+')
-        expression = expression.replace('~*', '*')
-        expression = expression.replace('~/', '/')
-        expression = expression.replace('~%', '%')
-        expression = expression.replace('~(', '(')
-        expression = expression.replace(')~', ')')
-        expression = expression.replace('~', '-')
-        return expression.replace(" ", "")
+        expression = expression.replace(' ', '')
+        return expression

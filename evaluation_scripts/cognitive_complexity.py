@@ -96,27 +96,27 @@ folder_paths_gemma_APPS = {
 
 
 
-results_chatgpt = {}  # Store average and std dev for each folder
+results_chatgpt = {}  # Store category counts for each folder
 results_gemini = {}
 results_gemma = {}
-ground_truth ={}  
+ground_truth ={}
 
 
-
-def analyze_folders_ground_truth(folder_paths, results):
-    for folder_name, folder_path in folder_paths.items():
-        complexities = []
-        all_file_names = []
-
-        for filename in os.listdir(folder_path):
-            if filename.endswith(".py"):
-                all_file_names.append(filename)
-        
-
+def get_complexity_category(complexity_value):
+    """Categorizes cognitive complexity into four classes."""
+    if complexity_value < 5:
+        return "low"
+    elif 6 <= complexity_value <= 10:
+        return "moderate"
+    elif 11 <= complexity_value <= 20:
+        return "high"
+    elif complexity_value >= 21:
+        return "very high"
+    return "N/A"
 
 def analyze_folders(folder_paths, results):
     for folder_name, folder_path in folder_paths.items():
-        
+
         if not os.path.exists(folder_path):
             print(f"Error: Folder not found: {folder_path}")
             continue
@@ -125,7 +125,7 @@ def analyze_folders(folder_paths, results):
             print(f"Error: Path is not a directory: {folder_path}")
             continue
 
-        complexities = []
+        category_counts = {"low": 0, "moderate": 0, "high": 0, "very high": 0}
         all_file_names = []
 
         for filename in os.listdir(folder_path):
@@ -138,17 +138,13 @@ def analyze_folders(folder_paths, results):
             file_path = os.path.join(folder_path, filename)
             try:
                 fc = file_complexity(file_path)
-                complexities.append(fc.complexity)
+                category = get_complexity_category(fc.complexity)
+                category_counts[category] += 1
             except Exception as e:
                 print(f"  Error analyzing {filename}: {e}")
                 continue
 
-        if complexities:
-            average_complexity = round(statistics.mean(complexities), 2)
-            std_dev_complexity = round(statistics.stdev(complexities), 2)
-            results[folder_name] = (average_complexity, std_dev_complexity)
-        else:
-            results[folder_name] = ("No valid files", "N/A")
+        results[folder_name] = category_counts
 
 def geometric_mean(data):
     if not data:
@@ -169,35 +165,21 @@ analyze_folders(folder_paths_gemma_APPS, results_gemma)
 analyze_folders(folder_paths_gemma_classEval, results_gemma)
 
 # Ground truth
-analyze_folders_ground_truth(folder_paths_ground_truth_APPS, ground_truth)
-analyze_folders_ground_truth(folder_paths_ground_truth_classEval, ground_truth)
+# analyze_folders(folder_paths_ground_truth_APPS, ground_truth)
+# analyze_folders(folder_paths_ground_truth_classEval, ground_truth)
 
 
 
-print_std_dev = False  # Changed to True to print standard deviation
+print("\nCognitive Complexity Category Distribution per prompt technique:")
 
-print("\nAverage Cognitive Complexity per prompt technique:")
+for folder, counts in results_gemini.items():
+    print(f"  {folder}: Low = {counts['low']}, Moderate = {counts['moderate']}, High = {counts['high']}, Very High = {counts['very high']}")
 
-for folder, (avg_complexity, std_dev) in results_gemini.items():
-    if print_std_dev:
-        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
-    else:
-        print(f"  {folder}: Average = {avg_complexity}")
+for folder, counts in results_chatgpt.items():
+    print(f"  {folder}: Low = {counts['low']}, Moderate = {counts['moderate']}, High = {counts['high']}, Very High = {counts['very high']}")
 
-for folder, (avg_complexity, std_dev) in results_chatgpt.items():
-    if print_std_dev:
-        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
-    else:
-        print(f"  {folder}: Average = {avg_complexity}")
+for folder, counts in results_gemma.items():
+    print(f"  {folder}: Low = {counts['low']}, Moderate = {counts['moderate']}, High = {counts['high']}, Very High = {counts['very high']}")
 
-for folder, (avg_complexity, std_dev) in results_gemma.items():
-    if print_std_dev:
-        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
-    else:
-        print(f"  {folder}: Average = {avg_complexity}")
-
-for folder, (avg_complexity, std_dev) in ground_truth.items():
-    if print_std_dev:
-        print(f"  {folder}: Average = {avg_complexity}, Std Dev = {std_dev}")
-    else:
-        print(f"  {folder}: Average = {avg_complexity}")
+for folder, counts in ground_truth.items():
+    print(f"  {folder}: Low = {counts['low']}, Moderate = {counts['moderate']}, High = {counts['high']}, Very High = {counts['very high']}")

@@ -1,4 +1,4 @@
-def is_lucky_time(hour, minute):
+def is_lucky(hour, minute):
     hour_str = str(hour).zfill(2)
     minute_str = str(minute).zfill(2)
     time_str = hour_str + minute_str
@@ -16,7 +16,7 @@ def solve():
         alarm_hour = (alarm_minutes // 60) % 24
         alarm_minute = alarm_minutes % 60
         
-        if is_lucky_time(alarm_hour, alarm_minute):
+        if is_lucky(alarm_hour, alarm_minute):
             print(y)
             return
 

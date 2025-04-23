@@ -1,10 +1,7 @@
-def find_integers(x):
-    for a in range(1, 11):
-        for b in range(1, 11):
-            if abs(a * b - x) < 1e-6:
-                return a, b
+x = float(input().strip())
 
-if __name__ == "__main__":
-    x = float(input().strip())
-    result = find_integers(x)
-    print(result[0], result[1])
+# Calculate integers a and b based on the input x
+a = min(max(int(x * 10), 1), 10)
+b = min(max(int(x * 10) % 10 + 1, 1), 10)
+
+print(a, b)

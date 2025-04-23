@@ -13,13 +13,15 @@ def solve():
         
         for x in arr:
             stack.append(x)
-            while stack and result and stack[-1] > result[-1]:
+            while stack and result and stack[-1] < result[-1]:
                 return False
             
             while stack and (not result or stack[-1] <= result[-1]):
                 result.append(stack.pop())
         
         while stack:
+            if result and stack[-1] < result[-1]:
+                return False
             result.append(stack.pop())
         
         return result == sorted(arr)

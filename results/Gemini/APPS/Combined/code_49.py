@@ -13,12 +13,12 @@ def solve():
             break
 
         digits_count += total_digits
-        power_of_10 *= 10
         length += 1
+        power_of_10 *= 10
 
-    remaining_digits = k - digits_count
-    number_index = (remaining_digits - 1) // length
-    digit_index = (remaining_digits - 1) % length
+    remaining = k - digits_count
+    number_index = (remaining - 1) // length
+    digit_index = (remaining - 1) % length
 
     number = power_of_10 + number_index
     number_str = str(number)

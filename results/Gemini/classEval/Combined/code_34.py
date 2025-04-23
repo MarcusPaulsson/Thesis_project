@@ -39,9 +39,14 @@ class DocFileHandler:
         try:
             document = Document()
             paragraph = document.add_paragraph(content)
-            paragraph.alignment = self._get_alignment_value(alignment)
+
+            # Set font size
             for run in paragraph.runs:
                 run.font.size = Pt(font_size)
+
+            # Set alignment
+            paragraph.alignment = self._get_alignment_value(alignment)
+
             document.save(self.file_path)
             return True
         except Exception as e:
@@ -56,7 +61,11 @@ class DocFileHandler:
         :return: bool, True if the heading is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path) if self.file_path else Document()
+            document = Document(self.file_path)
+        except Exception:
+            document = Document()
+
+        try:
             document.add_heading(heading, level=level)
             document.save(self.file_path)
             return True
@@ -71,8 +80,16 @@ class DocFileHandler:
         :return: bool, True if the table is successfully added, False otherwise.
         """
         try:
-            document = Document(self.file_path) if self.file_path else Document()
-            table = document.add_table(rows=0, cols=len(data[0]) if data else 0)
+            document = Document(self.file_path)
+        except Exception:
+            document = Document()
+
+        try:
+            if not data:
+                document.save(self.file_path)
+                return True
+
+            table = document.add_table(rows=0, cols=len(data[0]))
 
             for row_data in data:
                 row_cells = table.add_row().cells

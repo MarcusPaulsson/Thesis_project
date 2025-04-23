@@ -10,33 +10,40 @@ def find_spanning_tree(n, m, D, edges):
         graph[u].append(v)
         graph[v].append(u)
 
-    if len(graph[1]) < D:
+    degree = {i: 0 for i in range(1, n + 1)}
+    spanning_tree_edges = []
+    visited = set()
+
+    # BFS to construct the spanning tree
+    def bfs(start):
+        queue = deque([start])
+        visited.add(start)
+
+        while queue:
+            node = queue.popleft()
+            for neighbor in graph[node]:
+                if neighbor not in visited and degree[node] < D:
+                    spanning_tree_edges.append((node, neighbor))
+                    degree[node] += 1
+                    degree[neighbor] += 1
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+                    if degree[node] == D:
+                        break
+
+    bfs(1)
+
+    if degree[1] != D:
         print("NO")
         return
 
-    spanning_tree_edges = []
-    visited = set()
-    visited.add(1)
-
-    # Connect vertex 1 to D neighbors
-    degree_count = 0
-    for neighbor in graph[1]:
-        if degree_count < D:
-            spanning_tree_edges.append((1, neighbor))
-            visited.add(neighbor)
-            degree_count += 1
-        else:
-            break
-
-    # Use BFS to add remaining edges to form a spanning tree
-    queue = deque([1])
-    while queue and len(spanning_tree_edges) < n - 1:
-        current = queue.popleft()
-        for neighbor in graph[current]:
-            if neighbor not in visited:
-                visited.add(neighbor)
-                spanning_tree_edges.append((current, neighbor))
-                queue.append(neighbor)
+    # Add remaining edges to complete the spanning tree
+    for u in range(1, n + 1):
+        for v in graph[u]:
+            if degree[u] < 1 and degree[v] < 1 and (u, v) not in spanning_tree_edges and (v, u) not in spanning_tree_edges:
+                spanning_tree_edges.append((u, v))
+                degree[u] += 1
+                degree[v] += 1
                 if len(spanning_tree_edges) == n - 1:
                     break
 

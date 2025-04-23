@@ -8,15 +8,16 @@ class NLPDataProcessor2:
 
     def process_data(self, string_list):
         """
-        Keeps only English letters and spaces in the string, then converts the string to lower case, and then splits the string into a list of words.
+        Keeps only English letters and spaces in the string, then converts the string to lower case,
+        and then splits the string into a list of words.
         :param string_list: a list of strings
         :return: words_list: a list of words lists
         """
         words_list = []
         for string in string_list:
             cleaned_string = re.sub(r'[^a-zA-Z\s]', '', string)
-            lowercased_string = cleaned_string.lower()
-            words = lowercased_string.split()
+            cleaned_string = cleaned_string.lower()
+            words = cleaned_string.split()
             words_list.append(words)
         return words_list
 
@@ -29,6 +30,7 @@ class NLPDataProcessor2:
         word_counts = Counter()
         for words in words_list:
             word_counts.update(words)
+
         return dict(word_counts.most_common(5))
 
     def process(self, string_list):

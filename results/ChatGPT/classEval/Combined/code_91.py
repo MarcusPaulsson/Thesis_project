@@ -1,12 +1,14 @@
+import urllib.parse
+
 class UrlPath:
     """
     A utility class for encapsulating and manipulating the path component of a URL,
-    including adding segments, parsing path strings, and fixing path strings.
+    including adding segments, parsing path strings, and building path strings with optional encoding.
     """
 
     def __init__(self):
         """
-        Initializes the UrlPath object with an empty list of segments and a flag for the presence of an end tag.
+        Initializes the UrlPath object with an empty list of segments and a flag indicating the presence of an end tag.
         """
         self.segments = []
         self.with_end_tag = False
@@ -16,7 +18,8 @@ class UrlPath:
         Adds a segment to the list of segments in the UrlPath.
         :param segment: str, the segment to add.
         """
-        self.segments.append(segment)
+        if segment:
+            self.segments.append(segment)
 
     def parse(self, path: str, charset: str):
         """
@@ -24,8 +27,9 @@ class UrlPath:
         :param path: str, the path string to parse.
         :param charset: str, the character encoding of the path string.
         """
-        fixed_path = self.fix_path(path)
-        self.segments = fixed_path.split('/') if fixed_path else []
+        decoded_path = urllib.parse.unquote(path, encoding=charset)
+        cleaned_path = self.fix_path(decoded_path)
+        self.segments = cleaned_path.split('/') if cleaned_path else []
         self.with_end_tag = path.endswith('/')
 
     @staticmethod

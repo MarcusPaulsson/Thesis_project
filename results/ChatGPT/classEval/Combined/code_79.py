@@ -13,34 +13,32 @@ class SQLGenerator:
     def select(self, fields=None, condition=None):
         """
         Generates a SELECT SQL statement based on the specified fields and conditions.
-        :param fields: list, optional. The list of fields to be queried.
-        :param condition: str, optional. The condition expression for the query.
+        :param fields: list, optional. Default is None. The list of fields to be queried.
+        :param condition: str, optional. Default is None. The condition expression for the query.
         :return: str. The generated SQL statement.
         """
-        field_str = ', '.join(fields) if fields else '*'
-        sql = f"SELECT {field_str} FROM {self.table_name}"
-        if condition:
-            sql += f" WHERE {condition}"
-        return sql + ";"
+        fields_part = ', '.join(fields) if fields else '*'
+        condition_part = f' WHERE {condition}' if condition else ''
+        return f'SELECT {fields_part} FROM {self.table_name}{condition_part};'
 
     def insert(self, data):
         """
         Generates an INSERT SQL statement based on the given data.
-        :param data: dict. The data to be inserted, where keys are field names and values are field values.
+        :param data: dict. The data to be inserted, in dictionary form where keys are field names and values are field values.
         :return: str. The generated SQL statement.
         """
         fields = ', '.join(data.keys())
-        values = ', '.join(f"'{v}'" for v in data.values())
+        values = ', '.join(f"'{value}'" for value in data.values())
         return f"INSERT INTO {self.table_name} ({fields}) VALUES ({values});"
 
     def update(self, data, condition):
         """
         Generates an UPDATE SQL statement based on the given data and condition.
-        :param data: dict. The data to be updated, where keys are field names and values are new field values.
+        :param data: dict. The data to be updated, in dictionary form where keys are field names and values are new field values.
         :param condition: str. The condition expression for the update.
         :return: str. The generated SQL statement.
         """
-        set_clause = ', '.join(f"{k} = '{v}'" for k, v in data.items())
+        set_clause = ', '.join(f"{key} = '{value}'" for key, value in data.items())
         return f"UPDATE {self.table_name} SET {set_clause} WHERE {condition};"
 
     def delete(self, condition):

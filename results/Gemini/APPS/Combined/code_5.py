@@ -6,13 +6,12 @@ def solve():
         return
 
     ans = 0
-
     if l == 1:
-        ans += abs(pos - r) + 1
+        ans = abs(pos - r) + 1
     elif r == n:
-        ans += abs(pos - l) + 1
+        ans = abs(pos - l) + 1
     else:
-        ans += min(abs(pos - l), abs(pos - r)) + (r - l) + 2
+        ans = min(abs(pos - l) + abs(r - l) + 2, abs(pos - r) + abs(r - l) + 2)
 
     print(ans)
 

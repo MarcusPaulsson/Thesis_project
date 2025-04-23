@@ -29,7 +29,7 @@ class SplitSentence:
         words = sentence.split()
         count = 0
         for word in words:
-            if re.match(r'^[a-zA-Z]+$', word):
+            if not re.search(r'\d', word):
                 count += 1
         return count
 

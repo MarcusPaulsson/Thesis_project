@@ -16,8 +16,7 @@ class DataStatistics:
         """
         if not data:
             return 0.00
-        mean_value = sum(data) / len(data)
-        return float("{:.2f}".format(mean_value))
+        return float(f"{sum(data) / len(data):.2f}")
 
     def median(self, data):
         """
@@ -33,10 +32,11 @@ class DataStatistics:
         sorted_data = sorted(data)
         n = len(sorted_data)
         if n % 2 == 0:
-            median_value = (sorted_data[n // 2 - 1] + sorted_data[n // 2]) / 2
+            mid1 = sorted_data[n // 2 - 1]
+            mid2 = sorted_data[n // 2]
+            return float(f"{(mid1 + mid2) / 2:.2f}")
         else:
-            median_value = sorted_data[n // 2]
-        return float("{:.2f}".format(median_value))
+            return float(f"{sorted_data[n // 2]:.2f}")
 
     def mode(self, data):
         """

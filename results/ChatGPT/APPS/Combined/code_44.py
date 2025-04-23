@@ -1,27 +1,25 @@
 def minimal_time_to_post_office(d, k, a, b, t):
-    # Total time if Vasiliy walks the entire distance
-    walk_time = d * b
-    
-    # Initialize the minimum time with the walking time
-    min_time = walk_time
+    # Calculate the time if Vasiliy walks the entire distance
+    min_time = d * b
     
     # Calculate the number of full segments Vasiliy can drive
     full_segments = d // k
     remaining_distance = d % k
     
-    # Calculate time for driving full segments and walking the remaining distance
-    if full_segments > 0:
-        driving_time = full_segments * k * a
-        repair_time = (full_segments - 1) * t if full_segments > 1 else 0
-        total_time = driving_time + repair_time + remaining_distance * b
-        min_time = min(min_time, total_time)
+    # Time taken if Vasiliy drives full segments and walks the remaining distance
+    time_with_driving = full_segments * (k * a + t) + remaining_distance * b - t
+    min_time = min(min_time, time_with_driving)
     
-    # Check if Vasiliy can drive one less segment and walk the rest
-    if full_segments > 0:
-        driving_time = (full_segments - 1) * k * a
-        repair_time = (full_segments - 1) * t
-        total_time = driving_time + repair_time + k * a + remaining_distance * b
-        min_time = min(min_time, total_time)
+    # Check if he can drive fewer segments and walk the rest
+    for segments in range(full_segments + 1):
+        distance_driven = segments * k
+        time_taken = segments * (k * a + t) + (d - distance_driven) * b
+        
+        # If he drives the last segment, he doesn't need to repair after it
+        if segments > 0:
+            time_taken -= t
+        
+        min_time = min(min_time, time_taken)
     
     return min_time
 

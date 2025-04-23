@@ -6,16 +6,15 @@ def solve():
     for j in range(n):
         temp_a = a[:j] + a[j+1:]
         
+        if not temp_a:
+            continue
+        
         total_sum = sum(temp_a)
         
-        is_good = False
         for k in range(len(temp_a)):
             if temp_a[k] == total_sum - temp_a[k]:
-                is_good = True
+                nice_indices.append(j + 1)
                 break
-        
-        if is_good:
-            nice_indices.append(j + 1)
             
     print(len(nice_indices))
     print(*nice_indices)

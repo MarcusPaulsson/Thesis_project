@@ -2,73 +2,69 @@ from math import pi
 
 class TriCalculator:
     """
-    The class allows calculating trigonometric values, including cosine, sine, and tangent,
-    using Taylor series approximations.
+    The class allows to calculate trigonometric values, including cosine, sine, and tangent, using Taylor series approximations.
     """
 
-    def factorial(self, a: int) -> int:
+    def __init__(self):
+        pass
+
+    def cos(self, x):
         """
-        Calculate the factorial of a non-negative integer.
-        :param a: int - non-negative integer
-        :return: int - factorial of a
+        Calculate the cosine value of the x-degree angle.
+        :param x: float
+        :return: float
         """
-        if a < 0:
+        return self._taylor_cos(x, 50)
+
+    def factorial(self, n):
+        """
+        Calculate the factorial of n.
+        :param n: int
+        :return: int
+        """
+        if n < 0:
             raise ValueError("Factorial is not defined for negative numbers.")
         result = 1
-        for i in range(2, a + 1):
+        for i in range(2, n + 1):
             result *= i
         return result
 
-    def taylor_cos(self, x: float, n: int) -> float:
+    def _taylor_cos(self, x, n):
         """
         Calculate the n-order Taylor expansion value of cos(x) where x is in radians.
-        :param x: float - angle in radians
-        :param n: int - number of terms in the Taylor series
-        :return: float - cosine of x
+        :param x: float
+        :param n: int
+        :return: float
         """
-        cos_value = 0
-        for i in range(n):
-            term = ((-1) ** i) * (x ** (2 * i)) / self.factorial(2 * i)
-            cos_value += term
+        radians = x * (pi / 180)
+        cos_value = sum(((-1) ** i) * (radians ** (2 * i)) / self.factorial(2 * i) for i in range(n))
         return cos_value
 
-    def taylor_sin(self, x: float, n: int) -> float:
-        """
-        Calculate the n-order Taylor expansion value of sin(x) where x is in radians.
-        :param x: float - angle in radians
-        :param n: int - number of terms in the Taylor series
-        :return: float - sine of x
-        """
-        sin_value = 0
-        for i in range(n):
-            term = ((-1) ** i) * (x ** (2 * i + 1)) / self.factorial(2 * i + 1)
-            sin_value += term
-        return sin_value
-
-    def cos(self, x: float) -> float:
-        """
-        Calculate the cosine value of the x-degree angle.
-        :param x: float - angle in degrees
-        :return: float - cosine of x
-        """
-        radians = x * (pi / 180)
-        return self.taylor_cos(radians, 50)
-
-    def sin(self, x: float) -> float:
+    def sin(self, x):
         """
         Calculate the sine value of the x-degree angle.
-        :param x: float - angle in degrees
-        :return: float - sine of x
+        :param x: float
+        :return: float
+        """
+        return self._taylor_sin(x, 50)
+
+    def _taylor_sin(self, x, n):
+        """
+        Calculate the n-order Taylor expansion value of sin(x) where x is in radians.
+        :param x: float
+        :param n: int
+        :return: float
         """
         radians = x * (pi / 180)
-        return self.taylor_sin(radians, 50)
+        sin_value = sum(((-1) ** i) * (radians ** (2 * i + 1)) / self.factorial(2 * i + 1) for i in range(n))
+        return sin_value
 
-    def tan(self, x: float) -> float:
+    def tan(self, x):
         """
         Calculate the tangent value of the x-degree angle.
-        :param x: float - angle in degrees
-        :return: float or bool - tangent of x or False if undefined
+        :param x: float
+        :return: float or bool
         """
         if x % 180 == 90:
-            return False  # Undefined value for tangent
+            return False  # Undefined for odd multiples of 90 degrees
         return self.sin(x) / self.cos(x)

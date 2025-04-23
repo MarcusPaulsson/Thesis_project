@@ -29,14 +29,12 @@ class CurrencyConverter:
             return False
         return amount * self.rates[from_currency] / self.rates[to_currency]
 
-
     def get_supported_currencies(self):
         """
         Returns a list of supported currency types
         :return:list, All supported currency types
         """
         return list(self.rates.keys())
-
 
     def add_currency_rate(self, currency, rate):
         """
@@ -48,7 +46,6 @@ class CurrencyConverter:
         if currency in self.rates:
             return False
         self.rates[currency] = rate
-
 
     def update_currency_rate(self, currency, new_rate):
         """

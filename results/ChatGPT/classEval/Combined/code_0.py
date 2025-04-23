@@ -3,56 +3,71 @@ import datetime
 
 class AccessGatewayFilter:
     """
-    This class filters incoming requests for authentication and access logging.
+    This class is a filter used for accessing gateway filtering, primarily for authentication and access log recording.
     """
 
-    VALID_PREFIXES = ["/api", "/login"]
-
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.allowed_methods = {'GET', 'POST'}
+        self.valid_prefixes = ['/api', '/login']
 
     def filter(self, request):
         """
         Filter the incoming request based on certain rules and conditions.
         :param request: dict, the incoming request details
-        :return: bool, True if the request is allowed, False otherwise
+        :return: bool or None, True if the request is allowed, False if denied, None if user level is insufficient
         """
-        if self._starts_with_valid_prefix(request.get('path', '')):
-            user = self._extract_jwt_user(request)
-            if user:
-                self._log_user_access(user)
-                return True
-        return False
+        if not self._is_start_with(request['path']):
+            return False
 
-    def _starts_with_valid_prefix(self, request_uri):
+        if request['method'] not in self.allowed_methods:
+            return False
+
+        user = self._get_jwt_user(request)
+        if user is None:
+            return False
+
+        if user.get('level', 0) < 3:
+            return None
+
+        self._set_current_user_info_and_log(user)
+        return True
+
+    def _is_start_with(self, request_uri):
         """
         Check if the request URI starts with certain prefixes.
         :param request_uri: str, the URI of the request
         :return: bool, True if the URI starts with certain prefixes, False otherwise
         """
-        return any(request_uri.startswith(prefix) for prefix in self.VALID_PREFIXES)
+        return any(request_uri.startswith(prefix) for prefix in self.valid_prefixes)
 
-    def _extract_jwt_user(self, request):
+    def _get_jwt_user(self, request):
         """
         Get the user information from the JWT token in the request.
         :param request: dict, the incoming request details
         :return: dict or None, the user information if the token is valid, None otherwise
         """
         auth_header = request.get('headers', {}).get('Authorization', {})
-        jwt = auth_header.get('jwt')
-        user = auth_header.get('user')
+        user_info = auth_header.get('user')
+        jwt_token = auth_header.get('jwt')
 
-        if jwt and user and jwt == f"{user['name']}{datetime.date.today()}":
-            return user
+        if user_info and self._is_jwt_valid(jwt_token, user_info['name']):
+            return user_info
         return None
 
-    def _log_user_access(self, user):
+    def _is_jwt_valid(self, jwt_token, username):
         """
-        Log the access of the current user.
+        Validate the JWT token.
+        :param jwt_token: str, the JWT token
+        :param username: str, the username to validate against
+        :return: bool, True if the JWT is valid, False otherwise
+        """
+        expected_token = f"{username}{datetime.date.today()}"
+        return jwt_token == expected_token
+
+    def _set_current_user_info_and_log(self, user):
+        """
+        Set the current user information and log the access.
         :param user: dict, the user information
         :return: None
         """
-        address = user.get('address', 'unknown address')
-        self.logger.info(f"User accessed: {user['name']} from {address}")
-
-# Unit tests would follow here, as provided in the original prompt.
+        logging.info(f"User accessed: {user['name']} from {user.get('address', 'unknown')}")

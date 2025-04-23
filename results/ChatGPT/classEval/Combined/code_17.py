@@ -2,71 +2,72 @@ from datetime import datetime, timedelta
 
 class CalendarUtil:
     """
-    A utility class to manage calendar events, schedule appointments, and perform conflict checks.
+    A utility class for managing calendar events, scheduling appointments, and performing conflict checks.
     """
 
     def __init__(self):
-        """Initialize the calendar with an empty list of events."""
+        """
+        Initializes the calendar with an empty list of events.
+        """
         self.events = []
 
     def add_event(self, event):
         """
-        Add an event to the calendar.
-        :param event: The event to be added to the calendar, dict.
+        Adds an event to the calendar.
+        :param event: The event to be added, expected to be a dictionary with 'date', 'start_time', 'end_time', and 'description'.
         """
         self.events.append(event)
 
     def remove_event(self, event):
         """
-        Remove an event from the calendar.
-        :param event: The event to be removed from the calendar, dict.
+        Removes an event from the calendar.
+        :param event: The event to be removed, expected to be a dictionary.
         """
         self.events = [e for e in self.events if e != event]
 
     def get_events(self, date):
         """
-        Get all events on a given date.
-        :param date: The date to get events for, datetime.
-        :return: A list of events on the given date, list.
+        Retrieves all events on a given date.
+        :param date: The date to get events for, expected to be a datetime object.
+        :return: A list of events on the given date.
         """
         return [event for event in self.events if event['date'].date() == date.date()]
 
     def is_available(self, start_time, end_time):
         """
-        Check if the calendar is available for a given time slot.
-        :param start_time: The start time of the time slot, datetime.
-        :param end_time: The end time of the time slot, datetime.
-        :return: True if the calendar is available for the given time slot, False otherwise, bool.
+        Checks if the calendar is available for a given time slot.
+        :param start_time: The start time of the time slot, expected to be a datetime object.
+        :param end_time: The end time of the time slot, expected to be a datetime object.
+        :return: True if the calendar is available for the given time slot, False otherwise.
         """
-        return all(not (event['start_time'] < end_time and start_time < event['end_time']) for event in self.events)
+        return all(not (event['start_time'] < end_time and event['end_time'] > start_time) for event in self.events)
 
     def get_available_slots(self, date):
         """
-        Get all available time slots on a given date.
-        :param date: The date to get available time slots for, datetime.
-        :return: A list of available time slots on the given date, list.
+        Retrieves all available time slots on a given date.
+        :param date: The date to get available time slots for, expected to be a datetime object.
+        :return: A list of available time slots on the given date.
         """
         slots = []
-        day_start = datetime.combine(date.date(), datetime.min.time())
-        day_end = datetime.combine(date.date(), datetime.max.time())
-        occupied_times = [(event['start_time'], event['end_time']) for event in self.get_events(date)]
-        
-        current_time = day_start
-        for start, end in sorted(occupied_times):
-            if current_time < start:
-                slots.append((current_time, start))
-            current_time = max(current_time, end)
-        
-        if current_time < day_end:
-            slots.append((current_time, day_end))
-        
+        start_of_day = datetime.combine(date, datetime.min.time())
+        end_of_day = datetime.combine(date, datetime.max.time())
+        current_time = start_of_day
+
+        for event in sorted(self.events, key=lambda x: x['start_time']):
+            if current_time < event['start_time']:
+                slots.append((current_time, event['start_time']))
+            current_time = max(current_time, event['end_time'])
+
+        if current_time < end_of_day:
+            slots.append((current_time, end_of_day))
+
         return slots
 
     def get_upcoming_events(self, num_events):
         """
-        Get the next n upcoming events from the current date.
-        :param num_events: The number of upcoming events to get, int.
-        :return: A list of the next n upcoming events from the current date, list.
+        Retrieves the next n upcoming events from the current date.
+        :param num_events: The number of upcoming events to retrieve, expected to be an integer.
+        :return: A list of the next n upcoming events from the current date.
         """
         now = datetime.now()
         upcoming_events = [event for event in self.events if event['start_time'] > now]

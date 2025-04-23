@@ -40,16 +40,18 @@ class Snake:
             self.positions.insert(0, new_head)
             self.positions.pop()
 
+
     def random_food_position(self):
         """
         Randomly generate a new food position, but don't place it on the snake.
         :return: None, Change the food position
         """
         while True:
-            x = random.randint(0, self.SCREEN_WIDTH - 1)
-            y = random.randint(0, self.SCREEN_HEIGHT - 1)
-            if (x, y) not in self.positions:
-                self.food_position = (x, y)
+            x = random.randrange(self.SCREEN_WIDTH)
+            y = random.randrange(self.SCREEN_HEIGHT)
+            food_position = (x, y)
+            if food_position not in self.positions:
+                self.food_position = food_position
                 break
 
 

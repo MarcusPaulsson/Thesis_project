@@ -1,7 +1,7 @@
 def find_kth_digit(k):
-    length = 1  # Current digit length
-    count = 9   # Count of numbers with the current digit length
-    start = 1   # Starting number with the current digit length
+    length = 1
+    count = 9
+    start = 1
 
     # Determine the range where the k-th digit lies
     while k > length * count:
@@ -10,12 +10,13 @@ def find_kth_digit(k):
         count *= 10
         start *= 10
 
-    # Find the actual number that contains the k-th digit
+    # Find the actual number containing the k-th digit
     start += (k - 1) // length
     num_str = str(start)
-    
-    # Find the specific digit
-    return num_str[(k - 1) % length]
 
+    # Return the k-th digit
+    return int(num_str[(k - 1) % length])
+
+# Read input and print the result
 k = int(input().strip())
 print(find_kth_digit(k))

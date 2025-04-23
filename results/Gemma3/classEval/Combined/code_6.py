@@ -7,6 +7,8 @@ class AvgPartition:
         """
         Initialize the class with the given list and the number of partitions, and check if the number of partitions is greater than 0.
         """
+        if limit <= 0:
+            raise ValueError("Number of partitions must be greater than 0.")
         self.lst = lst
         self.limit = limit
 
@@ -15,12 +17,9 @@ class AvgPartition:
         Calculate the size of each block and the remainder of the division.
         :return: the size of each block and the remainder of the division, tuple.
         """
-        if self.limit <= 0:
-            raise ValueError("Limit must be greater than 0")
         size = len(self.lst) // self.limit
         remainder = len(self.lst) % self.limit
         return (size, remainder)
-
 
     def get(self, index):
         """

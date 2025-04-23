@@ -12,42 +12,36 @@ class StudentDatabaseProcessor:
         """
         self.database_name = database_name
 
-    def _execute_query(self, query, params=None):
+    def _execute_query(self, query, parameters=None):
         """
-        Executes a SQL query.  Handles connection and cursor management.
+        Executes a SQL query within a context-managed connection.
+
         :param query: str, the SQL query to execute.
-        :param params: tuple, optional parameters for the query.
-        :return: list of tuples, the result of the query (if applicable).
+        :param parameters: tuple, optional parameters to pass to the query.
+        :return: list of tuples, the result of the query if it's a SELECT statement, otherwise None.
         """
-        conn = None
-        cursor = None
         try:
-            conn = sqlite3.connect(self.database_name)
-            cursor = conn.cursor()
-            if params:
-                cursor.execute(query, params)
-            else:
-                cursor.execute(query)
-            if query.lower().startswith("select"):
-                result = cursor.fetchall()
-            else:
-                result = None
-            conn.commit()
-            return result
+            with sqlite3.connect(self.database_name) as conn:
+                cursor = conn.cursor()
+                if parameters:
+                    cursor.execute(query, parameters)
+                else:
+                    cursor.execute(query)
+
+                if query.lower().startswith("select"):
+                    result = cursor.fetchall()
+                    return result
+                else:
+                    conn.commit()
+                    return None
         except sqlite3.Error as e:
             print(f"Database error: {e}")
-            if conn:
-                conn.rollback()
             return None
-        finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
 
     def create_student_table(self):
         """
-        Creates a "students" table in the database if it does not exist already.Fields include ID of type int, name of type str, age of type int, gender of type str, and grade of type int
+        Creates a "students" table in the database if it does not exist already.
+        Fields include ID of type int, name of type str, age of type int, gender of type str, and grade of type int
         :return: None
         """
         query = """
@@ -71,8 +65,8 @@ class StudentDatabaseProcessor:
             INSERT INTO students (name, age, gender, grade)
             VALUES (?, ?, ?, ?)
         """
-        params = (student_data['name'], student_data['age'], student_data['gender'], student_data['grade'])
-        self._execute_query(query, params)
+        parameters = (student_data['name'], student_data['age'], student_data['gender'], student_data['grade'])
+        self._execute_query(query, parameters)
 
     def search_student_by_name(self, name):
         """
@@ -82,7 +76,7 @@ class StudentDatabaseProcessor:
         """
         query = "SELECT * FROM students WHERE name=?"
         result = self._execute_query(query, (name,))
-        return result
+        return result if result is not None else []
 
     def delete_student_by_name(self, name):
         """

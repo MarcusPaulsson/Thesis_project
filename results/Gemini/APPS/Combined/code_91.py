@@ -5,7 +5,6 @@ def solve():
     m = len(t)
     
     ans = 0
-    
     for i in range(n + 1):
         for j in range(i, n + 1):
             temp_s = ""
@@ -28,7 +27,6 @@ def solve():
             
             if ti == m:
                 ans = max(ans, j - i)
-    
     print(ans)
 
 solve()

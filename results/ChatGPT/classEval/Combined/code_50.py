@@ -3,19 +3,21 @@ import os
 
 class JSONProcessor:
     """
-    A class to process JSON files, including reading, writing, and modifying JSON data.
+    This class processes JSON files, including reading, writing, and modifying JSON data.
     """
 
     def read_json(self, file_path):
         """
         Read a JSON file and return the data.
-        
+
         :param file_path: str, the path of the JSON file.
         :return: dict or int, the data from the JSON file if read successfully, 
-                -1 if an error occurs, or 0 if the file does not exist.
+                -1 if an error occurs during the reading process, 
+                0 if the file does not exist.
         """
         if not os.path.isfile(file_path):
             return 0
+        
         try:
             with open(file_path, 'r') as file:
                 return json.load(file)
@@ -28,10 +30,12 @@ class JSONProcessor:
 
         :param data: dict, the data to be written to the JSON file.
         :param file_path: str, the path of the JSON file.
-        :return: int, 1 if successful, -1 if an error occurs.
+        :return: int, 1 if the writing process is successful, 
+                -1 if an error occurs during the writing process.
         """
-        if not isinstance(data, dict) or not file_path:
+        if not isinstance(data, dict):
             return -1
+        
         try:
             with open(file_path, 'w') as file:
                 json.dump(data, file, ensure_ascii=False, indent=4)
@@ -41,16 +45,21 @@ class JSONProcessor:
 
     def process_json(self, file_path, remove_key):
         """
-        Read a JSON file, remove a specified key, and write the modified data back.
+        Read a JSON file and process the data by removing a specified key 
+        and rewrite the modified data back to the file.
 
         :param file_path: str, the path of the JSON file.
         :param remove_key: str, the key to be removed.
-        :return: int, 1 if the key was removed and data written back, 
-                0 if the file does not exist or key does not exist in the data.
+        :return: int, 1 if the specified key is successfully removed and 
+                the data is written back, 
+                0 if the file does not exist or the specified key does not exist in the data.
         """
         data = self.read_json(file_path)
-        if data in (0, -1) or remove_key not in data:
+        if data == 0:
             return 0
-
-        data.pop(remove_key, None)  # Remove the key if it exists
-        return self.write_json(data, file_path)
+        
+        if isinstance(data, dict) and remove_key in data:
+            del data[remove_key]
+            return self.write_json(data, file_path)
+        
+        return 0

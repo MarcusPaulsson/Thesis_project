@@ -23,7 +23,7 @@ class CurrencyConverter:
         :param amount: float, The value of a given currency
         :param from_currency: string, source currency type
         :param to_currency: string, target currency type
-        :return: float, value converted to another currency type, or False if currencies are not supported.
+        :return: float, value converted to another currency type
         """
         if not isinstance(amount, (int, float)):
             raise TypeError("Amount must be a number.")
@@ -56,7 +56,7 @@ class CurrencyConverter:
         Add a new supported currency type, return False if the currency type is already in the support list
         :param currency:string, currency type to be added
         :param rate:float, exchange rate for this type of currency
-        :return: True if successful, False otherwise.
+        :return:If successful, returns None; if unsuccessful, returns False
         """
         if not isinstance(currency, str):
             raise TypeError("Currency must be a string.")
@@ -69,14 +69,14 @@ class CurrencyConverter:
             return False
 
         self.rates[currency] = rate
-        return True
+        return None
 
     def update_currency_rate(self, currency, new_rate):
         """
         Update the exchange rate for a certain currency
         :param currency:string
         :param new_rate:float
-        :return: True if successful, False otherwise.
+        :return:If successful, returns None; if unsuccessful, returns False
         """
         if not isinstance(currency, str):
             raise TypeError("Currency must be a string.")
@@ -89,4 +89,4 @@ class CurrencyConverter:
             return False
 
         self.rates[currency] = new_rate
-        return True
+        return None

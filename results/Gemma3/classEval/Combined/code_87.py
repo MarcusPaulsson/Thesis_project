@@ -58,8 +58,7 @@ class TimeUtils:
         """
         datetime1 = self.string_to_datetime(string_time1)
         datetime2 = self.string_to_datetime(string_time2)
-        time_difference = datetime2 - datetime1
-        return round(time_difference.total_seconds() / 60)
+        return round((datetime2 - datetime1).total_seconds() / 60)
 
     def get_format_time(self, year, month, day, hour, minute, second):
         """

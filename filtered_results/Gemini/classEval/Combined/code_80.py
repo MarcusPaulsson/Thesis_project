@@ -1,78 +1,60 @@
 class SQLQueryBuilder:
     """
-    This class provides methods to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements.
+    This class provides to build SQL queries, including SELECT, INSERT, UPDATE, and DELETE statements. 
     """
 
     @staticmethod
     def select(table, columns='*', where=None):
         """
-        Generates a SELECT SQL statement.
-
-        :param table: str, the name of the table.
-        :param columns: str or list of str, the columns to select.  Defaults to '*' (all columns).
-        :param where: dict, the WHERE clause conditions.
-        :return: str, the generated SQL query.
+        Generate the SELECT SQL statement from the given parameters.
+        :param table: str, the query table in database.
+        :param columns: list of str, ['col1', 'col2'].
+        :param where: dict, {key1: value1, key2: value2 ...}. The query condition.
+        return query: str, the SQL query statement.
         """
-        query = "SELECT "
-
-        if isinstance(columns, list):
-            query += ", ".join(columns)
-        else:
-            query += str(columns)  # Ensure columns is a string
-
-        query += f" FROM {table}"
-
+        query = f"SELECT {', '.join(columns) if isinstance(columns, list) else columns} FROM {table}"
         if where:
-            conditions = " AND ".join(f"{key}='{value}'" for key, value in where.items())
+            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
             query += f" WHERE {conditions}"
-
         return query
 
     @staticmethod
     def insert(table, data):
         """
-        Generates an INSERT SQL statement.
-
-        :param table: str, the name of the table.
-        :param data: dict, the data to insert (column names and values).
-        :return: str, the generated SQL query.
+        Generate the INSERT SQL statement from the given parameters.
+        :param table: str, the table to be inserted in database.
+        :param data: dict, the key and value in SQL insert statement
+        :return query: str, the SQL insert statement.
         """
-        columns = ", ".join(data.keys())
-        values = ", ".join([f"'{value}'" for value in data.values()])
+        columns = ', '.join(data.keys())
+        values = ', '.join([f"'{value}'" for value in data.values()])
         return f"INSERT INTO {table} ({columns}) VALUES ({values})"
 
     @staticmethod
     def delete(table, where=None):
         """
-        Generates a DELETE SQL statement.
-
-        :param table: str, the name of the table.
-        :param where: dict, the WHERE clause conditions.
-        :return: str, the generated SQL query.
+        Generate the DELETE SQL statement from the given parameters.
+        :param table: str, the table that will be excuted with DELETE operation in database
+        :param where: dict, {key1: value1, key2: value2 ...}. The query condition.
+        :return query: str, the SQL delete statement.
         """
         query = f"DELETE FROM {table}"
-
         if where:
-            conditions = " AND ".join(f"{key}='{value}'" for key, value in where.items())
+            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
             query += f" WHERE {conditions}"
-
         return query
 
     @staticmethod
     def update(table, data, where=None):
         """
-        Generates an UPDATE SQL statement.
-
-        :param table: str, the name of the table.
-        :param data: dict, the data to update (column names and values).
-        :param where: dict, the WHERE clause conditions.
-        :return: str, the generated SQL query.
+        Generate the UPDATE SQL statement from the given parameters.
+        :param table: str, the table that will be excuted with UPDATE operation in database
+        :param data: dict, the key and value in SQL update statement
+        :param where: dict, {key1: value1, key2: value2 ...}. The query condition.
         """
-        updates = ", ".join(f"{key}='{value}'" for key, value in data.items())
+        updates = ", ".join([f"{key}='{value}'" for key, value in data.items()])
         query = f"UPDATE {table} SET {updates}"
-
         if where:
-            conditions = " AND ".join(f"{key}='{value}'" for key, value in where.items())
+            conditions = " AND ".join([f"{key}='{value}'" for key, value in where.items()])
             query += f" WHERE {conditions}"
-
         return query

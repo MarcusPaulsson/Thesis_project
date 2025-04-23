@@ -5,25 +5,22 @@ def solve():
         print(d * a)
         return
 
-    cost_only_driving = k * a + (d - k) * b
-    cost_with_repairs = 0
+    cost_all_car = k * a + t + (d - k) * b
+    cost_all_walk = d * a
 
-    num_breaks = (d - 1) // k
-    cost_with_repairs = k * a + num_breaks * t + (d - k) * a
+    if a * k + t >= b * k:
+        print(k * a + (d - k) * b)
+        return
 
-    if t + k * a < k * b:
-        cost_with_repairs = (d // k) * (k * a + t) + (d % k) * a if d % k != 0 else (d // k) * (k * a + t) - t
-        cost_with_repairs = cost_with_repairs if d % k != 0 else cost_with_repairs + t if d == k else cost_with_repairs
-        cost_with_repairs = (d // k) * (k * a + t) + (d % k) * a if d % k != 0 else (d // k -1) * (k * a + t) + k * a
-        if d % k == 0 and d == k:
-            cost_with_repairs = k * a
-        elif d % k == 0 and d > k:
-            cost_with_repairs = (d // k - 1) * t + (d // k) * (k * a)
-        else:
-            cost_with_repairs = (d // k) * (k * a + t) + (d % k) * a
-    else:
-        cost_with_repairs = k * a + (d - k) * b
-    
-    print(min(cost_only_driving, cost_with_repairs))
+    num_breaks = d // k
+    remaining_dist = d % k
+
+    cost = num_breaks * (k * a + t)
+
+    if remaining_dist > 0:
+        cost += min(remaining_dist * a, remaining_dist * b + t)
+
+    print(cost)
+
 
 solve()

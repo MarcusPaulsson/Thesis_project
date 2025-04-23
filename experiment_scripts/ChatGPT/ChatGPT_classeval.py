@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
 
     skip_test = [6, 7, 10, 13, 20, 24, 29, 47, 60, 64, 76, 79, 80, 84, 98]
-
+    skip_test = []
     # Define the index interval for tasks
     start_index = 0
     end_index = 100
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)
 
     # Save results to JSON and extract Python code
-    results_dir = os.path.join(main_dir, "results", "ChatGPT_test2", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
+    results_dir = os.path.join(main_dir, "results", "ChatGPT", "classEval", prompt.PROMPT_TECHNIQUE_SETTING)
     os.makedirs(results_dir, exist_ok=True)  # Ensure the directory exists.
     json_file_path = os.path.join(results_dir, "classeval_raw.json")
     save_results_to_json(results, json_file_path)

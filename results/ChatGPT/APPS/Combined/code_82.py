@@ -1,18 +1,19 @@
 def max_problems_solved(n, k, difficulties):
-    left, right = 0, n - 1
-    solved_count = 0
+    left = 0
+    right = n - 1
+    solved = 0
 
     while left <= right:
         if difficulties[left] <= k:
-            solved_count += 1
+            solved += 1
             left += 1
         elif difficulties[right] <= k:
-            solved_count += 1
+            solved += 1
             right -= 1
         else:
             break
 
-    return solved_count
+    return solved
 
 # Input reading
 n, k = map(int, input().split())

@@ -1,22 +1,32 @@
 def is_valid_journey(n, journey):
-    current_position = 0  # Position in kilometers from the North Pole (0 to 20000)
-    
+    position = 0  # Position on the meridian, starting at North Pole (0 km)
+    MAX_POSITION = 20000  # South Pole position
+
     for t, direction in journey:
-        if current_position == 0 and direction != "South":
+        # Validate movement from North and South Poles
+        if position == 0 and direction != "South":
+            return "NO"  # At North Pole, can only move South
+        if position == MAX_POSITION and direction != "North":
+            return "NO"  # At South Pole, can only move North
+
+        # Update position based on direction
+        if direction == "North":
+            position -= t
+        elif direction == "South":
+            position += t
+        # West and East do not change the position
+
+        # Check if position goes out of bounds
+        if position < 0 or position > MAX_POSITION:
             return "NO"
-        if current_position == 20000 and direction != "North":
-            return "NO"
-        
-        if direction == "South":
-            current_position += t
-        elif direction == "North":
-            current_position -= t
-        # East and West do not affect the North/South position
-        elif direction in {"East", "West"}:
-            continue
-        
-        # Check if the current position is out of bounds
-        if current_position < 0 or current_position > 20000:
-            return "NO"
-    
-    return "YES" if current_position == 0 else "NO"
+
+    # Must end at North Pole
+    return "YES" if position == 0 else "NO"
+
+# Input reading
+n = int(input())
+journey = [tuple(input().split()) for _ in range(n)]
+journey = [(int(t), dir) for t, dir in journey]
+
+# Output the result
+print(is_valid_journey(n, journey))

@@ -32,6 +32,8 @@ class XMLProcessor:
         :param file_name: string, the name of the file to write the XML data.
         :return: bool, True if the write operation is successful, False otherwise.
         """
+        if self.root is None:
+            return False
         try:
             tree = ET.ElementTree(self.root)
             tree.write(file_name)

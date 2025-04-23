@@ -18,9 +18,10 @@ class SQLGenerator:
         :return: str. The generated SQL statement.
         """
         if fields:
-            fields_str = ", ".join(fields)
+            fields_str = ', '.join(fields)
         else:
-            fields_str = "*"
+            fields_str = '*'
+
         sql = f"SELECT {fields_str} FROM {self.table_name}"
         if condition:
             sql += f" WHERE {condition};"
@@ -34,8 +35,8 @@ class SQLGenerator:
         :param data: dict. The data to be inserted, in dictionary form where keys are field names and values are field values.
         :return: str. The generated SQL statement.
         """
-        fields = ", ".join(data.keys())
-        values = ", ".join([f"'{value}'" for value in data.values()])
+        fields = ', '.join(data.keys())
+        values = ', '.join([f"'{value}'" for value in data.values()])
         sql = f"INSERT INTO {self.table_name} ({fields}) VALUES ({values});"
         return sql
 
@@ -46,7 +47,7 @@ class SQLGenerator:
         :param condition: str. The condition expression for the update.
         :return: str. The generated SQL statement.
         """
-        set_clause = ", ".join([f"{key} = '{value}'" for key, value in data.items()])
+        set_clause = ', '.join([f"{key} = '{value}'" for key, value in data.items()])
         sql = f"UPDATE {self.table_name} SET {set_clause} WHERE {condition};"
         return sql
 

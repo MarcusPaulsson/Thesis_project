@@ -1,21 +1,25 @@
 def max_sum_divisible_by_k(n, m, k, matrix):
     max_elements = m // 2
     dp = [[-1] * k for _ in range(n + 1)]
-    dp[0][0] = 0  # Base case: sum of 0 is divisible by k
+    dp[0][0] = 0
 
     for i in range(1, n + 1):
-        row = sorted(matrix[i - 1], reverse=True)[:max_elements]
-        current_sums = {0}  # Start with the sum of choosing no elements
+        row = sorted(matrix[i - 1], reverse=True)
+        current_dp = dp[i - 1][:]
 
-        for value in row:
-            current_sums.update({s + value for s in current_sums})
+        for j in range(1, max_elements + 1):
+            if j > len(row):
+                break
+            
+            current_sum = sum(row[:j])
+            for r in range(k):
+                if current_dp[r] != -1:
+                    new_sum = current_dp[r] + current_sum
+                    new_remainder = new_sum % k
+                    dp[i][new_remainder] = max(dp[i][new_remainder], new_sum)
 
-        for mod in range(k):
-            if dp[i - 1][mod] != -1:
-                for s in current_sums:
-                    new_sum = dp[i - 1][mod] + s
-                    new_mod = new_sum % k
-                    dp[i][new_mod] = max(dp[i][new_mod], new_sum)
+        for r in range(k):
+            dp[i][r] = max(dp[i][r], current_dp[r])
 
     return max(dp[n])
 

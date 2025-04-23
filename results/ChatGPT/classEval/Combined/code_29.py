@@ -1,40 +1,47 @@
 from collections import Counter
-import statistics
+from typing import List, Union
 
 class DataStatistics:
     """
-    A class for performing basic statistical operations on a data set,
-    including mean, median, and mode calculations.
+    A class for performing data statistics, supporting the calculation of mean, median, and mode of a given data set.
     """
 
-    def mean(self, data):
+    def mean(self, data: List[Union[int, float]]) -> float:
         """
-        Calculate the mean of a dataset, rounded to two decimal places.
-        :param data: list of numerical values
-        :return: float, the mean value or 0.00 if data is empty
+        Calculate the average value of a group of data, accurate to two digits after the decimal separator.
+        
+        :param data: List of numerical data
+        :return: Mean value as a float
         """
         if not data:
-            return 0.00
+            return 0.0
         return round(sum(data) / len(data), 2)
 
-    def median(self, data):
+    def median(self, data: List[Union[int, float]]) -> float:
         """
-        Calculate the median of a dataset, rounded to two decimal places.
-        :param data: list of numerical values
-        :return: float, the median value or 0.00 if data is empty
+        Calculate the median of a group of data, accurate to two digits after the decimal separator.
+        
+        :param data: List of numerical data
+        :return: Median value as a float
         """
         if not data:
-            return 0.00
-        return round(statistics.median(data), 2)
+            return 0.0
+        sorted_data = sorted(data)
+        n = len(sorted_data)
+        mid = n // 2
+        if n % 2 == 0:
+            return round((sorted_data[mid - 1] + sorted_data[mid]) / 2, 2)
+        return round(sorted_data[mid], 2)
 
-    def mode(self, data):
+    def mode(self, data: List[Union[int, float]]) -> List[Union[int, float]]:
         """
-        Calculate the mode of a dataset.
-        :param data: list of numerical values
-        :return: list, the mode(s) or an empty list if data is empty
+        Calculate the mode of a set of data.
+        
+        :param data: List of numerical data
+        :return: List of mode(s)
         """
         if not data:
             return []
-        count = Counter(data)
-        max_freq = max(count.values())
-        return sorted(num for num, freq in count.items() if freq == max_freq)
+        frequency = Counter(data)
+        max_count = max(frequency.values())
+        return [num for num, count in frequency.items() if count == max_count]

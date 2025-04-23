@@ -25,43 +25,43 @@ class Lemmatization:
         lemmatizes the words with different parameters based on their parts of speech, and stores in a list.
         :param sentence: a sentence str
         :return: a list of words which have been lemmatized.
-        >>> lemmatization = Lemmatization()
-        >>> lemmatization.lemmatize_sentence("I am running in a race.")
-        ['I', 'be', 'run', 'in', 'a', 'race']
-
         """
         sentence = self.remove_punctuation(sentence)
-        tokens = word_tokenize(sentence)
+        words = word_tokenize(sentence)
         pos_tags = self.get_pos_tag(sentence)
         lemmatized_words = []
-        for i, token in enumerate(tokens):
-            pos_tag_prefix = pos_tags[i][0].upper() if pos_tags[i] else ''
-            if pos_tag_prefix == 'J':
-                lemmatized_word = self.lemmatizer.lemmatize(token, pos='a')
-            elif pos_tag_prefix == 'V':
-                lemmatized_word = self.lemmatizer.lemmatize(token, pos='v')
-            elif pos_tag_prefix == 'N':
-                lemmatized_word = self.lemmatizer.lemmatize(token, pos='n')
-            elif pos_tag_prefix == 'R':
-                lemmatized_word = self.lemmatizer.lemmatize(token, pos='r')
-            else:
-                lemmatized_word = self.lemmatizer.lemmatize(token)
-            lemmatized_words.append(lemmatized_word)
+        for word, pos_tag in zip(words, pos_tags):
+            lemma = self.lemmatize_word(word, pos_tag)
+            lemmatized_words.append(lemma)
         return lemmatized_words
+
+    def lemmatize_word(self, word, pos_tag):
+        """
+        Lemmatizes a single word based on its part-of-speech tag.
+        :param word: The word to lemmatize.
+        :param pos_tag: The part-of-speech tag of the word.
+        :return: The lemmatized word.
+        """
+        if pos_tag.startswith('N'):
+            return self.lemmatizer.lemmatize(word, pos='n')
+        elif pos_tag.startswith('V'):
+            return self.lemmatizer.lemmatize(word, pos='v')
+        elif pos_tag.startswith('J'):
+            return self.lemmatizer.lemmatize(word, pos='a')
+        elif pos_tag.startswith('R'):
+            return self.lemmatizer.lemmatize(word, pos='r')
+        else:
+            return self.lemmatizer.lemmatize(word)
 
     def get_pos_tag(self, sentence):
         """
         Remove punctuations of the sentence and tokenizes the input sentence, mark the part of speech tag of each word.
         :param sentence: a sentence str
         :return: list, part of speech tag of each word in the sentence.
-        >>> lemmatization = Lemmatization()
-        >>> lemmatization.get_pos_tag("I am running in a race.")
-        ['PRP', 'VBP', 'VBG', 'IN', 'DT', 'NN']
-
         """
         sentence = self.remove_punctuation(sentence)
-        tokens = word_tokenize(sentence)
-        pos_tags = pos_tag(tokens)
+        words = word_tokenize(sentence)
+        pos_tags = pos_tag(words)
         return [tag for word, tag in pos_tags]
 
     def remove_punctuation(self, sentence):
@@ -69,10 +69,5 @@ class Lemmatization:
         Removes punctuation from the input text.
         :param sentence: a sentence str
         :return: str, sentence without any punctuation
-        >>> lemmatization = Lemmatization()
-        >>> lemmatization.remove_punctuation("I am running in a race.")
-        'I am running in a race'
-
         """
-        translator = str.maketrans('', '', string.punctuation)
-        return sentence.translate(translator)
+        return sentence.translate(str.maketrans('', '', string.punctuation))

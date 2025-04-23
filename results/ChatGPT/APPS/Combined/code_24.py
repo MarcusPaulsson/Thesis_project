@@ -1,32 +1,37 @@
-def can_alice_win(board):
+def can_win(board):
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # vertical, horizontal, diagonal, anti-diagonal
+    n = 10
+
     def check_win(x, y):
-        directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
         for dx, dy in directions:
-            count = 1
-            
+            count = 1  # Count the current position
             # Check in the positive direction
-            count += count_in_direction(x, y, dx, dy)
+            for step in range(1, 5):
+                nx, ny = x + step * dx, y + step * dy
+                if 0 <= nx < n and 0 <= ny < n and board[nx][ny] == 'X':
+                    count += 1
+                else:
+                    break
             # Check in the negative direction
-            count += count_in_direction(x, y, -dx, -dy)
-            
+            for step in range(1, 5):
+                nx, ny = x - step * dx, y - step * dy
+                if 0 <= nx < n and 0 <= ny < n and board[nx][ny] == 'X':
+                    count += 1
+                else:
+                    break
             if count >= 5:
                 return True
         return False
 
-    def count_in_direction(x, y, dx, dy):
-        count = 0
-        nx, ny = x + dx, y + dy
-        while 0 <= nx < 10 and 0 <= ny < 10 and board[nx][ny] == 'X':
-            count += 1
-            nx += dx
-            ny += dy
-        return count
-
-    for i in range(10):
-        for j in range(10):
+    for i in range(n):
+        for j in range(n):
             if board[i][j] == '.':
-                board[i][j] = 'X'  # Place Alice's cross
+                board[i][j] = 'X'  # Place a cross
                 if check_win(i, j):
                     return "YES"
-                board[i][j] = '.'  # Reset the cell
+                board[i][j] = '.'  # Undo the move
     return "NO"
+
+# Read input
+board = [input().strip() for _ in range(10)]
+print(can_win(board))

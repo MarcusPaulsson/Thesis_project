@@ -1,21 +1,22 @@
-def count_cyclic_binary_strings(n, s):
+def count_cyclical_strings(n, s):
     from itertools import product
 
-    total_count = 0
-    seen = set()
+    def is_valid(t):
+        # Check if s is a substring of any cyclic shift of t
+        double_t = t + t
+        return s in double_t
 
-    # Generate all possible binary strings of length n
+    count = 0
     for bits in product('01', repeat=n):
         t = ''.join(bits)
-        # Check if any cyclic shift of t contains s as a substring
-        if any(s in t[i:] + t[:i] for i in range(n)):
-            seen.add(t)
+        if is_valid(t):
+            count += 1
 
-    return len(seen)
+    return count
 
 # Input reading
 n = int(input().strip())
 s = input().strip()
 
 # Output the result
-print(count_cyclic_binary_strings(n, s))
+print(count_cyclical_strings(n, s))

@@ -2,7 +2,6 @@ def solve():
     n, pos, l, r = map(int, input().split())
     
     if l <= pos <= r:
-        
         left_count = 0
         for i in range(1, pos):
             if not (l <= i <= r):
@@ -25,14 +24,22 @@ def solve():
             print(left_count)
             return
         
-        
         print(min(left_count, right_count) + abs(left_count - right_count))
         return
+    
     else:
         
         if pos < l:
-            print(pos - 1)
+            
+            left_count = pos - 1
+            right_count = n - r
+            
+            print(left_count + right_count)
             return
         else:
-            print(n - pos)
+            
+            left_count = l - 1
+            right_count = n - pos
+            
+            print(left_count + right_count)
             return

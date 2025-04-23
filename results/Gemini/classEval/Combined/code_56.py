@@ -5,7 +5,7 @@ class MetricsCalculator:
 
     def __init__(self):
         """
-        Initialize the number of true positives, false positives, false negatives, and true negatives to 0.
+        Initialize the counts for true positives, false positives, false negatives, and true negatives.
         """
         self.true_positives = 0
         self.false_positives = 0
@@ -19,7 +19,7 @@ class MetricsCalculator:
 
         :param predicted_labels: list, predicted results (1 for positive, 0 for negative)
         :param true_labels: list, true labels (1 for positive, 0 for negative)
-        :raises ValueError: if predicted_labels and true_labels have different lengths.
+        :raises ValueError: if predicted_labels and true_labels have different lengths
         """
         if len(predicted_labels) != len(true_labels):
             raise ValueError("predicted_labels and true_labels must have the same length")
@@ -38,9 +38,11 @@ class MetricsCalculator:
         """
         Calculate precision.
 
+        Precision is the ratio of correctly predicted positive observations to the total predicted positives.
+
         :param predicted_labels: list, predicted results (1 for positive, 0 for negative)
         :param true_labels: list, true labels (1 for positive, 0 for negative)
-        :return: float, precision score. Returns 0.0 if no positive predictions are made.
+        :return: float, precision score
         """
         tp = 0
         fp = 0
@@ -58,9 +60,11 @@ class MetricsCalculator:
         """
         Calculate recall.
 
+        Recall is the ratio of correctly predicted positive observations to the all observations in actual class - yes.
+
         :param predicted_labels: list, predicted results (1 for positive, 0 for negative)
         :param true_labels: list, true labels (1 for positive, 0 for negative)
-        :return: float, recall score. Returns 0.0 if no actual positives are present.
+        :return: float, recall score
         """
         tp = 0
         fn = 0
@@ -76,27 +80,28 @@ class MetricsCalculator:
 
     def f1_score(self, predicted_labels, true_labels):
         """
-        Calculate F1 score, the harmonic mean of precision and recall.
+        Calculate F1 score, which is the harmonic mean of precision and recall.
 
         :param predicted_labels: list, predicted results (1 for positive, 0 for negative)
         :param true_labels: list, true labels (1 for positive, 0 for negative)
-        :return: float, F1 score. Returns 0.0 if both precision and recall are 0.
+        :return: float, F1 score
         """
-        precision_value = self.precision(predicted_labels, true_labels)
-        recall_value = self.recall(predicted_labels, true_labels)
+        prec = self.precision(predicted_labels, true_labels)
+        rec = self.recall(predicted_labels, true_labels)
 
-        if precision_value + recall_value == 0:
+        if prec + rec == 0:
             return 0.0
-
-        return 2 * (precision_value * recall_value) / (precision_value + recall_value)
+        return 2 * (prec * rec) / (prec + rec)
 
     def accuracy(self, predicted_labels, true_labels):
         """
         Calculate accuracy.
 
+        Accuracy is the ratio of correctly predicted observations to the total observations.
+
         :param predicted_labels: list, predicted results (1 for positive, 0 for negative)
         :param true_labels: list, true labels (1 for positive, 0 for negative)
-        :return: float, accuracy score. Returns 0.0 if the input lists are empty.
+        :return: float, accuracy score
         """
         correct = 0
         total = len(predicted_labels)

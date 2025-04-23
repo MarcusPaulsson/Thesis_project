@@ -20,7 +20,7 @@ class BookManagement:
         if not isinstance(quantity, int):
             raise TypeError("Quantity must be an integer.")
         if quantity <= 0:
-            raise ValueError("Quantity must be positive.")
+            raise ValueError("Quantity must be a positive integer.")
 
         if title in self.inventory:
             self.inventory[title] += quantity
@@ -39,7 +39,7 @@ class BookManagement:
         if not isinstance(quantity, int):
             raise TypeError("Quantity must be an integer.")
         if quantity <= 0:
-            raise ValueError("Quantity must be positive.")
+            raise ValueError("Quantity must be a positive integer.")
 
         if title not in self.inventory:
             raise Exception("Book not found in inventory.")
@@ -48,6 +48,7 @@ class BookManagement:
             raise Exception("Not enough books to remove.")
 
         self.inventory[title] -= quantity
+
         if self.inventory[title] == 0:
             del self.inventory[title]
 

@@ -1,39 +1,46 @@
 def solve():
     n = int(input())
     s = input()
-
-    def check(coloring):
+    sorted_s = sorted(s)
+    
+    for i in range(1 << n):
+        coloring = ""
         s0 = ""
         s1 = ""
-        for i in range(n):
-            if coloring[i] == '0':
-                s0 += s[i]
+        
+        for j in range(n):
+            if (i >> j) & 1:
+                coloring += "1"
+                s1 += s[j]
             else:
-                s1 += s[i]
+                coloring += "0"
+                s0 += s[j]
         
-        s0_sorted = "".join(sorted(s0))
-        s1_sorted = "".join(sorted(s1))
+        s0_sorted = sorted(s0)
+        s1_sorted = sorted(s1)
         
-        sorted_s = "".join(sorted(s))
+        merged_s = ""
+        idx0 = 0
+        idx1 = 0
         
-        merged = ""
-        i = 0
-        j = 0
-        k = 0
-        
-        while i < len(s0_sorted) or j < len(s1_sorted):
-            if i < len(s0_sorted) and (j == len(s1_sorted) or s0_sorted[i] <= s1_sorted[j]):
-                merged += s0_sorted[i]
-                i += 1
+        possible = True
+        for j in range(n):
+            if coloring[j] == '0':
+                if idx0 < len(s0):
+                    merged_s += s0_sorted[idx0]
+                    idx0 += 1
+                else:
+                    possible = False
+                    break
             else:
-                merged += s1_sorted[j]
-                j += 1
+                if idx1 < len(s1):
+                    merged_s += s1_sorted[idx1]
+                    idx1 += 1
+                else:
+                    possible = False
+                    break
         
-        return merged == sorted_s
-
-    for i in range(2**n):
-        coloring = bin(i)[2:].zfill(n)
-        if check(coloring):
+        if possible and "".join(sorted_s) == merged_s:
             print("YES")
             print(coloring)
             return

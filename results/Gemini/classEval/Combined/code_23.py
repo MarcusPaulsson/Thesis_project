@@ -19,14 +19,12 @@ class CombinationCalculator:
         :param n: The total number of elements,int.
         :param m: The number of elements in each combination,int.
         :return: The number of combinations,int.
-        >>> CombinationCalculator.count(4, 2)
-        6
         """
         if m < 0 or m > n:
             return 0
         if m == 0 or m == n:
             return 1
-        m = min(m, n - m)
+        m = min(m, n - m)  # Optimization: C(n, m) = C(n, n-m)
         result = 1
         for i in range(m):
             result = result * (n - i) // (i + 1)
@@ -38,8 +36,6 @@ class CombinationCalculator:
         Calculate the number of all possible combinations.
         :param n: The total number of elements,int.
         :return: The number of all possible combinations,int,if the number of combinations is greater than 2^63-1,return float("inf").
-        >>> CombinationCalculator.count_all(4)
-        15
         """
         if n < 0 or n > 63:
             return False
@@ -52,10 +48,6 @@ class CombinationCalculator:
         Generate combinations with a specified number of elements.
         :param m: The number of elements in each combination,int.
         :return: A list of combinations,List[List[str]].
-        >>> calc = CombinationCalculator(["A", "B", "C", "D"])
-        >>> calc.select(2)
-        [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D']]
-
         """
         if m < 0 or m > len(self.datas):
             return []
@@ -66,44 +58,33 @@ class CombinationCalculator:
 
     def select_all(self) -> List[List[str]]:
         """
-        Generate all possible combinations of  selecting elements from the given data list,and it uses the select method.
+        Generate all possible combinations of selecting elements from the given data list.
         :return: A list of combinations,List[List[str]].
-        >>> calc = CombinationCalculator(["A", "B", "C", "D"])
-        >>> calc.select_all()
-        [['A'], ['B'], ['C'], ['D'], ['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D'], ['A', 'B', 'C'], ['A', 'B', 'D'], ['A', 'C', 'D'], ['B', 'C', 'D'], ['A', 'B', 'C', 'D']]
-
         """
         result = []
         for i in range(1, len(self.datas) + 1):
             result.extend(self.select(i))
         return result
 
-    def _select(self, dataIndex: int, currentCombination: List[str], remaining: int, result: List[List[str]]):
+    def _select(self, start_index: int, current_combination: List[str], remaining: int, result: List[List[str]]):
         """
-        Generate combinations with a specified number of elements by recursion.
-        :param dataIndex: The index of the data to be selected,int.
-        :param currentCombination: The list of elements in the combination,List[str].
+        Recursive helper function to generate combinations.
+        :param start_index: The index to start selecting from.
+        :param current_combination: The current combination being built.
         :param remaining: The number of elements remaining to be selected.
-        :param result: The list of combinations,List[List[str]].
-        :return: None.
-        >>> calc = CombinationCalculator(["A", "B", "C", "D"])
-        >>> result = []
-        >>> calc._select(0, [None] * 2, 0, result)
-        >>> result
-        [['A', 'B'], ['A', 'C'], ['A', 'D'], ['B', 'C'], ['B', 'D'], ['C', 'D']]
-
+        :param result: The list to store the resulting combinations.
         """
         if remaining == 0:
-            result.append(currentCombination.copy())
+            result.append(current_combination[:])  # Append a copy to avoid modification
             return
 
-        if dataIndex >= len(self.datas):
+        if start_index >= len(self.datas):
             return
 
         # Include the current element
-        currentCombination.append(self.datas[dataIndex])
-        self._select(dataIndex + 1, currentCombination, remaining - 1, result)
-        currentCombination.pop()  # Backtrack: remove the current element
+        current_combination.append(self.datas[start_index])
+        self._select(start_index + 1, current_combination, remaining - 1, result)
+        current_combination.pop()  # Backtrack: Remove the current element
 
         # Exclude the current element
-        self._select(dataIndex + 1, currentCombination, remaining, result)
+        self._select(start_index + 1, current_combination, remaining, result)

@@ -12,6 +12,7 @@ def kth_largest_in_multiplication_table(n, m, k):
             
     return left
 
-# Input reading
+# Read input
 n, m, k = map(int, input().split())
+# Output the k-th largest number
 print(kth_largest_in_multiplication_table(n, m, k))

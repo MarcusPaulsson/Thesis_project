@@ -8,14 +8,14 @@ def solve():
     import itertools
     
     for perm in itertools.permutations(projects):
-        current_rating = r
+        curr_r = r
         possible = True
         for a, b in perm:
-            if current_rating < a:
+            if curr_r < a:
                 possible = False
                 break
-            current_rating += b
-            if current_rating < 0:
+            curr_r += b
+            if curr_r < 0:
                 possible = False
                 break
         if possible:

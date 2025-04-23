@@ -1,31 +1,27 @@
-def max_number_after_replacement(n, a, f):
-    # Convert the function mapping to a list where index 0 corresponds to digit '1'
-    f = [0] + f  # Adding a dummy value at index 0 for convenience
-
-    # Convert the string of digits into a list of integers
-    digits = list(map(int, a))
+def max_after_replacement(n, a, f):
+    a_list = list(a)
+    f = [0] + f  # Adjust index to match digit values (1-9)
     
-    # Initialize a flag to indicate if we have started replacing
-    replacing = False
-    
-    # Iterate through the digits
+    modified = False
     for i in range(n):
-        current_digit = digits[i]
-        mapped_digit = f[current_digit]
+        original_digit = int(a_list[i])
+        new_digit = f[original_digit]
         
-        if mapped_digit > current_digit:
-            # Start replacing if the mapped digit is greater
-            digits[i] = mapped_digit
-            replacing = True
-        elif mapped_digit < current_digit and replacing:
-            # Stop replacing if we encounter a mapped digit less than the current digit
+        if new_digit > original_digit and not modified:
+            modified = True
+        
+        if modified:
+            a_list[i] = str(new_digit)
+        
+        if modified and new_digit < original_digit:
             break
     
-    # Convert the list of digits back to a string
-    return ''.join(map(str, digits))
+    return ''.join(a_list)
 
-# Example usage:
+# Input reading
 n = int(input())
 a = input().strip()
 f = list(map(int, input().strip().split()))
-print(max_number_after_replacement(n, a, f))
+
+# Output the result
+print(max_after_replacement(n, a, f))

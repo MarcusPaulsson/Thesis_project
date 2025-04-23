@@ -6,12 +6,12 @@ class ArrangementCalculator:
     The ArrangementCalculator class provides permutation calculations and selection operations for a given set of data elements.
     """
 
-    def __init__(self, data):
+    def __init__(self, datas):
         """
-        Initializes the ArrangementCalculator object with a list of data.
-        :param data: List, the data elements to be used for arrangements.
+        Initializes the ArrangementCalculator object with a list of data elements.
+        :param datas: List, the data elements to be used for arrangements.
         """
-        self.data = data
+        self.datas = datas
 
     @staticmethod
     def count(n, m=None):
@@ -23,10 +23,8 @@ class ArrangementCalculator:
         :return: int, the count of arrangements.
         """
         if m is None or n == m:
-            return math.factorial(n)
-        if m > n:
-            return 0
-        return math.factorial(n) // math.factorial(n - m)
+            return ArrangementCalculator.factorial(n)
+        return ArrangementCalculator.factorial(n) // ArrangementCalculator.factorial(n - m)
 
     @staticmethod
     def count_all(n):
@@ -44,19 +42,15 @@ class ArrangementCalculator:
         :param m: int, the number of items to be chosen (default=None).
         :return: List, a list of arrangements.
         """
-        if m is None:
-            m = len(self.data)
-        return [list(p) for p in itertools.permutations(self.data, m)]
+        m = m if m is not None else len(self.datas)
+        return [list(p) for p in itertools.permutations(self.datas, m)]
 
     def select_all(self):
         """
         Generates a list of all arrangements by selecting at least 1 item and at most the number of internal data.
         :return: List, a list of all arrangements.
         """
-        all_arrangements = []
-        for m in range(1, len(self.data) + 1):
-            all_arrangements.extend(self.select(m))
-        return all_arrangements
+        return [arrangement for m in range(1, len(self.datas) + 1) for arrangement in self.select(m)]
 
     @staticmethod
     def factorial(n):

@@ -17,28 +17,28 @@ class IpUtil:
         try:
             ipaddress.IPv4Address(ip_address)
             return True
-        except ipaddress.AddressValueError:
+        except ValueError:
             return False
 
     @staticmethod
     def is_valid_ipv6(ip_address):
         """
         Check if the given IP address is a valid IPv6 address.
-        :param ip_address: string, the IP address to check
-        :return: bool, True if the IP address is valid, False otherwise
+        :param ip_address:string, the IP address to check
+        :return:bool, True if the IP address is valid, False otherwise
         """
         try:
             ipaddress.IPv6Address(ip_address)
             return True
-        except ipaddress.AddressValueError:
+        except ValueError:
             return False
 
     @staticmethod
     def get_hostname(ip_address):
         """
         Get the hostname associated with the given IP address.
-        :param ip_address: string, the IP address to get the hostname for
-        :return: string, the hostname associated with the IP address, None if not found.
+        :param ip_address:string, the IP address to get the hostname for
+        :return: string, the hostname associated with the IP address, None if not found
         """
         try:
             hostname, _, _ = socket.gethostbyaddr(ip_address)
@@ -48,4 +48,6 @@ class IpUtil:
         except socket.gaierror:
             return None
         except OSError:
-            return socket.gethostname()
+            return None
+        except Exception:
+            return None

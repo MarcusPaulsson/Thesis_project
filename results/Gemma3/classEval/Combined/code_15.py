@@ -30,9 +30,7 @@ class BoyerMooreSearch:
         :return: The position of the first dismatch between the pattern and the text, int,otherwise -1.
         """
         for i in range(self.patLen):
-            if currentPos + i >= self.textLen:
-                return i
-            if self.text[currentPos + i] != self.pattern[i]:
+            if currentPos + i >= self.textLen or self.text[currentPos + i] != self.pattern[i]:
                 return i
         return -1
 
@@ -42,8 +40,14 @@ class BoyerMooreSearch:
         :return: A list of all positions of the pattern in the text, list.
         """
         occurrences = []
-        for i in range(self.textLen - self.patLen + 1):
-            mismatch_pos = self.mismatch_in_text(i)
-            if mismatch_pos == -1:
+        i = 0
+        while i <= self.textLen - self.patLen:
+            j = self.mismatch_in_text(i)
+            if j == -1:
                 occurrences.append(i)
+                i += 1
+            else:
+                bad_char = self.text[i + j]
+                shift = max(1, j - self.match_in_pattern(bad_char))
+                i += shift
         return occurrences

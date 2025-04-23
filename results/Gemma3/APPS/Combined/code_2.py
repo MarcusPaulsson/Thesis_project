@@ -1,6 +1,6 @@
 def solve():
     n = int(input())
-    
+
     def is_lucky(year):
         s = str(year)
         non_zero_count = 0
@@ -15,5 +15,3 @@ def solve():
             print(year - n)
             return
         year += 1
-
-solve()

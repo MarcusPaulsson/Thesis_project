@@ -18,34 +18,32 @@ class CSVProcessor:
             with open(file_name, 'r', newline='') as file:
                 reader = csv.reader(file)
                 title = next(reader)
-                data = list(reader)
+                data = list(reader)  # Read all rows into a list
                 return title, data
         except FileNotFoundError:
             print(f"Error: File '{file_name}' not found.")
             return [], []
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error reading CSV file: {e}")
             return [], []
 
     def write_csv(self, data, file_name):
         """
         Write data into a csv file.
-        :param data: list of lists, the data to write. The first sublist is the header.
         :param file_name: str, name of the csv file
+        :param data: list of lists, the data to write to the CSV file
         :return: int, if success return 1, or 0 otherwise
         """
-        if not data:
+        if not data or not file_name:
             return 0
 
         try:
             with open(file_name, 'w', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(data[0])  # Write the header row
-                for row in data[1:]:
-                    writer.writerow(row)
+                writer.writerows(data)  # Use writerows to write all rows
             return 1
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error writing to CSV file: {e}")
             return 0
 
     def process_csv_data(self, N, save_file_name):
@@ -62,20 +60,15 @@ class CSVProcessor:
             if not title or not data:
                 return 0
 
-            processed_data = []
-            for row in data:
-                if 0 <= N < len(row):
-                    processed_data.append([row[N].upper()])
-                else:
-                    print(f"Error: Column index {N} out of range for row: {row}")
-                    return 0
+            processed_data = [[row[N].upper()] for row in data if len(row) > N]
 
             new_file_name = save_file_name.replace(".csv", "_process.csv")
-            
-            # Prepare data for writing: header + processed data
-            data_to_write = [title] + processed_data
-            return self.write_csv(data_to_write, new_file_name)
 
+            with open(new_file_name, 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(title)
+                writer.writerows(processed_data)  # Use writerows to write all processed rows
+            return 1
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"Error processing CSV data: {e}")
             return 0

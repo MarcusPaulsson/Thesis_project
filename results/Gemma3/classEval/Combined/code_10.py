@@ -22,7 +22,7 @@ class BinaryDataProcessor:
         """
         bit_length = len(self.binary_string)
         if bit_length == 0:
-            return {'Bit length': 0, 'Ones': 0, 'Zeroes': 0}
+            return {'Bit length': 0, 'Zeroes': 0, 'Ones': 0}
         zeroes = self.binary_string.count('0')
         ones = self.binary_string.count('1')
         zero_percentage = zeroes / bit_length
@@ -33,16 +33,18 @@ class BinaryDataProcessor:
         """
         Convert the binary string to ascii string.
         """
-        ascii_string = ''
-        for i in range(0, len(self.binary_string), 8):
-            byte = self.binary_string[i:i+8]
-            if len(byte) == 8:
-                decimal_value = int(byte, 2)
-                ascii_string += chr(decimal_value)
-        return ascii_string
+        try:
+            byte_string = bytes([int(self.binary_string[i:i+8], 2) for i in range(0, len(self.binary_string), 8)])
+            return byte_string.decode('ascii')
+        except ValueError:
+            return ""
 
     def convert_to_utf8(self):
         """
         Convert the binary string to utf-8 string.
         """
-        return self.convert_to_ascii()
+        try:
+            byte_string = bytes([int(self.binary_string[i:i+8], 2) for i in range(0, len(self.binary_string), 8)])
+            return byte_string.decode('utf-8')
+        except ValueError:
+            return ""

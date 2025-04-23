@@ -1,7 +1,7 @@
 class VendingMachine:
     """
-    This class simulates a vending machine, allowing the addition of products, insertion of coins,
-    purchasing products, viewing balance, replenishing inventory, and displaying product information.
+    A class to simulate a vending machine, including adding products, inserting coins, purchasing products, 
+    viewing balance, replenishing product inventory, and displaying product information.
     """
 
     def __init__(self):
@@ -11,7 +11,8 @@ class VendingMachine:
 
     def add_item(self, item_name: str, price: float, quantity: int) -> None:
         """
-        Adds or updates a product in the vending machine's inventory.
+        Adds a product to the vending machine's inventory.
+        
         :param item_name: The name of the product to be added.
         :param price: The price of the product to be added.
         :param quantity: The quantity of the product to be added.
@@ -24,36 +25,34 @@ class VendingMachine:
     def insert_coin(self, amount: float) -> float:
         """
         Inserts coins into the vending machine.
+        
         :param amount: The amount of coins to be inserted.
-        :return: The updated balance after inserting coins.
+        :return: The updated balance of the vending machine.
         """
-        if amount < 0:
-            raise ValueError("Amount must be positive.")
         self.balance += amount
         return self.balance
 
     def purchase_item(self, item_name: str) -> float or bool:
         """
-        Purchases a product from the vending machine.
-        :param item_name: The name of the product to purchase.
-        :return: The remaining balance if purchase is successful, otherwise False.
+        Purchases a product from the vending machine and returns the balance after the purchase.
+        
+        :param item_name: The name of the product to be purchased.
+        :return: The updated balance if successful, otherwise False.
         """
-        if item_name not in self.inventory:
-            return False
-        
-        item = self.inventory[item_name]
-        if item['quantity'] > 0 and self.balance >= item['price']:
-            item['quantity'] -= 1
-            self.balance -= item['price']
-            return self.balance
-        
+        if item_name in self.inventory:
+            item = self.inventory[item_name]
+            if item['quantity'] > 0 and self.balance >= item['price']:
+                item['quantity'] -= 1
+                self.balance -= item['price']
+                return self.balance
         return False
 
     def restock_item(self, item_name: str, quantity: int) -> bool:
         """
-        Replenishes the inventory of a product in the vending machine.
-        :param item_name: The name of the product to be restocked.
-        :param quantity: The quantity of the product to be restocked.
+        Replenishes the inventory of a product already in the vending machine.
+        
+        :param item_name: The name of the product to be replenished.
+        :param quantity: The quantity of the product to be replenished.
         :return: True if the product was restocked, otherwise False.
         """
         if item_name in self.inventory:
@@ -64,9 +63,9 @@ class VendingMachine:
     def display_items(self) -> str or bool:
         """
         Displays the products in the vending machine.
-        :return: A formatted string of the products, or False if the inventory is empty.
+        
+        :return: A string of the products in the vending machine or False if empty.
         """
         if not self.inventory:
             return False
-        return "\n".join(f"{item} - ${details['price']} [{details['quantity']}]" 
-                         for item, details in self.inventory.items())
+        return '\n'.join(f"{name} - ${item['price']:.2f} [{item['quantity']}]" for name, item in self.inventory.items())

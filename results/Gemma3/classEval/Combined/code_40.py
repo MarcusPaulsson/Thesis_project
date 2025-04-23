@@ -11,6 +11,10 @@ class FitnessTracker:
         self.weight = weight
         self.age = age
         self.sex = sex
+        self.bmi_std = {
+            "male": [20, 25],
+            "female": [19, 24]
+        }
 
     def get_BMI(self):
         """
@@ -25,20 +29,13 @@ class FitnessTracker:
         :return: 1 if the user is too fat, -1 if the user is too thin, 0 if the user is normal, int.
         """
         bmi = self.get_BMI()
-        if self.sex == "male":
-            if bmi < 20:
-                return -1
-            elif bmi > 25:
-                return 1
-            else:
-                return 0
+        lower_bound, upper_bound = self.bmi_std[self.sex]
+        if bmi < lower_bound:
+            return -1
+        elif bmi > upper_bound:
+            return 1
         else:
-            if bmi < 19:
-                return -1
-            elif bmi > 24:
-                return 1
-            else:
-                return 0
+            return 0
 
     def calculate_calorie_intake(self):
         """
@@ -49,7 +46,6 @@ class FitnessTracker:
             bmr = 10 * self.weight + 6.25 * self.height - 5 * self.age + 5
         else:
             bmr = 10 * self.weight + 6.25 * self.height - 5 * self.age - 161
-
         condition = self.condition_judge()
         if condition == 1:
             return bmr * 1.2

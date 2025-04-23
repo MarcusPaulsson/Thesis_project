@@ -25,8 +25,7 @@ def solve():
                                             break
                                     
                                     if valid:
-                                        length = 4 + (k - j - 1) + (j - i - 1)
-                                        max_len = max(max_len, length)
+                                        max_len = max(max_len, l - i + 1)
     
     print(max_len)
 

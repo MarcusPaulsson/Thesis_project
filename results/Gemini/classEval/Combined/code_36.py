@@ -23,20 +23,24 @@ class EmailClient:
         :param size: The size of the email, float.
         :return: True if the email is sent successfully, False if the receiver's email box is full.
         """
-        if recv.is_full_with_one_more_email(size):
+        if self.is_full_with_one_more_email(size):
             return False
-        else:
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            email = {
-                'sender': self.addr,
-                'receiver': recv.addr,
-                'content': content,
-                'size': size,
-                'time': timestamp,
-                'state': 'unread'
-            }
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        email = {
+            'sender': self.addr,
+            'receiver': recv.addr if isinstance(recv, EmailClient) else recv,
+            'content': content,
+            'size': size,
+            'time': timestamp,
+            'state': 'unread'
+        }
+
+        if isinstance(recv, EmailClient):
             recv.inbox.append(email)
             return True
+        else:
+            return False
 
     def fetch(self):
         """
@@ -64,7 +68,7 @@ class EmailClient:
         """
         total_size = 0
         for email in self.inbox:
-            total_size += email.get('size', 0)
+            total_size += email['size']
         return total_size
 
     def clear_inbox(self, size):
@@ -72,23 +76,20 @@ class EmailClient:
         Clears the email box by deleting the oldest emails until the email box has enough space to accommodate the given size.
         :param size: The size of the email, float.
         """
-        
         if not self.inbox:
             return
-        
-        emails_to_remove_size = 0
-        emails_to_remove = []
-        
-        inbox_copy = self.inbox[:]
-        
-        inbox_copy.sort(key=lambda x: x.get('time', datetime.now().strftime("%Y-%m-%d %H:%M:%S")) if isinstance(x.get('time', datetime.now().strftime("%Y-%m-%d %H:%M:%S")), str) else datetime.now().strftime("%Y-%m-%d %H:%M:%S"), reverse = False)
 
-        for email in inbox_copy:
-            emails_to_remove_size += email.get('size', 0)
+        occupied_size = self.get_occupied_size()
+        if occupied_size + size <= self.capacity:
+            return
+
+        emails_to_remove = []
+        freed_space = 0
+        for email in self.inbox:
             emails_to_remove.append(email)
-            if self.get_occupied_size() - emails_to_remove_size + size <= self.capacity:
+            freed_space += email['size']
+            if occupied_size - freed_space + size <= self.capacity:
                 break
-        
+
         for email in emails_to_remove:
-            if email in self.inbox:
-                self.inbox.remove(email)
+            self.inbox.remove(email)

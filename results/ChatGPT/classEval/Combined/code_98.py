@@ -1,5 +1,4 @@
 import xml.etree.ElementTree as ET
-import os
 
 
 class XMLProcessor:
@@ -18,11 +17,10 @@ class XMLProcessor:
     def read_xml(self):
         """
         Reads the XML file and returns the root element.
-        :return: Element, the root element of the XML file or None if an error occurs.
+        :return: Element, the root element of the XML file, or None if an error occurs.
         """
         if not self.file_name:
             return None
-        
         try:
             tree = ET.parse(self.file_name)
             self.root = tree.getroot()
@@ -38,10 +36,9 @@ class XMLProcessor:
         """
         if not self.root or not file_name:
             return False
-        
         try:
             tree = ET.ElementTree(self.root)
-            tree.write(file_name)
+            tree.write(file_name, encoding='utf-8', xml_declaration=True)
             return True
         except Exception:
             return False
@@ -54,11 +51,9 @@ class XMLProcessor:
         """
         if not self.root or not file_name:
             return False
-        
         for item in self.root.findall('item'):
-            if item.text:
+            if item.text is not None:
                 item.text = item.text.upper()
-        
         return self.write_xml(file_name)
 
     def find_element(self, element_name):
@@ -67,4 +62,6 @@ class XMLProcessor:
         :param element_name: string, the name of the elements to find.
         :return: list, a list of found elements with the specified name.
         """
-        return self.root.findall(element_name) if self.root else []
+        if not self.root:
+            return []
+        return self.root.findall(element_name)

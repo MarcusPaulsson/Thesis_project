@@ -13,17 +13,19 @@ class CookiesUtil:
         self.cookies_file = cookies_file
         self.cookies = {}
 
-    def get_cookies(self, reponse):
+    def get_cookies(self, response):
         """
         Gets the cookies from the specified response.
-        :param reponse: The response to get cookies from, dict.
+        :param response: The response to get cookies from, dict.
         """
-        if 'cookies' in reponse:
-            self.cookies = reponse['cookies']
+        if 'cookies' in response:
+            self.cookies = response['cookies']
+        else:
+            self.cookies = {}
 
     def load_cookies(self):
         """
-        Loads the cookies from the cookies_file.
+        Loads the cookies from the cookies_file to the cookies data.
         :return: The cookies data, dict.
         """
         try:
@@ -33,20 +35,15 @@ class CookiesUtil:
             self.cookies = {}
         except json.JSONDecodeError:
             self.cookies = {}
-
-        if isinstance(self.cookies, dict):
-            return self.cookies
-        else:
-            return {}
+        return self.cookies
 
     def _save_cookies(self):
         """
-        Saves the cookies to the cookies_file.
+        Saves the cookies to the cookies_file, and returns True if successful, False otherwise.
         :return: True if successful, False otherwise.
         """
         if not self.cookies_file:
             return False
-
         try:
             with open(self.cookies_file, 'w') as f:
                 json.dump(self.cookies, f)
@@ -59,4 +56,4 @@ class CookiesUtil:
         Sets the cookies to the specified request.
         :param request: The request to set cookies to, dict.
         """
-        request['cookies'] = "cookies=" + str(self.cookies)
+        request['cookies'] = f"cookies={self.cookies}"

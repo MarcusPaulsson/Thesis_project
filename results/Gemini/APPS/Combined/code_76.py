@@ -22,6 +22,7 @@ def solve():
     else:
         print("NO")
 
+
 t = int(input())
 for _ in range(t):
     solve()

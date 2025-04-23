@@ -8,14 +8,23 @@ def max_beauty_with_subarray(n, x, a):
 
     original_beauty = kadane(a)
 
+    if x == 0:
+        return original_beauty
+
     max_increase = 0
     current_sum = 0
+
     for value in a:
         current_sum += value
         max_increase = max(max_increase, current_sum * x)
         if current_sum < 0:
             current_sum = 0
 
-    max_beauty = max(original_beauty, original_beauty + max_increase)
+    return max(original_beauty, original_beauty + max_increase)
 
-    return max_beauty
+# Input reading
+n, x = map(int, input().split())
+a = list(map(int, input().split()))
+
+# Output the result
+print(max_beauty_with_subarray(n, x, a))

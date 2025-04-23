@@ -15,13 +15,16 @@ def solve():
         print("rated")
         return
     
-    out_of_order = False
-    for i in range(n - 1):
-        if ratings[i][0] < ratings[i+1][0]:
-            out_of_order = True
+    better_place_higher_rating = False
+    for i in range(n):
+        for j in range(i + 1, n):
+            if ratings[i][0] < ratings[j][0]:
+                better_place_higher_rating = True
+                break
+        if better_place_higher_rating:
             break
     
-    if out_of_order:
+    if better_place_higher_rating:
         print("unrated")
         return
     

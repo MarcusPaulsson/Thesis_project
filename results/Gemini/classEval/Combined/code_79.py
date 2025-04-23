@@ -8,6 +8,10 @@ class SQLGenerator:
         Initialize the table name.
         :param table_name: str
         """
+        if not isinstance(table_name, str):
+            raise TypeError("Table name must be a string.")
+        if not table_name:
+            raise ValueError("Table name cannot be empty.")
         self.table_name = table_name
 
     def select(self, fields=None, condition=None):
@@ -17,10 +21,18 @@ class SQLGenerator:
         :param condition: str, optional. Default is None. The condition expression for the query.
         :return: str. The generated SQL statement.
         """
-        fields_str = ', '.join(fields) if fields else '*'
-        sql = f"SELECT {fields_str} FROM {self.table_name}"
+        sql = "SELECT "
+        if fields:
+            if not isinstance(fields, list):
+                raise TypeError("Fields must be a list.")
+            sql += ", ".join(fields)
+        else:
+            sql += "*"
+        sql += " FROM " + self.table_name
         if condition:
-            sql += f" WHERE {condition}"
+            if not isinstance(condition, str):
+                raise TypeError("Condition must be a string.")
+            sql += " WHERE " + condition
         sql += ";"
         return sql
 
@@ -30,9 +42,14 @@ class SQLGenerator:
         :param data: dict. The data to be inserted, in dictionary form where keys are field names and values are field values.
         :return: str. The generated SQL statement.
         """
-        fields = ', '.join(data.keys())
-        values = ', '.join([f"'{value}'" for value in data.values()])
-        sql = f"INSERT INTO {self.table_name} ({fields}) VALUES ({values});"
+        if not isinstance(data, dict):
+            raise TypeError("Data must be a dictionary.")
+        if not data:
+            raise ValueError("Data dictionary cannot be empty.")
+
+        fields = ", ".join(data.keys())
+        values = ", ".join(["'" + str(v) + "'" for v in data.values()])
+        sql = "INSERT INTO " + self.table_name + " (" + fields + ") VALUES (" + values + ");"
         return sql
 
     def update(self, data, condition):
@@ -42,8 +59,17 @@ class SQLGenerator:
         :param condition: str. The condition expression for the update.
         :return: str. The generated SQL statement.
         """
-        updates = ', '.join([f"{field} = '{value}'" for field, value in data.items()])
-        sql = f"UPDATE {self.table_name} SET {updates} WHERE {condition};"
+        if not isinstance(data, dict):
+            raise TypeError("Data must be a dictionary.")
+        if not data:
+            raise ValueError("Data dictionary cannot be empty.")
+        if not isinstance(condition, str):
+            raise TypeError("Condition must be a string.")
+        if not condition:
+            raise ValueError("Condition cannot be empty.")
+
+        set_clause = ", ".join([f"{k} = '{v}'" for k, v in data.items()])
+        sql = "UPDATE " + self.table_name + " SET " + set_clause + " WHERE " + condition + ";"
         return sql
 
     def delete(self, condition):
@@ -52,7 +78,12 @@ class SQLGenerator:
         :param condition: str. The condition expression for the delete.
         :return: str. The generated SQL statement.
         """
-        sql = f"DELETE FROM {self.table_name} WHERE {condition};"
+        if not isinstance(condition, str):
+            raise TypeError("Condition must be a string.")
+        if not condition:
+            raise ValueError("Condition cannot be empty.")
+
+        sql = "DELETE FROM " + self.table_name + " WHERE " + condition + ";"
         return sql
 
     def select_female_under_age(self, age):
@@ -61,7 +92,12 @@ class SQLGenerator:
         :param age: int. The specified age.
         :return: str. The generated SQL statement.
         """
-        sql = f"SELECT * FROM {self.table_name} WHERE age < {age} AND gender = 'female';"
+        if not isinstance(age, int):
+            raise TypeError("Age must be an integer.")
+        if age < 0:
+            raise ValueError("Age cannot be negative.")
+
+        sql = "SELECT * FROM " + self.table_name + " WHERE age < " + str(age) + " AND gender = 'female';"
         return sql
 
     def select_by_age_range(self, min_age, max_age):
@@ -71,5 +107,12 @@ class SQLGenerator:
         :param max_age: int. The maximum age.
         :return: str. The generated SQL statement.
         """
-        sql = f"SELECT * FROM {self.table_name} WHERE age BETWEEN {min_age} AND {max_age};"
+        if not isinstance(min_age, int) or not isinstance(max_age, int):
+            raise TypeError("Ages must be integers.")
+        if min_age < 0 or max_age < 0:
+            raise ValueError("Ages cannot be negative.")
+        if min_age > max_age:
+            raise ValueError("Minimum age cannot be greater than maximum age.")
+
+        sql = "SELECT * FROM " + self.table_name + " WHERE age BETWEEN " + str(min_age) + " AND " + str(max_age) + ";"
         return sql

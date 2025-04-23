@@ -20,8 +20,10 @@ class ImageProcessor:
             self.image = Image.open(image_path)
         except FileNotFoundError:
             print(f"Error: Image file not found at {image_path}")
+            self.image = None
         except Exception as e:
             print(f"Error loading image: {e}")
+            self.image = None
 
     def save_image(self, save_path):
         """
@@ -33,8 +35,6 @@ class ImageProcessor:
                 self.image.save(save_path)
             except Exception as e:
                 print(f"Error saving image: {e}")
-        else:
-            print("Error: No image loaded to save.")
 
     def resize_image(self, width, height):
         """
@@ -47,8 +47,6 @@ class ImageProcessor:
                 self.image = self.image.resize((width, height))
             except Exception as e:
                 print(f"Error resizing image: {e}")
-        else:
-            print("Error: No image loaded to resize.")
 
     def rotate_image(self, degrees):
         """
@@ -60,8 +58,6 @@ class ImageProcessor:
                 self.image = self.image.rotate(degrees)
             except Exception as e:
                 print(f"Error rotating image: {e}")
-        else:
-            print("Error: No image loaded to rotate.")
 
     def adjust_brightness(self, factor):
         """
@@ -74,5 +70,3 @@ class ImageProcessor:
                 self.image = enhancer.enhance(factor)
             except Exception as e:
                 print(f"Error adjusting brightness: {e}")
-        else:
-            print("Error: No image loaded to adjust brightness.")

@@ -1,7 +1,7 @@
 def solve():
     a, b = map(int, input().split())
 
-    for price in range(1, 2001):
+    for price in range(1, 1251):
         tax_8 = int(price * 0.08)
         tax_10 = int(price * 0.10)
 

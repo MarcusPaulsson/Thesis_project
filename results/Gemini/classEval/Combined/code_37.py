@@ -35,16 +35,14 @@ class EncryptionUtils:
         :return: The ciphertext, str.
         """
         ciphertext = ""
-        key = self.key
-        key_length = len(key)
+        key_length = len(self.key)
         for i, char in enumerate(plaintext):
+            key_char = self.key[i % key_length]
+            shift = ord(key_char.lower()) - ord('a')
+
             if 'a' <= char <= 'z':
-                key_char = key[i % key_length]
-                shift = ord(key_char) - ord('a')
                 shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))
             elif 'A' <= char <= 'Z':
-                key_char = key[i % key_length]
-                shift = ord(key_char.lower()) - ord('a')
                 shifted_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))
             else:
                 shifted_char = char
@@ -54,34 +52,33 @@ class EncryptionUtils:
     def rail_fence_cipher(self, plain_text, rails):
         """
         Encrypts the plaintext using the Rail Fence cipher.
-        :param plaintext: The plaintext to encrypt, str.
-        :param rails: The number of rails to use, int.
+        :param plain_text: The plaintext to encrypt, str.
+        :param rails: The number of rails to use for encryption, int.
         :return: The ciphertext, str.
         """
         if rails <= 1:
             return plain_text
 
-        rail = [['' for _ in range(len(plain_text))]
-                for _ in range(rails)]
-
-        dir_down = False
-        row, col = 0, 0
+        rail = [['' for _ in range(len(plain_text))] for _ in range(rails)]
+        down = False
+        row = 0
 
         for i in range(len(plain_text)):
-            if row == 0 or row == rails - 1:
-                dir_down = not dir_down
+            rail[row][i] = plain_text[i]
 
-            rail[row][col] = plain_text[i]
-            col += 1
+            if row == 0:
+                down = True
+            elif row == rails - 1:
+                down = False
 
-            if dir_down:
+            if down:
                 row += 1
             else:
                 row -= 1
 
-        result = ""
+        cipher_text = ""
         for i in range(rails):
             for j in range(len(plain_text)):
-                if rail[i][j] != '':
-                    result += rail[i][j]
-        return result
+                cipher_text += rail[i][j]
+
+        return cipher_text.replace('', '')

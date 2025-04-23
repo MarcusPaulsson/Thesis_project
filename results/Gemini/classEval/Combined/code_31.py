@@ -14,12 +14,9 @@ class DataStatistics4:
         :param data2: The second set of data,list.
         :return: The correlation coefficient, float.
         """
-        if len(data1) != len(data2):
-            raise ValueError("Data sets must have the same length")
-
         n = len(data1)
-        if n <= 1:
-            return 0.0
+        if n != len(data2):
+            raise ValueError("Data sets must have the same length")
 
         mean1 = sum(data1) / n
         mean2 = sum(data2) / n
@@ -83,9 +80,6 @@ class DataStatistics4:
         :param sigma: The standard deviation of the normal distribution, float.
         :return: The probability density function (PDF), list.
         """
-        if sigma <= 0:
-            raise ValueError("Standard deviation (sigma) must be positive.")
-
         pdf_values = []
         for x in data:
             exponent = -((x - mu) ** 2) / (2 * sigma ** 2)

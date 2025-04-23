@@ -3,6 +3,8 @@ def solve():
     s = input()
     
     count = 0
+    distinct_strings = set()
+    
     for i in range(2**n):
         t = bin(i)[2:].zfill(n)
         
@@ -14,7 +16,9 @@ def solve():
                 break
         
         if found:
-            count += 1
+            if t not in distinct_strings:
+                count += 1
+                distinct_strings.add(t)
             
     print(count)
 

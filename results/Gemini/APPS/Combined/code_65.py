@@ -9,21 +9,22 @@ def solve():
         print(-1)
         return
 
-    diff = m // n
+    k = m // n
     
+    count = 0
     twos = 0
     threes = 0
     
-    while diff % 2 == 0:
-        diff //= 2
+    while k % 2 == 0:
+        k //= 2
         twos += 1
-    while diff % 3 == 0:
-        diff //= 3
+    while k % 3 == 0:
+        k //= 3
         threes += 1
-            
-    if diff != 1:
-        print(-1)
-    else:
+    
+    if k == 1:
         print(twos + threes)
+    else:
+        print(-1)
 
 solve()

@@ -189,8 +189,6 @@ tasks = load_classEval_tests(test_data_path)
 save_passed = True
 
 # Run tests for each folder in parallel
-
-# Run tests for each folder in parallel
 curr_time = time.time()
 if tasks:
     results = {}

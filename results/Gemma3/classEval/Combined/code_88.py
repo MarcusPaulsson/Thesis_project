@@ -19,7 +19,7 @@ class TriCalculator:
         0.5
         """
         x_rad = x / 180 * pi
-        return self.taylor_cos(x_rad, 15)
+        return self.taylor(x_rad, 15)
 
     def factorial(self, a):
         """
@@ -34,13 +34,13 @@ class TriCalculator:
         else:
             return a * self.factorial(a-1)
 
-    def taylor_cos(self, x, n):
+    def taylor(self, x, n):
         """
         Finding the n-order Taylor expansion value of cos (x)
         :param x: float
         :param n: int
         :return: float
-        >>> tricalculator.taylor_cos(60, 50)
+        >>> tricalculator.taylor(60, 50)
         0.5000000000000001
         """
         result = 0

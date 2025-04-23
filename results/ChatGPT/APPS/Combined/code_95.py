@@ -1,39 +1,38 @@
 def generate_string(n, s, t):
-    # Count of each character
-    counts = {'a': n, 'b': n, 'c': n}
-    
     # Create a list to hold the result
     res = []
     
-    # Function to check if adding a character would create a forbidden substring
-    def can_add_char(c):
-        if len(res) >= 1 and res[-1] == c:
-            return False
-        if len(res) >= 1 and res[-1] + c in (s, t):
-            return False
-        return True
+    # Count of each character
+    counts = {'a': n, 'b': n, 'c': n}
     
-    # Try to build the result string
+    # Function to check if the last two characters in res form a forbidden substring
+    def is_forbidden():
+        return ''.join(res[-2:]) in (s, t) if len(res) >= 2 else False
+    
+    # Fill the result while ensuring no forbidden substrings
     while sum(counts.values()) > 0:
         for char in 'abc':
-            if counts[char] > 0 and can_add_char(char):
+            if counts[char] > 0:
                 res.append(char)
                 counts[char] -= 1
-                break
-        else:
-            # If we went through all characters and couldn't add any, we are stuck
-            return "NO"
-    
+                
+                # Check if the last two characters form a forbidden substring
+                if is_forbidden():
+                    res.pop()  # Remove the last character added
+                    counts[char] += 1  # Restore the count
+                else:
+                    break  # Valid addition, continue to next character
+
     # Join the result list into a string
     result_string = ''.join(res)
     
-    # Check if the result contains forbidden substrings
-    if s in result_string or t in result_string:
+    # Check if the result is valid
+    if len(result_string) == 3 * n and not is_forbidden():
+        return "YES\n" + result_string
+    else:
         return "NO"
-    
-    return "YES\n" + result_string
 
-# Input reading
+# Read input
 n = int(input())
 s = input().strip()
 t = input().strip()

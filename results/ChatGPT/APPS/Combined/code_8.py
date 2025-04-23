@@ -1,44 +1,42 @@
 def min_tiles_to_draw(tiles):
-    # Parse the input tiles
-    hand = [(int(tile[0]), tile[1]) for tile in tiles]
-    
+    from collections import Counter
+
     # Count occurrences of each tile
-    counts = {}
-    for num, suit in hand:
-        counts[(num, suit)] = counts.get((num, suit), 0) + 1
-    
+    counts = Counter(tiles)
+
     # Check for koutsu (triplet)
-    if any(count == 3 for count in counts.values()):
-        return 0  # Already have a koutsu
-    
+    if any(count >= 3 for count in counts.values()):
+        return 0  # Already has a koutsu
+
     # Organize tiles by suit
     suits = {'m': [], 'p': [], 's': []}
-    for num, suit in hand:
-        suits[suit].append(num)
-    
-    # Check for shuntsu (sequence)
+    for tile in tiles:
+        number = int(tile[0])
+        suit = tile[1]
+        suits[suit].append(number)
+
+    # Sort the numbers in each suit
     for suit in suits:
-        nums = sorted(suits[suit])
-        if len(nums) >= 3:
-            for i in range(len(nums) - 2):
-                if nums[i] + 1 == nums[i + 1] and nums[i + 1] + 1 == nums[i + 2]:
-                    return 0  # Already have a shuntsu
-    
-    # Calculate the minimum tiles needed to draw
-    needed = float('inf')
-    
-    for suit in suits:
-        nums = sorted(suits[suit])
-        for i in range(len(nums)):
-            # Check for potential shuntsu with one draw
-            if nums[i] > 1 and (nums[i] - 1) not in nums:
-                needed = min(needed, 1)  # Can draw (num[i] - 1)
-            if nums[i] < 9 and (nums[i] + 1) not in nums:
-                needed = min(needed, 1)  # Can draw (num[i] + 1)
-            if i < len(nums) - 1 and nums[i + 1] - nums[i] > 1:
-                needed = min(needed, 2)  # Need two draws to fill the gap
-    
-    return needed if needed != float('inf') else 2  # If no possible shuntsu, need at least 2 draws
+        suits[suit].sort()
+
+    # Check for existing shuntsu (sequence)
+    for numbers in suits.values():
+        if any(numbers[i] + 1 == numbers[i + 1] and numbers[i] + 2 == numbers[i + 2] for i in range(len(numbers) - 2)):
+            return 0  # Already has a shuntsu
+
+    # Check for possible shuntsu with one draw
+    for numbers in suits.values():
+        for i in range(len(numbers)):
+            # Check for completing a sequence
+            if (numbers[i] - 1) not in numbers or (numbers[i] + 1) not in numbers:
+                return 1  # Can complete a shuntsu with one draw
+
+            # Check for gaps in the sequence
+            if i > 0 and numbers[i] - numbers[i - 1] > 1:
+                return 1  # Can draw a tile to complete a shuntsu
+
+    # If no mentsu can be formed with one draw, it requires two draws
+    return 2
 
 # Read input
 tiles = input().strip().split()
