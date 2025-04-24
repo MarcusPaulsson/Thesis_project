@@ -26,6 +26,7 @@ class DecryptionUtils:
             else:
                 plaintext += char
                 continue
+
             shifted_char = chr((ord(char) - ord(start) - shift) % 26 + ord(start))
             plaintext += shifted_char
         return plaintext
@@ -46,10 +47,11 @@ class DecryptionUtils:
             else:
                 plaintext += char
                 continue
+
             key_char = self.key[i % key_len]
             key_shift = ord(key_char) - ord('a') if 'a' <= key_char <= 'z' else ord(key_char) - ord('A')
-            shifted_char = chr((ord(char) - ord(start) - key_shift) % 26 + ord(start))
-            plaintext += shifted_char
+            decrypted_char = chr((ord(char) - ord(start) - key_shift) % 26 + ord(start))
+            plaintext += decrypted_char
         return plaintext
 
     def rail_fence_decipher(self, encrypted_text, rails):
@@ -59,22 +61,23 @@ class DecryptionUtils:
         :param rails: The number of rails to use for decryption,int.
         :return: The deciphered plaintext,str.
         """
-        text_len = len(encrypted_text)
-        fence = [['' for _ in range(text_len)] for _ in range(rails)]
+        n = len(encrypted_text)
+        fence = [['' for _ in range(n)] for _ in range(rails)]
         rail = 0
         direction = 1  # 1 for down, -1 for up
 
         # Mark the positions where characters will be placed
-        for i in range(text_len):
+        for i in range(n):
             fence[rail][i] = '*'
             rail += direction
+
             if rail == rails - 1 or rail == 0:
                 direction *= -1
 
         # Fill the fence with the encrypted text
         index = 0
         for i in range(rails):
-            for j in range(text_len):
+            for j in range(n):
                 if fence[i][j] == '*':
                     fence[i][j] = encrypted_text[index]
                     index += 1
@@ -83,9 +86,10 @@ class DecryptionUtils:
         plaintext = ''
         rail = 0
         direction = 1
-        for i in range(text_len):
+        for i in range(n):
             plaintext += fence[rail][i]
             rail += direction
+
             if rail == rails - 1 or rail == 0:
                 direction *= -1
 

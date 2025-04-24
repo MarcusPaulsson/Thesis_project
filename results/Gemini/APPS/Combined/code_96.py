@@ -9,24 +9,7 @@ def solve():
             next_element = p[-1] + q[i]
             p.append(next_element)
         
-        if len(set(p)) != n:
-            continue
-        
-        all_elements_present = True
-        for i in range(n):
-            if not (1 <= p[i] <= n):
-                all_elements_present = False
-                break
-        
-        if all_elements_present:
-            seen = [False] * (n + 1)
-            for x in p:
-                if seen[x]:
-                    all_elements_present = False
-                    break
-                seen[x] = True
-
-        if all_elements_present:
+        if all(1 <= x <= n for x in p) and len(set(p)) == n:
             print(*p)
             return
     

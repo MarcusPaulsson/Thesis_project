@@ -42,11 +42,14 @@ class Order:
         :return total: float, the final total price.
         """
         total = 0
-        for dish in self.selected_dishes:
-            if dish["dish"] in self.sales:
-                total += dish["count"] * dish["price"] * self.sales[dish["dish"]]
+        for selected_dish in self.selected_dishes:
+            dish_name = selected_dish["dish"]
+            count = selected_dish["count"]
+            price = selected_dish["price"]
+            if dish_name in self.sales:
+                total += count * price * self.sales[dish_name]
             else:
-                total += dish["count"] * dish["price"]
+                total += count * price
         return total
 
     def checkout(self):

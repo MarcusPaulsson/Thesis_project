@@ -16,14 +16,9 @@ class DataStatistics:
         """
         if not data:
             return 0.00
-        try:
-            mean_value = sum(data) / len(data)
-            return round(mean_value, 2)
-        except TypeError:
-            raise TypeError("Data must be a list of numbers.")
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return None
+        
+        mean_value = sum(data) / len(data)
+        return round(mean_value, 2)
 
     def median(self, data):
         """
@@ -37,28 +32,19 @@ class DataStatistics:
         if not data:
             return 0.00
 
-        try:
-            sorted_data = sorted(data)
-            n = len(sorted_data)
+        sorted_data = sorted(data)
+        n = len(sorted_data)
 
-            if n % 2 == 0:
-                # Even number of elements
-                mid1 = sorted_data[n // 2 - 1]
-                mid2 = sorted_data[n // 2]
-                median = (mid1 + mid2) / 2
-            else:
-                # Odd number of elements
-                median = sorted_data[n // 2]
-
-            if isinstance(median, float):
-                return round(median, 2)
-            else:
-                return median
-        except TypeError:
-            raise TypeError("Data must be a list of numbers.")
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return None
+        if n % 2 == 0:
+            # Even number of elements
+            mid1 = sorted_data[n // 2 - 1]
+            mid2 = sorted_data[n // 2]
+            median_value = (mid1 + mid2) / 2
+        else:
+            # Odd number of elements
+            median_value = sorted_data[n // 2]
+        
+        return round(float(median_value), 2)
 
     def mode(self, data):
         """
@@ -72,14 +58,8 @@ class DataStatistics:
         if not data:
             return []
 
-        try:
-            count = Counter(data)
-            max_count = max(count.values())
-            modes = [key for key, value in count.items() if value == max_count]
-            modes.sort()
-            return modes
-        except TypeError:
-            raise TypeError("Data must be a list of numbers or strings.")
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return None
+        counts = Counter(data)
+        max_count = max(counts.values())
+        modes = [key for key, value in counts.items() if value == max_count]
+        modes.sort()
+        return modes

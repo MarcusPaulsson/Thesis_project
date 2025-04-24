@@ -1,20 +1,27 @@
 def is_lucky_time(hh, mm):
     return '7' in f"{hh:02d}{mm:02d}"
 
-def time_before(hh, mm, minutes):
-    total_minutes = (hh * 60 + mm - minutes) % (24 * 60)
-    return divmod(total_minutes, 60)
+def find_lucky_time(x, hh, mm):
+    minutes_passed = 0
+    
+    while True:
+        if is_lucky_time(hh, mm):
+            return minutes_passed // x
+        
+        minutes_passed += x
+        mm -= x
+        
+        if mm < 0:
+            mm += 60
+            hh -= 1
+            
+            if hh < 0:
+                hh += 24
 
-def minimum_snooze_presses(x, hh, mm):
-    presses = 0
-    while not is_lucky_time(hh, mm):
-        presses += 1
-        hh, mm = time_before(hh, mm, x)
-    return presses
+def main():
+    x = int(input())
+    hh, mm = map(int, input().split())
+    print(find_lucky_time(x, hh, mm))
 
-# Input reading
-x = int(input().strip())
-hh, mm = map(int, input().strip().split())
-
-# Output the result
-print(minimum_snooze_presses(x, hh, mm))
+if __name__ == "__main__":
+    main()

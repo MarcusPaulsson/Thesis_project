@@ -22,9 +22,7 @@ class Interpolation:
             raise ValueError("x and y must have the same length")
 
         if len(x) < 2:
-            if not x:
-                return []
-            return [y[0]] * len(x_interp)
+            return [y[0]] * len(x_interp) if x and y else []
 
         y_interp = []
         for x_i in x_interp:
@@ -51,6 +49,16 @@ class Interpolation:
         :param y_interp: The y-coordinate of the interpolation point, list.
         :return: The z-coordinate of the interpolation point, list.
         """
+        if not x or not y or not z or not x_interp or not y_interp:
+            return []
+
+        if len(z) != len(x):
+            raise ValueError("The length of z must be equal to the length of x")
+
+        for row in z:
+            if len(row) != len(y):
+                raise ValueError("The length of each row in z must be equal to the length of y")
+
         z_interp = []
         for x_i, y_i in zip(x_interp, y_interp):
             for i in range(len(x) - 1):
@@ -64,11 +72,11 @@ class Interpolation:
                         z21 = z[i + 1][j]
                         z22 = z[i + 1][j + 1]
 
-                        z_interp_val = (z11 * (x2 - x_i) * (y2 - y_i) +
-                                          z21 * (x_i - x1) * (y2 - y_i) +
-                                          z12 * (x2 - x_i) * (y_i - y1) +
-                                          z22 * (x_i - x1) * (y_i - y1)) / ((x2 - x1) * (y2 - y1))
-                        z_interp.append(z_interp_val)
+                        z_i = (z11 * (x2 - x_i) * (y2 - y_i) +
+                               z21 * (x_i - x1) * (y2 - y_i) +
+                               z12 * (x2 - x_i) * (y_i - y1) +
+                               z22 * (x_i - x1) * (y_i - y1)) / ((x2 - x1) * (y2 - y1))
+                        z_interp.append(z_i)
                         break
                 else:
                     continue

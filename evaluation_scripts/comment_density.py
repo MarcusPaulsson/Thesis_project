@@ -74,7 +74,7 @@ upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # Ad
 
 
 result_setting = "results" # "filtered_results"
-result_setting = "filtered_results" # "results"
+#result_setting = "filtered_results" # "results"
 
 # folder_paths_gemini_cli_games = {
 #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
@@ -151,6 +151,14 @@ folder_paths_gemma_APPS = {
     "Gemma3 APPS Combined": os.path.join(upper_dir, result_setting, "Gemma3", "APPS", "Combined"),
 }
 
+folder_paths_ground_truth_classEval = {
+        "GroundTruth classEval": os.path.join(upper_dir, "ground_truth", "classEval")
+    }
+folder_paths_ground_truth_APPS = {
+        "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
+    }
+
+
 # Analyze folders and count comment density
 # results_gemini = analyze_folders_and_count_comment_density(folder_paths_gemini_cli_games)
 # results_chatgpt = analyze_folders_and_count_comment_density(folder_paths_chatgpt_cli_games)
@@ -158,14 +166,17 @@ folder_paths_gemma_APPS = {
 results_gemini={}  
 results_chatgpt ={} 
 results_gemma ={} 
+ground_truth ={} 
 
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_classEval))
 results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_classEval))
 results_gemma.update(analyze_folders_and_count_comment_density(folder_paths_gemma_classEval))
+ground_truth.update(analyze_folders_and_count_comment_density(folder_paths_ground_truth_classEval))
 
 results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_APPS))
 results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_APPS))
 results_gemma.update(analyze_folders_and_count_comment_density(folder_paths_gemma_APPS))
+ground_truth.update(analyze_folders_and_count_comment_density(folder_paths_ground_truth_APPS))
 
 print("\nComment Density per Folder:")
 for folder, (avg_density, std_dev_density) in results_gemini.items():
@@ -175,6 +186,9 @@ for folder, (avg_density, std_dev_density) in results_chatgpt.items():
     print(f"  {folder}: Average Density = {avg_density:.2f}")
 
 for folder, (avg_density, std_dev_density) in results_gemma.items():
+    print(f"  {folder}: Average Density = {avg_density:.2f}")
+
+for folder, (avg_density, std_dev_density) in ground_truth.items():
     print(f"  {folder}: Average Density = {avg_density:.2f}")
 
 # Split density calculation by technique for Gemini

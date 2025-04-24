@@ -59,24 +59,26 @@ class EncryptionUtils:
         """
         Encrypts the plaintext using the Rail Fence cipher.
         :param plaintext: The plaintext to encrypt, str.
-        :param rails: The number of rails to use, int.
+        :param rails: The number of rails to use for the cipher, int.
         :return: The ciphertext, str.
         """
         if rails <= 1:
             return plain_text
 
-        rail_matrix = [['' for _ in range(len(plain_text))] for _ in range(rails)]
-        row, direction = 0, 1
+        fence = [['' for _ in range(len(plain_text))] for _ in range(rails)]
+        rail = 0
+        direction = 1  # 1 for down, -1 for up
 
         for i, char in enumerate(plain_text):
-            rail_matrix[row][i] = char
+            fence[rail][i] = char
 
-            if row == 0:
-                direction = 1
-            elif row == rails - 1:
-                direction = -1
+            rail += direction
 
-            row += direction
+            if rail == rails - 1 or rail == 0:
+                direction *= -1
 
-        ciphertext = ''.join([''.join(row) for row in rail_matrix])
-        return ciphertext
+        result = ''
+        for rail in fence:
+            result += ''.join(rail)
+
+        return result

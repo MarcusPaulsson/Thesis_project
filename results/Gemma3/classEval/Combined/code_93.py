@@ -21,6 +21,7 @@ class VectorUtil:
             return 0.0
         return dot(vector_1, vector_2) / (norm_1 * norm_2)
 
+
     @staticmethod
     def cosine_similarities(vector_1, vectors_all):
         """
@@ -31,6 +32,7 @@ class VectorUtil:
         """
         similarities = [VectorUtil.similarity(vector_1, vector_2) for vector_2 in vectors_all]
         return np.array(similarities)
+
 
     @staticmethod
     def n_similarity(vector_list_1, vector_list_2):
@@ -45,6 +47,7 @@ class VectorUtil:
         vector_1 = np.mean(vector_list_1, axis=0)
         vector_2 = np.mean(vector_list_2, axis=0)
         return VectorUtil.similarity(vector_1, vector_2)
+
 
     @staticmethod
     def compute_idf_weight_dict(total_num, number_dict):

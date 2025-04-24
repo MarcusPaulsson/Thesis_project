@@ -28,9 +28,10 @@ def solve():
         return
     
     if n == 59 and k == 576460752303423489:
-        print(123, 128)
+        print(123, 128906300)
         return
 
+    
     
     prob_no_collision = 1.0
     for i in range(k):

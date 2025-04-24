@@ -1,13 +1,13 @@
 class Interpolation:
     """
-    This class implements linear interpolation for one-dimensional and two-dimensional data.
+    A class that implements linear interpolation for one-dimensional and two-dimensional data.
     """
 
     @staticmethod
     def interpolate_1d(x, y, x_interp):
         """
-        Perform linear interpolation of one-dimensional data.
-        
+        Performs linear interpolation for one-dimensional data.
+
         :param x: List of x-coordinates of the data points.
         :param y: List of y-coordinates of the data points.
         :param x_interp: List of x-coordinates for interpolation.
@@ -17,19 +17,21 @@ class Interpolation:
             return []
 
         y_interp = []
-        n = len(x)
-
         for xi in x_interp:
             if xi < x[0]:
-                y_interp.append(y[0])
+                # Extrapolate to the left
+                slope = (y[1] - y[0]) / (x[1] - x[0])
+                y_interp.append(y[0] + slope * (xi - x[0]))
             elif xi > x[-1]:
-                y_interp.append(y[-1])
+                # Extrapolate to the right
+                slope = (y[-1] - y[-2]) / (x[-1] - x[-2])
+                y_interp.append(y[-1] + slope * (xi - x[-1]))
             else:
-                for i in range(n - 1):
+                # Interpolate
+                for i in range(len(x) - 1):
                     if x[i] <= xi <= x[i + 1]:
                         slope = (y[i + 1] - y[i]) / (x[i + 1] - x[i])
-                        yi = y[i] + slope * (xi - x[i])
-                        y_interp.append(yi)
+                        y_interp.append(y[i] + slope * (xi - x[i]))
                         break
 
         return y_interp
@@ -37,11 +39,11 @@ class Interpolation:
     @staticmethod
     def interpolate_2d(x, y, z, x_interp, y_interp):
         """
-        Perform linear interpolation of two-dimensional data.
-        
+        Performs linear interpolation for two-dimensional data.
+
         :param x: List of x-coordinates of the data points.
         :param y: List of y-coordinates of the data points.
-        :param z: 2D list of z-coordinates for the data points.
+        :param z: 2D list of z-coordinates of the data points.
         :param x_interp: List of x-coordinates for interpolation.
         :param y_interp: List of y-coordinates for interpolation.
         :return: List of interpolated z-coordinates.
@@ -52,39 +54,30 @@ class Interpolation:
         z_interp = []
         for xi, yi in zip(x_interp, y_interp):
             if xi < x[0] or xi > x[-1] or yi < y[0] or yi > y[-1]:
-                z_interp.append(None)
+                z_interp.append(None)  # Out of bounds
                 continue
-            
+
+            # Find the surrounding points for bilinear interpolation
             for i in range(len(x) - 1):
                 if x[i] <= xi <= x[i + 1]:
                     for j in range(len(y) - 1):
                         if y[j] <= yi <= y[j + 1]:
-                            z_interp_value = Interpolation._bilinear_interpolate(xi, yi, x[i], x[i + 1], y[j], y[j + 1],
-                                                                                  z[j][i], z[j][i + 1], z[j + 1][i], z[j + 1][i + 1])
+                            z11 = z[j][i]
+                            z12 = z[j + 1][i]
+                            z21 = z[j][i + 1]
+                            z22 = z[j + 1][i + 1]
+
+                            # Calculate weights
+                            weight_x = (xi - x[i]) / (x[i + 1] - x[i])
+                            weight_y = (yi - y[j]) / (y[j + 1] - y[j])
+
+                            # Perform bilinear interpolation
+                            z_interp_value = (z11 * (1 - weight_x) * (1 - weight_y) +
+                                              z21 * weight_x * (1 - weight_y) +
+                                              z12 * (1 - weight_x) * weight_y +
+                                              z22 * weight_x * weight_y)
                             z_interp.append(z_interp_value)
                             break
                     break
 
         return z_interp
-
-    @staticmethod
-    def _bilinear_interpolate(xi, yi, x1, x2, y1, y2, z11, z12, z21, z22):
-        """
-        Helper method to perform bilinear interpolation.
-
-        :param xi: x-coordinate for interpolation.
-        :param yi: y-coordinate for interpolation.
-        :param x1: Lower x-bound.
-        :param x2: Upper x-bound.
-        :param y1: Lower y-bound.
-        :param y2: Upper y-bound.
-        :param z11: Value at (x1, y1).
-        :param z12: Value at (x2, y1).
-        :param z21: Value at (x1, y2).
-        :param z22: Value at (x2, y2).
-        :return: Interpolated z-coordinate.
-        """
-        return (z11 * (x2 - xi) * (y2 - yi) +
-                z12 * (xi - x1) * (y2 - yi) +
-                z21 * (x2 - xi) * (yi - y1) +
-                z22 * (xi - x1) * (yi - y1)) / ((x2 - x1) * (y2 - y1))

@@ -9,13 +9,11 @@ def solve():
         if pairs[i][1] > pairs[i][0]:
             possible = False
             break
-
-    if possible:
-        for i in range(1, n):
+        if i > 0:
             if pairs[i][0] < pairs[i-1][0] or pairs[i][1] < pairs[i-1][1]:
                 possible = False
                 break
-            if pairs[i][1] - pairs[i-1][1] > pairs[i][0] - pairs[i-1][0]:
+            if pairs[i][0] - pairs[i-1][0] < pairs[i][1] - pairs[i-1][1]:
                 possible = False
                 break
 
@@ -23,7 +21,6 @@ def solve():
         print("YES")
     else:
         print("NO")
-
 
 t = int(input())
 for _ in range(t):

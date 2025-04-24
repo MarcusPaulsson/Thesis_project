@@ -4,7 +4,7 @@ class AutomaticGuitarSimulator:
         Initializes the AutomaticGuitarSimulator with the given text.
 
         Args:
-            text (str): The text representing the guitar score.
+            text (str): The guitar score to be played.
         """
         self.play_text = text
 
@@ -14,26 +14,22 @@ class AutomaticGuitarSimulator:
         where each dictionary contains the chord and tune.
 
         Args:
-            display (bool, optional): Whether to display the interpreted score. Defaults to False.
+            display (bool, optional): A flag indicating whether to print the interpreted score. Defaults to False.
 
         Returns:
             list: A list of dictionaries, where each dictionary has 'Chord' and 'Tune' keys.
-                   Returns an empty list if the input text is empty or contains only whitespace.
+                 Returns an empty list if the input is empty or contains only whitespace.
         """
         if not self.play_text or self.play_text.isspace():
             return []
 
+        score_list = self.play_text.split()
         play_list = []
-        parts = self.play_text.split()
 
-        for part in parts:
-            chord = ''.join(filter(str.isalpha, part))
-            tune = ''.join(filter(str.isdigit, part))
+        for score in score_list:
+            chord = ''.join(char for char in score if char.isalpha())
+            tune = ''.join(char for char in score if char.isdigit())
             play_list.append({'Chord': chord, 'Tune': tune})
-
-        if display:
-            for item in play_list:
-                print(self.display(item['Chord'], item['Tune']))
 
         return play_list
 

@@ -18,6 +18,7 @@ def solve():
         if k <= 0:
             break
             
+    
     for i in range(n):
         print(*matrix[i])
 

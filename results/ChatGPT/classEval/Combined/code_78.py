@@ -7,26 +7,31 @@ class SplitSentence:
 
     def split_sentences(self, sentences_string):
         """
-        Split a string into a list of sentences. Sentences end with . or ? and are not preceded by abbreviations like 'Mr.'.
-        :param sentences_string: string, string to split
+        Split a string into a list of sentences. Sentences end with . or ? and are followed by a space. 
+        Note that abbreviations like Mr. do not count as sentence endings.
+        
+        :param sentences_string: str, string to split
         :return: list, split sentence list
         """
-        sentence_pattern = r'(?<!\bMr\.)(?<!\b[A-Z]\.[A-Z]\.)[^?.!]+[?.!](?=\s|$)'
-        return [sentence.strip() for sentence in re.findall(sentence_pattern, sentences_string)]
+        pattern = r'(?<!\bMr\.)(?<!\b[A-Z]\.)(?<!\b[A-Z]\.[A-Z]\.)[.?\n]+(?=\s|$)'
+        return [sentence.strip() for sentence in re.split(pattern, sentences_string) if sentence.strip()]
 
     def count_words(self, sentence):
         """
-        Count the number of words in a sentence. Words are separated by spaces; punctuation marks and numbers are not counted.
-        :param sentence: string, sentence to be counted
+        Count the number of words in a sentence. Words are separated by spaces, 
+        and punctuation marks and numbers are not counted as words.
+        
+        :param sentence: str, sentence to be counted
         :return: int, number of words in the sentence
         """
-        words = [word for word in sentence.split() if word.isalpha()]
+        words = re.findall(r'\b[a-zA-Z]+\b', sentence)
         return len(words)
 
     def process_text_file(self, sentences_string):
         """
         Given a text, return the number of words in the longest sentence.
-        :param sentences_string: string, undivided long sentence
+        
+        :param sentences_string: str, undivided long sentence
         :return: int, the number of words in the longest sentence
         """
         sentences = self.split_sentences(sentences_string)

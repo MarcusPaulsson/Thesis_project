@@ -1,6 +1,6 @@
 class IPAddress:
     """
-    A class to process IP addresses, including validating, retrieving octets, and obtaining binary representation.
+    A class to process IP Addresses, including validation, retrieving octets, and obtaining the binary representation of a valid IP address.
     """
 
     def __init__(self, ip_address: str):
@@ -12,7 +12,7 @@ class IPAddress:
 
     def is_valid(self) -> bool:
         """
-        Validate the IP address format: four decimal digits (0-255) separated by dots.
+        Validate the IP address format. It should consist of four decimal digits (0-255) separated by '.'.
         :return: bool
         """
         octets = self.ip_address.split('.')
@@ -25,7 +25,7 @@ class IPAddress:
 
     def get_octets(self) -> list:
         """
-        Return the list of decimal numbers constituting the IP address if valid; otherwise, return an empty list.
+        Return a list of the four decimal numbers constituting the IP address if valid; otherwise, return an empty list.
         :return: list
         """
         return self.ip_address.split('.') if self.is_valid() else []
@@ -36,5 +36,5 @@ class IPAddress:
         :return: string
         """
         if self.is_valid():
-            return '.'.join(format(int(octet), '08b') for octet in self.ip_address.split('.'))
+            return '.'.join(format(int(octet), '08b') for octet in self.get_octets())
         return ''

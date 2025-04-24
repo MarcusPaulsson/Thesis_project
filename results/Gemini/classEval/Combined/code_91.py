@@ -26,15 +26,12 @@ class UrlPath:
         :param path: str, the path string to parse.
         :param charset: str, the character encoding of the path string.
         """
-        path = self.fix_path(path)
-        self.with_end_tag = path.endswith('/')
-        if self.with_end_tag:
-            path = path[:-1]
-
-        if path:
-            self.segments = path.split('/')
+        fixed_path = self.fix_path(path)
+        if fixed_path:
+            self.segments = fixed_path.split('/')
         else:
             self.segments = []
+        self.with_end_tag = path.endswith('/') if path else False
 
 
     @staticmethod
@@ -44,5 +41,8 @@ class UrlPath:
         :param path: str, the path string to fix.
         :return: str, the fixed path string.
         """
+        if not path:
+            return ''
+
         path = path.strip('/')
         return path

@@ -33,7 +33,7 @@ class UserLoginDB:
         :param password: str, the password of the user.
         :return: None
         """
-        self.cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+        self.cursor.execute("INSERT INTO users VALUES (?, ?)", (username, password))
         self.connection.commit()
 
     def search_user_by_username(self, username):
@@ -42,7 +42,7 @@ class UserLoginDB:
         :param username: str, the username of the user to search for.
         :return:list of tuples, the rows from the "users" table that match the search criteria.
         """
-        self.cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+        self.cursor.execute("SELECT * FROM users WHERE username=?", (username,))
         return self.cursor.fetchall()
 
     def delete_user_by_username(self, username):
@@ -51,7 +51,7 @@ class UserLoginDB:
         :param username: str, the username of the user to delete.
         :return: None
         """
-        self.cursor.execute("DELETE FROM users WHERE username = ?", (username,))
+        self.cursor.execute("DELETE FROM users WHERE username=?", (username,))
         self.connection.commit()
 
     def validate_user_login(self, username, password):
@@ -61,6 +61,8 @@ class UserLoginDB:
         :param password:str, the password of the user to validate.
         :return:bool, representing whether the user can log in correctly
         """
-        self.cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-        result = self.cursor.fetchall()
-        return len(result) > 0
+        user = self.search_user_by_username(username)
+        if user:
+            return user[0][1] == password
+        else:
+            return False

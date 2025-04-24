@@ -103,9 +103,12 @@ class NumberWordFormatter:
             temp_list.insert(0, s[i])
             group_count += 1
             if group_count == 3 and i != 0:
-                formatted_number = self.parse_more((n - len(temp_list)) // 3) + " " + self.trans_three("".join(temp_list)) + " " + formatted_number
+                formatted_number = self.parse_more(len(self.NUMBER_MORE) - len(self.NUMBER_MORE) + (n - len(temp_list)) // 3) + " " + formatted_number
                 temp_list = []
                 group_count = 0
 
-        formatted_number = self.trans_three("".join(temp_list)) + " " + formatted_number
+        if temp_list:
+            temp_str = "".join(temp_list)
+            formatted_number = self.trans_three(temp_str) + " " + formatted_number
+
         return formatted_number.strip()

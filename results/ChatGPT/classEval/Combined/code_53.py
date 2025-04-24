@@ -1,10 +1,9 @@
 import re
 
-
 class LongestWord:
     """
-    This class allows adding words to a list and finding the longest word in a given sentence by comparing 
-    the words with the ones in the word list.
+    This class allows adding words to a list and finding the longest word in a given sentence 
+    by comparing the words with those in the word list.
     """
 
     def __init__(self):
@@ -13,7 +12,7 @@ class LongestWord:
         """
         self.word_list = []
 
-    def add_word(self, word: str) -> None:
+    def add_word(self, word: str):
         """
         Append the input word into self.word_list.
         :param word: str, input word
@@ -24,14 +23,18 @@ class LongestWord:
     def find_longest_word(self, sentence: str) -> str:
         """
         Remove punctuation marks and split a sentence into a list of words. 
-        Find the longest word that is in the self.word_list.
+        Find the longest split word that is in the self.word_list.
         Words are strictly case sensitive.
         :param sentence: a sentence str
-        :return str: longest word that is in the self.word_list. Returns '' if self.word_list is empty.
+        :return: str, longest split word that is in the self.word_list. 
+                 Returns '' if self.word_list is empty.
         """
         if not self.word_list:
             return ''
-        
+
+        # Remove punctuation and split the sentence into words
         words = re.findall(r'\b\w+\b', sentence)
-        longest = max((word for word in words if word in self.word_list), key=len, default='')
-        return longest
+        longest_word = max((word for word in words if word in self.word_list), 
+                           key=len, default='')
+
+        return longest_word

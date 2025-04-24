@@ -34,36 +34,33 @@ class Words2Numbers:
         :return: string, the final converted integer string
         """
         textnum = textnum.replace('-', ' ')
-        current_number = 0
-        final_number = 0
-        parts = textnum.split()
+        current = result = 0
+        tokens = textnum.split()
 
-        for word in parts:
-            word = word.lower()
+        for word in tokens:
             if word in self.numwords:
                 scale, increment = self.numwords[word]
-                current_number = current_number * scale + increment
+                current = current * scale + increment
                 if scale > 100:
-                    final_number += current_number
-                    current_number = 0
+                    result += current
+                    current = 0
             elif word in self.ordinal_words:
-                final_number += self.ordinal_words[word]
-                current_number = 0
+                result += self.ordinal_words[word]
+                current = 0
             else:
                 for ending, replacement in self.ordinal_endings:
                     if word.endswith(ending):
                         base_word = word[:-len(ending)] + replacement
                         if base_word in self.numwords:
                             scale, increment = self.numwords[base_word]
-                            current_number = current_number * scale + increment
-                            final_number += current_number
-                            current_number = 0
+                            current = current * scale + increment
+                            result += current
+                            current = 0
                             break
                 else:
-                    return "0"
+                    return "Invalid input"
 
-        final_number += current_number
-        return str(final_number)
+        return str(result + current)
 
     def is_valid_input(self, textnum):
         """
@@ -72,20 +69,21 @@ class Words2Numbers:
         :return: True if input is valid, False otherwise.
         """
         textnum = textnum.replace('-', ' ')
-        parts = textnum.split()
-        valid_words = list(self.numwords.keys()) + list(self.ordinal_words.keys())
-        for word in parts:
-            word = word.lower()
-            found = False
+        tokens = textnum.split()
+        valid_words = set(self.numwords.keys()) | set(self.ordinal_words.keys())
+
+        for word in tokens:
             if word in valid_words:
-                found = True
-            else:
-                for ending, replacement in self.ordinal_endings:
-                    if word.endswith(ending):
-                        base_word = word[:-len(ending)] + replacement
-                        if base_word in self.numwords:
-                            found = True
-                            break
-                if not found:
-                    return False
+                continue
+
+            found = False
+            for ending, replacement in self.ordinal_endings:
+                if word.endswith(ending):
+                    base_word = word[:-len(ending)] + replacement
+                    if base_word in self.numwords:
+                        found = True
+                        break
+            if not found:
+                return False
+
         return True

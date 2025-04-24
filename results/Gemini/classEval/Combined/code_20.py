@@ -15,23 +15,25 @@ class Chat:
         """
         Add a new user to the Chat.
         :param username: The user's name, str.
-        :return: If the user is already in the Chat, returns False, otherwise, returns True.
+        :return: True if the user was added, False otherwise.
         """
         if username in self.users:
             return False
-        self.users[username] = []
-        return True
+        else:
+            self.users[username] = []
+            return True
 
     def remove_user(self, username):
         """
         Remove a user from the Chat.
         :param username: The user's name, str.
-        :return: If the user is already in the Chat, returns True, otherwise, returns False.
+        :return: True if the user was removed, False otherwise.
         """
         if username in self.users:
             del self.users[username]
             return True
-        return False
+        else:
+            return False
 
     def send_message(self, sender, receiver, message):
         """
@@ -39,7 +41,7 @@ class Chat:
         :param sender: The sender's name, str.
         :param receiver: The receiver's name, str.
         :param message: The message, str.
-        :return: If the sender or the receiver is not in the Chat, returns False, otherwise, returns True.
+        :return: True if the message was sent, False otherwise.
         """
         if sender not in self.users or receiver not in self.users:
             return False
@@ -56,4 +58,7 @@ class Chat:
         :param username: The user's name, str.
         :return: A list of messages, each message is a dictionary with keys 'sender', 'receiver', 'message', 'timestamp'.
         """
-        return self.users.get(username, [])
+        if username in self.users:
+            return self.users[username]
+        else:
+            return []

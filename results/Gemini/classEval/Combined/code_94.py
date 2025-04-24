@@ -46,7 +46,7 @@ class VendingMachine:
             raise ValueError("amount must be positive")
 
         self.balance += amount
-        return round(self.balance, 2)
+        return self.balance
 
     def purchase_item(self, item_name):
         """
@@ -68,7 +68,7 @@ class VendingMachine:
 
         self.balance -= self.inventory[item_name]['price']
         self.inventory[item_name]['quantity'] -= 1
-        return round(self.balance, 2)
+        return self.balance
 
     def restock_item(self, item_name, quantity):
         """
@@ -99,9 +99,6 @@ class VendingMachine:
             return False
 
         display_string = ""
-        items = list(self.inventory.items())
-        for i, (item_name, item_data) in enumerate(items):
-            display_string += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]"
-            if i < len(items) - 1:
-                display_string += "\n"
-        return display_string
+        for item_name, item_data in self.inventory.items():
+            display_string += f"{item_name} - ${item_data['price']} [{item_data['quantity']}]\n"
+        return display_string.strip()

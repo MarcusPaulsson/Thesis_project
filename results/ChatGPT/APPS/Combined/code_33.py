@@ -1,45 +1,43 @@
-def count_common_ap_integers(a1, b1, a2, b2, L, R):
-    def find_first_valid_x(start, step, b, limit):
+def count_common_ap(a1, b1, a2, b2, L, R):
+    def gcd(x, y):
+        while y:
+            x, y = y, x % y
+        return x
+
+    def find_first_valid(start, step, offset):
         if step == 0:
-            return b if start <= limit else None
-        if (start - b) % step == 0 and start <= limit:
-            return start
-        if step > 0:
-            return b + ((start - b + step - 1) // step) * step
-        return None
+            return offset if start <= offset <= R else None
+        if start > R:
+            return None
+        if start < L:
+            if (L - offset) % step == 0:
+                return L
+            return L + (step - (L - offset) % step) % step
+        return start + (step - (start - offset) % step) % step
 
-    def find_last_valid_x(end, step, b):
+    def find_last_valid(end, step, offset):
         if step == 0:
-            return b if end >= b else None
-        if (end - b) % step == 0:
-            return end
-        if step > 0:
-            return b + (end - b) // step * step
-        return None
+            return offset if L <= offset <= end else None
+        if end < L:
+            return None
+        if end > R:
+            if (R - offset) % step == 0:
+                return R
+            return R - (R - offset) % step
+        return end - (end - offset) % step
 
-    # Calculate the first and last valid x for both progressions
-    first_x1 = find_first_valid_x(L, a1, b1, R)
-    last_x1 = find_last_valid_x(R, a1, b1)
-    
-    first_x2 = find_first_valid_x(L, a2, b2, R)
-    last_x2 = find_last_valid_x(R, a2, b2)
+    step = a1 * a2 // gcd(a1, a2)
+    offset = b2 - b1
 
-    # If any of the ranges are invalid, return 0
-    if None in (first_x1, last_x1, first_x2, last_x2):
+    first_x = find_first_valid(L, step, b1)
+    last_x = find_last_valid(R, step, b1)
+
+    if first_x is None or last_x is None or first_x > last_x:
         return 0
 
-    # Calculate the common range
-    start = max(first_x1, first_x2)
-    end = min(last_x1, last_x2)
-
-    if start > end:
-        return 0
-
-    # Count the number of valid integers in the common range
-    count = (end - start) // a1 + 1
-    return count
+    return (last_x - first_x) // step + 1
 
 # Input reading
 a1, b1, a2, b2, L, R = map(int, input().split())
-result = count_common_ap_integers(a1, b1, a2, b2, L, R)
-print(result)
+# Output the result
+print(count_common_ap(a1, b1, a2, b2, L, R))

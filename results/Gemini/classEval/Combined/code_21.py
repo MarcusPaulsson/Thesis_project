@@ -5,8 +5,6 @@ class Classroom:
     This is a class representing a classroom, capable of adding and removing courses, checking availability at a given time, and detecting conflicts when scheduling new courses.
     """
 
-    TIME_FORMAT = '%H:%M'
-
     def __init__(self, id):
         """
         Initialize the classroom management system.
@@ -33,30 +31,30 @@ class Classroom:
 
     def is_free_at(self, check_time):
         """
-        Check if the classroom is free at the given time.
-        :param check_time: str, the time to check (format: HH:MM)
-        :return: True if the classroom is free, False otherwise.
+        change the time format as '%H:%M' and check the time is free or not in the classroom.
+        :param check_time: str, the time need to be checked
+        :return: True if the check_time does not conflict with every course time, or False otherwise.
         """
-        check_time_dt = datetime.strptime(check_time, self.TIME_FORMAT).time()
+        check_time_dt = datetime.strptime(check_time, '%H:%M').time()
         for course in self.courses:
-            start_time_dt = datetime.strptime(course['start_time'], self.TIME_FORMAT).time()
-            end_time_dt = datetime.strptime(course['end_time'], self.TIME_FORMAT).time()
+            start_time_dt = datetime.strptime(course['start_time'], '%H:%M').time()
+            end_time_dt = datetime.strptime(course['end_time'], '%H:%M').time()
             if start_time_dt <= check_time_dt < end_time_dt:
                 return False
         return True
 
     def check_course_conflict(self, new_course):
         """
-        Check if the new course conflicts with any existing courses.
+        Before adding a new course, check if the new course time conflicts with any other course.
         :param new_course: dict, information of the course, including 'start_time', 'end_time' and 'name'
-        :return: True if there is no conflict, False otherwise.
+        :return: False if the new course time conflicts(including two courses have the same boundary time) with other courses, or True otherwise.
         """
-        new_start_time = datetime.strptime(new_course['start_time'], self.TIME_FORMAT).time()
-        new_end_time = datetime.strptime(new_course['end_time'], self.TIME_FORMAT).time()
+        new_start_time = datetime.strptime(new_course['start_time'], '%H:%M').time()
+        new_end_time = datetime.strptime(new_course['end_time'], '%H:%M').time()
 
         for existing_course in self.courses:
-            existing_start_time = datetime.strptime(existing_course['start_time'], self.TIME_FORMAT).time()
-            existing_end_time = datetime.strptime(existing_course['end_time'], self.TIME_FORMAT).time()
+            existing_start_time = datetime.strptime(existing_course['start_time'], '%H:%M').time()
+            existing_end_time = datetime.strptime(existing_course['end_time'], '%H:%M').time()
 
             if not (new_end_time <= existing_start_time or new_start_time >= existing_end_time):
                 return False

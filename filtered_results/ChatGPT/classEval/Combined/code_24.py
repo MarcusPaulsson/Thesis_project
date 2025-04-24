@@ -44,7 +44,7 @@ class ComplexCalculator:
         :param c1: The first complex number.
         :param c2: The second complex number.
         :return: The quotient of the two complex numbers.
-        :raises ValueError: If attempting to divide by zero.
+        :raises ValueError: If the second complex number is zero.
         """
         if c2 == 0:
             raise ValueError("Cannot divide by zero.")

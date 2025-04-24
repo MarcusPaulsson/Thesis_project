@@ -20,12 +20,8 @@ class DocFileHandler:
         Reads the content of a Word document and returns it as a string.
         :return: str, the content of the Word document.
         """
-        try:
-            doc = Document(self.file_path)
-            return '\n'.join([p.text for p in doc.paragraphs if p.text.strip()])
-        except Exception as e:
-            print(f"Error reading text: {e}")
-            return ""
+        doc = Document(self.file_path)
+        return '\n'.join(para.text for para in doc.paragraphs)
 
     def write_text(self, content, font_size=12, alignment='left'):
         """
@@ -36,11 +32,11 @@ class DocFileHandler:
         :return: bool, True if the write operation is successful, False otherwise.
         """
         try:
-            doc = Document(self.file_path) if self.file_path else Document()
-            para = doc.add_paragraph(content)
-            run = para.runs[0]
+            doc = Document()
+            paragraph = doc.add_paragraph(content)
+            run = paragraph.runs[0]
             run.font.size = Pt(font_size)
-            para.alignment = self._get_alignment_value(alignment)
+            paragraph.alignment = self._get_alignment_value(alignment)
             doc.save(self.file_path)
             return True
         except Exception as e:
@@ -71,16 +67,10 @@ class DocFileHandler:
         """
         try:
             doc = Document(self.file_path)
-            table = doc.add_table(rows=1, cols=len(data[0]))
-            hdr_cells = table.rows[0].cells
-            for i, header in enumerate(data[0]):
-                hdr_cells[i].text = header
-
-            for row_data in data[1:]:
-                row_cells = table.add_row().cells
-                for i, item in enumerate(row_data):
-                    row_cells[i].text = item
-
+            table = doc.add_table(rows=len(data), cols=len(data[0]))
+            for row_idx, row_data in enumerate(data):
+                for col_idx, cell_data in enumerate(row_data):
+                    table.cell(row_idx, col_idx).text = str(cell_data)
             doc.save(self.file_path)
             return True
         except Exception as e:

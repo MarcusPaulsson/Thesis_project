@@ -5,23 +5,31 @@ class Warehouse:
 
     def __init__(self):
         """
-        Initialize inventory and orders.
-        inventory: {product_id: {'name': product_name, 'quantity': quantity}}
-        orders: {order_id: {'product_id': product_id, 'quantity': quantity, 'status': order_status}}
+        Initialize two fields.
+        self.inventory is a dict that stores the products.
+        self.inventory = {Product ID: Product}
+        self.orders is a dict that stores the products in a order.
+        self.orders = {Order ID: Order}
         """
-        self.inventory = {}
-        self.orders = {}
+        self.inventory = {}  # Product ID: Product
+        self.orders = {}  # Order ID: Order
 
     def add_product(self, product_id, name, quantity):
         """
-        Adds a product to the inventory or updates the quantity if the product already exists.
-
-        :param product_id: int, the unique identifier for the product
-        :param name: str, the name of the product
-        :param quantity: int, the quantity of the product to add
+        Add product to inventory and plus the quantity if it has existed in inventory.
+        Or just add new product to dict otherwise.
+        :param product_id: int
+        :param name: str, product name
+        :param quantity: int, product quantity
         """
-        if not isinstance(product_id, int) or not isinstance(quantity, int) or not isinstance(name, str):
-            raise TypeError("Invalid input types. Product ID and quantity must be integers, and name must be a string.")
+        if not isinstance(product_id, int):
+            raise TypeError("Product ID must be an integer.")
+        if not isinstance(name, str):
+            raise TypeError("Product name must be a string.")
+        if not isinstance(quantity, int):
+            raise TypeError("Quantity must be an integer.")
+        if quantity < 0:
+            raise ValueError("Quantity must be non-negative.")
 
         if product_id in self.inventory:
             self.inventory[product_id]['quantity'] += quantity
@@ -30,23 +38,24 @@ class Warehouse:
 
     def update_product_quantity(self, product_id, quantity):
         """
-        Updates the quantity of a product in the inventory.
-
-        :param product_id: int, the unique identifier for the product
-        :param quantity: int, the quantity to add to the existing quantity (can be negative)
+        According to product_id, add the quantity to the corresponding product in inventory.
+        :param product_id: int
+        :param quantity: int
         """
-        if not isinstance(product_id, int) or not isinstance(quantity, int):
-            raise TypeError("Invalid input types. Product ID and quantity must be integers.")
+        if not isinstance(product_id, int):
+            raise TypeError("Product ID must be an integer.")
+        if not isinstance(quantity, int):
+            raise TypeError("Quantity must be an integer.")
 
         if product_id in self.inventory:
             self.inventory[product_id]['quantity'] += quantity
 
     def get_product_quantity(self, product_id):
         """
-        Retrieves the quantity of a product in the inventory.
-
-        :param product_id: int, the unique identifier for the product
-        :return: int, the quantity of the product if it exists in the inventory, or False otherwise
+        Get the quantity of specific product by product_id.
+        :param product_id: int
+        :return: int, the corresponding quantity if the product_id is in inventory,
+                 or False otherwise.
         """
         if not isinstance(product_id, int):
             raise TypeError("Product ID must be an integer.")
@@ -58,15 +67,22 @@ class Warehouse:
 
     def create_order(self, order_id, product_id, quantity):
         """
-        Creates a new order.
-
-        :param order_id: int, the unique identifier for the order
-        :param product_id: int, the unique identifier for the product being ordered
-        :param quantity: int, the quantity of the product being ordered
-        :return: bool, True if the order was created successfully, False otherwise (e.g., insufficient stock)
+        Create an order which includes the information of product, like id and quantity.
+        And put the new order into self.orders.
+        The default value of status is 'Shipped'.
+        :param order_id: int
+        :param product_id: int
+        :param quantity: int, the quantity of product that be selected.
+        :return: bool, True if the order is created successfully, False otherwise.
         """
-        if not isinstance(order_id, int) or not isinstance(product_id, int) or not isinstance(quantity, int):
-            raise TypeError("Invalid input types. Order ID, Product ID, and quantity must be integers.")
+        if not isinstance(order_id, int):
+            raise TypeError("Order ID must be an integer.")
+        if not isinstance(product_id, int):
+            raise TypeError("Product ID must be an integer.")
+        if not isinstance(quantity, int):
+            raise TypeError("Quantity must be an integer.")
+        if quantity <= 0:
+            raise ValueError("Quantity must be positive.")
 
         if product_id not in self.inventory:
             return False
@@ -75,18 +91,21 @@ class Warehouse:
             return False
 
         self.orders[order_id] = {'product_id': product_id, 'quantity': quantity, 'status': 'Shipped'}
+        # Update inventory after creating the order
+        self.inventory[product_id]['quantity'] -= quantity
         return True
 
     def change_order_status(self, order_id, status):
         """
-        Changes the status of an existing order.
-
-        :param order_id: int, the unique identifier for the order
-        :param status: str, the new status of the order
-        :return: bool, True if the order status was changed successfully, False otherwise (e.g., order not found)
+        Change the status of order if the input order_id is in self.orders.
+        :param order_id: int
+        :param status: str, the state that is going to change to
+        :return: bool, True if the order status is changed successfully, False otherwise.
         """
-        if not isinstance(order_id, int) or not isinstance(status, str):
-            raise TypeError("Invalid input types. Order ID must be an integer, and status must be a string.")
+        if not isinstance(order_id, int):
+            raise TypeError("Order ID must be an integer.")
+        if not isinstance(status, str):
+            raise TypeError("Status must be a string.")
 
         if order_id not in self.orders:
             return False
@@ -96,10 +115,10 @@ class Warehouse:
 
     def track_order(self, order_id):
         """
-        Retrieves the status of an order.
-
-        :param order_id: int, the unique identifier for the order
-        :return: str, the status of the order if it exists, or False otherwise
+        Get the status of specific order.
+        :param order_id: int
+        :return: str, the status of the order if the order_id is in self.orders,
+                 or False otherwise.
         """
         if not isinstance(order_id, int):
             raise TypeError("Order ID must be an integer.")

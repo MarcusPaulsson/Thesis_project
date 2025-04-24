@@ -1,43 +1,40 @@
-def find_coordinates(n):
+def hexagonal_coordinates(n):
     if n == 0:
         return (0, 0)
 
     layer = 0
-    moves_in_layer = 0
+    moves_in_layer = 1
 
-    # Determine the layer in which the move n is located
-    while n > moves_in_layer:
+    while n >= moves_in_layer:
+        n -= moves_in_layer
         layer += 1
         moves_in_layer = 6 * layer
 
-    # Calculate the coordinates based on the layer and remaining moves
     x, y = layer, 0
-    remaining_moves = n - (moves_in_layer - 6 * layer)
 
-    if remaining_moves > 0:
-        # Each segment of the layer corresponds to a direction
-        direction = remaining_moves // layer
-        steps = remaining_moves % layer
+    if n == 0:
+        return (x, y)
 
-        if direction == 0:  # right
-            x += steps
-        elif direction == 1:  # top-right
-            x += steps
-            y += steps
-        elif direction == 2:  # top-left
-            x -= steps
-            y += steps
-        elif direction == 3:  # left
-            x -= steps
-        elif direction == 4:  # bottom-left
-            x -= steps
-            y -= steps
-        elif direction == 5:  # bottom-right
-            x += steps
-            y -= steps
+    directions = [
+        (1, 0),   # right
+        (0, 1),   # top right
+        (-1, 1),  # top left
+        (-1, 0),  # left
+        (0, -1),  # bottom left
+        (1, -1)   # bottom right
+    ]
+
+    dx, dy = directions[n % 6]
+    x += dx * (n // 6 + 1)
+    y += dy * (n // 6 + 1)
+
+    for i in range(n % 6):
+        dx, dy = directions[i]
+        x += dx
+        y += dy
 
     return (x, y)
 
-n = int(input())
-x, y = find_coordinates(n)
+n = int(input().strip())
+x, y = hexagonal_coordinates(n)
 print(x, y)

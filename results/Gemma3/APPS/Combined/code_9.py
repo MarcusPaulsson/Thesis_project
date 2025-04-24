@@ -8,34 +8,8 @@ def solve():
     
     cnt_l, cnt_r, cnt_t, cnt_b = map(int, input().split())
     
-    def is_left(sofa1, sofa2):
-        x1_1, y1_1, x1_2, y1_2 = sofa1
-        x2_1, y2_1, x2_2, y2_2 = sofa2
-        
-        cells1 = [(x1_1, y1_1), (x1_2, y1_2)]
-        cells2 = [(x2_1, y2_1), (x2_2, y2_2)]
-        
-        for a in cells1:
-            for b in cells2:
-                if a[0] < b[0]:
-                    return True
-        return False
-    
-    def is_top(sofa1, sofa2):
-        x1_1, y1_1, x1_2, y1_2 = sofa1
-        x2_1, y2_1, x2_2, y2_2 = sofa2
-        
-        cells1 = [(x1_1, y1_1), (x1_2, y1_2)]
-        cells2 = [(x2_1, y2_1), (x2_2, y2_2)]
-        
-        for a in cells1:
-            for b in cells2:
-                if a[1] < b[1]:
-                    return True
-        return False
-    
     for i in range(d):
-        current_sofa = sofas[i]
+        x1, y1, x2, y2 = sofas[i]
         
         left_count = 0
         right_count = 0
@@ -43,16 +17,29 @@ def solve():
         bottom_count = 0
         
         for j in range(d):
-            if i != j:
-                other_sofa = sofas[j]
-                
-                if is_left(other_sofa, current_sofa):
+            if i == j:
+                continue
+            
+            x1_other, y1_other, x2_other, y2_other = sofas[j]
+            
+            # Check left
+            if x1_other < x1:
+                if not (x2_other < x1 or x1 > x2_other or y1_other > y2 or y2 < y1_other):
                     left_count += 1
-                if is_left(current_sofa, other_sofa):
+            
+            # Check right
+            if x1_other > x1:
+                if not (x2_other < x1 or x1 > x2_other or y1_other > y2 or y2 < y1_other):
                     right_count += 1
-                if is_top(other_sofa, current_sofa):
+            
+            # Check top
+            if y1_other < y1:
+                if not (x2_other < x1 or x1 > x2_other or y1_other > y2 or y2 < y1_other):
                     top_count += 1
-                if is_top(current_sofa, other_sofa):
+            
+            # Check bottom
+            if y1_other > y1:
+                if not (x2_other < x1 or x1 > x2_other or y1_other > y2 or y2 < y1_other):
                     bottom_count += 1
         
         if left_count == cnt_l and right_count == cnt_r and top_count == cnt_t and bottom_count == cnt_b:

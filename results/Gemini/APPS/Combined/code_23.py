@@ -10,40 +10,31 @@ def solve():
         print("".join(a_digits))
         return
     
-    def find_max_permutation(index, current_num, remaining_digits):
+    a_counts = Counter(a)
+    
+    def find_max_permutation(index, current_num, remaining_counts):
         if index == len(a):
             return current_num
         
-        best_num = None
+        for digit in sorted(remaining_counts.keys(), reverse=True):
+            
+            if current_num == "" and digit == '0':
+                continue
+            
+            temp_counts = remaining_counts.copy()
+            temp_counts[digit] -= 1
+            if temp_counts[digit] == 0:
+                del temp_counts[digit]
+            
+            new_num = current_num + digit
+            
+            if len(new_num) < len(b) or new_num <= b:
+                result = find_max_permutation(index + 1, new_num, temp_counts)
+                if result is not None:
+                    return result
         
-        for digit in sorted(remaining_digits.keys(), reverse=True):
-            if remaining_digits[digit] > 0:
-                new_num = current_num + digit
-                
-                if new_num <= b[:index+1]:
-                    temp_remaining_digits = remaining_digits.copy()
-                    temp_remaining_digits[digit] -= 1
-                    if temp_remaining_digits[digit] == 0:
-                        del temp_remaining_digits[digit]
-                    
-                    if new_num == b[:index+1]:
-                        result = find_max_permutation(index + 1, new_num, temp_remaining_digits)
-                        if result is not None:
-                            if best_num is None or result > best_num:
-                                best_num = result
-                    else:
-                        remaining_digits_list = []
-                        for d, count in temp_remaining_digits.items():
-                            remaining_digits_list.extend([d] * count)
-                        remaining_digits_list.sort(reverse=True)
-                        
-                        full_num = new_num + "".join(remaining_digits_list)
-                        if best_num is None or full_num > best_num:
-                            best_num = full_num
-        
-        return best_num
+        return None
 
-    a_counts = Counter(a)
     result = find_max_permutation(0, "", a_counts)
     print(result)
 

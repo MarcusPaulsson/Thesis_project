@@ -2,8 +2,7 @@ import time
 
 class Thermostat:
     """
-    The class manages temperature control, including setting and retrieving the target temperature,
-    adjusting the mode, and simulating temperature operation.
+    The class manages temperature control, including setting and retrieving the target temperature, adjusting the mode, and simulating temperature operation.
     """
 
     VALID_MODES = {'heat', 'cool'}
@@ -39,40 +38,32 @@ class Thermostat:
         return False
 
     def auto_set_mode(self) -> None:
-        """Automatically set the operating mode based on current and target temperature."""
+        """Automatically set the operating mode based on current and target temperatures."""
         self.mode = 'heat' if self.current_temperature < self.target_temperature else 'cool'
 
     def auto_check_conflict(self) -> bool:
         """
-        Check if there is a conflict between the operating mode and the relationship
-        between the current temperature and the target temperature.
-        :return: True if mode is consistent with temperature, False otherwise.
+        Check for conflicts between the mode and temperature relationship.
+        :return: True if there is no conflict, False otherwise
         """
-        if (self.current_temperature < self.target_temperature and self.mode == 'cool') or \
-           (self.current_temperature > self.target_temperature and self.mode == 'heat'):
+        conflict = (self.current_temperature < self.target_temperature and self.mode == 'cool') or \
+                   (self.current_temperature > self.target_temperature and self.mode == 'heat')
+        if conflict:
             self.auto_set_mode()
-            return False
-        return True
+        return not conflict
 
     def simulate_operation(self) -> int:
-        """Simulate the operation of the Thermostat."""
+        """
+        Simulate the operation of the thermostat until the target temperature is reached.
+        :return: int, the time it took to complete the simulation
+        """
         self.auto_set_mode()
         time_taken = 0
-        
-        while self.current_temperature != self.target_temperature:
-            if self.mode == 'heat':
-                self.current_temperature += 1
-            elif self.mode == 'cool':
-                self.current_temperature -= 1
-            
-            time_taken += 1
-            
-            # Simulate some delay (optional)
-            time.sleep(0.1)
 
-            # Prevent overshooting
-            if (self.mode == 'heat' and self.current_temperature > self.target_temperature) or \
-               (self.mode == 'cool' and self.current_temperature < self.target_temperature):
-                self.current_temperature = self.target_temperature
-            
+        while abs(self.current_temperature - self.target_temperature) >= 1:
+            self.current_temperature += 1 if self.mode == 'heat' else -1
+            time.sleep(1)  # Simulate time passing
+            time_taken += 1
+
+        self.current_temperature = self.target_temperature  # Ensure we end exactly at the target
         return time_taken

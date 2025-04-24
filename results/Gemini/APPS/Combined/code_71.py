@@ -1,20 +1,19 @@
+import math
+
 def solve():
     """
-    Reads an integer 'a' from input and finds the largest integer 'n' such that 2^n <= a.
-    Prints the value of 'n'.
+    Calculates the smallest integer k such that 2^k >= a.
+
+    This function takes an integer 'a' as input and calculates the smallest
+    integer 'k' such that 2 raised to the power of 'k' is greater than or
+    equal to 'a'.  It handles the special case where a = 1 directly and
+    uses the ceiling of the base-2 logarithm for other values of 'a'.
+
     """
     a = int(input())
-
     if a == 1:
         print(1)
-        return
-
-    n = 0
-    power_of_2 = 1
-    while power_of_2 <= a:
-        power_of_2 *= 2
-        n += 1
-
-    print(n - 1)
+    else:
+        print(math.ceil(math.log2(a)))
 
 solve()

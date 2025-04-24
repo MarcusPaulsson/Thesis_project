@@ -5,55 +5,35 @@ def solve():
         print(0, 0)
         return
 
-    layer = 0
-    count = 0
-    while True:
-        if count + 6 * layer <= n:
-            count += 6 * layer
-            layer += 1
+    l, r = 0, 10**9
+    k = 0
+    while l <= r:
+        mid = (l + r) // 2
+        if 3 * mid * (mid + 1) >= n:
+            k = mid
+            r = mid - 1
         else:
-            layer -= 1
-            break
+            l = mid + 1
 
-    remaining_moves = n - count
-    x, y = 2 * layer, 0
+    n -= 3 * k * (k - 1)
+    side_length = 2 * k
 
-    if remaining_moves == 0:
-        print(x, y)
-        return
-
-    segment_length = layer
-    
-    if layer == 0:
-        x = remaining_moves * 2
-        y = 0
-        print(x, y)
-        return
-
-    moves_in_segment = remaining_moves % (6 * layer)
-    
-    if 0 < remaining_moves <= layer:
-        x -= 2 * remaining_moves
-    elif layer < remaining_moves <= 2 * layer:
-        x -= 2 * layer
-        x += 2 * (remaining_moves - layer)
-        y += 2 * layer
-    elif 2 * layer < remaining_moves <= 3 * layer:
-        x += 2 * (remaining_moves - 2 * layer)
-        y += 2 * layer
-        y -= 2 * (remaining_moves - 2 * layer)
-    elif 3 * layer < remaining_moves <= 4 * layer:
-        x += 2 * layer
-        y -= 2 * (remaining_moves - 3 * layer)
-    elif 4 * layer < remaining_moves <= 5 * layer:
-        x += 2 * layer
-        x -= 2 * (remaining_moves - 4 * layer)
-        y -= 2 * layer
+    if n <= side_length // 2:
+        print(side_length // 2 - n, 2 * n)
+    elif n <= side_length:
+        n -= side_length // 2
+        print(side_length // 2 - 2 * n, side_length)
+    elif n <= 3 * side_length // 2:
+        n -= side_length
+        print(-side_length // 2 - n, side_length - 2 * n)
+    elif n <= 2 * side_length:
+        n -= 3 * side_length // 2
+        print(-side_length // 2 + n, -side_length)
+    elif n <= 5 * side_length // 2:
+        n -= 2 * side_length
+        print(side_length // 2 + n, -side_length + 2 * n)
     else:
-        x -= 2 * (remaining_moves - 5 * layer)
-        y -= 2 * layer
-        y += 2 * (remaining_moves - 5 * layer)
-
-    print(x, y)
+        n -= 5 * side_length // 2
+        print(side_length // 2 - 2 * n, 0)
 
 solve()

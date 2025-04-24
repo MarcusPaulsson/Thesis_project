@@ -1,12 +1,17 @@
 def can_form_regular_bracket_sequence(cnt1, cnt2, cnt3, cnt4):
-    # Calculate the total number of opening and closing brackets
-    opening_brackets = cnt1 + cnt2
-    closing_brackets = cnt2 + cnt4
+    # Calculate total open and close brackets
+    total_open = cnt1 + cnt2
+    total_close = cnt2 + cnt4
     
-    # Check if the number of opening and closing brackets can form a regular sequence
-    if opening_brackets >= closing_brackets and (opening_brackets - closing_brackets) <= cnt3:
-        return 1
-    return 0
+    # Check if we can balance the brackets
+    if total_open < total_close:
+        return 0
+    
+    # Check if we have enough opening brackets to match closing ones
+    if cnt1 > cnt4 + cnt2:
+        return 0
+    
+    return 1
 
 # Read input values
 cnt1 = int(input().strip())

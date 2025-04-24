@@ -9,17 +9,41 @@ def solve():
             for j in range(n):
                 if board[i][j] == 'X':
                     # Check horizontal
-                    if j + 4 < n and all(board[i][j+k] == 'X' for k in range(5)):
-                        return True
+                    if j <= n - 5:
+                        win = True
+                        for k in range(5):
+                            if board[i][j+k] != 'X':
+                                win = False
+                                break
+                        if win:
+                            return True
                     # Check vertical
-                    if i + 4 < n and all(board[i+k][j] == 'X' for k in range(5)):
-                        return True
+                    if i <= n - 5:
+                        win = True
+                        for k in range(5):
+                            if board[i+k][j] != 'X':
+                                win = False
+                                break
+                        if win:
+                            return True
                     # Check diagonal (top-left to bottom-right)
-                    if i + 4 < n and j + 4 < n and all(board[i+k][j+k] == 'X' for k in range(5)):
-                        return True
+                    if i <= n - 5 and j <= n - 5:
+                        win = True
+                        for k in range(5):
+                            if board[i+k][j+k] != 'X':
+                                win = False
+                                break
+                        if win:
+                            return True
                     # Check diagonal (top-right to bottom-left)
-                    if i + 4 < n and j - 4 >= 0 and all(board[i+k][j-k] == 'X' for k in range(5)):
-                        return True
+                    if i <= n - 5 and j >= 4:
+                        win = True
+                        for k in range(5):
+                            if board[i+k][j-k] != 'X':
+                                win = False
+                                break
+                        if win:
+                            return True
         return False
 
     for i in range(10):
@@ -27,8 +51,10 @@ def solve():
             if board[i][j] == '.':
                 temp_board = [list(row) for row in board]
                 temp_board[i][j] = 'X'
-                temp_board = ["".join(row) for row in temp_board]
-                if check_win(temp_board):
+                
+                new_board = ["".join(row) for row in temp_board]
+                
+                if check_win(new_board):
                     print('YES')
                     return
 

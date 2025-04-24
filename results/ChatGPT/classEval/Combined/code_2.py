@@ -4,36 +4,41 @@ class ArgumentParser:
     """
 
     def __init__(self):
+        """
+        Initializes the fields:
+        - self.arguments: a dict that stores the parsed command line arguments.
+        - self.required: a set that stores the names of required arguments.
+        - self.types: a dict that stores the expected types for each argument.
+        """
         self.arguments = {}
         self.required = set()
         self.types = {}
 
     def parse_arguments(self, command_string):
         """
-        Parses the command line argument string and stores the parsed results in the arguments dictionary.
+        Parses the given command line argument string and stores the parsed results in the arguments dictionary.
         Checks for missing required arguments and returns a tuple indicating success and any missing arguments.
         
         :param command_string: str, command line argument string formatted like "python script.py --arg1=value1 -arg2 value2 --option1 -option2"
-        :return: tuple: (True, None) if parsing is successful, (False, missing_args) if parsing fails,
-            where missing_args is a set of the missing argument names.
+        :return: tuple (bool, set or None) indicating success and missing arguments if any.
         """
-        tokens = command_string.split()
-        for token in tokens[1:]:  # Skip the script name
-            key, value = self._parse_token(token)
-            key = key.lstrip('-')  # Remove leading dashes
+        args = command_string.split()[1:]  # Skip the script name
+        missing_args = set()
 
-            if key in self.types:
-                self.arguments[key] = self._convert_type(key, value)
-            else:
-                self.arguments[key] = value
+        for arg in args:
+            key, value = self._parse_arg(arg)
+            self.arguments[key] = self._convert_type(key, value)
 
-        missing_args = {arg for arg in self.required if arg not in self.arguments}
-        return (len(missing_args) == 0, missing_args if missing_args else None)
+        for req in self.required:
+            if req not in self.arguments:
+                missing_args.add(req)
+
+        return (not missing_args, missing_args if missing_args else None)
 
     def get_argument(self, key):
         """
         Retrieves the value of the specified argument from the arguments dictionary.
-
+        
         :param key: str, argument name
         :return: The value of the argument, or None if the argument does not exist.
         """
@@ -41,11 +46,11 @@ class ArgumentParser:
 
     def add_argument(self, arg, required=False, arg_type=str):
         """
-        Adds an argument to the parser, specifying its type and whether it's required.
-
+        Adds an argument to the parser, specifying if it is required and its expected type.
+        
         :param arg: str, argument name
-        :param required: bool, whether the argument is required
-        :param arg_type: type, expected type for the argument value
+        :param required: bool, whether the argument is required, default is False
+        :param arg_type: type, expected type of the argument, default is str
         """
         self.types[arg] = arg_type
         if required:
@@ -53,27 +58,31 @@ class ArgumentParser:
 
     def _convert_type(self, arg, value):
         """
-        Converts the value to the specified type for the argument.
-
-        :param arg: str, argument name
-        :param value: str, the input value in command line
-        :return: Converted value if successful, otherwise the input value
+        Converts the input value to the expected type based on the argument's type.
+        
+        :param arg: str, the argument name
+        :param value: str, the input value from the command line
+        :return: converted value if successful, or the original value otherwise
         """
-        try:
-            return self.types[arg](value)
-        except (ValueError, TypeError):
-            return value
+        if arg in self.types:
+            try:
+                return self.types[arg](value)
+            except ValueError:
+                pass
+        return value
 
-    def _parse_token(self, token):
+    def _parse_arg(self, arg):
         """
-        Parses a single token from the command line, separating key and value.
-
-        :param token: str, command line token
-        :return: tuple: (key, value)
+        Parses a single argument string into a key and value.
+        
+        :param arg: str, the argument string
+        :return: tuple (str, str) containing the key and value
         """
-        if '=' in token:
-            key, value = token.split('=', 1)
+        if '=' in arg:
+            key, value = arg.split('=', 1)
         else:
-            key = token
-            value = True  # For flags, set value to True
+            key = arg
+            value = True  # Treat flags as True
+
+        key = key.lstrip('-')  # Remove leading dashes
         return key, value

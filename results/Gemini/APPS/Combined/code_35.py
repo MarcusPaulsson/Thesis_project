@@ -2,43 +2,39 @@ def solve():
     n, m = map(int, input().split())
     grid = [input() for _ in range(n)]
 
-    def check_horizontal(grid):
+    def check_horizontal():
         if n % 3 != 0:
             return False
         stripe_height = n // 3
         colors = []
         for i in range(3):
-            colors.append(grid[i * stripe_height][0])
+            color = grid[i * stripe_height][0]
+            for r in range(i * stripe_height, (i + 1) * stripe_height):
+                for c in range(m):
+                    if grid[r][c] != color:
+                        return False
+            colors.append(color)
         if len(set(colors)) != 3:
             return False
-
-        for i in range(n):
-            expected_color_index = i // stripe_height
-            expected_color = colors[expected_color_index]
-            for j in range(m):
-                if grid[i][j] != expected_color:
-                    return False
         return True
 
-    def check_vertical(grid):
+    def check_vertical():
         if m % 3 != 0:
             return False
         stripe_width = m // 3
         colors = []
         for i in range(3):
-            colors.append(grid[0][i * stripe_width])
+            color = grid[0][i * stripe_width]
+            for r in range(n):
+                for c in range(i * stripe_width, (i + 1) * stripe_width):
+                    if grid[r][c] != color:
+                        return False
+            colors.append(color)
         if len(set(colors)) != 3:
             return False
-
-        for j in range(m):
-            expected_color_index = j // stripe_width
-            expected_color = colors[expected_color_index]
-            for i in range(n):
-                if grid[i][j] != expected_color:
-                    return False
         return True
 
-    if check_horizontal(grid) or check_vertical(grid):
+    if check_horizontal() or check_vertical():
         print("YES")
     else:
         print("NO")

@@ -2,7 +2,7 @@ import sqlite3
 
 class MovieTicketDB:
     """
-    A class for managing a movie ticket database with operations for inserting, searching, and deleting tickets.
+    This class handles movie ticket database operations, including inserting, searching, and deleting ticket information.
     """
 
     def __init__(self, db_name):

@@ -6,20 +6,16 @@ def solve():
         return '7' in str(h) or '7' in str(m)
 
     count = 0
-    current_h = hh
-    current_m = mm
-
-    while True:
-        if is_lucky(current_h, current_m):
-            print(count)
-            return
-
-        current_m -= x
-        if current_m < 0:
-            current_m += 60
-            current_h -= 1
-            if current_h < 0:
-                current_h += 24
+    while not is_lucky(hh, mm):
+        minutes = hh * 60 + mm
+        minutes -= x
+        if minutes < 0:
+            minutes += 24 * 60
+        minutes %= (24 * 60)
+        hh = minutes // 60
+        mm = minutes % 60
         count += 1
+
+    print(count)
 
 solve()

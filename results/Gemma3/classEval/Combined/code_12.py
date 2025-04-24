@@ -1,5 +1,4 @@
 import random
-
 class BlackjackGame:
     """
     This is a class representing a game of blackjack, which includes creating a deck, calculating the value of a hand, and determine the winner based on the hand values of the player and dealer.
@@ -47,8 +46,8 @@ class BlackjackGame:
             elif rank in ['J', 'Q', 'K']:
                 value += 10
             elif rank == 'A':
-                value += 11
                 ace_count += 1
+                value += 11
 
         while value > 21 and ace_count > 0:
             value -= 10

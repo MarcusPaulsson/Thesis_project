@@ -5,7 +5,7 @@ class TicTacToe:
 
     def __init__(self, N=3):
         """
-        Initialize a 3x3 game board with all empty spaces and current symble player, default is 'X'.
+        Initialize a 3x3 game board with all empty spaces and current player, default is 'X'.
         """
         self.board = [[' ' for _ in range(N)] for _ in range(N)]
         self.current_player = 'X'
@@ -13,7 +13,7 @@ class TicTacToe:
 
     def make_move(self, row, col):
         """
-        Place the current player's mark at the specified position on the board and switch the mark.
+        Place the current player's mark at the specified position on the board and switch the player.
         :param row: int, the row index of the position
         :param col: int, the column index of the position
         :return: bool, indicating whether the move was successful or not
@@ -21,16 +21,16 @@ class TicTacToe:
         if not (0 <= row < self.size and 0 <= col < self.size):
             return False
 
-        if self.board[row][col] == ' ':
-            self.board[row][col] = self.current_player
-            self.current_player = 'O' if self.current_player == 'X' else 'X'
-            return True
-        else:
+        if self.board[row][col] != ' ':
             return False
+
+        self.board[row][col] = self.current_player
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
+        return True
 
     def check_winner(self):
         """
-        Check if there is a winner on the board in rows, columns and diagonals three directions
+        Check if there is a winner on the board in rows, columns and diagonals.
         :return: str or None, the mark of the winner ('X' or 'O'), or None if there is no winner yet
         """
         # Check rows
@@ -58,8 +58,4 @@ class TicTacToe:
         Check if the game board is completely filled.
         :return: bool, indicating whether the game board is full or not
         """
-        for row in range(self.size):
-            for col in range(self.size):
-                if self.board[row][col] == ' ':
-                    return False
-        return True
+        return all(self.board[row][col] != ' ' for row in range(self.size) for col in range(self.size))

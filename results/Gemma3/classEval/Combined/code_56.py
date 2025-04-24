@@ -79,7 +79,6 @@ class MetricsCalculator:
         :return: float
         """
         self.update(predicted_labels, true_labels)
-        total = self.true_positives + self.false_positives + self.false_negatives + self.true_negatives
-        if total == 0:
+        if len(predicted_labels) == 0:
             return 0.0
-        return (self.true_positives + self.true_negatives) / total
+        return (self.true_positives + self.true_negatives) / len(predicted_labels)

@@ -23,7 +23,7 @@ class ArgumentParser:
             where missing_args is a set of the missing argument names which are str.
         """
         args = command_string.split()
-        i = 1
+        i = 0
         while i < len(args):
             arg = args[i]
             if arg.startswith("--"):
@@ -60,22 +60,21 @@ class ArgumentParser:
     def add_argument(self, arg, required=False, arg_type=str):
         """
         Adds an argument to self.types and self.required.
-        Check if it is a required argument and store the argument type.
         If the argument is set as required, it will be added to the required set.
         The argument type and name are stored in the types dictionary as key-value pairs.
         :param arg: str, argument name
         :param required: bool, whether the argument is required, default is False
         :param arg_type:str, Argument type, default is str
         """
-        self.types[arg] = arg_type
         if required:
             self.required.add(arg)
+        self.types[arg] = arg_type
 
     def _convert_type(self, arg, value):
         """
         Try to convert the type of input value by searching in self.types.
         :param value: str, the input value in command line
-        :return: return corresponding value in self.types if convert successfully, or the input value oherwise
+        :return: return corresponding value in self.types if convert successfully, or the input value otherwise
         """
         arg_type = self.types.get(arg)
         if arg_type:
@@ -85,9 +84,10 @@ class ArgumentParser:
                 elif arg_type == float:
                     return float(value)
                 elif arg_type == bool:
-                    return value.lower() == 'true' or value == ''
+                    return value.lower() == 'true' or value.lower() == '1' or value == ''
                 else:
                     return value
             except ValueError:
                 return value
-        return value
+        else:
+            return value

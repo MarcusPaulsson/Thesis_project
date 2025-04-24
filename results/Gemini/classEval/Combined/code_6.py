@@ -5,7 +5,7 @@ class AvgPartition:
 
     def __init__(self, lst, limit):
         """
-        Initializes the partitioner.
+        Initializes the AvgPartition object.
 
         Args:
             lst: The list to partition.
@@ -30,14 +30,14 @@ class AvgPartition:
         """
         block_size = len(self.lst) // self.limit
         remainder = len(self.lst) % self.limit
-        return (block_size, remainder)
+        return block_size, remainder
 
     def get(self, index):
         """
-        Retrieves a specific partition.
+        Retrieves a specific partition (block) from the list.
 
         Args:
-            index: The index of the partition to retrieve (0-based).
+            index: The index of the desired partition (0-based).
 
         Returns:
             A list representing the requested partition.
@@ -46,9 +46,9 @@ class AvgPartition:
             IndexError: If the index is out of bounds.
         """
         if not isinstance(index, int):
-            raise TypeError("Index must be an integer")
+            raise TypeError("Index must be an integer.")
         if index < 0 or index >= self.limit:
-            raise IndexError("Index out of bounds")
+            raise IndexError("Index out of bounds.")
 
         block_size, remainder = self.setNum()
         start = index * block_size + min(index, remainder)

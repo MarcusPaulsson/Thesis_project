@@ -21,10 +21,10 @@ class NumericEntityUnescaper:
         while i < len(string):
             if string[i:i + 2] == "&#":
                 j = i + 2
-                while j < len(string) and string[j] != ';':
+                while j < len(string) and string[j] != ";":
                     j += 1
 
-                if j < len(string) and string[j] == ';':
+                if j < len(string) and string[j] == ";":
                     entity = string[i + 2:j]
                     try:
                         if entity.lower().startswith("x"):
@@ -34,10 +34,10 @@ class NumericEntityUnescaper:
                         result += chr(char_code)
                         i = j + 1
                     except ValueError:
-                        result += string[i:j+1]
+                        result += string[i:j + 1]
                         i = j + 1
                 else:
-                    result += string[i:i+2]
+                    result += string[i:i + 2]
                     i += 2
             else:
                 result += string[i]

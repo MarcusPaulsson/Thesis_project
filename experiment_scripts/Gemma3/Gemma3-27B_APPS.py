@@ -142,10 +142,10 @@ if __name__ == "__main__":
     # Define the index interval for tasks
     start_index = 0
     end_index = 100 # Adjust to the number of tasks you want to run in parallel
-    max_workers = 3  # Adjust the number of parallel calls you want to make
+    max_workers = 1  # Adjust the number of parallel calls you want to make
 
     skip_test = [4, 21, 26, 37, 43, 48, 61, 65, 75, 85, 98]
-
+    skip_test = []
     run_iterative = True if (prompt.PROMPT_TECHNIQUE_SETTING == "Iterative" or prompt.PROMPT_TECHNIQUE_SETTING == "Combined") else False
 
     results = process_tasks_parallel(tasks, start_index, end_index, max_workers, run_iterative)

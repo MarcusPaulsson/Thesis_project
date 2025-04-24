@@ -1,6 +1,14 @@
-def minimum_traps(m, x):
-    # The number of traps needed is equal to the number of unique rooms
-    # visited before returning to the starting point, which is m - 1.
+def minimum_traps(m: int, x: int) -> int:
+    """
+    Calculate the minimum number of traps needed to catch the x-mouse in a campus with m rooms.
+    
+    Parameters:
+    m (int): The number of rooms.
+    x (int): The parameter of the x-mouse.
+    
+    Returns:
+    int: The minimum number of traps required.
+    """
     return m - 1
 
 # Read input

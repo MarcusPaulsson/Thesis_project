@@ -1,21 +1,17 @@
-def lexicographically_minimal_string(s: str) -> str:
+def lexicographically_minimal_string(s):
     t = []
     u = []
     
     for char in s:
         t.append(char)
-        
-        while t and (not s or t[-1] <= s[0]):
+        while t and (not u or t[-1] <= u[-1]):
             u.append(t.pop())
-        
-        if s:
-            s = s[1:]
-    
-    while t:
-        u.append(t.pop())
     
     return ''.join(u)
 
-# Example usage
+# Read input
 s = input().strip()
-print(lexicographically_minimal_string(s))
+# Get the result
+result = lexicographically_minimal_string(s)
+# Print the result
+print(result)

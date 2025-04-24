@@ -2,24 +2,19 @@ def solve():
     n = int(input())
     q = list(map(int, input().split()))
     
-    p = [0] * n
-    p[0] = 1
+    def check(p):
+        for i in range(n - 1):
+            if p[i+1] - p[i] != q[i]:
+                return False
+        return True
     
-    for i in range(n - 1):
-        p[i+1] = p[i] + q[i]
-        
+    import itertools
     
-    if any(x < 1 or x > n for x in p):
-        print(-1)
-        return
-    
-    seen = set()
-    for x in p:
-        if x in seen:
-            print(-1)
+    for p in itertools.permutations(range(1, n + 1)):
+        if check(list(p)):
+            print(*p)
             return
-        seen.add(x)
-        
-    print(*p)
+    
+    print(-1)
 
 solve()

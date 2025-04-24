@@ -21,7 +21,7 @@ class AccessGatewayFilter:
         if 'headers' in request and 'Authorization' in request['headers']:
             user = self.get_jwt_user(request)
             if user:
-                if user['user'].get('level', 0) >= 3:
+                if user.get('user', {}).get('level', 0) >= 3:
                     self.set_current_user_info_and_log(user['user'])
                     return True
                 else:
@@ -49,19 +49,17 @@ class AccessGatewayFilter:
         """
         if 'headers' in request and 'Authorization' in request['headers']:
             auth_header = request['headers']['Authorization']
-            if 'user' in auth_header and 'jwt' in auth_header:
-                user = auth_header['user']
-                jwt = auth_header['jwt']
+            if 'jwt' in auth_header and 'user' in auth_header:
+                jwt_token = auth_header['jwt']
+                user_info = auth_header['user']
                 today = datetime.date.today()
                 try:
-                    user_name = user['name']
-                    jwt_date_str = jwt[len(user_name):]
-                    jwt_date = datetime.date.fromisoformat(jwt_date_str)
-                    if jwt_date == today:
+                    user_name = user_info['name']
+                    if jwt_token == user_name + str(today):
                         return auth_header
                     else:
                         return None
-                except (ValueError, KeyError, TypeError):
+                except (KeyError, TypeError):
                     return None
         return None
 
@@ -71,4 +69,4 @@ class AccessGatewayFilter:
         :param user: dict, the user information
         :return: None
         """
-        logging.info(f"User accessed: {user.get('name', 'Unknown')}, Address: {user.get('address', 'Unknown')}")
+        logging.info(f"User {user.get('name', 'unknown')} accessed the gateway.")

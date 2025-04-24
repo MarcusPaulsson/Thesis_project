@@ -1,1 +1,99 @@
-["n=int(input())\na=list(map(int,input().split()))\n\nc=[0]*1001\n\nfor i in range (len(a)):\n\tc[a[i]]+=1\n\nsym=0\nsin=0\n\nfor i in range (1001):\n\tsym+=(c[i]//4)\n\tif(c[i]%2==1):\n\t\tsin+=1\n\nif(n%2==0 and sym==((n*n)//4)):\n\tmat= [([0]*(n//2)) for i in range (n//2)]\n\tar=[]\n\tfor i in range (1001):\n\t\twhile(c[i]>=4):\n\t\t\tar.append(i)\n\t\t\tc[i]-=4\n\t\n\tk=0\n\tfor i in range (n//2):\n\t\tfor j in range (n//2):\n\t\t\tmat[i][j]=ar[k]\n\t\t\tk+=1\n\n\tnewm=[([0]*n) for i in range (n)]\n\tfor i in range (n//2):\n\t\tfor j in range (n//2):\n\t\t\tnewm[i][j]=mat[i][j]\n\t\t\tnewm[n-i-1][j]=mat[i][j]\n\t\t\tnewm[n-i-1][n-j-1]=mat[i][j]\n\t\t\tnewm[i][n-j-1]=mat[i][j]\n\n\tprint(\"YES\")\n\tfor i in range (n):\n\t\tfor j in range (n):\n\t\t\tprint(newm[i][j],end=\" \")\n\t\tprint()\n\n\t\nelif(n%2==1 and (((sym>=(((n//2) *(n//2)) ) ) and (sin==1)))):\n\tmat= [([0]*(n//2)) for i in range (n//2)]\n\tar=[]\n\tfor i in range (1001):\n\t\twhile(c[i]>=4):\n\t\t\tar.append(i)\n\t\t\tc[i]-=4\n\t\n\tk=0\n\tfor i in range (n//2):\n\t\tfor j in range (n//2):\n\t\t\tmat[i][j]=ar[k]\n\t\t\tar.pop(k)\n\n\tnewm=[([0]*n) for i in range (n)]\n\tfor i in range (n//2):\n\t\tfor j in range (n//2):\n\t\t\tnewm[i][j]=mat[i][j]\n\t\t\tnewm[n-i-1][j]=mat[i][j]\n\t\t\tnewm[n-i-1][n-j-1]=mat[i][j]\n\t\t\tnewm[i][n-j-1]=mat[i][j]\n\n\tna=len(ar)\n\tar2=[]\n\tfor i in range (na):\n\t\tar2.append(ar[i])\n\t\tar2.append(ar[i])\n\n\tfor i in range (1001):\n\t\twhile(c[i]>=2):\n\t\t\tar2.append(i)\n\t\t\tc[i]-=2\n\n\t#print(ar)\n\tfor i in range (n//2):\n\t\tnewm[n//2 ][i]=ar2[0]\n\t\tnewm[n//2 ][n-i-1]=ar2[0]\n\t\tar2.pop(0)\n\t\tnewm[i][n//2 ]=ar2[0]\n\t\tnewm[n-i-1][n//2 ]=ar2[0]\n\t\tar2.pop(0)\n\n\tfor i in range (1001):\n\t\tif(c[i]==1):\n\t\t\tnewm[n//2][n//2]=i\n\t\n\tprint(\"YES\")\n\tfor i in range (n):\n\t\tfor j in range (n):\n\t\t\tprint(newm[i][j],end=\" \")\n\t\tprint()\n\nelse:\n\tprint(\"NO\")\n"]
+n=int(input())
+a=list(map(int,input().split()))
+
+c=[0]*1001
+
+for i in range (len(a)):
+	c[a[i]]+=1
+
+sym=0
+sin=0
+
+for i in range (1001):
+	sym+=(c[i]//4)
+	if(c[i]%2==1):
+		sin+=1
+
+if(n%2==0 and sym==((n*n)//4)):
+	mat= [([0]*(n//2)) for i in range (n//2)]
+	ar=[]
+	for i in range (1001):
+		while(c[i]>=4):
+			ar.append(i)
+			c[i]-=4
+	
+	k=0
+	for i in range (n//2):
+		for j in range (n//2):
+			mat[i][j]=ar[k]
+			k+=1
+
+	newm=[([0]*n) for i in range (n)]
+	for i in range (n//2):
+		for j in range (n//2):
+			newm[i][j]=mat[i][j]
+			newm[n-i-1][j]=mat[i][j]
+			newm[n-i-1][n-j-1]=mat[i][j]
+			newm[i][n-j-1]=mat[i][j]
+
+	print("YES")
+	for i in range (n):
+		for j in range (n):
+			print(newm[i][j],end=" ")
+		print()
+
+	
+elif(n%2==1 and (((sym>=(((n//2) *(n//2)) ) ) and (sin==1)))):
+	mat= [([0]*(n//2)) for i in range (n//2)]
+	ar=[]
+	for i in range (1001):
+		while(c[i]>=4):
+			ar.append(i)
+			c[i]-=4
+	
+	k=0
+	for i in range (n//2):
+		for j in range (n//2):
+			mat[i][j]=ar[k]
+			ar.pop(k)
+
+	newm=[([0]*n) for i in range (n)]
+	for i in range (n//2):
+		for j in range (n//2):
+			newm[i][j]=mat[i][j]
+			newm[n-i-1][j]=mat[i][j]
+			newm[n-i-1][n-j-1]=mat[i][j]
+			newm[i][n-j-1]=mat[i][j]
+
+	na=len(ar)
+	ar2=[]
+	for i in range (na):
+		ar2.append(ar[i])
+		ar2.append(ar[i])
+
+	for i in range (1001):
+		while(c[i]>=2):
+			ar2.append(i)
+			c[i]-=2
+
+	#print(ar)
+	for i in range (n//2):
+		newm[n//2 ][i]=ar2[0]
+		newm[n//2 ][n-i-1]=ar2[0]
+		ar2.pop(0)
+		newm[i][n//2 ]=ar2[0]
+		newm[n-i-1][n//2 ]=ar2[0]
+		ar2.pop(0)
+
+	for i in range (1001):
+		if(c[i]==1):
+			newm[n//2][n//2]=i
+	
+	print("YES")
+	for i in range (n):
+		for j in range (n):
+			print(newm[i][j],end=" ")
+		print()
+
+else:
+	print("NO")

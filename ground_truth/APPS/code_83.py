@@ -1,1 +1,65 @@
-["import math\na,b = [int(x) for x in input().split()]\n\narea = a+b\nt = int(math.sqrt(area))\nsa = int(math.sqrt(a))\nsb = int(math.sqrt(b))\n\nD = []\nDA = []\nDB = []\nfor i in range(1,t+1):\n    if area % i == 0:\n        if i*i != area:\n            D.append(i)\n            D.append(area//i)\n        else:\n            D.append(i)\n\nfor i in range(1,sa+1):\n    if a % i == 0:\n        if i*i != a:\n            DA.append(i)\n            DA.append(a//i)\n        else:\n            DA.append(i)\n            \nfor i in range(1,sb+1):\n    if b % i == 0:\n        if i*i != b:\n            DB.append(i)\n            DB.append(b//i)\n        else:\n            DB.append(i)\nDA.sort()\nDB.sort()\nD.sort()\n\nstart = ((len(D)+1)//2)-1\ndiv = len(D)\n\ndef closestdiv(t,D):\n    low = 0\n    high = len(D)-1\n    while high - low > 1:\n        guess = (high+low)//2\n        if D[guess] > t:\n            high = guess\n        else:\n            low = guess\n    if D[high] <= t:\n        return high\n    else:\n        return low\n    \nwhile start > -1:\n    t = D[start]\n    s = D[-start-1]\n    if DA[-closestdiv(t,DA)-1] <= s:\n        print(2*t+2*s)\n        break\n    elif DB[-closestdiv(t,DB)-1] <= s:\n        print(2*t+2*s)\n        break\n    start -= 1"]
+import math
+a,b = [int(x) for x in input().split()]
+
+area = a+b
+t = int(math.sqrt(area))
+sa = int(math.sqrt(a))
+sb = int(math.sqrt(b))
+
+D = []
+DA = []
+DB = []
+for i in range(1,t+1):
+    if area % i == 0:
+        if i*i != area:
+            D.append(i)
+            D.append(area//i)
+        else:
+            D.append(i)
+
+for i in range(1,sa+1):
+    if a % i == 0:
+        if i*i != a:
+            DA.append(i)
+            DA.append(a//i)
+        else:
+            DA.append(i)
+            
+for i in range(1,sb+1):
+    if b % i == 0:
+        if i*i != b:
+            DB.append(i)
+            DB.append(b//i)
+        else:
+            DB.append(i)
+DA.sort()
+DB.sort()
+D.sort()
+
+start = ((len(D)+1)//2)-1
+div = len(D)
+
+def closestdiv(t,D):
+    low = 0
+    high = len(D)-1
+    while high - low > 1:
+        guess = (high+low)//2
+        if D[guess] > t:
+            high = guess
+        else:
+            low = guess
+    if D[high] <= t:
+        return high
+    else:
+        return low
+    
+while start > -1:
+    t = D[start]
+    s = D[-start-1]
+    if DA[-closestdiv(t,DA)-1] <= s:
+        print(2*t+2*s)
+        break
+    elif DB[-closestdiv(t,DB)-1] <= s:
+        print(2*t+2*s)
+        break
+    start -= 1

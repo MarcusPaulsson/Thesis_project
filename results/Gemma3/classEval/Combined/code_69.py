@@ -20,13 +20,11 @@ class PDFHandler:
         :param output_filepath: str, ouput file path to save to
         :return: str, "Merged PDFs saved at {output_filepath}" if successfully merged
         """
-        pdf_writer = PyPDF2.PdfFileWriter()
+        merger = PyPDF2.PdfFileMerger()
         for reader in self.readers:
-            for page in reader.pages:
-                pdf_writer.addPage(page)
-
-        with open(output_filepath, 'wb') as output_file:
-            pdf_writer.write(output_file)
+            merger.append(reader)
+        merger.write(output_filepath)
+        merger.close()
         return f"Merged PDFs saved at {output_filepath}"
 
     def extract_text_from_pdfs(self):
@@ -36,8 +34,8 @@ class PDFHandler:
         """
         pdf_texts = []
         for reader in self.readers:
-            text = ''
+            text = ""
             for page in reader.pages:
-                text += page.extract_text()
+                text += page.extract_text() + "\n"
             pdf_texts.append(text)
         return pdf_texts

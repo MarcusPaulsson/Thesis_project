@@ -40,11 +40,12 @@ class CookiesUtil:
         Saves the cookies to the cookies_file.
         :return: True if successful, False otherwise.
         """
-        if not self.cookies:
+        if not self.cookies_file:
             return False
         try:
             with open(self.cookies_file, 'w') as f:
                 json.dump(self.cookies, f)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error saving cookies: {e}")
             return False

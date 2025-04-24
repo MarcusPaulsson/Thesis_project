@@ -6,14 +6,14 @@ def solve():
     
     while digit_count < k:
         num_str = str(num)
-        num_digits = len(num_str)
+        num_len = len(num_str)
         
-        if digit_count + num_digits >= k:
+        if digit_count + num_len <= k:
+            digit_count += num_len
+            num += 1
+        else:
             index_within_num = k - digit_count - 1
             print(int(num_str[index_within_num]))
             return
-        
-        digit_count += num_digits
-        num += 1
-
+    
 solve()

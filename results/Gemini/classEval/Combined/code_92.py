@@ -11,9 +11,28 @@ class UserLoginDB:
         :param db_name: str, the name of the SQLite database.
         """
         self.db_name = db_name
-        self.connection = sqlite3.connect(self.db_name)
-        self.cursor = self.connection.cursor()
+        self.connection = None
+        self.cursor = None
+        self.connect()
         self.create_table()
+
+    def connect(self):
+        """
+        Establishes a connection to the SQLite database.
+        """
+        try:
+            self.connection = sqlite3.connect(self.db_name)
+            self.cursor = self.connection.cursor()
+        except sqlite3.Error as e:
+            print(f"Database connection error: {e}")
+            raise
+
+    def close(self):
+        """
+        Closes the database connection.
+        """
+        if self.connection:
+            self.connection.close()
 
     def create_table(self):
         """
@@ -29,7 +48,8 @@ class UserLoginDB:
             self.cursor.execute(query)
             self.connection.commit()
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
+            print(f"Error creating table: {e}")
+            raise
 
     def insert_user(self, username, password):
         """
@@ -42,8 +62,14 @@ class UserLoginDB:
             query = "INSERT INTO users (username, password) VALUES (?, ?)"
             self.cursor.execute(query, (username, password))
             self.connection.commit()
+        except sqlite3.IntegrityError:
+            print(f"Username '{username}' already exists.")
+            return False
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
+            print(f"Error inserting user: {e}")
+            self.connection.rollback()
+            return False
+        return True
 
     def search_user_by_username(self, username):
         """
@@ -57,21 +83,24 @@ class UserLoginDB:
             result = self.cursor.fetchone()
             return result
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
+            print(f"Error searching user: {e}")
             return None
 
     def delete_user_by_username(self, username):
         """
         Deletes a user from the "users" table by username.
         :param username: str, the username of the user to delete.
-        :return: None
+        :return: True if deleted, False otherwise
         """
         try:
             query = "DELETE FROM users WHERE username = ?"
             self.cursor.execute(query, (username,))
             self.connection.commit()
+            return self.connection.total_changes > 0 # Check if any rows were actually deleted
         except sqlite3.Error as e:
-            print(f"Database error: {e}")
+            print(f"Error deleting user: {e}")
+            self.connection.rollback()
+            return False
 
     def validate_user_login(self, username, password):
         """
@@ -80,7 +109,15 @@ class UserLoginDB:
         :param password:str, the password of the user to validate.
         :return:bool, representing whether the user can log in correctly
         """
-        user = self.search_user_by_username(username)
-        if user:
-            return user[1] == password
-        return False
+        try:
+            query = "SELECT password FROM users WHERE username = ?"
+            self.cursor.execute(query, (username,))
+            result = self.cursor.fetchone()
+
+            if result:
+                return result[0] == password
+            else:
+                return False
+        except sqlite3.Error as e:
+            print(f"Error validating user: {e}")
+            return False

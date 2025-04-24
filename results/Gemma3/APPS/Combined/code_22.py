@@ -10,6 +10,9 @@ def is_s_palindrome(s):
     """
 
     n = len(s)
+    if n <= 1:
+        return "TAK"
+
     mirror = {
         'b': 'd',
         'd': 'b',
@@ -30,8 +33,3 @@ def is_s_palindrome(s):
             return "NIE"
 
     return "TAK"
-
-
-if __name__ == "__main__":
-    s = input()
-    print(is_s_palindrome(s))

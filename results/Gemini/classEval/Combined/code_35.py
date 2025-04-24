@@ -33,10 +33,11 @@ class EightPuzzle:
         :return new_state: a 3*3 size list of Integer, stores the state after moving.
         """
         blank_row, blank_col = self.find_blank(state)
-        new_state = [row[:] for row in state]
 
-        if blank_row is None or blank_col is None:
-            return new_state
+        if blank_row is None:
+            return state
+
+        new_state = [row[:] for row in state]  # Create a deep copy
 
         if direction == 'up':
             if blank_row > 0:
@@ -50,6 +51,7 @@ class EightPuzzle:
         elif direction == 'right':
             if blank_col < self.size - 1:
                 new_state[blank_row][blank_col], new_state[blank_row][blank_col + 1] = new_state[blank_row][blank_col + 1], new_state[blank_row][blank_col]
+
         return new_state
     
     def get_possible_moves(self, state):
@@ -61,7 +63,7 @@ class EightPuzzle:
         blank_row, blank_col = self.find_blank(state)
         moves = []
 
-        if blank_row is None or blank_col is None:
+        if blank_row is None:
             return moves
 
         if blank_row > 0:
@@ -72,6 +74,7 @@ class EightPuzzle:
             moves.append('left')
         if blank_col < self.size - 1:
             moves.append('right')
+
         return moves
 
     def solve(self):
@@ -83,16 +86,18 @@ class EightPuzzle:
         redo the above steps until the open_list is empty or the state has changed to the goal state.
         :return path: list of str, the solution to the goal state.
         """
-        initial_state = self.initial_state
+        initial_state_tuple = tuple(tuple(row) for row in self.initial_state)
+        goal_state_tuple = tuple(tuple(row) for row in self.goal_state)
 
-        if initial_state == [[0, 0, 0], [0, 0, 0], [0, 0, 0]]:
+        if self.find_blank(self.initial_state) is None:
             return None
 
-        queue = [(initial_state, [])]  # (state, path)
-        visited = {tuple(map(tuple, initial_state))}
+        open_list = [(self.initial_state, [])]  # (state, path)
+        visited = {initial_state_tuple}
 
-        while queue:
-            current_state, path = queue.pop(0)
+        while open_list:
+            current_state, path = open_list.pop(0)
+            current_state_tuple = tuple(tuple(row) for row in current_state)
 
             if current_state == self.goal_state:
                 return path
@@ -101,11 +106,10 @@ class EightPuzzle:
 
             for move in possible_moves:
                 new_state = self.move(current_state, move)
-                state_tuple = tuple(map(tuple, new_state))
+                new_state_tuple = tuple(tuple(row) for row in new_state)
 
-                if state_tuple not in visited:
-                    visited.add(state_tuple)
-                    new_path = path + [move]
-                    queue.append((new_state, new_path))
+                if new_state_tuple not in visited:
+                    open_list.append((new_state, path + [move]))
+                    visited.add(new_state_tuple)
 
-        return None
+        return None  # No solution found

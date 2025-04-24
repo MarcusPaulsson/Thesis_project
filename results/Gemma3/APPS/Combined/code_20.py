@@ -7,23 +7,25 @@ def solve():
         m_str = str(m).zfill(2)
         return h_str == m_str[::-1]
     
-    current_minutes = hours * 60 + minutes
+    min_sleep_time = float('inf')
     
+    # Check current time
     if is_palindrome(hours, minutes):
         print(0)
         return
     
-    min_minutes = float('inf')
+    # Iterate through future times
+    current_minutes = hours * 60 + minutes
     
-    for i in range(1, 1441):
-        next_minutes = current_minutes + i
-        next_hours = (next_minutes // 60) % 24
+    for i in range(1, 1441):  # Iterate through minutes in a day
+        next_minutes = (current_minutes + i) % (24 * 60)
+        next_hours = next_minutes // 60
         next_minutes %= 60
         
         if is_palindrome(next_hours, next_minutes):
-            min_minutes = i
+            min_sleep_time = i
             break
             
-    print(min_minutes)
+    print(min_sleep_time)
 
 solve()

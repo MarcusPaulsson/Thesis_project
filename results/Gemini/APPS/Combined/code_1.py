@@ -8,18 +8,18 @@ def sum_digits(n):
         The sum of the digits of n.
     """
     s = str(n)
-    digit_sum = 0
+    sum_val = 0
     for digit in s:
-        digit_sum += int(digit)
-    return digit_sum
+        sum_val += int(digit)
+    return sum_val
 
 
 def solve():
-    """Finds the largest integer not exceeding x with the maximum digit sum."""
+    """Finds the largest integer not exceeding x with the maximum sum of digits."""
     x = int(input())
 
     best_num = x
-    max_digit_sum = sum_digits(x)
+    max_sum = sum_digits(x)
 
     s = str(x)
     n = len(s)
@@ -32,11 +32,11 @@ def solve():
         num = int(num_str)
 
         if num > 0:
-            digit_sum = sum_digits(num)
-            if digit_sum > max_digit_sum:
-                max_digit_sum = digit_sum
+            current_sum = sum_digits(num)
+            if current_sum > max_sum:
+                max_sum = current_sum
                 best_num = num
-            elif digit_sum == max_digit_sum and num > best_num:
+            elif current_sum == max_sum and num > best_num:
                 best_num = num
 
     print(best_num)

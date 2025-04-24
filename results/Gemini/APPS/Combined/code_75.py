@@ -1,55 +1,58 @@
 def solve():
-  a, b, c = map(int, input().split())
-  
-  week = [0, 1, 2, 0, 2, 1, 0]  # 0: fish, 1: rabbit, 2: chicken
-  
-  weekly_a = week.count(0)
-  weekly_b = week.count(1)
-  weekly_c = week.count(2)
-  
-  weeks = min(a // weekly_a if weekly_a > 0 else float('inf'),
-              b // weekly_b if weekly_b > 0 else float('inf'),
-              c // weekly_c if weekly_c > 0 else float('inf'))
-  
-  a -= weeks * weekly_a
-  b -= weeks * weekly_b
-  c -= weeks * weekly_c
-  
-  days = weeks * 7
-  
-  best_days = 0
-  
-  for start_day in range(7):
-    temp_days = 0
-    temp_a, temp_b, temp_c = a, b, c
+    a, b, c = map(int, input().split())
     
-    possible = True
+    week = [0, 1, 2, 0, 2, 1, 0]  # 0: fish, 1: rabbit, 2: chicken
     
-    while possible:
-      day_index = (start_day + temp_days) % 7
-      food_type = week[day_index]
-      
-      if food_type == 0:
-        if temp_a > 0:
-          temp_a -= 1
-        else:
-          possible = False
-      elif food_type == 1:
-        if temp_b > 0:
-          temp_b -= 1
-        else:
-          possible = False
-      else:
-        if temp_c > 0:
-          temp_c -= 1
-        else:
-          possible = False
-      
-      if possible:
-        temp_days += 1
+    weekly_fish = week.count(0)
+    weekly_rabbit = week.count(1)
+    weekly_chicken = week.count(2)
     
-    best_days = max(best_days, temp_days)
-  
-  print(days + best_days)
+    weekly_days = 7
+    
+    complete_weeks = min(a // weekly_fish, b // weekly_rabbit, c // weekly_chicken)
+    
+    a -= complete_weeks * weekly_fish
+    b -= complete_weeks * weekly_rabbit
+    c -= complete_weeks * weekly_chicken
+    
+    total_days = complete_weeks * weekly_days
+    
+    best_days = 0
+    
+    for start_day in range(7):
+        days = 0
+        fish = a
+        rabbit = b
+        chicken = c
+        
+        current_day = start_day
+        
+        while True:
+            food_type = week[current_day % 7]
+            
+            if food_type == 0:
+                if fish > 0:
+                    fish -= 1
+                    days += 1
+                else:
+                    break
+            elif food_type == 1:
+                if rabbit > 0:
+                    rabbit -= 1
+                    days += 1
+                else:
+                    break
+            else:
+                if chicken > 0:
+                    chicken -= 1
+                    days += 1
+                else:
+                    break
+            
+            current_day += 1
+        
+        best_days = max(best_days, days)
+    
+    print(total_days + best_days)
 
 solve()

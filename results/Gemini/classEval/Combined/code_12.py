@@ -81,7 +81,7 @@ class BlackjackGame:
         else:
             if player_value > dealer_value:
                 return 'Player wins'
-            elif player_value < dealer_value:
+            elif dealer_value > player_value:
                 return 'Dealer wins'
             else:
                 return 'Dealer wins'

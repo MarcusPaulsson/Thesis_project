@@ -1,42 +1,38 @@
 class EncryptionUtils:
     """
-    A class that provides methods for encryption, including the Caesar cipher,
-    Vigenere cipher, and Rail Fence cipher.
+    This class provides methods for encryption, including the Caesar cipher, Vigenere cipher, and Rail Fence cipher.
     """
 
-    def __init__(self, key):
+    def __init__(self, key: str):
         """
-        Initializes the class with a key for the Vigenere cipher.
-        
+        Initializes the class with a key.
         :param key: The key to use for encryption, str.
         """
-        self.key = key
+        self.key = key.lower()  # Store the key in lowercase for consistent processing
 
-    def caesar_cipher(self, plaintext, shift):
+    def caesar_cipher(self, plaintext: str, shift: int) -> str:
         """
         Encrypts the plaintext using the Caesar cipher.
-
         :param plaintext: The plaintext to encrypt, str.
         :param shift: The number of characters to shift each character in the plaintext, int.
         :return: The ciphertext, str.
         """
-        shift = shift % 26  # Normalize the shift
+        shift %= 26  # Normalize shift to be within 0-25
         ciphertext = []
 
         for char in plaintext:
             if char.isalpha():
                 base = ord('A') if char.isupper() else ord('a')
-                shifted_char = chr((ord(char) - base + shift) % 26 + base)
-                ciphertext.append(shifted_char)
+                new_char = chr((ord(char) - base + shift) % 26 + base)
+                ciphertext.append(new_char)
             else:
-                ciphertext.append(char)  # Non-alphabetic characters remain unchanged
+                ciphertext.append(char)
 
         return ''.join(ciphertext)
 
-    def vigenere_cipher(self, plaintext):
+    def vigenere_cipher(self, plaintext: str) -> str:
         """
         Encrypts the plaintext using the Vigenere cipher.
-
         :param plaintext: The plaintext to encrypt, str.
         :return: The ciphertext, str.
         """
@@ -47,37 +43,34 @@ class EncryptionUtils:
         for char in plaintext:
             if char.isalpha():
                 base = ord('A') if char.isupper() else ord('a')
-                key_char = self.key[key_index % key_length].lower()
+                key_char = self.key[key_index % key_length]
                 shift = ord(key_char) - ord('a')
-                shifted_char = chr((ord(char) - base + shift) % 26 + base)
-                ciphertext.append(shifted_char)
+                new_char = chr((ord(char) - base + shift) % 26 + base)
+                ciphertext.append(new_char)
                 key_index += 1
             else:
-                ciphertext.append(char)  # Non-alphabetic characters remain unchanged
+                ciphertext.append(char)
 
         return ''.join(ciphertext)
 
-    def rail_fence_cipher(self, plain_text, rails):
+    def rail_fence_cipher(self, plaintext: str, rails: int) -> str:
         """
         Encrypts the plaintext using the Rail Fence cipher.
-
-        :param plain_text: The plaintext to encrypt, str.
-        :param rails: The number of rails, int.
+        :param plaintext: The plaintext to encrypt, str.
+        :param rails: The number of rails to use, int.
         :return: The ciphertext, str.
         """
-        if rails <= 1 or rails >= len(plain_text):
-            return plain_text  # No encryption needed
+        if rails <= 1:
+            return plaintext
 
         rail = [''] * rails
-        direction = 1
+        direction_down = False
         row = 0
 
-        for char in plain_text:
+        for char in plaintext:
             rail[row] += char
-            if row == 0:
-                direction = 1
-            elif row == rails - 1:
-                direction = -1
-            row += direction
+            if row == 0 or row == rails - 1:
+                direction_down = not direction_down
+            row += 1 if direction_down else -1
 
         return ''.join(rail)

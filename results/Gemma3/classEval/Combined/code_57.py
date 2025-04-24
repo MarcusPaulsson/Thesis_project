@@ -26,21 +26,20 @@ class MetricsCalculator2:
         if isinstance(data, tuple):
             result, num_relevant = data
             ranks = np.where(np.array(result) == 1)[0]
-            if len(ranks) > 0:
+            if ranks.size > 0:
                 rr = 1.0 / (ranks[0] + 1)
                 return rr, [rr]
             else:
                 return 0.0, [0.0]
         else:
             rr_list = []
-            for item in data:
-                result, num_relevant = item
+            for result, num_relevant in data:
                 ranks = np.where(np.array(result) == 1)[0]
-                if len(ranks) > 0:
+                if ranks.size > 0:
                     rr = 1.0 / (ranks[0] + 1)
-                    rr_list.append(rr)
                 else:
-                    rr_list.append(0.0)
+                    rr = 0.0
+                rr_list.append(rr)
             return np.mean(rr_list), rr_list
 
     @staticmethod
@@ -70,8 +69,7 @@ class MetricsCalculator2:
             return ap, [ap]
         else:
             ap_list = []
-            for item in data:
-                result, num_relevant = item
+            for result, num_relevant in data:
                 ap = 0.0
                 relevant_count = 0
                 for i, val in enumerate(result):

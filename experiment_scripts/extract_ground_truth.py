@@ -22,16 +22,30 @@ def extract_classeval_ground_truth():
         return None
 
 def extract_apps_ground_truth():
+    test_cases =[] 
     solution_data_path = os.path.abspath(os.path.join('data', 'apps.json'))
     try:
         with open(solution_data_path, 'r', encoding='utf-8') as jsonfile:
-            return [json.loads(line.strip()) for line in jsonfile if "solutions" in json.loads(line.strip())]
+            temp=  [json.loads(line.strip()) for line in jsonfile if "input_output" in json.loads(line.strip())]
+        for i, task in enumerate(temp):
+            a = task["solutions"]
+            b = json.loads(a)
+            print(len(b))
+            c = b[0]
+            test_cases.append(c)
+        return test_cases
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"Error: {e}")
         return None
-    
+        
+
+
+        return test_cases
    
-    
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error: {e}")
+        return None
+   
 
 def save_ground_truth():
     classeval = extract_classeval_ground_truth()
@@ -58,12 +72,10 @@ def save_ground_truth():
             file_path = os.path.join(dir_name, file_name)
             try:
                 with open(file_path, 'w', encoding='utf-8') as py_file:
-                    py_file.write(item['solutions'] if isinstance(item, dict) and 'solutions' in item and item['solutions'] else item) # Assuming you want the first solution
+                    py_file.write(item)
                 print(f"Saved code block from APPS index '{i}' to '{file_path}'")
             except Exception as e:
                 print(f"Error saving APPS code block at index '{i}': {e}")
-
-save_ground_truth()
 
 save_ground_truth()
 

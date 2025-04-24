@@ -22,14 +22,18 @@ class MahjongConnect:
         """
         rows, cols = self.BOARD_SIZE
         board = []
-        icons = self.ICONS * ((rows * cols) // len(self.ICONS))
-        if (rows * cols) % len(self.ICONS) != 0:
-            icons += self.ICONS[:(rows * cols) % len(self.ICONS)]
+        icons = self.ICONS * ((rows * cols) // len(self.ICONS))  # Ensure enough icons
+        remaining = (rows * cols) % len(self.ICONS)
+        icons += random.sample(self.ICONS, remaining)
         random.shuffle(icons)
-        
-        board_icons = icons[:rows * cols]
-        board = [board_icons[i * cols:(i + 1) * cols] for i in range(rows)]
-        
+
+        k = 0
+        for i in range(rows):
+            row = []
+            for j in range(cols):
+                row.append(icons[k])
+                k += 1
+            board.append(row)
         return board
 
     def is_valid_move(self, pos1, pos2):
@@ -39,29 +43,24 @@ class MahjongConnect:
         :param pos2: position tuple(x, y) of the second icon
         :return:True or False ,representing whether the move of two icons is valid
         """
-        if not self.is_valid_position(pos1) or not self.is_valid_position(pos2):
+        x1, y1 = pos1
+        x2, y2 = pos2
+        rows, cols = self.BOARD_SIZE
+
+        if not (0 <= x1 < rows and 0 <= y1 < cols and 0 <= x2 < rows and 0 <= y2 < cols):
             return False
 
         if pos1 == pos2:
             return False
 
-        if self.board[pos1[0]][pos1[1]] != self.board[pos2[0]][pos2[1]]:
+        if self.board[x1][y1] != self.board[x2][y2]:
             return False
 
-        if self.board[pos1[0]][pos1[1]] == ' ':
+        if self.board[x1][y1] == ' ':
             return False
 
         return self.has_path(pos1, pos2)
 
-    def is_valid_position(self, pos):
-        """
-        check if the position is within the game board range
-        :param pos: position tuple(x, y) of the icon
-        :return: True or False, representing whether the position is valid
-        """
-        rows, cols = self.BOARD_SIZE
-        r, c = pos
-        return 0 <= r < rows and 0 <= c < cols
 
     def has_path(self, pos1, pos2):
         """
@@ -70,50 +69,59 @@ class MahjongConnect:
         :param pos2: position tuple(x, y) of the second icon
         :return: True or False ,representing whether there is a path between two icons
         """
+        x1, y1 = pos1
+        x2, y2 = pos2
         rows, cols = self.BOARD_SIZE
 
-        def find_path(p1, p2, turns):
-            if turns > 2:
-                return False
+        def is_valid(x, y):
+            return 0 <= x < rows and 0 <= y < cols
 
-            if p1 == p2:
-                return True
+        def bfs(start, end):
+            queue = [(start, [])]  # (position, path)
+            visited = {start}
 
-            r, c = p1
-            
-            # Move horizontally
-            for nc in range(cols):
-                if nc == c:
-                    continue
-                
-                valid_horizontal = True
-                for k in range(min(c, nc) + 1, max(c, nc)):
-                    if self.board[r][k] != ' ':
-                        valid_horizontal = False
+            while queue:
+                (x, y), path = queue.pop(0)
+
+                if (x, y) == end:
+                    return True
+
+                # Move up
+                for i in range(x - 1, -1, -1):
+                    if self.board[i][y] != ' ' and (i, y) != end:
                         break
-                
-                if valid_horizontal:
-                    if find_path((r, nc), p2, turns + (1 if nc != c else 0)):
-                        return True
+                    if (i, y) not in visited:
+                        queue.append(((i, y), path + [(i, y)]))
+                        visited.add((i, y))
 
-            # Move vertically
-            for nr in range(rows):
-                if nr == r:
-                    continue
-                
-                valid_vertical = True
-                for k in range(min(r, nr) + 1, max(r, nr)):
-                    if self.board[k][c] != ' ':
-                        valid_vertical = False
+                # Move down
+                for i in range(x + 1, rows):
+                    if self.board[i][y] != ' ' and (i, y) != end:
                         break
-                
-                if valid_vertical:
-                    if find_path((nr, c), p2, turns + (1 if nr != r else 0)):
-                        return True
+                    if (i, y) not in visited:
+                        queue.append(((i, y), path + [(i, y)]))
+                        visited.add((i, y))
+
+                # Move left
+                for j in range(y - 1, -1, -1):
+                    if self.board[x][j] != ' ' and (x, j) != end:
+                        break
+                    if (x, j) not in visited:
+                        queue.append(((x, j), path + [(x, j)]))
+                        visited.add((x, j))
+
+                # Move right
+                for j in range(y + 1, cols):
+                    if self.board[x][j] != ' ' and (x, j) != end:
+                        break
+                    if (x, j) not in visited:
+                        queue.append(((x, j), path + [(x, j)]))
+                        visited.add((x, j))
 
             return False
 
-        return find_path(pos1, pos2, 0)
+        return bfs(pos1, pos2)
+
 
     def remove_icons(self, pos1, pos2):
         """
@@ -122,8 +130,11 @@ class MahjongConnect:
         :param pos2: position tuple(x, y) of the second icon to be removed
         :return: None
         """
-        self.board[pos1[0]][pos1[1]] = ' '
-        self.board[pos2[0]][pos2[1]] = ' '
+        x1, y1 = pos1
+        x2, y2 = pos2
+        self.board[x1][y1] = ' '
+        self.board[x2][y2] = ' '
+
 
     def is_game_over(self):
         """

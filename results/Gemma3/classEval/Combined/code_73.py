@@ -41,26 +41,24 @@ class RPGCharacter:
         The experience that overflows should be used to calculate the next leve up untill exhausts
         :param amount: int, the amount of experience points to gain.
         """
-        exp_needed = 100 * self.level
-        while amount >= exp_needed:
+        while amount >= 100 * self.level:
             self.level_up()
-            amount -= exp_needed
-            exp_needed = 100 * self.level
-        self.exp = amount
+            amount -= 100 * self.level
+        self.exp += amount
 
     def level_up(self):
-        """
+         """
         Level up the character and return to zero experience points, increase hp by 20 points, attack power and defense points by 5 points.
         max level is 100
         :return: tuple[int, int, int, int], the new level, health points, attack power, and defense points after leveling up.
         """
-        if self.level < 100:
+         if self.level < 100:
             self.level += 1
             self.hp += 20
             self.attack_power += 5
             self.defense += 5
             self.exp = 0
-        return (self.level, self.hp, self.attack_power, self.defense)
+         return (self.level, self.hp, self.attack_power, self.defense)
 
     def is_alive(self):
         """

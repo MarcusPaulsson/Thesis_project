@@ -1,4 +1,6 @@
 import re
+import string
+import gensim
 from bs4 import BeautifulSoup
 
 class HtmlUtil:
@@ -36,27 +38,24 @@ class HtmlUtil:
         :return:string
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        text = ''
-        for element in soup.recursiveChildGenerator():
-            if isinstance(element, str):
-                stripped_text = element.strip()
-                if stripped_text:  # Avoid adding empty lines
-                    text += stripped_text + '\n'
-            elif element.name == 'pre':
-                text += self.CODE_MARK + '\n'
-            elif element.name == 'ul':
-                for item in element.find_all('li'):
-                    text += '[-]'+ item.text + '.' + '\n'
-            elif element.name == 'div':
-                stripped_text = element.text.strip()
-                if stripped_text:
-                    text += stripped_text + '\n'
-            elif element.name == 'code':
-                stripped_text = element.text.strip()
-                if stripped_text:
-                    text += stripped_text + '\n'
 
-        return HtmlUtil.__format_line_feed(text).strip()
+        # Replace code blocks with the CODE_MARK
+        code_blocks = soup.find_all(['pre', 'code'])
+        for code_block in code_blocks:
+            code_block.replace_with(self.CODE_MARK)
+
+        # Handle list items
+        list_items = soup.find_all('li')
+        for list_item in list_items:
+            list_item.replace_with('[-]'+list_item.get_text()+'.')
+
+        # Extract text and clean it up
+        text = soup.get_text()
+        text = text.replace('\r', '').strip()
+        text = '\n'.join(line.strip() for line in text.splitlines())
+        text = HtmlUtil.__format_line_feed(text)
+
+        return text
 
     def extract_code_from_html_text(self, html_text):
         """
@@ -65,11 +64,6 @@ class HtmlUtil:
         :return: the list of code
         """
         soup = BeautifulSoup(html_text, 'html.parser')
-        code_list = []
-        for pre in soup.find_all('pre'):
-            code = pre.find('code')
-            if code:
-                code_list.append(code.text)
-            else:
-                code_list.append(pre.text)
-        return code_list
+        code_blocks = soup.find_all(['pre', 'code'])
+        codes = [code_block.get_text() for code_block in code_blocks]
+        return codes

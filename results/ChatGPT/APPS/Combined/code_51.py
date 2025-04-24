@@ -1,27 +1,25 @@
+from collections import Counter
+import sys
+
 def find_x_y(n, divisors):
-    from collections import Counter
+    count = Counter(divisors)
+    x, y = 1, 1
     
-    # Count occurrences of each divisor
-    divisor_count = Counter(divisors)
-    
-    # The maximum divisor is either x or y
-    x = max(divisor_count)
-    divisor_count[x] -= 1  # Remove one occurrence of x
-    
-    # Now find y by checking the remaining divisors
-    y = 1
-    for d, count in divisor_count.items():
-        if count > 0:
-            y *= d ** count
-    
+    for d, freq in count.items():
+        if freq == 2:
+            x *= d
+            y *= d
+        elif freq == 1:
+            if x > y:
+                x *= d
+            else:
+                y *= d
+                
     return x, y
 
-# Input reading
-n = int(input().strip())
-divisors = list(map(int, input().strip().split()))
-
-# Finding x and y
-x, y = find_x_y(n, divisors)
-
-# Output the result
-print(x, y)
+if __name__ == "__main__":
+    n = int(sys.stdin.readline().strip())
+    divisors = list(map(int, sys.stdin.readline().strip().split()))
+    
+    x, y = find_x_y(n, divisors)
+    print(x, y)

@@ -1,41 +1,47 @@
+MOD = 10**9 + 7
+
 def count_regular_sequences(n, s):
-    MOD = 10**9 + 7
     m = len(s)
+    
+    # Precompute the Catalan numbers up to 2n
+    catalan = [0] * (n + 1)
+    catalan[0] = 1
+    for i in range(1, n + 1):
+        catalan[i] = sum(catalan[j] * catalan[i - 1 - j] for j in range(i)) % MOD
 
-    # Precompute factorials and inverse factorials
-    fact = [1] * (2 * n + 1)
-    for i in range(2, 2 * n + 1):
-        fact[i] = fact[i - 1] * i % MOD
-
-    def mod_inv(x):
-        return pow(x, MOD - 2, MOD)
-
-    inv_fact = [1] * (2 * n + 1)
-    for i in range(2, 2 * n + 1):
-        inv_fact[i] = mod_inv(fact[i])
-
-    # Check if s can be part of a valid sequence
+    # Check the balance of the substring s
     balance = 0
     min_balance = 0
     for char in s:
-        balance += 1 if char == '(' else -1
+        if char == '(':
+            balance += 1
+        else:
+            balance -= 1
         min_balance = min(min_balance, balance)
 
-    if balance < 0 or balance > 2 * n or min_balance < 0:
+    # If the total balance is negative or cannot be balanced with n pairs
+    if balance < 0 or balance + n < 0:
         return 0
 
-    # Count valid sequences
-    total_sequences = 0
+    # Count the number of valid sequences
+    total_count = 0
     for prefix_length in range(n + 1):
-        suffix_length = n - prefix_length
-        if prefix_length + m + suffix_length == n:
-            total_sequences += (fact[prefix_length + suffix_length] * inv_fact[prefix_length] % MOD * inv_fact[suffix_length] % MOD)
-            total_sequences %= MOD
+        if prefix_length + m > 2 * n:
+            break
+        
+        prefix_balance = prefix_length + min_balance
+        suffix_balance = n - (prefix_length + balance)
+        
+        if prefix_balance < 0 or suffix_balance < 0:
+            continue
+        
+        total_count += (catalan[prefix_balance] * catalan[suffix_balance]) % MOD
+        total_count %= MOD
 
-    return total_sequences
+    return total_count
 
-# Read input
-n = int(input())
+# Input reading
+n = int(input().strip())
 s = input().strip()
 
 # Output the result

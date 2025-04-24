@@ -47,8 +47,8 @@ class SignInSystem:
         Check if all users are signed in.
         :return: bool, True if all users are signed in, False otherwise.
         """
-        for signed_in in self.users.values():
-            if not signed_in:
+        for user in self.users:
+            if not self.users[user]:
                 return False
         return True
 
@@ -58,7 +58,7 @@ class SignInSystem:
         :return: list[str], a list of usernames that are not signed in.
         """
         not_signed_in_users = []
-        for user, signed_in in self.users.items():
-            if not signed_in:
+        for user in self.users:
+            if not self.users[user]:
                 not_signed_in_users.append(user)
         return not_signed_in_users

@@ -24,44 +24,49 @@ class MinesweeperGame:
         :return: The minesweeper map, list of lists.
         """
         minesweeper_map = [[0 for _ in range(self.n)] for _ in range(self.n)]
-        
-        # Place mines randomly
         mine_positions = random.sample(range(self.n * self.n), self.k)
+
         for mine_position in mine_positions:
             row = mine_position // self.n
             col = mine_position % self.n
             minesweeper_map[row][col] = 'X'
-        
-        # Calculate adjacent mine counts
+
         for row in range(self.n):
             for col in range(self.n):
                 if minesweeper_map[row][col] == 'X':
                     continue
-                count = 0
-                for i in range(max(0, row - 1), min(self.n, row + 2)):
-                    for j in range(max(0, col - 1), min(self.n, col + 2)):
-                        if minesweeper_map[i][j] == 'X':
-                            count += 1
+                count = self.count_adjacent_mines(minesweeper_map, row, col)
                 minesweeper_map[row][col] = count
+
         return minesweeper_map
+
+    def count_adjacent_mines(self, grid, row, col):
+        """Counts the number of mines adjacent to a given cell."""
+        count = 0
+        for i in range(max(0, row - 1), min(self.n, row + 2)):
+            for j in range(max(0, col - 1), min(self.n, col + 2)):
+                if (i, j) != (row, col) and grid[i][j] == 'X':
+                    count += 1
+        return count
 
     def generate_playerMap(self):
         """
-        Generates a player map with all positions initially unknown ('-').
+        Generates a player map with the given size of the board.
+        '-' represents the unknown position.
         :return: The player map, list of lists.
         """
         return [['-' for _ in range(self.n)] for _ in range(self.n)]
 
-    def check_won(self, map):
+    def check_won(self, player_map):
         """
         Checks whether the player has won the game.
         The player wins if all non-mine cells are revealed.
         :return: True if the player has won the game, False otherwise.
         """
         revealed_count = 0
-        for row in range(self.n):
-            for col in range(self.n):
-                if map[row][col] != '-':
+        for i in range(self.n):
+            for j in range(self.n):
+                if player_map[i][j] != '-':
                     revealed_count += 1
         return revealed_count == self.n * self.n - self.k
 
@@ -70,7 +75,10 @@ class MinesweeperGame:
         Sweeps the given position.
         :param x: The x coordinate of the position, int.
         :param y: The y coordinate of the position, int.
-        :return: False if mine hit, True if won, player_map if game continues.
+        :return:
+            - False if the player hits a mine.
+            - True if the player wins the game.
+            - The updated player map if the game continues.
         """
         if self.minesweeper_map[x][y] == 'X':
             return False

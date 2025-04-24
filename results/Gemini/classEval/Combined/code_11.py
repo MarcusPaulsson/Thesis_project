@@ -39,14 +39,15 @@ class BitStatusUtil:
     @staticmethod
     def check(args):
         """
-        Check if the parameters are legal. Args must be greater than or equal to 0 and must be even, if not, raise ValueError.
+        Check if the parameters are legal. Args must be greater than or equal to 0 and must be even.
+        If not, raise ValueError.
 
         :param args: Parameters to be checked, list.
         :return: None.
-        :raises ValueError: If any argument is negative or odd.
+        :raises ValueError: If any argument is less than 0 or not even.
         """
         for arg in args:
             if arg < 0:
-                raise ValueError(f"{arg} must be non-negative")
+                raise ValueError(f"{arg} less than 0")
             if arg % 2 != 0:
-                raise ValueError(f"{arg} must be even")
+                raise ValueError(f"{arg} not even")

@@ -15,31 +15,29 @@ class Server:
         """
         Add an address to the whitelist and do nothing if it already exists
         :param addr: int, address to be added
-        :return: True if the address was added, False otherwise.
+        :return: new whitelist, return False if the address already exists
         """
         if addr in self.white_list:
             return False
-        else:
-            self.white_list.append(addr)
-            return True
+        self.white_list.append(addr)
+        return self.white_list
 
     def del_white_list(self, addr):
         """
         Remove an address from the whitelist and do nothing if it does not exist
         :param addr: int, address to be deleted
-        :return: True if the address was deleted, False otherwise.
+        :return: new whitelist, return False if the address does not exist
         """
-        if addr in self.white_list:
-            self.white_list.remove(addr)
-            return True
-        else:
+        if addr not in self.white_list:
             return False
+        self.white_list.remove(addr)
+        return self.white_list
 
     def recv(self, info):
         """
         Receive information containing address and content. If the address is on the whitelist, receive the content; otherwise, do not receive it
         :param info: dict, information dictionary containing address and content
-        :return: The content of the information if successfully received, False if the address is not on the whitelist, -1 if the info is invalid.
+        :return: if successfully received, return the content of the infomation; otherwise, return False
         """
         if not isinstance(info, dict) or "addr" not in info or "content" not in info:
             return -1
@@ -57,7 +55,7 @@ class Server:
         """
         Send information containing address and content
         :param info: dict, information dictionary containing address and content
-        :return: None if successfully sent, an error message string otherwise.
+        :return: if successfully sent, return nothing; otherwise, return a string indicating an error message
         """
         if not isinstance(info, dict) or "addr" not in info or "content" not in info:
             return "info structure is not correct"
@@ -69,7 +67,7 @@ class Server:
         """
         Returns struct of the specified type
         :param type: string, the type of struct to be returned, which can be 'send' or 'receive'
-        :return: The corresponding struct if type is 'send' or 'receive', False otherwise.
+        :return: if type is equal to 'send' or 'receive', return the corresponding struct; otherwise, return False
         """
         if type == "send":
             return self.send_struct

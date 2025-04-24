@@ -4,85 +4,61 @@ def solve():
     mod = 10**9 + 7
     len_s = len(s)
 
-    def count_regular_sequences(n, s):
-        count = 0
-        
-        def is_regular(seq):
-            balance = 0
-            for char in seq:
-                if char == '(':
-                    balance += 1
-                else:
-                    balance -= 1
-                if balance < 0:
-                    return False
-            return balance == 0
-
-        def generate_sequences(current_seq, open_count, close_count):
-            nonlocal count
-            if len(current_seq) == 2 * n:
-                if is_regular(current_seq) and s in current_seq:
-                    count = (count + 1) % mod
-                return
-
-            if open_count < n:
-                generate_sequences(current_seq + '(', open_count + 1, close_count)
-            if close_count < open_count:
-                generate_sequences(current_seq + ')', open_count, close_count + 1)
-
-        generate_sequences("", 0, 0)
-        return count
-
-    
     dp = {}
 
-    def count_regular_sequences_dp(length, balance, contains_s):
-        if (length, balance, contains_s) in dp:
-            return dp[(length, balance, contains_s)]
+    def count_regular_sequences(length, balance, found_s, kmp_state):
+        if (length, balance, found_s, kmp_state) in dp:
+            return dp[(length, balance, found_s, kmp_state)]
 
         if length == 2 * n:
-            if balance == 0 and contains_s:
+            if balance == 0 and found_s:
                 return 1
             else:
                 return 0
 
-        if balance < 0:
-            return 0
-
-        res = 0
+        count = 0
         
         # Add '('
-        if balance < n:
-            new_contains_s = contains_s
-            temp_seq = ""
-            if length < len_s:
-                temp_seq = "(" + s[:length]
-            else:
-                temp_seq = current_seq = "("
-                
-            if not contains_s:
-                if (temp_seq).endswith(s):
-                    new_contains_s = True
-            
-            res = (res + count_regular_sequences_dp(length + 1, balance + 1, new_contains_s)) % mod
+        if balance + 1 <= n:
+            new_kmp_state = compute_kmp_state(kmp_table, kmp_state, '(')
+            new_found_s = found_s or new_kmp_state == len_s
+            count = (count + count_regular_sequences(length + 1, balance + 1, new_found_s, new_kmp_state)) % mod
 
         # Add ')'
-        new_contains_s = contains_s
-        temp_seq = ""
-        if length < len_s:
-            temp_seq = ")" + s[:length]
-        else:
-            temp_seq = ")"
-        
-        if not contains_s:
-            if (temp_seq).endswith(s):
-                new_contains_s = True
-        
-        res = (res + count_regular_sequences_dp(length + 1, balance - 1, new_contains_s)) % mod
+        if balance > 0:
+            new_kmp_state = compute_kmp_state(kmp_table, kmp_state, ')')
+            new_found_s = found_s or new_kmp_state == len_s
+            count = (count + count_regular_sequences(length + 1, balance - 1, new_found_s, new_kmp_state)) % mod
 
-        dp[(length, balance, contains_s)] = res
-        return res
+        dp[(length, balance, found_s, kmp_state)] = count
+        return count
 
-    print(count_regular_sequences_dp(0, 0, False))
+    def compute_kmp_table(pattern):
+        length = len(pattern)
+        table = [0] * length
+        i = 1
+        j = 0
+        while i < length:
+            if pattern[i] == pattern[j]:
+                j += 1
+                table[i] = j
+                i += 1
+            else:
+                if j != 0:
+                    j = table[j - 1]
+                else:
+                    i += 1
+        return table
+
+    def compute_kmp_state(table, state, char):
+        while state > 0 and char != s[state]:
+            state = table[state - 1]
+        if char == s[state]:
+            state += 1
+        return state
+
+    kmp_table = compute_kmp_table(s)
+    result = count_regular_sequences(0, 0, False, 0)
+    print(result)
 
 solve()

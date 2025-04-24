@@ -15,27 +15,31 @@ class LongestWord:
     def add_word(self, word):
         """
         Append the input word into self.word_list.
+
         :param word: str, input word
         """
         self.word_list.append(word)
 
     def find_longest_word(self, sentence):
         """
-        Remove punctuation marks and split a sentence into a list of word. Find the longest splited word that is in the self.word_list.
+        Remove punctuation marks and split a sentence into a list of words.
+        Find the longest split word that is in the self.word_list.
         Words are strictly case sensitive.
+
         :param sentence: a sentence str
-        :return str: longest splited word that is in the self.word_list. Return '' if self.word_list is empty.
+        :return str: longest split word that is in the self.word_list.
+                     Return '' if self.word_list is empty or no word in sentence is in word_list.
         """
         if not self.word_list:
             return ''
 
         # Remove punctuation marks from the sentence
-        sentence = sentence.translate(str.maketrans('', '', string.punctuation))
+        translator = str.maketrans('', '', string.punctuation)
+        sentence = sentence.translate(translator)
 
         # Split the sentence into words
         words = sentence.split()
 
-        # Find the longest word that is in the word_list
         longest_word = ''
         for word in words:
             if word in self.word_list:

@@ -22,8 +22,8 @@ class NLPDataProcessor:
         [['This', 'is', 'test.']]
         """
         words_list = []
-        for sentence in string_list:
-            words = sentence.split()
+        for string in string_list:
+            words = string.split()
             filtered_words = [word for word in words if word not in stop_word_list]
             words_list.append(filtered_words)
         return words_list

@@ -35,12 +35,11 @@ class AssessmentSystem:
         :return: if name is in students and this students have courses grade, return average grade(float)
                     or None otherwise
         """
-        if name in self.students:
-            courses = self.students[name]['courses']
-            if courses:
-                total_score = sum(courses.values())
-                return total_score / len(courses)
-        return None
+        if name in self.students and self.students[name]['courses']:
+            scores = self.students[name]['courses'].values()
+            return sum(scores) / len(scores)
+        else:
+            return None
 
     def get_all_students_with_fail_course(self):
         """
@@ -61,14 +60,12 @@ class AssessmentSystem:
         :param course: str, course name
         :return: float, average scores of this course if anyone have score of this course, or None if nobody have records.
         """
-        total_score = 0
-        count = 0
+        scores = []
         for name, student_data in self.students.items():
-            if course in student_data['courses'] and student_data['courses'][course] is not None:
-                total_score += student_data['courses'][course]
-                count += 1
-        if count > 0:
-            return total_score / count
+            if course in student_data['courses']:
+                scores.append(student_data['courses'][course])
+        if scores:
+            return sum(scores) / len(scores)
         else:
             return None
 
@@ -77,11 +74,14 @@ class AssessmentSystem:
         Calculate every student's gpa with get_gpa method, and find the student with highest gpa
         :return: str, name of student whose gpa is highest
         """
-        highest_gpa = -1
-        top_student = None
+        gpas = {}
         for name in self.students:
             gpa = self.get_gpa(name)
-            if gpa is not None and gpa > highest_gpa:
-                highest_gpa = gpa
-                top_student = name
+            if gpa is not None:
+                gpas[name] = gpa
+
+        if not gpas:
+            return None
+
+        top_student = max(gpas, key=gpas.get)
         return top_student

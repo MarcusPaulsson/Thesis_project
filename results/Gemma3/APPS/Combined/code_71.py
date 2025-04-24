@@ -1,10 +1,12 @@
+import math
+
 def solve():
-    a = int(input())
-    
-    if a == 1:
-        print(1)
-        return
-    
-    print(a.bit_length() - 1)
+  a = int(input())
+  
+  if a == 1:
+    print(1)
+    return
+  
+  print(int(math.log2(a)))
 
 solve()

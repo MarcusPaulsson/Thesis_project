@@ -12,17 +12,17 @@ class Manacher:
 
     def palindromic_length(self, center, diff, string):
         """
-        Calculates the length of the palindromic substring based on a given center and difference.
+        Calculates the length of the palindromic substring based on a given center, difference value, and input string.
         :param center: The center of the palindromic substring, int.
-        :param diff: The difference from the center, int.
+        :param diff: The difference between the center and the current position, int.
         :param string: The string to be searched, str.
         :return: The length of the palindromic substring, int.
         """
-        if center - diff < 0 or center + diff >= len(string):
-            return diff
-        if string[center - diff] != string[center + diff]:
-            return diff
-        return self.palindromic_length(center, diff + 1, string)
+        length = 0
+        while center - diff >= 0 and center + diff < len(string) and string[center - diff] == string[center + diff]:
+            length += 1
+            diff += 1
+        return length
 
     def palindromic_string(self):
         """

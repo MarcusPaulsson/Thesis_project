@@ -243,7 +243,7 @@ def extract_and_save_passed_code(passed_code_ids):
                     print(f"Warning: Source file not found: {source_file_path}")
 
 
-save_passed = False
+save_passed = True
 curr_time = time.time()
 if tasks:
     results = {}

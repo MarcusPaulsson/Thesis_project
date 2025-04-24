@@ -28,7 +28,7 @@ class WeatherSystem:
                 temperature = self.celsius_to_fahrenheit(temperature)
             elif tmp_units == 'celsius' and temperature_units == 'fahrenheit':
                 temperature = self.fahrenheit_to_celsius(temperature)
-            
+
             return (temperature, weather)
         else:
             return False

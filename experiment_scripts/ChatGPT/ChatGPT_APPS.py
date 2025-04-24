@@ -119,7 +119,7 @@ if __name__ == "__main__":
     # Load tasks from the APPS JSON file
     apps_file_path = os.path.join(main_dir, "data", "apps.json")
     tasks = extract_apps_tasks(apps_file_path)
-    skip_test = [4, 21, 26, 37, 43, 48, 61, 65, 75, 85, 98]
+    #skip_test = [4, 21, 26, 37, 43, 48, 61, 65, 75, 85, 98]
     skip_test = []
     if tasks is None:
         sys.exit(1)
