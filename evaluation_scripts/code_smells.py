@@ -1,37 +1,48 @@
-
 import os
 import re
 import statistics
-import radon.raw
+import subprocess
 
 def numerical_sort_key(filename):
     """Sort filenames numerically if possible, otherwise alphabetically."""
     parts = re.split(r'(\d+)', filename)
     return [(int(part) if part.isdigit() else part.lower()) for part in parts]
 
-def calculate_comment_density(file_path):
-    """Calculates the comment percentage (as a decimal) of a Python file using Radon, excluding blank lines."""
+def run_pylint(file_path):
+    """Runs pylint on a Python file and captures the output."""
     try:
-        with open(file_path, 'r') as f:
-            code_string = f.read()
-        results = radon.raw.analyze(code_string)
-        if results:
-            loc = results.loc - results.blank  # Subtract blank lines from total LOC
-            comments = results.comments
-            if loc + comments > 0:
-                return 100*comments / (loc + comments)
-            else:
-                return 0.0
-        else:
-            return 0.0
+        result = subprocess.run(['pylint', '--output-format=text', file_path], capture_output=True, text=True, check=True)
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        return e.stdout
     except FileNotFoundError:
-        return 0.0
+        return f"Error: File not found: {file_path}"
     except Exception as e:
-        print(f"Error analyzing {file_path}: {e}")
-        return 0.0
+        return f"Error running pylint on {file_path}: {e}"
 
-def analyze_folders_and_count_comment_density(folder_paths):
-    """Analyzes folders and counts comment percentage (as a decimal) in Python files."""
+def count_code_smells(pylint_output):
+    """Counts the number of Pylint messages that often indicate code smells."""
+    smell_indicators = [
+    re.compile(r"R0912: Too many branches"),
+    re.compile(r"R0915: Too many statements"),
+    re.compile(r"C0302: Too many lines in module"),
+    re.compile(r"W0102: Dangerous default value as argument"),
+    re.compile(r"W0201: Attribute defined outside __init__"),
+    re.compile(r"R0201: Method could be a function"),
+    re.compile(r"W0612: Unused variable .*"),
+    re.compile(r"R1726: Consider using a list comprehension instead of a for loop"),
+]
+    count = 0
+    if isinstance(pylint_output, str):
+        for line in pylint_output.splitlines():
+            for indicator in smell_indicators:
+                if indicator.search(line):
+                    count += 1
+                    break  # Only count each smell once per line
+    return count
+
+def analyze_folders_and_count_code_smells(folder_paths):
+    """Analyzes folders and counts potential code smells in Python files using Pylint."""
     results = {}
     for folder_name, folder_path in folder_paths.items():
         if not os.path.exists(folder_path):
@@ -49,33 +60,30 @@ def analyze_folders_and_count_comment_density(folder_paths):
 
         all_file_names = sorted(all_file_names, key=numerical_sort_key)
 
-        percentages = []
+        smell_counts = []
         for filename in all_file_names:
             file_path = os.path.join(folder_path, filename)
-            percentage = calculate_comment_density(file_path)
-            if percentage is not None:
-                percentages.append(percentage)
+            pylint_output = run_pylint(file_path)
+            if isinstance(pylint_output, str) and not pylint_output.startswith("Error"):
+                smell_count = count_code_smells(pylint_output)
+                smell_counts.append(smell_count)
             else:
-                print(f"Error analyzing {filename}")
+                print(f"Error analyzing {filename}: {pylint_output}")
 
-        if percentages:
-            avg_percentage = statistics.mean(percentages)
-            std_dev_percentage = statistics.stdev(percentages) if len(percentages) > 1 else 0
-            results[folder_name] = (avg_percentage, std_dev_percentage)
+        if smell_counts:
+            avg_smells = statistics.mean(smell_counts)
+            std_dev_smells = statistics.stdev(smell_counts) if len(smell_counts) > 1 else 0
+            results[folder_name] = (avg_smells, std_dev_smells)
         else:
             results[folder_name] = (0, 0)
 
     return results
 
-
 # Define folder paths (same as your original script)
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # Adjust if running locally.
 
-
-
 result_setting = "results" # "filtered_results"
-#result_setting = "filtered_results" # "results"
-
+result_setting = "filtered_results" # "results"
 
 # ClassEval
 folder_paths_gemini_classEval = {
@@ -144,147 +152,137 @@ folder_paths_ground_truth_APPS = {
         "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
     }
 
+# Analyze folders and count code smells
+results_gemini = {}
+results_chatgpt = {}
+results_gemma = {}
+ground_truth = {}
 
-# Analyze folders and count comment density
-# results_gemini = analyze_folders_and_count_comment_density(folder_paths_gemini_cli_games)
-# results_chatgpt = analyze_folders_and_count_comment_density(folder_paths_chatgpt_cli_games)
+results_chatgpt.update(analyze_folders_and_count_code_smells(folder_paths_chatgpt_classEval))
+results_gemini.update(analyze_folders_and_count_code_smells(folder_paths_gemini_classEval))
+results_gemma.update(analyze_folders_and_count_code_smells(folder_paths_gemma_classEval))
+results_chatgpt.update(analyze_folders_and_count_code_smells(folder_paths_chatgpt_APPS))
+results_gemini.update(analyze_folders_and_count_code_smells(folder_paths_gemini_APPS))
+results_gemma.update(analyze_folders_and_count_code_smells(folder_paths_gemma_APPS))
 
-results_gemini={}  
-results_chatgpt ={} 
-results_gemma ={} 
-ground_truth ={} 
 
-results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_classEval))
-results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_classEval))
-results_gemma.update(analyze_folders_and_count_comment_density(folder_paths_gemma_classEval))
-ground_truth.update(analyze_folders_and_count_comment_density(folder_paths_ground_truth_classEval))
+print("\nAverage Code Smell Count per Folder (based on selected Pylint messages):")
+for folder, (avg_smells, std_dev_smells) in results_gemini.items():
+    print(f"  Gemini {folder}: Average Smells = {avg_smells:.2f}")
 
-results_chatgpt.update(analyze_folders_and_count_comment_density(folder_paths_chatgpt_APPS))
-results_gemini.update(analyze_folders_and_count_comment_density(folder_paths_gemini_APPS))
-results_gemma.update(analyze_folders_and_count_comment_density(folder_paths_gemma_APPS))
-ground_truth.update(analyze_folders_and_count_comment_density(folder_paths_ground_truth_APPS))
+for folder, (avg_smells, std_dev_smells) in results_chatgpt.items():
+    print(f"  ChatGPT {folder}: Average Smells = {avg_smells:.2f}")
 
-print("\nComment Density per Folder:")
-for folder, (avg_density, std_dev_density) in results_gemini.items():
-    print(f"  {folder}: Average Density = {avg_density:.2f}")
+for folder, (avg_smells, std_dev_smells) in results_gemma.items():
+    print(f"  Gemma3 {folder}: Average Smells = {avg_smells:.2f}")
 
-for folder, (avg_density, std_dev_density) in results_chatgpt.items():
-    print(f"  {folder}: Average Density = {avg_density:.2f}")
+for folder, (avg_smells, std_dev_smells) in ground_truth.items():
+    print(f"  {folder}: Average Smells = {avg_smells:.2f}")
 
-for folder, (avg_density, std_dev_density) in results_gemma.items():
-    print(f"  {folder}: Average Density = {avg_density:.2f}")
-
-for folder, (avg_density, std_dev_density) in ground_truth.items():
-    print(f"  {folder}: Average Density = {avg_density:.2f}")
-
-# Split density calculation by technique for Gemini
-gemini_densities = {
+# Split smell count by technique for Gemini
+gemini_smell_counts = {
     "Zero-shot": [],
     "Zero-shot-CoT": [],
     "Expert-role": [],
     "Student-role": [],
-   
     "Naive": [],
-    "Iterative" :[],
-    "Combined" :[],
+    "Iterative": [],
+    "Combined": [],
 }
 
-# Split density calculation by technique for ChatGPT
-chatgpt_densities = {
+# Split smell count by technique for ChatGPT
+chatgpt_smell_counts = {
     "Zero-shot": [],
     "Zero-shot-CoT": [],
     "Expert-role": [],
     "Student-role": [],
-   
     "Naive": [],
-    "Iterative":[], 
-    "Combined" :[],
+    "Iterative": [],
+    "Combined": [],
 }
 
-# Split density calculation by technique for ChatGPT
-gemma_densities = {
+# Split smell count by technique for Gemma3
+gemma_smell_counts = {
     "Zero-shot": [],
     "Zero-shot-CoT": [],
     "Expert-role": [],
     "Student-role": [],
-  
     "Naive": [],
-    "Iterative":[], 
-    "Combined" :[],
+    "Iterative": [],
+    "Combined": [],
 }
 
-for folder, (avg_density, _) in results_gemini.items(): #ignore standard deviation from folder output
+for folder, (avg_smells, _) in results_gemini.items(): #ignore standard deviation from folder output
     if "Zero-shot" in folder and "CoT" not in folder:
-        gemini_densities["Zero-shot"].append(avg_density)
+        gemini_smell_counts["Zero-shot"].append(avg_smells)
     elif "Zero-shot-CoT" in folder:
-        gemini_densities["Zero-shot-CoT"].append(avg_density)
+        gemini_smell_counts["Zero-shot-CoT"].append(avg_smells)
     elif "Expert-role" in folder:
-        gemini_densities["Expert-role"].append(avg_density)
+        gemini_smell_counts["Expert-role"].append(avg_smells)
     elif "Student-role" in folder:
-        gemini_densities["Student-role"].append(avg_density)
+        gemini_smell_counts["Student-role"].append(avg_smells)
     elif "Naive" in folder:
-        gemini_densities["Naive"].append(avg_density)
+        gemini_smell_counts["Naive"].append(avg_smells)
     elif "Iterative" in folder:
-        gemini_densities["Iterative"].append(avg_density)
+        gemini_smell_counts["Iterative"].append(avg_smells)
     elif "Combined" in folder:
-        gemini_densities["Combined"].append(avg_density)
+        gemini_smell_counts["Combined"].append(avg_smells)
 
-
-for folder, (avg_density, _) in results_chatgpt.items(): #ignore standard deviation from folder output
+for folder, (avg_smells, _) in results_chatgpt.items(): #ignore standard deviation from folder output
     if "Zero-shot" in folder and "CoT" not in folder:
-        chatgpt_densities["Zero-shot"].append(avg_density)
+        chatgpt_smell_counts["Zero-shot"].append(avg_smells)
     elif "Zero-shot-CoT" in folder:
-        chatgpt_densities["Zero-shot-CoT"].append(avg_density)
+        chatgpt_smell_counts["Zero-shot-CoT"].append(avg_smells)
     elif "Expert-role" in folder:
-        chatgpt_densities["Expert-role"].append(avg_density)
+        chatgpt_smell_counts["Expert-role"].append(avg_smells)
     elif "Student-role" in folder:
-        chatgpt_densities["Student-role"].append(avg_density)
+        chatgpt_smell_counts["Student-role"].append(avg_smells)
     elif "Naive" in folder:
-        chatgpt_densities["Naive"].append(avg_density)
+        chatgpt_smell_counts["Naive"].append(avg_smells)
     elif "Iterative" in folder:
-        chatgpt_densities["Iterative"].append(avg_density)
+        chatgpt_smell_counts["Iterative"].append(avg_smells)
     elif "Combined" in folder:
-        gemini_densities["Combined"].append(avg_density)
+        chatgpt_smell_counts["Combined"].append(avg_smells)
 
-for folder, (avg_density, _) in results_gemma.items(): #ignore standard deviation from folder output
+for folder, (avg_smells, _) in results_gemma.items(): #ignore standard deviation from folder output
     if "Zero-shot" in folder and "CoT" not in folder:
-        gemma_densities["Zero-shot"].append(avg_density)
+        gemma_smell_counts["Zero-shot"].append(avg_smells)
     elif "Zero-shot-CoT" in folder:
-        gemma_densities["Zero-shot-CoT"].append(avg_density)
+        gemma_smell_counts["Zero-shot-CoT"].append(avg_smells)
     elif "Expert-role" in folder:
-        gemma_densities["Expert-role"].append(avg_density)
+        gemma_smell_counts["Expert-role"].append(avg_smells)
     elif "Student-role" in folder:
-        gemma_densities["Student-role"].append(avg_density)
+        gemma_smell_counts["Student-role"].append(avg_smells)
     elif "Naive" in folder:
-        gemma_densities["Naive"].append(avg_density)
+        gemma_smell_counts["Naive"].append(avg_smells)
     elif "Iterative" in folder:
-        gemma_densities["Iterative"].append(avg_density)
+        gemma_smell_counts["Iterative"].append(avg_smells)
     elif "Combined" in folder:
-        gemma_densities["Combined"].append(avg_density)
+        gemma_smell_counts["Combined"].append(avg_smells)
 
-print("\nGemini Comment Density Averages:")
-for technique, densities in gemini_densities.items():
-    if densities:
-        avg_density = statistics.mean(densities)
-        std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
-        print(f"  {technique}: Average Density = {avg_density:.2f}")
+print("\nGemini Average Code Smell Counts:")
+for technique, counts in gemini_smell_counts.items():
+    if counts:
+        avg_count = statistics.mean(counts)
+        std_dev_count = statistics.stdev(counts) if len(counts) > 1 else 0
+        print(f"  {technique}: Average Smells = {avg_count:.2f}")
     else:
         print(f"  {technique}: No data available.")
 
-print("\nChatGPT Comment Density Averages:")
-for technique, densities in chatgpt_densities.items():
-    if densities:
-        avg_density = statistics.mean(densities)
-        std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
-        print(f"  {technique}: Average Density = {avg_density:.2f}")
+print("\nChatGPT Average Code Smell Counts:")
+for technique, counts in chatgpt_smell_counts.items():
+    if counts:
+        avg_count = statistics.mean(counts)
+        std_dev_count = statistics.stdev(counts) if len(counts) > 1 else 0
+        print(f"  {technique}: Average Smells = {avg_count:.2f}")
     else:
         print(f"  {technique}: No data available.")
 
-print("\nGemma3 Comment Density Averages:")
-for technique, densities in gemma_densities.items():
-    if densities:
-        avg_density = statistics.mean(densities)
-        std_dev_density = statistics.stdev(densities) if len(densities) > 1 else 0
-        print(f"  {technique}: Average Density = {avg_density:.2f}")
+print("\nGemma3 Average Code Smell Counts:")
+for technique, counts in gemma_smell_counts.items():
+    if counts:
+        avg_count = statistics.mean(counts)
+        std_dev_count = statistics.stdev(counts) if len(counts) > 1 else 0
+        print(f"  {technique}: Average Smells = {avg_count:.2f}")
     else:
         print(f"  {technique}: No data available.")
