@@ -64,7 +64,6 @@ HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
 '''
 
-<<<<<<< HEAD
 # Meta prompting
 '''
 PROMPT_TECHNIQUE_SETTING = "Meta" 
@@ -78,8 +77,6 @@ HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
 '''
 
-=======
->>>>>>> 7497e9224c14265ea555142f846dde042913d463
 # Naive Prompting
 '''
 PROMPT_TECHNIQUE_SETTING = "Naive" 
@@ -103,11 +100,7 @@ TAIL_PROMPT="Give only the code, no test cases."
 PROMPT_TECHNIQUE_SETTING = "Combined" 
 
 SYSTEM_PROMPT="""You are an expert software developer, skilled in producing clean and well-structured code. Generate code that is clean, easy to read with low complexity, and uphold high software quality standards.
-For the following coding task, solve it in the following steps:
-1. Define which variables needed.
-2. Find a suitable algorithm, structure and approach to solve the task.
-3. Refine the previous steps.
-4. Give a code solution that solves the task.
+For the following coding task, generate code that is clean, easy to read with low complexity, and uphold high software quality standards.
 ""","Read the task description again and refine the provided code to be better and fix potential problems. Generate code that is clean, easy to read and with low complexity, and uphold high software quality standards."
 HEAD_PROMPT = ""
 TAIL_PROMPT="Give only the code, no test cases."
