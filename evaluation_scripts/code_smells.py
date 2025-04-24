@@ -23,15 +23,20 @@ def run_pylint(file_path):
 def count_code_smells(pylint_output):
     """Counts the number of Pylint messages that often indicate code smells."""
     smell_indicators = [
-    re.compile(r"R0912: Too many branches"),
-    re.compile(r"R0915: Too many statements"),
-    re.compile(r"C0302: Too many lines in module"),
-    re.compile(r"W0102: Dangerous default value as argument"),
-    re.compile(r"W0201: Attribute defined outside __init__"),
-    re.compile(r"R0201: Method could be a function"),
-    re.compile(r"W0612: Unused variable .*"),
-    re.compile(r"R1726: Consider using a list comprehension instead of a for loop"),
-]
+        re.compile(r"C0301: Line too long"),
+        re.compile(r"R0902: Too many instance attributes"),
+        re.compile(r"R0911: Too many return statements"),
+        re.compile(r"R0912: Too many branches"),
+        re.compile(r"R0913: Too many arguments"),
+        re.compile(r"R0914: Too many local variables"),
+        re.compile(r"R0915: Too many statements"),
+        re.compile(r"R1702: Too many nested blocks"),
+        re.compile(r"W0102: Dangerous default value as argument"),
+        re.compile(r"W0212: Accessing a protected member"),
+        re.compile(r"W0603: Global variable used"),
+        re.compile(r"R0801: Similar lines in"),
+        re.compile(r"R0802: Too many ancestors"),
+    ]
     count = 0
     if isinstance(pylint_output, str):
         for line in pylint_output.splitlines():
@@ -161,10 +166,12 @@ ground_truth = {}
 results_chatgpt.update(analyze_folders_and_count_code_smells(folder_paths_chatgpt_classEval))
 results_gemini.update(analyze_folders_and_count_code_smells(folder_paths_gemini_classEval))
 results_gemma.update(analyze_folders_and_count_code_smells(folder_paths_gemma_classEval))
+ground_truth.update(analyze_folders_and_count_code_smells(folder_paths_ground_truth_classEval))
+
 results_chatgpt.update(analyze_folders_and_count_code_smells(folder_paths_chatgpt_APPS))
 results_gemini.update(analyze_folders_and_count_code_smells(folder_paths_gemini_APPS))
 results_gemma.update(analyze_folders_and_count_code_smells(folder_paths_gemma_APPS))
-
+ground_truth.update(analyze_folders_and_count_code_smells(folder_paths_ground_truth_APPS))
 
 print("\nAverage Code Smell Count per Folder (based on selected Pylint messages):")
 for folder, (avg_smells, std_dev_smells) in results_gemini.items():
