@@ -17,22 +17,21 @@ sys.path.append(upper_dir)
 
 # EVALUATING ALL RESULTS
 
-result_setting = "filtered_results" # "results"
-#result_setting = "results" # "filtered_results"
+filtered = True
+if filtered: result_setting="filtered_results"
+else: result_setting = "results" 
 
-
-# ClassEval
+if filtered: ground_truth = "ground_truth_filtered"
+else: ground_truth = "ground_truth"
 
 # ClassEval
 folder_paths_ground_truth_classEval = {
-    "GroundTruth classEval": os.path.join(upper_dir, "ground_truth", "classEval")
+    "GroundTruth classEval": os.path.join(upper_dir, ground_truth, "classEval")
 }
 
 folder_paths_ground_truth_APPS = {
-    "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
+    "GroundTruth APPS": os.path.join(upper_dir, ground_truth, "APPS")
 }
-
-
 
 
 folder_paths_gemini_classEval = {
@@ -62,7 +61,6 @@ folder_paths_gemma_classEval = {
     "Gemma3 classEval Iterative": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Iterative"),
     "Gemma3 classEval Combined": os.path.join(upper_dir, result_setting, "Gemma3", "classEval", "Combined"),
 }
-
 
 # APPS
 folder_paths_chatgpt_APPS = {
@@ -165,8 +163,8 @@ analyze_folders(folder_paths_gemma_APPS, results_gemma)
 analyze_folders(folder_paths_gemma_classEval, results_gemma)
 
 # Ground truth
-# analyze_folders(folder_paths_ground_truth_APPS, ground_truth)
-# analyze_folders(folder_paths_ground_truth_classEval, ground_truth)
+analyze_folders(folder_paths_ground_truth_APPS, ground_truth)
+analyze_folders(folder_paths_ground_truth_classEval, ground_truth)
 
 
 

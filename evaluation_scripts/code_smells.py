@@ -251,8 +251,12 @@ def analyze_folders_and_count_code_smells(folder_paths):
 # Define folder paths (same as your original script)
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # Adjust if running locally.
 
-result_setting = "results" # "filtered_results"
-#result_setting = "filtered_results" # "results"
+filtered = True
+if filtered: result_setting="filtered_results"
+else: result_setting = "results" 
+
+if filtered: ground_truth = "ground_truth_filtered"
+else: ground_truth = "ground_truth"
 
 # ClassEval
 folder_paths_gemini_classEval = {
@@ -315,10 +319,10 @@ folder_paths_gemma_APPS = {
 }
 
 folder_paths_ground_truth_classEval = {
-        "GroundTruth classEval": os.path.join(upper_dir, "ground_truth", "classEval")
+        "GroundTruth classEval": os.path.join(upper_dir, ground_truth, "classEval")
     }
 folder_paths_ground_truth_APPS = {
-        "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
+        "GroundTruth APPS": os.path.join(upper_dir, ground_truth, "APPS")
     }
 
 # Analyze folders and count code smells
@@ -328,14 +332,14 @@ results_gemma = {}
 ground_truth = {}
 
 results_chatgpt.update(analyze_folders_and_count_code_smells(folder_paths_chatgpt_classEval))
-# results_gemini.update(analyze_folders_and_count_code_smells(folder_paths_gemini_classEval))
-# results_gemma.update(analyze_folders_and_count_code_smells(folder_paths_gemma_classEval))
-# ground_truth.update(analyze_folders_and_count_code_smells(folder_paths_ground_truth_classEval))
+results_gemini.update(analyze_folders_and_count_code_smells(folder_paths_gemini_classEval))
+results_gemma.update(analyze_folders_and_count_code_smells(folder_paths_gemma_classEval))
+ground_truth.update(analyze_folders_and_count_code_smells(folder_paths_ground_truth_classEval))
 
-# results_chatgpt.update(analyze_folders_and_count_code_smells(folder_paths_chatgpt_APPS))
-# results_gemini.update(analyze_folders_and_count_code_smells(folder_paths_gemini_APPS))
-# results_gemma.update(analyze_folders_and_count_code_smells(folder_paths_gemma_APPS))
-# ground_truth.update(analyze_folders_and_count_code_smells(folder_paths_ground_truth_APPS))
+results_chatgpt.update(analyze_folders_and_count_code_smells(folder_paths_chatgpt_APPS))
+results_gemini.update(analyze_folders_and_count_code_smells(folder_paths_gemini_APPS))
+results_gemma.update(analyze_folders_and_count_code_smells(folder_paths_gemma_APPS))
+ground_truth.update(analyze_folders_and_count_code_smells(folder_paths_ground_truth_APPS))
 
 print("\nAverage Code Smell Count per Folder (based on selected Pylint messages):")
 for folder, (avg_smells, std_dev_smells) in results_gemini.items():

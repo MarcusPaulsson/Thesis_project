@@ -214,30 +214,19 @@ if __name__ == "__main__":
     # Define folder paths
     upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #adjust if running locally.
 
-    result_setting = "results" # "results"
-    #result_setting = "filtered_results" # "results"
+    filtered = True
+    if filtered: result_setting="filtered_results"
+    else: result_setting = "results" 
 
-    # folder_paths_gemini_cli_games = {
-    #     "Gemini cli_games Zero-shot": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot"),
-    #     "Gemini cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Zero-shot-CoT"),
-    #     "Gemini cli_games Expert-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Expert-role"),
-    #     "Gemini cli_games Student-role": os.path.join(upper_dir, result_setting, "Gemini", "cli_games", "Student-role"),
-    # }
-    # folder_paths_chatgpt_cli_games = {
-    #     "ChatGPT cli_games Zero-shot": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot"),
-    #     "ChatGPT cli_games Zero-shot-CoT": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Zero-shot-CoT"),
-    #     "ChatGPT cli_games Expert-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Expert-role"),
-    #     "ChatGPT cli_games Student-role": os.path.join(upper_dir, result_setting, "ChatGPT", "cli_games", "Student-role"),
-    # }
+    if filtered: ground_truth = "ground_truth_filtered"
+    else: ground_truth = "ground_truth"
 
     # ClassEval
-
     folder_paths_ground_truth_classEval = {
-        "GroundTruth classEval": os.path.join(upper_dir, "ground_truth", "classEval")
+        "GroundTruth classEval": os.path.join(upper_dir, ground_truth, "classEval")
     }
-
     folder_paths_ground_truth_APPS = {
-        "GroundTruth APPS": os.path.join(upper_dir, "ground_truth", "APPS")
+        "GroundTruth APPS": os.path.join(upper_dir, ground_truth, "APPS")
     }
 
     folder_paths_gemini_classEval = {
