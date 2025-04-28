@@ -72,7 +72,6 @@ def analyze_folders_and_count_comment_density(folder_paths):
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # Adjust if running locally.
 
 
-
 result_setting = "results" # "filtered_results"
 #result_setting = "filtered_results" # "results"
 
