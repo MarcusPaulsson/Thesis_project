@@ -17,7 +17,7 @@ sys.path.append(upper_dir)
 
 # EVALUATING ALL RESULTS
 
-filtered = True
+filtered = False
 if filtered: result_setting="filtered_results"
 else: result_setting = "results" 
 
@@ -151,9 +151,6 @@ def geometric_mean(data):
     for x in data:
         product *= x
     return round(math.pow(product, 1 / len(data)), 2)
-
-# analyze_folders(folder_paths_gemini_cli_games, results_gemini)
-# analyze_folders(folder_paths_chatgpt_cli_games, results_chatgpt)
 
 analyze_folders(folder_paths_gemini_classEval, results_gemini)
 analyze_folders(folder_paths_chatgpt_classEval, results_chatgpt)

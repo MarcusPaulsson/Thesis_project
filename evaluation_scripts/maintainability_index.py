@@ -109,7 +109,7 @@ def analyze_folders_and_count_metrics(folder_paths):
 # Define folder paths (same as your original script)
 upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # Adjust if running locally.
 
-filtered = False
+filtered = True
 if filtered: result_setting="filtered_results"
 else: result_setting = "results" 
 

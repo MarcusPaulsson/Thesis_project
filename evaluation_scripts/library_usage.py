@@ -214,7 +214,7 @@ if __name__ == "__main__":
     # Define folder paths
     upper_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) #adjust if running locally.
 
-    filtered = True
+    filtered = False
     if filtered: result_setting="filtered_results"
     else: result_setting = "results" 
 
